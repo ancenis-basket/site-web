@@ -1,0 +1,477 @@
+/**
+ * RTL Responsive Styles
+ *
+ * WooCommerce plugin
+ *
+ * Adds support for languages written in a Right To Left (RTL) direction.
+ *
+ * @link  http://codex.wordpress.org/Right_to_Left_Language_Support
+ *
+ * @since    1.0
+ * @version  1.5
+ */
+
+
+
+	/**
+	 * WooCommerce default overrides
+	 */
+
+		/* Product page */
+			.woocommerce div.product div.summary,
+			.woocommerce-page div.product div.summary,
+			.woocommerce .star-rating,
+			.woocommerce-page .star-rating,
+			.woocommerce #reviews #comments ol.commentlist li img.avatar,
+			.woocommerce-page #reviews #comments ol.commentlist li img.avatar,
+			.woocommerce .col2-set .col-2,
+			.woocommerce-page .col2-set .col-2,
+			.woocommerce-page .cart-collaterals .woocommerce-shipping-calculator,
+			.woocommerce form .form-row-last,
+			.woocommerce-page form .form-row-last,
+			.woocommerce #payment #place_order,
+			.woocommerce-page #payment #place_order,
+			.woocommerce .addresses .title .edit,
+			.woocommerce-page .addresses .title .edit,
+			.woocommerce .widget_layered_nav ul small.count,
+			.woocommerce-page .widget_layered_nav ul small.count,
+			.woocommerce .woocommerce-message .button,
+			.woocommerce .woocommerce-error .button,
+			.woocommerce .woocommerce-info .button,
+			.woocommerce-page .woocommerce-message .button,
+			.woocommerce-page .woocommerce-error .button,
+			.woocommerce-page .woocommerce-info .button {float: left}
+
+			.woocommerce div.product div.images,
+			.woocommerce-page div.product div.images,
+			.woocommerce div.product form.cart div.quantity,
+			.woocommerce-page div.product form.cart div.quantity,
+			.woocommerce div.product form.cart .button,
+			.woocommerce-page div.product form.cart .button,
+			.woocommerce .star-rating span,
+			.woocommerce-page .star-rating span,
+			.woocommerce .col2-set .col-1,
+			.woocommerce-page .col2-set .col-1,
+			.woocommerce table.cart td.actions .coupon,
+			.woocommerce-page table.cart td.actions .coupon,
+			.woocommerce table.cart td.actions .coupon .input-text,
+			.woocommerce-page table.cart td.actions .coupon .input-text,
+			.woocommerce form .form-row-first,
+			.woocommerce-page form .form-row-first,
+			.woocommerce .checkout .col-2 h3#ship-to-different-address,
+			.woocommerce-page .checkout .col-2 h3#ship-to-different-address,
+			.woocommerce .order_details li,
+			.woocommerce-page .order_details li,
+			.woocommerce .woocommerce-product-rating .star-rating,
+			.woocommerce-page .woocommerce-product-rating .star-rating,
+			.woocommerce div.product div.thumbnails a,
+			.woocommerce-page div.product div.thumbnails a,
+			.woocommerce .addresses .title h3,
+			.woocommerce-page .addresses .title h3,
+			.woocommerce .widget_price_filter .price_slider_amount .button,
+			.woocommerce-page .widget_price_filter .price_slider_amount .button,
+			.woocommerce .widget_layered_nav ul li a,
+			.woocommerce .widget_layered_nav ul li span,
+			.woocommerce-page .widget_layered_nav ul li a,
+			.woocommerce-page .widget_layered_nav ul li span,
+			.woocommerce .widget_layered_nav_filters ul li,
+			.woocommerce-page .widget_layered_nav_filters ul li {float: right}
+
+			.woocommerce .checkout .col-2 .notes,
+			.woocommerce-page .checkout .col-2 .notes {clear: right}
+
+			.woocommerce table.cart td.actions,
+			.woocommerce-page table.cart td.actions,
+			.woocommerce table.my_account_orders .order-actions,
+			.woocommerce-page table.my_account_orders .order-actions,
+			.woocommerce .widget_price_filter .price_slider_amount,
+			.woocommerce-page .widget_price_filter .price_slider_amount {text-align: left}
+
+			.woocommerce table.shop_table,
+			.woocommerce-page table.shop_table,
+			.woocommerce form.login,
+			.woocommerce form.checkout_coupon,
+			.woocommerce form.register,
+			.woocommerce-page form.login,
+			.woocommerce-page form.checkout_coupon,
+			.woocommerce-page form.register {text-align: right}
+
+				.woocommerce table.my_account_orders .order-status,
+				.woocommerce-page table.my_account_orders .order-status {text-align: right !important}
+
+			.woocommerce #reviews #comments ol.commentlist li img.avatar,
+			.woocommerce-page #reviews #comments ol.commentlist li img.avatar,
+			.woocommerce .star-rating span,
+			.woocommerce-page .star-rating span {
+				left: auto;
+				right: 0;
+			}
+
+			.woocommerce p.stars a,
+			.woocommerce-page p.stars a {
+				margin-right: 0;
+				margin-left: 1em;
+			}
+				.woocommerce p.stars a,
+				.woocommerce-page p.stars a {
+					border-right: 0 !important;
+					border-left: 1px solid !important;
+					border-color: inherit !important;
+				}
+				.woocommerce p.stars a:last-child,
+				.woocommerce-page p.stars a:last-child {border-left: 0 !important}
+				.woocommerce p.stars a:after,
+				.woocommerce-page p.stars a:after,
+				.woocommerce .star-rating span:before,
+				.woocommerce-page .star-rating span:before {
+					left: auto !important;
+					right: 0 !important;
+				}
+
+			.woocommerce .woocommerce-product-rating .star-rating,
+			.woocommerce-page .woocommerce-product-rating .star-rating {
+				margin-right: 0;
+				margin-left: 4px;
+			}
+
+			.woocommerce div.product div.thumbnails a,
+			.woocommerce-page div.product div.thumbnails a {
+				margin-right: 0;
+				margin-left: 3.8%;
+			}
+				.woocommerce div.product div.thumbnails a.last,
+				.woocommerce-page div.product div.thumbnails a.last {margin-left: 0}
+
+		/* Cart */
+			.woocommerce-page table.cart td.actions .coupon .input-text {
+				margin-left: 0;
+				margin-right: .62em;
+			}
+
+		/* Checkout */
+			.woocommerce #payment ul.payment_methods li input,
+			.woocommerce-page #payment ul.payment_methods li input {margin: 0 0 0 1em}
+
+		/* Thank you page */
+			.woocommerce .order_details li,
+			.woocommerce-page .order_details li {
+				padding-right: 0;
+				padding-left: 2em;
+				margin-right: 0;
+				margin-left: 2em;
+				border-right: 0;
+				border-left: 1px dashed;
+				border-color: inherit;
+			}
+
+		/* My account */
+			.woocommerce ul.digital-downloads li,
+			.woocommerce-page ul.digital-downloads li {margin-right: 0}
+
+			.woocommerce ul.digital-downloads li:before,
+			.woocommerce-page ul.digital-downloads li:before {
+				margin-right: 0;
+				margin-left: 7px;
+			}
+
+
+
+
+
+	/**
+	 * plugins-woocommerce.css
+	 */
+
+
+
+		/**
+		 * Shop page
+		 */
+
+			/* Products ordering */
+				.woocommerce .woocommerce-result-count,
+				.woocommerce-page .woocommerce-result-count {float: right}
+				.woocommerce .woocommerce-ordering,
+				.woocommerce-page .woocommerce-ordering {float: left}
+
+			/* Products columns */
+				.woocommerce ul.products li.product,
+				.woocommerce-page ul.products li.product {
+					float: right;
+					margin: 0 0 2.62em 4%;
+				}
+
+				.woocommerce .product.last,
+				.woocommerce-page .product.last {margin-left: 0 !important}
+
+				/* Product column */
+
+					/* Image */
+
+						/* Sales badge */
+							.woocommerce-page span.onsale,
+							.woocommerce ul.products li.product .onsale,
+							.woocommerce-page ul.products li.product .onsale {
+								right: auto;
+								left: 20px;
+							}
+								.single.woocommerce-page span.onsale {
+									left: auto;
+									right: 20px;
+								}
+
+					/* Price and rating */
+
+						/* Price */
+							.woocommerce ul.products li.product .price,
+							.woocommerce-page ul.products li.product .price,
+							.woocommerce-page div.product p.price,
+							.woocommerce-page div.product span.price {float: right}
+
+							.woocommerce-page div.product span.price del,
+							.woocommerce-page div.product p.price del,
+							.woocommerce ul.products li.product .price del,
+							.woocommerce-page ul.products li.product .price del {
+								float: left;
+								margin-left: 0;
+								margin-right: .28em;
+							}
+							.woocommerce-page .price ins {float: right}
+
+							.woocommerce-page div.product p.price,
+							.woocommerce-page div.product span.price {float: none}
+
+						/* Rating */
+							.woocommerce ul.products li.product .star-rating,
+							.woocommerce-page ul.products li.product .star-rating {float: left}
+
+
+
+		/**
+		 * Product page
+		 */
+
+			/* Variations table */
+				.woocommerce-page div.product form.cart .reset_variations:before {
+					margin-right: 0;
+					margin-left: .28em;
+				}
+
+			/* Quantity buttons */
+				.woocommerce-page .quantity,
+				.woocommerce-page div.product form.cart div.quantity {
+					margin-right: 0;
+					margin-left: 1em;
+				}
+
+			/* Tabs */
+				.woocommerce-page div.product .woocommerce-tabs ul.tabs li,
+				.woocommerce-page div.product .woocommerce-tabs ul.tabs li.active {
+					border-left: 0;
+					border-right: 1px solid;
+					border-color: inherit;
+				}
+					.woocommerce-page div.product .woocommerce-tabs ul.tabs li:first-child {
+						padding-left: .62em;
+						padding-right: 0;
+						border-right: 0;
+					}
+
+				/* Reviews */
+
+					/* List */
+						.woocommerce-page #reviews #comments ol.commentlist li .comment-text {margin: 0 80px 0 0}
+
+					/* Form */
+						.woocommerce-page #review_form #respond p.comment-form-author {
+							margin-right: 0;
+							margin-left: 2%;
+						}
+
+
+
+		/**
+		 * Cart
+		 */
+
+			.woocommerce-page table.cart td.actions .coupon .input-text {
+				margin-right: 0;
+				margin-left: .62em;
+			}
+
+			/* Totals and shipping */
+
+				/* Totals */
+					.woocommerce-page .cart-collaterals .cart_totals {
+						float: left;
+						text-align: right;
+					}
+
+					.woocommerce-page .cart-collaterals .cart_totals th + td {text-align: left}
+
+					#shipping_method input[type="radio"] {
+						float: left;
+						margin: 0 .62em 0 0;
+					}
+
+
+
+		/**
+		 * Checkout
+		 */
+
+			/* Login */
+				.woocommerce-page .login label.inline {
+					margin-left: 0;
+					margin-right: 1em;
+				}
+
+			/* Summary */
+				.woocommerce-page form.checkout .product-name img,
+				.woocommerce .order_details .product-name img,
+				.woocommerce-page .order_details .product-name img {
+					float: right;
+					margin-right: 0;
+					margin-left: 1em;
+				}
+
+				.woocommerce-page form.checkout .product-total,
+				.woocommerce-page form.checkout tfoot th,
+				.woocommerce-page form.checkout tfoot td,
+				.woocommerce-page .order_details .product-total,
+				.woocommerce-page .order_details tfoot th,
+				.woocommerce-page .order_details tfoot td {text-align: left}
+
+			/* Payment */
+				.woocommerce-page #payment ul.payment_methods li,
+				.woocommerce-page #payment .terms {text-align: right}
+
+				.woocommerce-page #payment div.payment_box {margin: 0 2.62em 0 0}
+
+			/* Checkout buttons */
+				.button.checkout:before {
+					margin-right: 0;
+					margin-left: .62em;
+				}
+
+
+
+		/**
+		 * Thank you page
+		 * My account
+		 */
+
+			.woocommerce-page .order_details li,
+			.woocommerce-account .commentlist {margin-right: 0}
+
+
+
+		/**
+		 * Widgets
+		 */
+
+			/* Categories */
+				.widget_product_categories .product-categories a:before {
+					content: 'f';
+					text-align: right;
+				}
+
+			/* Products lists */
+				.woocommerce ul.product_list_widget li img,
+				.woocommerce-page ul.product_list_widget li img {
+					float: left;
+					margin-left: 0;
+					margin-right: 1em;
+				}
+
+
+
+		/**
+		 * Floating cart / Menu cart
+		 */
+
+			/* Floating cart */
+				.floating-cart {
+					right: auto;
+					left: 0;
+				}
+
+				.floating-cart-switch {float: left}
+
+				.floating-cart-content {
+					right: auto;
+					left: -22em;
+				}
+					.floating-cart:hover .floating-cart-content {
+						right: auto;
+						left: 0;
+					}
+
+				.floating-cart-content .button.checkout {float: left}
+
+
+
+		/**
+		 * Shortcodes
+		 */
+
+			/* Product categories */
+				.woocommerce ul.products li.product-category h3 {
+					left: auto;
+					right: 0;
+				}
+
+
+
+			/**
+			 * Posts shortcode implementation
+			 */
+
+				.wm-posts-product .price del {
+					margin-right: 0;
+					margin-left: .28em;
+				}
+
+
+
+
+
+	/**
+	 * responsive-plugins-woocommerce.css
+	 */
+
+
+
+		/**
+		 * 800px max
+		 */
+
+			@media only screen and (max-width: 800px) {
+
+				/* Reviews */
+					.woocommerce-page #reviews #comments ol.commentlist li .comment-text {
+						margin-left: 0;
+						margin-right: 40px;
+					}
+
+			} /* /(max-width: 800px) */
+
+
+
+		/**
+		 * 420px max
+		 */
+
+			@media only screen and (max-width: 420px) {
+
+				/* Shop tables (cart, checkout) */
+					.responsive-design table.shop_table th,
+					.responsive-design table.shop_table td,
+					.responsive-design .cart-collaterals .cart_totals table th,
+					.responsive-design .cart-collaterals .cart_totals table td {text-align: right !important}
+
+			} /* /(max-width: 420px) */
+
+
+
+

@@ -1,0 +1,136 @@
+/**
+ * Responsive styles
+ *
+ * bbPress plugin
+ */
+
+
+
+	/**
+	 * 800px max
+	 */
+
+		@media only screen and (max-width: 800px) {
+
+			/* Topics */
+				.responsive-design #bbpress-forums li.bbp-body ul.topic {
+					min-height: 80px;
+					padding-left: 70px;
+				}
+
+			/* Avatars */
+				.responsive-design #bbpress-forums .bbp-topic-started-by .bbp-avatar-wrapper,
+				.responsive-design #bbpress-forums .bbp-topic-freshness-author .bbp-avatar-wrapper {
+					width: 24px;
+					height: 40px;
+					left: 10px;
+				}
+				.responsive-design #bbpress-forums .single-voice.single-reply .bbp-topic-started-by .bbp-avatar-wrapper {width: 40px}
+
+				.responsive-design #bbpress-forums .bbp-topic-freshness-author .bbp-avatar-wrapper {
+					width: 19px;
+					height: 30px;
+					left: 36px;
+					top: 25px;
+				}
+
+				.responsive-design #bbpress-forums .single-voice.single-reply .bbp-topic-freshness-author .bbp-avatar-wrapper,
+				.responsive-design #bbpress-forums ul.forum .bbp-topic-started-by .bbp-avatar-wrapper,
+				.responsive-design #bbpress-forums ul.forum .bbp-topic-freshness-author .bbp-avatar-wrapper {display: none}
+
+					.responsive-design #bbpress-forums .bbp-topic-started-by .bbp-avatar-wrapper img.avatar,
+					.responsive-design #bbpress-forums .bbp-topic-freshness-author .bbp-avatar-wrapper img.avatar {
+						width: 40px;
+						max-width: 40px;
+					}
+					.responsive-design #bbpress-forums .bbp-topic-freshness-author .bbp-avatar-wrapper img.avatar {width: 30px}
+
+			/* Single topic */
+				.responsive-design .bbp-large-topic .bbp-topic-title,
+				.responsive-design .bbp-meta,
+				.responsive-design #bbpress-forums .bbp-search-results .bbp-forum-title,
+				.responsive-design #bbpress-forums .bbp-search-results .bbp-topic-title,
+				.responsive-design #bbpress-forums .bbp-search-results .bbp-reply-title {text-align: center}
+
+					.responsive-design #bbpress-forums div.bbp-reply-author,
+					.responsive-design #bbpress-forums .bbp-search-results div.bbp-topic-author,
+					.responsive-design .bbp-large-topic div.bbp-reply-author {
+						float: none;
+						clear: both;
+						width: 100%;
+						margin-bottom: 1em;
+						text-align: center;
+					}
+					.responsive-design #bbpress-forums div.bbp-reply-content,
+					.responsive-design #bbpress-forums .bbp-search-results div.bbp-forum-content,
+					.responsive-design #bbpress-forums .bbp-search-results div.bbp-topic-content,
+					.responsive-design .bbp-large-topic div.bbp-reply-content,
+					.responsive-design .bbp-large-topic div.bbp-meta {margin-left: 0}
+
+					.responsive-design span.bbp-admin-links {
+						float: none;
+						display: block;
+						margin-top: .62em;
+					}
+
+			/* User account */
+				.responsive-design #bbpress-forums #bbp-single-user-details,
+				.responsive-design #bbpress-forums #bbp-user-body {
+					float: none;
+					width: 100%;
+					margin-bottom: 1.62em;
+				}
+				.responsive-design #bbpress-forums #bbp-single-user-details #bbp-user-avatar {
+					width: 33%;
+					margin: 0 auto;
+				}
+
+				.responsive-design #bbpress-forums #bbp-user-body {
+					float: none;
+					width: 100%;
+				}
+
+			/* Search form fix */
+				.responsive-design div.bbp-search-form input {
+					padding: .43em .62em .43em 2em;
+					font-size: 1em;
+				}
+
+			/* Author card fix */
+				.responsive-design #bbpress-forums .bbp-body div.bbp-reply-author {
+					min-height: 80px;
+					margin: 0 0 1em;
+					padding: 0;
+					text-align: center;
+				}
+				.responsive-design #bbpress-forums div.bbp-reply-author img.avatar {
+					position: relative;
+					top: auto;
+				}
+
+		} /* /(max-width: 800px) */
+
+
+
+	/**
+	 * 420px max
+	 */
+
+		@media only screen and (max-width: 420px) {
+
+			/* User account */
+				.responsive-design #bbpress-forums #bbp-your-profile fieldset label[for],
+				.responsive-design #bbpress-forums #bbp-your-profile fieldset input,
+				.responsive-design #bbpress-forums #bbp-your-profile fieldset select,
+				.responsive-design #bbpress-forums #bbp-your-profile fieldset textarea {
+					float: none;
+					display: block;
+					width: 100%;
+				}
+				.responsive-design #bbpress-forums #bbp-your-profile fieldset label[for] {text-align: left}
+
+		} /* /(max-width: 420px) */
+
+
+
+

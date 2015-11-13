@@ -1,0 +1,193 @@
+/**
+ * Responsive styles
+ *
+ * WooCommerce plugin
+ *
+ * @since    1.0
+ * @version  1.3
+ */
+
+
+
+	/**
+	 * 1024px max
+	 */
+
+		@media only screen and (max-width: 1024px) {
+
+			/* Products list */
+				.woocommerce ul.products li.product .star-rating,
+				.woocommerce-page ul.products li.product .star-rating {
+					float: none;
+					clear: both;
+					display: block;
+					position: relative;
+					top: .62em;
+				}
+
+				.woocommerce .buy-container,
+				.woocommerce ul.products li.product .buy-container,
+				.woocommerce-page ul.products li.product .buy-container,
+				.woocommerce.wm-posts-item:hover .buy-container,
+				.woocommerce ul.products li.product:hover .buy-container,
+				.woocommerce-page ul.products li.product:hover .buy-container {
+					display: block;
+					visibility: visible;
+					position: absolute;
+					width: 100%;
+					height: auto;
+					left: 0;
+					top: auto;
+					bottom: 0;
+					text-align: center;
+					background: #000;
+					color: #fff;
+					border-radius: 0;
+					opacity: .75;
+					filter: alpha(opacity=75); /* For IE8 */
+					overflow: hidden;
+					z-index: 10;
+				}
+					.woocommerce.wm-posts-item:hover .buy-container,
+					.woocommerce ul.products li.product:hover .buy-container,
+					.woocommerce-page ul.products li.product:hover .buy-container {
+						-webkit-animation: none;
+						        animation: none;
+					}
+					.woocommerce .buy-table,
+					.woocommerce ul.products li.product .buy-table,
+					.woocommerce-page ul.products li.product .buy-table,
+					.woocommerce .buy-cell,
+					.woocommerce ul.products li.product .buy-cell,
+					.woocommerce-page ul.products li.product .buy-cell {display: block}
+
+					.woocommerce .buy-container .price,
+					.woocommerce ul.products li.product .buy-container .price,
+					.woocommerce-page ul.products li.product .buy-container .price,
+					.woocommerce .buy-container .details-button,
+					.woocommerce ul.products li.product .buy-container .details-button,
+					.woocommerce-page ul.products li.product .buy-container .details-button {display: none}
+
+					.woocommerce .buy-container .add_to_cart_button,
+					.woocommerce ul.products li.product .buy-container .add_to_cart_button,
+					.woocommerce-page ul.products li.product .buy-container .add_to_cart_button {
+						display: block;
+						padding: .28em;
+						font-size: 1.62em;
+					}
+
+		} /* /(max-width: 1024px) */
+
+
+
+	/**
+	 * 800px max
+	 */
+
+		@media only screen and (max-width: 800px) {
+
+			/* Products columns */
+				.woocommerce ul.products li.product,
+				.woocommerce-page ul.products li.product,
+				.shop-columns-3 ul.products li.product,
+				.woocommerce.columns-3 ul.products li.product,
+				.woocommerce.columns-5 ul.products li.product,
+				.woocommerce.columns-6 ul.products li.product {
+					width: 46% !important;
+					margin-left: 2%;
+					margin-right: 2%;
+				}
+
+				.woocommerce.columns-1 ul.products li.product {width: 100% !important}
+				.woocommerce.columns-2 ul.products li.product {width: 48% !important}
+				.woocommerce.columns-1 ul.products li.product,
+				.woocommerce.columns-2 ul.products li.product {
+					margin-right: 4%;
+					margin-left: 0;
+				}
+
+				.woocommerce-page .upsells ul.products li.product,
+				.woocommerce-page .cross-sells ul.products li.product,
+				.woocommerce-page .related ul.products li.product {margin-bottom: 1.62em}
+
+			/* Products list */
+				.woocommerce .woocommerce-result-count,
+				.woocommerce-page .woocommerce-result-count,
+				.woocommerce .woocommerce-ordering,
+				.woocommerce-page .woocommerce-ordering {float: none}
+
+			/* Reviews */
+				.woocommerce-page #reviews #comments ol.commentlist li {min-height: 30px}
+				.woocommerce-page #reviews #comments ol.commentlist li img.avatar {width: 24px}
+				.woocommerce-page #reviews #comments ol.commentlist li .comment-text {margin-left: 40px}
+
+			/* Cart page */
+				.woocommerce-page .cart-collaterals .cart_totals {float: none}
+				.woocommerce-page .cart-collaterals .woocommerce-shipping-calculator {
+					clear: both;
+					margin-bottom: 1.62em;
+				}
+
+			/* Columns */
+				.col2-set > .col-2 {margin-top: 1.62em}
+
+			/* Product images in order tables */
+				.woocommerce-page form.checkout .product-name img,
+				.woocommerce .order_details .product-name img,
+				.woocommerce-page .order_details .product-name img {display: none}
+
+			/* Thank you page */
+				.woocommerce-page .order_details li {
+					float: none;
+					display: block;
+					border: 0;
+				}
+				.woocommerce-page .order_details li + li {margin-top: 1em}
+
+		} /* /(max-width: 800px) */
+
+
+
+	/**
+	 * 420px max
+	 */
+
+		@media only screen and (max-width: 420px) {
+
+			/* Products columns */
+				.woocommerce ul.products li.product,
+				.woocommerce-page ul.products li.product,
+				.shop-columns-3 ul.products li.product,
+				.woocommerce.columns-2 ul.products li.product,
+				.woocommerce.columns-3 ul.products li.product,
+				.woocommerce.columns-5 ul.products li.product,
+				.woocommerce.columns-6 ul.products li.product {
+					width: 100% !important;
+					margin-left: 0;
+					margin-right: 0;
+				}
+
+			/* Shop tables (cart, checkout) */
+				.responsive-design table.shop_table th,
+				.responsive-design table.shop_table td,
+				.responsive-design .cart-collaterals .cart_totals table th,
+				.responsive-design .cart-collaterals .cart_totals table td {
+					display: block !important;
+					width: 100% !important;
+					text-align: left !important;
+				}
+				.responsive-design table.shop_table th.product-remove {display: none !important}
+
+				.responsive-design table.cart td.actions .coupon {white-space: normal !important}
+				.responsive-design table.shop_table input[type="submit"] {
+					float: none !important;
+					clear: both !important;
+					width: 100% !important;
+					margin-top: .62em;
+				}
+
+		} /* /(max-width: 420px) */
+
+
+
+
