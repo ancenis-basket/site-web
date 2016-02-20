@@ -6,6 +6,7 @@
  * and other user handling.
  *
  * @package WordPress
+ * Christophe modification
  */
 
 /** Make sure that the WordPress bootstrap has run before continuing. */
