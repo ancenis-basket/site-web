@@ -1,201 +1,218 @@
-/* LayerSlider Full Width Skin */
+/* LayerSlider Borderless Dark Skin */
 
 
 
-.ls-fullwidth .ls-playvideo {
+.ls-borderlessdark .ls-ct-half {
+	background: #444;
+}
+
+.ls-borderlessdark .ls-ct-center {
+	background: white;
+}
+
+.ls-borderlessdark .ls-playvideo {
 	width: 50px;
 	height: 50px;
 	margin-left: -25px;
 	margin-top: -25px;
 }
 
-.ls-fullwidth .ls-playvideo,
-.ls-fullwidth .ls-nav-sides,
-.ls-fullwidth .ls-bottom-slidebuttons a,
-.ls-fullwidth .ls-nav-prev,
-.ls-fullwidth .ls-nav-next,
-.ls-fullwidth .ls-nav-start,
-.ls-fullwidth .ls-nav-stop,
-.ls-fullwidth .ls-fullscreen,
-.ls-fullwidth .ls-loading-container {
+.ls-borderlessdark .ls-playvideo,
+.ls-borderlessdark .ls-nav-sides,
+.ls-borderlessdark .ls-bottom-slidebuttons a,
+.ls-borderlessdark .ls-nav-prev,
+.ls-borderlessdark .ls-nav-next,
+.ls-borderlessdark .ls-nav-start,
+.ls-borderlessdark .ls-nav-stop,
+.ls-borderlessdark .ls-fullscreen,
+.ls-borderlessdark .ls-loading-container {
 	background-image: url(skin.png);	
 }
 
-.ls-fullwidth .ls-playvideo {
+.ls-borderlessdark .ls-playvideo {
 	background-position: -300px -150px;
 }
 
-.ls-fullwidth .ls-playvideo:hover,
-.ls-fullwidth .ls-vpcontainer:hover .ls-playvideo {
+.ls-borderlessdark .ls-playvideo:hover,
+.ls-borderlessdark .ls-vpcontainer:hover .ls-playvideo {
 	background-position: -375px -150px;
 }
 
-.ls-fullwidth .ls-nav-prev {
+.ls-borderlessdark .ls-nav-prev {
 	background-position: 0px 0px;
 }
 
-.ls-fullwidth .ls-nav-prev:hover {
+.ls-borderlessdark .ls-nav-prev:hover {
 	background-position: 0px -75px;
 }
 
-.ls-fullwidth .ls-nav-next {
+.ls-borderlessdark .ls-nav-next {
 	background-position: -150px 0px;
 }
 
-.ls-fullwidth .ls-nav-next:hover {
+.ls-borderlessdark .ls-nav-next:hover {
 	background-position: -150px -75px;
 }
 
-.ls-fullwidth .ls-nav-start {
+.ls-borderlessdark .ls-nav-start {
 	background-position: -300px 0px;
 }
 
-.ls-fullwidth .ls-nav-start:hover,
-.ls-fullwidth .ls-nav-start-active {
+.ls-borderlessdark .ls-nav-start:hover,
+.ls-borderlessdark .ls-nav-start-active {
 	background-position: -300px -75px;
 }
 
-.ls-fullwidth .ls-nav-stop {
+.ls-borderlessdark .ls-nav-stop {
 	background-position: -450px 0px;
 }
 
-.ls-fullwidth .ls-nav-stop:hover,
-.ls-fullwidth .ls-nav-stop-active {
+.ls-borderlessdark .ls-nav-stop:hover,
+.ls-borderlessdark .ls-nav-stop-active {
 	background-position: -450px -75px;
 }
 
-.ls-fullwidth .ls-bottom-slidebuttons a {
+.ls-borderlessdark .ls-bottom-slidebuttons a {
 	background-position: 0px -150px;
 }
 
-.ls-fullwidth .ls-bottom-slidebuttons a.ls-nav-active,
-.ls-fullwidth .ls-bottom-slidebuttons a:hover {
+.ls-borderlessdark .ls-bottom-slidebuttons a.ls-nav-active,
+.ls-borderlessdark .ls-bottom-slidebuttons a:hover {
 	background-position: -75px -150px;
 }
 
-.ls-fullwidth .ls-nav-sideleft {
+.ls-borderlessdark .ls-nav-sideleft {
 	background-position: -150px -150px;	
 }
 
-.ls-fullwidth .ls-nav-sideright {
+.ls-borderlessdark .ls-nav-sideright {
 	background-position: -225px -150px;	
 }
 
 
 
-.ls-fullwidth .ls-nav-prev,
-.ls-fullwidth .ls-nav-next {
-	width: 40px;
-	height: 40px;
+.ls-borderlessdark .ls-nav-prev,
+.ls-borderlessdark .ls-nav-next {
+	width: 50px;
+	height: 50px;
 	z-index: 10000;
 	top: 50%;
-	margin-top: -20px;	
+	margin-top: -22px;	
 	position: absolute;
 }
 
-.ls-fullwidth .ls-nav-prev {
+.ls-borderlessdark .ls-nav-prev {
 	left: 10px;	
 }
 
-.ls-fullwidth .ls-nav-next {
+.ls-borderlessdark .ls-nav-next {
 	right: 10px;	
 }
 
 
 
-.ls-fullwidth .ls-bottom-slidebuttons,
-.ls-fullwidth .ls-bottom-slidebuttons a,
-.ls-fullwidth .ls-nav-start,
-.ls-fullwidth .ls-nav-stop,
-.ls-fullwidth .ls-nav-sides {
-	height: 20px;
+.ls-borderlessdark .ls-bottom-slidebuttons,
+.ls-borderlessdark .ls-bottom-slidebuttons a,
+.ls-borderlessdark .ls-nav-start,
+.ls-borderlessdark .ls-nav-stop,
+.ls-borderlessdark .ls-nav-sides {
+	height: 36px;
 }
 
-.ls-fullwidth .ls-bottom-slidebuttons,
-.ls-fullwidth .ls-bottom-slidebuttons a,
-.ls-fullwidth .ls-nav-start,
-.ls-fullwidth .ls-nav-stop,
-.ls-fullwidth .ls-nav-sides {
+.ls-borderlessdark .ls-bottom-slidebuttons,
+.ls-borderlessdark .ls-bottom-slidebuttons a,
+.ls-borderlessdark .ls-nav-start,
+.ls-borderlessdark .ls-nav-stop,
+.ls-borderlessdark .ls-nav-sides {
 	display: inline-block;
 }
 
-.ls-fullwidth .ls-bottom-slidebuttons,
-.ls-fullwidth .ls-nav-start,
-.ls-fullwidth .ls-nav-stop,
-.ls-fullwidth .ls-nav-sides {
-	top: -30px;
+.ls-borderlessdark .ls-bottom-slidebuttons,
+.ls-borderlessdark .ls-nav-start,
+.ls-borderlessdark .ls-nav-stop,
+.ls-borderlessdark .ls-nav-sides {
+	top: -44px;
 }
 
-.ls-fullwidth .ls-nav-start,
-.ls-fullwidth .ls-nav-stop {
-	width: 25px;
+.ls-borderlessdark .ls-nav-start,
+.ls-borderlessdark .ls-nav-stop {
+	width: 24px;
 }
 
-.ls-fullwidth .ls-bottom-slidebuttons a {
+.ls-borderlessdark .ls-bottom-slidebuttons a {
 	width: 20px;
 }
 
-.ls-fullwidth .ls-nav-sides {
-	width: 0px;	
+.ls-borderlessdark .ls-nav-sides {
+	width: 13px;	
 }
 
 
 
-.ls-fullwidth .ls-thumbnail-hover {
-	bottom: 30px;
-	padding: 2px;
+.ls-borderlessdark .ls-thumbnail-hover {
+	bottom: 45px;
+	padding: 3px;
 	margin-left: 1px;
 }
 
-.ls-fullwidth .ls-thumbnail-hover-bg {
-	background: #eee;
+.ls-borderlessdark .ls-thumbnail-hover-bg {
+	background: #4f4f4f;
+	box-shadow: 0px 2px 12px -4px black;
+	border-radius: 4px;
 }
 
-.ls-fullwidth .ls-thumbnail-hover span {
-	border: 5px solid #eee;
+.ls-borderlessdark .ls-thumbnail-hover span {
+	border: 5px solid #4f4f4f;
 	margin-left: -5px;
 }
 
 
 
-.ls-fullwidth .ls-thumbnail {
-	top: 10px;
+.ls-borderlessdark .ls-thumbnail {
+	top: 15px;
 }
 
-.ls-fullwidth .ls-thumbnail-inner {
+.ls-borderlessdark .ls-thumbnail-inner {
 	padding: 2px;
 	margin-left: -2px;
-	background: #fff;
+	background: #4f4f4f;
+	border-radius: 4px;
 }
 
-.ls-fullwidth .ls-thumbnail-slide a {
+.ls-borderlessdark .ls-thumbnail-slide a {
 	margin-right: 2px;
 }
 
-.ls-fullwidth .ls-nothumb {
-	background: #eee;
+.ls-borderlessdark .ls-nothumb {
+	background: #555;
 }
 
 
 
-.ls-fullwidth .ls-loading-container {
-	width: 40px;
-	height: 40px;
-	margin-left: -20px;
-	margin-top: -20px;
+.ls-borderlessdark .ls-shadow {
+	display: block;
+}
+
+
+
+.ls-borderlessdark .ls-loading-container {
+	width: 50px;
+	height: 50px;
+	margin-left: -25px;
+	margin-top: -22px;
 	background-position: -450px -150px;	
 }
 
-.ls-fullwidth .ls-loading-indicator {
+.ls-borderlessdark .ls-loading-indicator {
 	width: 22px;
 	height: 22px;
-	margin-top: 9px;
+	margin-top: 11px;
 	background-image: url(loading.gif);	
 }
 
 
 
-.ls-fullwidth .ls-fullscreen {
+.ls-borderlessdark .ls-fullscreen {
 	width: 30px;
 	height: 30px;
 	right: 10px;
@@ -203,6 +220,6 @@
 	background-position: -525px -150px;
 }
 
-.ls-fullwidth .ls-fullscreen:hover {
+.ls-borderlessdark .ls-fullscreen:hover {
 	background-position: -525px -190px;
 }

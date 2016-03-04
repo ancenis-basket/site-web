@@ -12051,8 +12051,8 @@
 		}
 
 		.nav-main > ul > li {
-			padding-top: 14px;
-			padding-bottom: 14px;
+			padding-top: 20px;
+			padding-bottom: 20px;
 		}
 
 
@@ -12395,10 +12395,6 @@
 
 	/* Background: HTML and body */
 
-		html {
-			background: #1e73be;
-		}
-
 
 	/* Background: Topbar */
 
@@ -12408,16 +12404,43 @@
 		.header,
 		#search-container input,
 		.mobile-nav {
-			border-color: #eeeeee !important;
+			background: #ffffff url(http://localhost/wordpress/wp-content/uploads/2016/03/plaquette_basket.jpg) no-repeat scroll 0 0; background-size: contain;
+			color: #1e73be;
+		}
+
+		#search-container input::-webkit-input-placeholder {
+			color: #1e73be;
+		}
+
+		#search-container input::-moz-placeholder {
+			color: #1e73be;
+		}
+
+		#search-container input:-ms-input-placeholder {
+			color: #1e73be;
+		}
+
+		.header input[type="date"],
+		.header input[type="email"],
+		.header input[type="file"],
+		.header input[type="number"],
+		.header input[type="search"],
+		.header input[type="password"],
+		.header input[type="text"],
+		.header input[type="url"],
+		.header input[type="tel"],
+		.header select,
+		.header textarea {
+			background-color: #f6f6f6;
 		}
 
 		.nav-main li ul {
 			background-color: #ffffff;
-			color: #ffffff;
+			color: #1e73be;
 		}
 
 		.nav-main li ul {
-			border-color: #eeeeee;
+			border-color: #666666;
 		}
 
 		.nav-main li li:hover > a,
@@ -12428,13 +12451,13 @@
 
 		.nav-main > ul > li > .inner:hover,
 		.nav-main > ul > li:hover > .inner {
-			-webkit-box-shadow: inset 0 .15em .72em 0 rgba(0,0,0, 0.195);
-			box-shadow: inset 0 .15em .72em 0 rgba(0,0,0, 0.195);
+			-webkit-box-shadow: inset 0 .15em .72em 0 rgba(0,0,0, 0.075);
+			box-shadow: inset 0 .15em .72em 0 rgba(0,0,0, 0.075);
 		}
 
-		.nav-main > ul > li.active-menu-item > a /* Brightness (accent) = 89 */ {
-			-webkit-box-shadow: inset 0 .15em 1.4em 0 rgba(0,0,0, 0.39);
-			box-shadow: inset 0 .15em 1.4em 0 rgba(0,0,0, 0.39);
+		.nav-main > ul > li.active-menu-item > a /* Brightness = 255 */ {
+			-webkit-box-shadow: inset 0 .15em 1.4em 0 rgba(0,0,0, 0.15);
+			box-shadow: inset 0 .15em 1.4em 0 rgba(0,0,0, 0.15);
 		}
 
 
@@ -12518,12 +12541,32 @@
 	/* Background: Main heading */
 
 		.main-heading {
-			color: #1e73be;
-			border-color: #1e73be !important;
+			background: #f7f7f7;
+			color: #7aa8bf;
+			border-color: #ffffff !important;
+		}
+
+		.main-heading input[type="date"],
+		.main-heading input[type="email"],
+		.main-heading input[type="file"],
+		.main-heading input[type="number"],
+		.main-heading input[type="search"],
+		.main-heading input[type="password"],
+		.main-heading input[type="text"],
+		.main-heading input[type="url"],
+		.main-heading input[type="tel"],
+		.main-heading select,
+		.main-heading textarea {
+			background-color: #eeeeee;
 		}
 
 
 	/* Background: Content area */
+
+		.content-section,
+		.page-template-page-templateblank-php {
+			border-color: #1e73be !important;
+		}
 
 		.content-section h1,
 		.content-section h2,
@@ -12556,9 +12599,9 @@
 	/* Background: Footer widgets */
 
 		.footer-widgets {
-			background: #ffffff;
-			color: #dddddd;
-			border-color: #1e73be !important;
+			background: #7ea0bf;
+			color: #898989;
+			border-color: #ffffff !important;
 		}
 
 		.footer-widgets h1,
@@ -12576,7 +12619,7 @@
 		.footer-widgets [class*="heading-style-"],
 		.footer-widgets .no-icon-background .wm-iconbox-module .wm-content-module-element.image,
 		.footer-widgets .no-icon-bg .wm-iconbox-module .wm-content-module-element.image {
-			color: #999999;
+			color: #454545;
 		}
 
 		.footer-widgets .wm-accordion .wm-item.active .wm-item-title,
@@ -12594,20 +12637,20 @@
 		.footer-widgets .wm-table.type-bordered-striped tr.even th,
 		.footer-widgets .wm-table.type-bordered-striped tr.even td,
 		.footer-widgets .bypostauthor .comment-author .fn {
-			background-color: #f6f6f6;
+			background-color: #7597b6;
 		}
 
 		.footer-widgets .wm-tabs .wm-tab-links li.active,
 		.footer-widgets .wm-tabs.layout-top .wm-tab-links li.active {
-			border-bottom-color: #f6f6f6;
+			border-bottom-color: #7597b6;
 		}
 
 		.footer-widgets div.wm-tabs.layout-left .wm-tab-links li.active {
-			border-right-color: #f6f6f6;
+			border-right-color: #7597b6;
 		}
 
 		.footer-widgets div.wm-tabs.layout-right .wm-tab-links li.active {
-			border-left-color: #f6f6f6;
+			border-left-color: #7597b6;
 		}
 
 		.footer-widgets input[type="date"],
@@ -12621,7 +12664,7 @@
 		.footer-widgets input[type="tel"],
 		.footer-widgets select,
 		.footer-widgets textarea {
-			background-color: #f6f6f6;
+			background-color: #7597b6;
 		}
 
 
@@ -12776,7 +12819,7 @@
 	} /* /High DPI */
 
 
-	/* Using Mustang theme by WebMan - Oliver Juhas (http://www.webmandesign.eu), version 1.5.4. CSS generated on 2015/11/06 00:49, UTC. */
+	/* Using Mustang theme by WebMan - Oliver Juhas (http://www.webmandesign.eu), version 1.5.4. CSS generated on 2016/03/04 06:44, UTC. */
 
 
 

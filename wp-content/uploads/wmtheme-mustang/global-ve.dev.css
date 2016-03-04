@@ -4672,6 +4672,11 @@
 
 	/* Background: HTML and body */
 
+		html,
+		body {
+			border-color: #1e73be;
+		}
+
 
 	/* Typography */
 
@@ -4728,7 +4733,7 @@
 		}
 
 
-	/* Using Mustang theme by WebMan - Oliver Juhas (http://www.webmandesign.eu), version 1.5.4. CSS generated on 2015/11/06 00:49, UTC. */
+	/* Using Mustang theme by WebMan - Oliver Juhas (http://www.webmandesign.eu), version 1.5.4. CSS generated on 2016/03/04 06:44, UTC. */
 
 
 

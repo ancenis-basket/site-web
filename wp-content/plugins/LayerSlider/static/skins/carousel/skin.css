@@ -1,94 +1,98 @@
-/* LayerSlider Carousel Skin */
+/* LayerSlider Borderless Dark Skin */
 
 
 
-.ls-carousel .ls-bottom-nav-wrapper {
-	margin: 10px auto;
+.ls-borderlessdark .ls-ct-half {
+	background: #444;
 }
 
-.ls-carousel .ls-playvideo {
+.ls-borderlessdark .ls-ct-center {
+	background: white;
+}
+
+.ls-borderlessdark .ls-playvideo {
 	width: 50px;
 	height: 50px;
 	margin-left: -25px;
 	margin-top: -25px;
 }
 
-.ls-carousel .ls-playvideo,
-.ls-carousel .ls-nav-sides,
-.ls-carousel .ls-bottom-slidebuttons a,
-.ls-carousel .ls-nav-prev,
-.ls-carousel .ls-nav-next,
-.ls-carousel .ls-nav-start,
-.ls-carousel .ls-nav-stop,
-.ls-carousel .ls-fullscreen,
-.ls-carousel .ls-loading-container {
+.ls-borderlessdark .ls-playvideo,
+.ls-borderlessdark .ls-nav-sides,
+.ls-borderlessdark .ls-bottom-slidebuttons a,
+.ls-borderlessdark .ls-nav-prev,
+.ls-borderlessdark .ls-nav-next,
+.ls-borderlessdark .ls-nav-start,
+.ls-borderlessdark .ls-nav-stop,
+.ls-borderlessdark .ls-fullscreen,
+.ls-borderlessdark .ls-loading-container {
 	background-image: url(skin.png);	
 }
 
-.ls-carousel .ls-playvideo {
+.ls-borderlessdark .ls-playvideo {
 	background-position: -300px -150px;
 }
 
-.ls-carousel .ls-playvideo:hover,
-.ls-carousel .ls-vpcontainer:hover .ls-playvideo {
+.ls-borderlessdark .ls-playvideo:hover,
+.ls-borderlessdark .ls-vpcontainer:hover .ls-playvideo {
 	background-position: -375px -150px;
 }
 
-.ls-carousel .ls-nav-prev {
+.ls-borderlessdark .ls-nav-prev {
 	background-position: 0px 0px;
 }
 
-.ls-carousel .ls-nav-prev:hover {
+.ls-borderlessdark .ls-nav-prev:hover {
 	background-position: 0px -75px;
 }
 
-.ls-carousel .ls-nav-next {
+.ls-borderlessdark .ls-nav-next {
 	background-position: -150px 0px;
 }
 
-.ls-carousel .ls-nav-next:hover {
+.ls-borderlessdark .ls-nav-next:hover {
 	background-position: -150px -75px;
 }
 
-.ls-carousel .ls-nav-start {
+.ls-borderlessdark .ls-nav-start {
 	background-position: -300px 0px;
 }
 
-.ls-carousel .ls-nav-start:hover,
-.ls-carousel .ls-nav-start-active {
+.ls-borderlessdark .ls-nav-start:hover,
+.ls-borderlessdark .ls-nav-start-active {
 	background-position: -300px -75px;
 }
 
-.ls-carousel .ls-nav-stop {
+.ls-borderlessdark .ls-nav-stop {
 	background-position: -450px 0px;
 }
 
-.ls-carousel .ls-nav-stop:hover,
-.ls-carousel .ls-nav-stop-active {
+.ls-borderlessdark .ls-nav-stop:hover,
+.ls-borderlessdark .ls-nav-stop-active {
 	background-position: -450px -75px;
 }
 
-.ls-carousel .ls-bottom-slidebuttons a {
+.ls-borderlessdark .ls-bottom-slidebuttons a {
 	background-position: 0px -150px;
 }
 
-.ls-carousel .ls-bottom-slidebuttons a.ls-nav-active,
-.ls-carousel .ls-bottom-slidebuttons a:hover {
+.ls-borderlessdark .ls-bottom-slidebuttons a.ls-nav-active,
+.ls-borderlessdark .ls-bottom-slidebuttons a:hover {
 	background-position: -75px -150px;
 }
 
-.ls-carousel .ls-nav-sideleft {
+.ls-borderlessdark .ls-nav-sideleft {
 	background-position: -150px -150px;	
 }
 
-.ls-carousel .ls-nav-sideright {
+.ls-borderlessdark .ls-nav-sideright {
 	background-position: -225px -150px;	
 }
 
 
 
-.ls-carousel .ls-nav-prev,
-.ls-carousel .ls-nav-next {
+.ls-borderlessdark .ls-nav-prev,
+.ls-borderlessdark .ls-nav-next {
 	width: 50px;
 	height: 50px;
 	z-index: 10000;
@@ -97,99 +101,101 @@
 	position: absolute;
 }
 
-.ls-carousel .ls-nav-prev {
+.ls-borderlessdark .ls-nav-prev {
 	left: 10px;	
 }
 
-.ls-carousel .ls-nav-next {
+.ls-borderlessdark .ls-nav-next {
 	right: 10px;	
 }
 
 
 
-.ls-carousel .ls-bottom-slidebuttons,
-.ls-carousel .ls-bottom-slidebuttons a,
-.ls-carousel .ls-nav-start,
-.ls-carousel .ls-nav-stop,
-.ls-carousel .ls-nav-sides {
+.ls-borderlessdark .ls-bottom-slidebuttons,
+.ls-borderlessdark .ls-bottom-slidebuttons a,
+.ls-borderlessdark .ls-nav-start,
+.ls-borderlessdark .ls-nav-stop,
+.ls-borderlessdark .ls-nav-sides {
 	height: 36px;
 }
 
-.ls-carousel .ls-bottom-slidebuttons,
-.ls-carousel .ls-bottom-slidebuttons a,
-.ls-carousel .ls-nav-start,
-.ls-carousel .ls-nav-stop,
-.ls-carousel .ls-nav-sides {
+.ls-borderlessdark .ls-bottom-slidebuttons,
+.ls-borderlessdark .ls-bottom-slidebuttons a,
+.ls-borderlessdark .ls-nav-start,
+.ls-borderlessdark .ls-nav-stop,
+.ls-borderlessdark .ls-nav-sides {
 	display: inline-block;
 }
 
-.ls-carousel .ls-nav-start,
-.ls-carousel .ls-nav-stop {
+.ls-borderlessdark .ls-bottom-slidebuttons,
+.ls-borderlessdark .ls-nav-start,
+.ls-borderlessdark .ls-nav-stop,
+.ls-borderlessdark .ls-nav-sides {
+	top: -44px;
+}
+
+.ls-borderlessdark .ls-nav-start,
+.ls-borderlessdark .ls-nav-stop {
 	width: 24px;
 }
 
-.ls-carousel .ls-bottom-slidebuttons a {
+.ls-borderlessdark .ls-bottom-slidebuttons a {
 	width: 20px;
 }
 
-.ls-carousel .ls-nav-sides {
+.ls-borderlessdark .ls-nav-sides {
 	width: 13px;	
 }
 
 
 
-.ls-carousel .ls-thumbnail-hover {
+.ls-borderlessdark .ls-thumbnail-hover {
 	bottom: 45px;
 	padding: 3px;
 	margin-left: 1px;
 }
 
-.ls-carousel .ls-thumbnail-hover-bg {
-	background: #eee;
+.ls-borderlessdark .ls-thumbnail-hover-bg {
+	background: #4f4f4f;
 	box-shadow: 0px 2px 12px -4px black;
 	border-radius: 4px;
 }
 
-.ls-carousel .ls-thumbnail-hover span {
-	border: 5px solid #eee;
+.ls-borderlessdark .ls-thumbnail-hover span {
+	border: 5px solid #4f4f4f;
 	margin-left: -5px;
 }
 
 
 
-.ls-carousel .ls-thumbnail {
-	top: 10px;
+.ls-borderlessdark .ls-thumbnail {
+	top: 15px;
 }
 
-.ls-carousel .ls-thumbnail-inner {
-	padding: 4px;
-	margin-left: -4px;
-	background: #eee;
+.ls-borderlessdark .ls-thumbnail-inner {
+	padding: 2px;
+	margin-left: -2px;
+	background: #4f4f4f;
 	border-radius: 4px;
 }
 
-.ls-carousel .ls-thumbnail-slide a {
-	margin-right: 4px;
+.ls-borderlessdark .ls-thumbnail-slide a {
+	margin-right: 2px;
 }
 
-.ls-carousel .ls-nothumb {
-	background: #eee;
+.ls-borderlessdark .ls-nothumb {
+	background: #555;
 }
 
 
 
-.ls-carousel .ls-above-thumbnails {
-	display: none;
-}
-
-.ls-carousel .ls-below-thumbnails {
+.ls-borderlessdark .ls-shadow {
 	display: block;
-	margin-top: 10px;
 }
 
 
 
-.ls-carousel .ls-loading-container {
+.ls-borderlessdark .ls-loading-container {
 	width: 50px;
 	height: 50px;
 	margin-left: -25px;
@@ -197,7 +203,7 @@
 	background-position: -450px -150px;	
 }
 
-.ls-carousel .ls-loading-indicator {
+.ls-borderlessdark .ls-loading-indicator {
 	width: 22px;
 	height: 22px;
 	margin-top: 11px;
@@ -206,7 +212,7 @@
 
 
 
-.ls-carousel .ls-fullscreen {
+.ls-borderlessdark .ls-fullscreen {
 	width: 30px;
 	height: 30px;
 	right: 10px;
@@ -214,6 +220,6 @@
 	background-position: -525px -150px;
 }
 
-.ls-carousel .ls-fullscreen:hover {
+.ls-borderlessdark .ls-fullscreen:hover {
 	background-position: -525px -190px;
 }
