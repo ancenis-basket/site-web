@@ -1,7 +1,7 @@
 # BEGIN s2Member GZIP exclusions
 <IfModule rewrite_module>
 	RewriteEngine On
-	RewriteBase /wordpress/
+	RewriteBase /pab44/
 	RewriteCond %{QUERY_STRING} (^|\?|&)s2member_file_download\=.+ [OR]
 	RewriteCond %{QUERY_STRING} (^|\?|&)no-gzip\=1
 	RewriteRule .* - [E=no-gzip:1]
@@ -11,11 +11,11 @@
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteBase /wordpress/
+RewriteBase /pab44/
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /wordpress/index.php [L]
+RewriteRule . /pab44/index.php [L]
 </IfModule>
 
 # END WordPress

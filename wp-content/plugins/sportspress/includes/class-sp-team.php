@@ -5,7 +5,7 @@
  * The SportsPress team class handles individual team data.
  *
  * @class 		SP_Team
- * @version		1.9.6
+ * @version		1.9.14
  * @package		SportsPress/Classes
  * @category	Class
  * @author 		ThemeBoy
@@ -346,6 +346,40 @@ class SP_Team extends SP_Custom_Post {
 	}
 
 	/**
+	 * Returns staff members
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function staff( $admin = false ) {
+		if ( ! $this->ID ) return null;
+
+		$args = array(
+			'post_type' => 'sp_staff',
+			'numberposts' => -1,
+			'posts_per_page' => -1,
+			'orderby' => 'menu_order',
+			'order' => 'ASC',
+			'meta_key' => 'sp_team',
+			'meta_value' => $this->ID,
+		);
+		$members = get_posts( $args );
+
+		$checked = (array) get_post_meta( $this->ID, 'sp_staff' );
+
+		if ( $admin ):
+			return array( $members, $checked );
+		else:
+			foreach ( $members as $key => $member ):
+				if ( ! in_array( $member->ID, $checked ) ):
+					unset( $members[ $key ] );
+				endif;
+			endforeach;
+			return $members;
+		endif;
+	}
+
+	/**
 	 * Returns player lists
 	 *
 	 * @access public
@@ -388,16 +422,58 @@ class SP_Team extends SP_Custom_Post {
 	public function tables( $admin = false ) {
 		if ( ! $this->ID ) return null;
 
+		$league_ids = sp_get_the_term_ids( $this->ID, 'sp_league' );
+		$season_ids = sp_get_the_term_ids( $this->ID, 'sp_season' );
+
 		$args = array(
 			'post_type' => 'sp_table',
 			'numberposts' => -1,
 			'posts_per_page' => -1,
 			'orderby' => 'menu_order',
 			'order' => 'ASC',
-			'meta_key' => 'sp_team',
-			'meta_value' => $this->ID,
+			'meta_query' => array(
+				'relation' => 'AND',
+				array(
+					'key' => 'sp_select',
+					'value' => 'manual',
+				),
+				array(
+					'key' => 'sp_team',
+					'value' => $this->ID,
+				),
+			),
 		);
-		$tables = get_posts( $args );
+		$tables_by_id = get_posts( $args );
+
+		$args = array(
+			'post_type' => 'sp_table',
+			'numberposts' => -1,
+			'posts_per_page' => -1,
+			'orderby' => 'menu_order',
+			'order' => 'ASC',
+			'meta_query' => array(
+				array(
+					'key' => 'sp_select',
+					'value' => 'auto',
+				),
+			),
+			'tax_query' => array(
+				'relation' => 'AND',
+				array(
+					'taxonomy' => 'sp_league',
+					'field' => 'term_id',
+					'terms' => $league_ids,
+				),
+				array(
+					'taxonomy' => 'sp_season',
+					'field' => 'term_id',
+					'terms' => $season_ids,
+				),
+			),
+		);
+		$tables_by_terms = get_posts( $args );
+		
+		$tables = array_merge( $tables_by_id, $tables_by_terms );
 
 		$checked = (array) get_post_meta( $this->ID, 'sp_table' );
 

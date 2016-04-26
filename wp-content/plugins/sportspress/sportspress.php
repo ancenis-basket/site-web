@@ -3,11 +3,11 @@
  * Plugin Name: SportsPress
  * Plugin URI: http://themeboy.com/sportspress/
  * Description: Manage your club and its players, staff, events, league tables, and player lists.
- * Version: 1.9.10
+ * Version: 1.9.20
  * Author: ThemeBoy
  * Author URI: http://themeboy.com
  * Requires at least: 3.8
- * Tested up to: 4.3
+ * Tested up to: 4.4
  *
  * Text Domain: sportspress
  * Domain Path: /languages/
@@ -26,14 +26,14 @@ if ( ! class_exists( 'SportsPress' ) ) :
  * Main SportsPress Class
  *
  * @class SportsPress
- * @version	1.9.10
+ * @version	1.9.20
  */
 final class SportsPress {
 
 	/**
 	 * @var string
 	 */
-	public $version = '1.9.10';
+	public $version = '1.9.20';
 
 	/**
 	 * @var SportsPress The single instance of the class
@@ -234,6 +234,9 @@ final class SportsPress {
 		// WPML-related localization hooks
 		include_once( 'includes/class-sp-wpml.php' );
 
+		// REST API
+		//include_once( 'includes/class-sp-rest-api.php' );
+
 		// TGMPA
 		require_once dirname( __FILE__ ) . '/includes/libraries/class-tgm-plugin-activation.php';
 	}
@@ -316,6 +319,7 @@ final class SportsPress {
 		}
 
 		// Add image sizes
+		add_image_size( 'sportspress-crop-medium',  300, 300, true );
 		add_image_size( 'sportspress-fit-medium',  300, 300, false );
 		add_image_size( 'sportspress-fit-icon',  128, 128, false );
 		add_image_size( 'sportspress-fit-mini',  32, 32, false );
@@ -336,6 +340,7 @@ final class SportsPress {
 					'name'        => 'SportsPress for Cricket',
 					'slug'        => 'sportspress-for-cricket',
 					'required'    => false,
+					'version'     => '1.0',
 				);
 				break;
 			case 'golf':

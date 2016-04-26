@@ -1,0 +1,558 @@
+//
+// @file
+//
+// Used to style Posterboard and Stream views.
+//
+
+@import "bootstrap/mixins.less";
+@import "timely-mixins.less";
+@import "fonts/font-league-gothic.less";
+
+// Map legacy user variable names to Bootstrap 3.x-style variable names for
+// syntax consistency.
+@title-font-family:               @titleFontFamily;
+@title-font-size:                 @titleFontSize;
+@posterboard-main-bg:             @posterboardMainBg;
+@posterboard-tile-bg:             @posterboardTileBg;
+@posterboard-footer-bg:           @posterboardFooterBg;
+@posterboard-tile-border:         @posterboardTileBorder;
+@posterboard-tile-shadow:         @posterboardTileShadow;
+@posterboard-image-border:        @posterboardImageBorder;
+@posterboard-image-padding:       @posterboardImagePadding;
+@posterboard-image-padding-width: @posterboardImagePaddingWidth;
+@posterboard-date-title-text:     @posterboardDateTitleText;
+@stream-event-border:             @streamEventBorder;
+@stream-event-bg:                 @streamEventBackground;
+@stream-date-title-text:          @streamDateTitleText;
+@stream-date-title-bg:            @streamDateTitleBackground;
+
+// Other variables.
+@posterboard-tile-padding:        8px;
+@title-line-height:               @title-font-size * 1.05;
+@stream-title-line-height:        @title-font-size * 0.62;
+@posterboard-edit-link-shadow:    fade( @posterboard-tile-shadow, 10% );
+
+// Posterboard view.
+.ai1ec-posterboard-view {
+	clear: both;
+	margin: 0 auto !important;
+	min-height: @line-height-computed * 1.5;
+	padding: 0 0 6px !important;
+	background-color: @posterboard-main-bg;
+	.ai1ec-date-block-wrap {
+		background: saturate( @event-default-color, 15% );
+		color: @posterboard-date-title-text;
+		float: right;
+		line-height: @line-height-computed;
+		margin: 0 0 0 7px;
+		min-width: 50px;
+		position: relative;
+		text-align: center;
+		text-shadow: 0 -1px 1px rgba(0,0,0,0.5);
+		border-radius: 2px;
+		z-index: 2;
+		a {
+			color: @posterboard-date-title-text !important;
+			&:hover {
+				color: @posterboard-date-title-text !important;
+			}
+		}
+	}
+	.ai1ec-month {
+		background: fade( @posterboard-date-title-text, 20% );
+		font-size: 0.8em;
+		letter-spacing: 0.2em;
+		padding: 0 0.4em;
+		text-transform: uppercase;
+	}
+	.ai1ec-day {
+		font-size: 2.2em;
+		padding: 0.3em 0.2em 0.2em;
+		font-weight: bold;
+	}
+	.ai1ec-weekday {
+		font-size: 0.7em;
+		letter-spacing: 0.2em;
+		line-height: 1.8em;
+	}
+	.ai1ec-year {
+		font-size: 0.7em;
+		letter-spacing: 0.2em;
+		line-height: 1.8em;
+	}
+	.ai1ec-end-date-month-divider {
+		position: relative;
+		bottom: -10px;
+		width: 0;
+		height: 0;
+		border-style: solid;
+		border-width: 10px 25px 0 25px;
+		border-color: inherit transparent transparent transparent;
+		margin-top: 5px;
+	}
+	.ai1ec-end-date {
+		background-color: fade( @posterboard-date-title-text, 20% );
+	}
+	.ai1ec-end-date-divider {
+		width: 0;
+		height: 0;
+		border-style: solid;
+		border-width: 10px 25px 0 25px;
+		border-color: saturate( @event-default-color, 15% ) transparent transparent transparent;
+		margin-top: 0px;
+	}
+	.ai1ec-month .ai1ec-end-date-divider {
+		margin-left: -5px;
+		margin-right: -5px;
+	}
+	.ai1ec-buy-tickets {
+		clear: right;
+		margin: 0 0 @line-height-computed / 2 5px;
+	}
+	// Posterboard view event tiles.
+	.ai1ec-event-wrap {
+		background: @posterboard-tile-bg;
+		border: 1px solid @posterboard-tile-border;
+		.ai1ec-box-shadow( 0 1px 3px @posterboard-tile-shadow );
+		margin: 6px;
+		padding: @posterboard-tile-padding - 1px;
+		position: relative;
+	}
+	.ai1ec-event {
+		position: relative;
+		font-size: 10pt;
+		padding: 0 !important;
+		// Without extra margin allowance, some unusual jumping occurs.
+		margin: 0 -2px 0 0 !important;
+		float: left;
+		width: 240px;
+		.post-edit-link {
+			background: @posterboard-tile-bg;
+			bottom: 100%;
+			.ai1ec-box-shadow( 0 1px 3px @posterboard-tile-shadow );
+			margin-bottom: -3px;
+			padding: 3px 5px;
+			position: absolute;
+			right: @posterboard-tile-padding;
+			.ai1ec-opacity( 0 );
+			.ai1ec-transition( opacity 0.1s );
+			z-index: 2;
+		}
+		&:hover {
+			.ai1ec-opacity( 1 );
+			z-index: 1;
+			.post-edit-link {
+				.ai1ec-opacity( 1 );
+			}
+		}
+	}
+	.ai1ec-event-title-wrap {
+		margin-bottom: 0.3em;
+	}
+	.ai1ec-event-title {
+		line-height: @title-line-height;
+		color: #555555;
+		font-weight: bold;
+		font-family: @title-font-family;
+		font-size: @title-font-size;
+		a {
+			font-weight: bold !important;
+		}
+		&:after {
+			color: @linkColor;
+			margin-top: -1px;
+		}
+	}
+	.ai1ec-event-avatar {
+		background-color: @posterboard-image-padding;
+		border: 1px solid @posterboard-image-border;
+		.ai1ec-box-sizing( border-box );
+		clear: both;
+		margin: @font-size-base / 2 0;
+		padding: @posterboard-image-padding-width;
+		position: relative;
+		width: 100%;
+		img {
+			width: 100%;
+		}
+	}
+	.ai1ec-event-time {
+		font-weight: bold;
+		line-height: @line-height-base;
+		margin-top: @title-font-size * 0.2;
+	}
+	.ai1ec-event-description {
+		margin-top: 5px;
+	}
+	footer {
+		background: @posterboard-footer-bg;
+		border-top: 1px solid @posterboard-tile-border;
+		.ai1ec-box-shadow( ~"inset 0 1px 0 " darken( @posterboard-footer-bg, 6% ) ~", inset 0 2px 0 " lighten( @posterboard-tile-bg, 7% ) );
+		font-size: 8pt;
+		margin: 5px -@posterboard-tile-padding -@posterboard-tile-padding;
+		padding: ( @posterboard-tile-padding - 3 ) @posterboard-tile-padding ( @posterboard-tile-padding - 2 );
+		position: relative;
+		z-index: 5;
+		> div {
+			overflow: hidden;
+			white-space: nowrap;
+			&:hover {
+				white-space: normal;
+			}
+		}
+		&:after {
+			content: ' ';
+			display: block;
+			bottom: 0;
+			#gradient > .ai1ec-horizontal-replace( fade( @posterboard-footer-bg, 0% ), @posterboard-footer-bg );
+			position: absolute;
+			top: 2px;
+			right: 0;
+			width: 30px;
+			z-index: 1;
+		}
+		&:hover:after {
+			display: none;
+		}
+		&.ai1ec-auto-height {
+			position: absolute;
+			bottom: 8px;
+			width: 100%;
+		}
+	}
+	&.ai1ec-posterboard-masonry {
+		.ai1ec-date-block-wrap {
+			.ai1ec-opacity( 0.75 );
+			.ai1ec-transition( 0.1s opacity );
+			&:hover {
+				.ai1ec-opacity( 0.9 );
+			}
+		}
+		.ai1ec-event-wrap {
+			.ai1ec-opacity( 0.85 );
+			.ai1ec-transition( 0.1s opacity );
+			&:hover {
+				.ai1ec-opacity( 1 );
+			}
+		}
+		.ai1ec-posterboard-time {
+			display: none;
+		}
+	}
+	&.ai1ec-posterboard-aligned {
+		.ai1ec-event-wrap {
+			height: 300px;
+			overflow: hidden;
+			&:hover {
+				.ai1ec-event-location {
+					.ai1ec-opacity( 1 );
+				}
+			}
+		}
+		.ai1ec-event-title-wrap .ai1ec-event-title {
+			min-height: 68px;
+		}
+		footer {
+			> div {
+				min-height: 15px;
+			}
+		}
+		.ai1ec-event-location {
+			text-transform: uppercase;
+			background-color: @posterboard-tile-bg !important;
+			position: absolute;
+			top: 237px;
+			z-index: 4;
+			background: white;
+			padding: 3px 6px;
+			border-radius: 0 3px 3px 0;
+			box-shadow: 1px 1px 1px rgba( 0, 0, 0, 0.4 );
+			border-left: none;
+			font-size: 10px;
+			.ai1ec-transition( 0.1s opacity );
+			max-width: 90%;
+			overflow: hidden;
+			height: 20px;
+			i {
+				font-size: 13px;
+				margin-right: 1px;
+			}
+		}
+		.post-edit-link {
+			position: absolute;
+			display: block;
+			top: 0;
+			height: 28px;
+			right: 0;
+			padding: 5px;
+			width: 50px;
+			white-space: nowrap;
+		}
+		.ai1ec-event-time {
+			display: none;
+		}
+		.ai1ec-event:hover {
+			.ai1ec-posterboard-image-container {
+				.ai1ec-posterboard-image {
+					.ai1ec-opacity( .3 );
+					-webkit-filter: blur( 5px );
+					filter: blur( 5px );
+				}
+				.ai1ec-event-description {
+					.ai1ec-opacity( 1 );
+					pointer-events: none;
+				}
+				.ai1ec-posterboard-time {
+					pointer-events: none;
+				}
+			}
+		}
+		.ai1ec-date {
+			display: inline-block;
+			min-width: 48px;
+		}
+		.ai1ec-end-date {
+			margin-left: -3px;
+		}
+		.ai1ec-end-date-divider {
+			display: inline-block;
+			position: absolute;
+			top: 50%;
+			border-width: 36px 0 28px 3px;
+			margin-top: -33px;
+			margin-left: -3px;
+			border-color: transparent transparent transparent saturate( @event-default-color, 15% );
+		}
+		.ai1ec-end-date-divider-small {
+			border-width: 0px 2px 18px 0px;
+			margin-top: -33px;
+			margin-left: -4px;
+			border-color: transparent transparent fade( @posterboard-date-title-text, 20% ) transparent;
+		}
+		.ai1ec-posterboard-image-container {
+			position: relative;
+			overflow: hidden;
+			height: 188px;
+			.ai1ec-posterboard-image {
+				background-size: cover;
+				background-position: 50% 50%;
+				height: 190px;
+				@media screen and ( max-width: @screen-xs-max ) {
+					height: 188px;
+				}
+				.ai1ec-transition( 0.1s all );
+			}
+			.ai1ec-posterboard-time {
+				background: saturate( @event-default-color, 15% );
+				color: @posterboard-date-title-text;
+				width: 50px;
+				.ai1ec-transition( 0.1s all );
+				.ai1ec-opacity( 1 );
+				text-align: center;
+				padding: 2px 0;
+				float: right;
+				display: inline-block;
+				border-top-left-radius: 3px;
+				border-bottom-left-radius: 3px;
+				position: relative;
+				top: -181px;
+				font-size: 10px;
+				z-index: 2;
+			}
+			.ai1ec-event-description {
+				position: relative;
+				top: -190px;
+				padding: 8px;
+				opacity: 0;
+				.ai1ec-transition( 0.1s opacity );
+				z-index: 3;
+			}
+		}
+		.ai1ec-sas-actions {
+			text-align: left;
+			position: relative;
+			top: -183px;
+			left: 7px;
+			margin-bottom: 8px;
+		}
+	}
+	&.ai1ec-posterboard-aligned.ai1ec-posterboard-no-footer {
+		.ai1ec-event-wrap {
+			height: 280px;
+		}
+		.ai1ec-no-footer-padding {
+			height: 7px;
+			width: 100%;
+			background-color: @posterboard-tile-bg !important;
+			position: absolute;
+			top: 271px;
+			z-index: 10;
+		}
+	}
+}
+
+// Stream view.
+.ai1ec-stream-view {
+	margin-top: 4px;
+	.ai1ec-date-title {
+		background-color: @stream-date-title-bg;
+		border-radius: 5px;
+		.ai1ec-box-sizing( border-box );
+		font-size: 12px;
+		font-weight: bold;
+		display: block;
+		margin-bottom: 10px;
+		padding: 4px;
+		width: 100%;
+		text-align: center;
+		text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+		text-transform: uppercase;
+		a,
+		a:hover {
+			color: @stream-date-title-text;
+		}
+	}
+	.ai1ec-event {
+		background-color: @stream-event-bg;
+		border: 1px solid @stream-event-border;
+		border-radius: 5px;
+		.ai1ec-box-shadow( 0 1px 2px rgba(0,0,0,0.15) );
+		font-size: 13px;
+		line-height: 18px;
+		margin-bottom: 10px;
+		height: 90px;
+		overflow: hidden;
+		.ai1ec-opacity( 0.85 );
+		position: relative;
+		.post-edit-link {
+			float: right;
+			font-size: 13px;
+			margin-right: -50px;
+			.ai1ec-transition( margin 0.1s );
+		}
+		&:hover {
+			.ai1ec-opacity( 1 );
+			.post-edit-link {
+				margin-right: 0;
+			}
+		}
+		.ai1ec-event-avatar {
+			img {
+				.ai1ec-opacity( 0.8 );
+				&:hover {
+					.ai1ec-opacity( 1 );
+				}
+			}
+		}
+	}
+	.ai1ec-event-title {
+		line-height: @stream-title-line-height;
+		font-weight: bold;
+		font-size: 15px;
+		margin-bottom: 4px;
+		max-height: @stream-title-line-height * 2;
+		overflow: hidden;
+		a {
+			font-weight: bold !important;
+		}
+	}
+	.ai1ec-event-description {
+		max-height: @stream-title-line-height * 2;
+		overflow: hidden;
+	}
+	.ai1ec-event-meta {
+		color: mix( @text-color, @stream-event-bg, 75% );
+		font-weight: bold;
+		font-size: 11px;
+		margin-bottom: 2px;
+		max-height: 20px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		a {
+			padding: 0 0 0 6px !important;
+			white-space: nowrap;
+			&:last-child {
+				padding-right: 5px !important;
+			}
+		}
+		.ai1ec-categories a i,
+		.ai1ec-tags a i {
+			padding-right: 3px;
+		}
+		.ai1ec-tag {
+			background: none;
+			.ai1ec-box-shadow( none );
+			line-height: inherit !important;
+			&:hover {
+				color: @link-hover-color !important;
+			}
+		}
+		a:hover i {
+			text-decoration: none !important;
+		}
+	}
+	.ai1ec-event-time {
+		font-size: 13px;
+		padding-right: 2px;
+	}
+	* + .ai1ec-meta-divide {
+		border-left: 1px solid mix( @text-color, @stream-event-bg, 25% );
+		// Negative margin below required to ensure divider is hidden in
+		// .ai1ec-event-inner's overflow when .ai1ec-meta-divide is wrapped onto a
+		// new line.
+		margin-left: -1px;
+	}
+	.ai1ec-event-inner {
+		margin: 5px 12px 5px 102px;
+		height: 80px;
+		overflow: hidden;
+	}
+	.ai1ec-event-avatar {
+		border-radius: 4px 0 0 4px;
+		bottom: 0;
+		.ai1ec-box-shadow( none );
+		left: 0;
+		overflow: hidden;
+		position: absolute;
+		top: 0;
+		width: 90px;
+		a {
+			.ai1ec-opacity( 1 );
+		}
+		img {
+			height: 100%;
+		}
+		&.ai1ec-portrait img {
+			height: auto !important;
+			width: 100% !important;
+		}
+	}
+	.ai1ec-allday-badge {
+		background: mix( @text-color, @stream-event-bg, 60% );
+		border-radius: 3px;
+		.ai1ec-box-shadow( none );
+		color: @stream-event-bg;
+		display: inline-block;
+		font-size: 0.7em;
+		font-weight: normal;
+		margin: 0 0 2px;
+		padding: 0 3px;
+		text-transform: uppercase;
+	}
+	.ai1ec-event-location {
+		margin-left: 5px;
+		font-size: 13px !important;
+	}
+}
+// Used to detect if the font was loaded.
+.ai1ec-detect-font-load {
+	position: absolute;
+	left: -10000px;
+	top: -10000px;
+	font-family: sans-serif;
+}
+body:not(:-moz-handler-blocked) .ai1ec-end-date-divider-small { 
+	display: none !important;
+}
+

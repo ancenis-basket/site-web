@@ -8,7 +8,7 @@
 }
 
 .post-state-format.post-format-league:before, .post-format-icon.post-format-league:before, a.post-state-format.format-league:before {
-	content: "\f481";
+	content: "\f332";
 }
 
 .post-state-format.post-format-friendly:before, .post-format-icon.post-format-friendly:before, a.post-state-format.format-friendly:before {
@@ -46,6 +46,11 @@
 #sp_editordiv .tmce-active .switch-html,
 #sp_editordiv .html-active .switch-tmce {
 	background: #fdfdfd;
+}
+
+.post-type-sp_player .curtime #timestamp:before {
+	font-family: sportspress, dashicons;
+	content: "\f453";
 }
 
 .sp-link:before {
@@ -287,6 +292,10 @@ table.widefat.sp-data-table tr:hover a.sp-edit {
 	-moz-opacity: 1;
 	opacity: 1;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+}
+
+table.widefat.sp-data-table th.check-column {
+	padding: 10px 0 6px 2px;
 }
 
 table.widefat.sp-data-table th:not(.check-column) input[type=checkbox] {
@@ -979,6 +988,12 @@ table.sp-status-table td mark.yes {
 	.about-sportspress-wrap .sp-top-translations {
 		float: none;
 		margin-left: 0;
+	}
+	
+	.wp-list-table tr:not(.inline-edit-row):not(.no-items) td.column-sp_format,
+	.wp-list-table tr:not(.inline-edit-row):not(.no-items) td.column-sp_icon,
+	.wp-list-table tr:not(.inline-edit-row):not(.no-items) td.column-sp_number {
+		display: table-cell!important;
 	}
 }
 

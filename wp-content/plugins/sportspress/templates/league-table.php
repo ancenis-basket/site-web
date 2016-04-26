@@ -4,7 +4,7 @@
  *
  * @author 		ThemeBoy
  * @package 	SportsPress/Templates
- * @version     1.8.7
+ * @version     1.9.13
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -121,7 +121,7 @@ foreach ( $data as $team_id => $row ):
 		$td_class = ' sp-highlight';
 	endif;
 
-	$output .= '<tr class="' . ( $i % 2 == 0 ? 'odd' : 'even' ) . $tr_class . '">';
+	$output .= '<tr class="' . ( $i % 2 == 0 ? 'odd' : 'even' ) . $tr_class . ' sp-row-no-' . $i . '">';
 
 	// Rank
 	$output .= '<td class="data-rank' . $td_class . '">' . sp_array_value( $row, 'pos' ) . '</td>';

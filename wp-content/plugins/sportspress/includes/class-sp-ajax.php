@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * AJAX Event Handler
  *
  * @class 		SP_AJAX
- * @version		1.7
+ * @version		1.9.13
  * @package		SportsPress/Classes
  * @category	Class
  * @author 		ThemeBoy
@@ -706,12 +706,6 @@ class SP_AJAX {
 					<?php _e( 'Display link to view all players', 'sportspress' ); ?>
 				</label>
 			</p>
-			<p>
-				<label>
-					<input type="checkbox" name="show_names_on_hover" id="show_names_on_hover">
-					<?php _e( 'Display player names on hover', 'sportspress' ); ?>
-				</label>
-			</p>
 			<?php do_action( 'sportspress_ajax_shortcode_form', 'player-gallery' ); ?>
 			<p class="submit">
 				<input type="button" class="button-primary" value="<?php _e( 'Insert Shortcode', 'sportspress' ); ?>" onclick="insertSportsPress('player_gallery');" />
@@ -777,7 +771,6 @@ class SP_AJAX {
                     args.orderby = $div.find('[name=orderby]').val();
                     args.order = $div.find('[name=order]').val();
                     args.show_all_players_link = $div.find('[name=show_all_players_link]:checked').length;
-                    args.show_names_on_hover = $div.find('[name=show_names_on_hover]:checked').length;
                 }
 
                 <?php do_action( 'sportspress_ajax_scripts_before_shortcode' ); ?>

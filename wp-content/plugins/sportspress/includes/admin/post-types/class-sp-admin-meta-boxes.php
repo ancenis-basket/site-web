@@ -7,7 +7,7 @@
  * @author 		ThemeBoy
  * @category 	Admin
  * @package 	SportsPress/Admin/Meta_Boxes
- * @version     1.9.6
+ * @version     1.9.13
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -164,6 +164,13 @@ class SP_Admin_Meta_Boxes {
 					'output' => 'SP_Meta_Box_Team_Editor::output',
 					'context' => 'normal',
 					'priority' => 'low',
+				),
+				'staff' => array(
+					'title' => __( 'Staff', 'sportspress' ),
+					'save' => 'SP_Meta_Box_Team_Staff::save',
+					'output' => 'SP_Meta_Box_Team_Staff::output',
+					'context' => 'normal',
+					'priority' => 'high',
 				),
 			),
 			'sp_player' => array(

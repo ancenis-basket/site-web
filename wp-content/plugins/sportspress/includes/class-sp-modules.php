@@ -78,13 +78,6 @@ class SP_Modules {
 					'icon' => 'sp-icon-list',
 					'desc' => __( 'Create team rosters, player galleries, and ranking charts.', 'sportspress' ),
 				),
-				'birthdays' => array(
-					'label' => __( 'Birthdays', 'sportspress' ),
-					'class' => 'SportsPress_Birthdays',
-					'icon' => 'sp-icon-cake',
-					'link' => 'http://tboy.co/pro',
-					'desc' => __( "Display each player's birthday and their current age.", 'sportspress' ),
-				),
 				'staff_directories' => array(
 					'label' => __( 'Directories', 'sportspress' ),
 					'class' => 'SportsPress_Staff_Directories',
@@ -112,13 +105,6 @@ class SP_Modules {
 					'icon' => 'sp-icon-copy',
 					'link' => 'http://tboy.co/pro',
 					'desc' => __( 'Clone anything with just one click. Great for creating multiple events.', 'sportspress' ),
-				),
-				'lazy_loading' => array(
-					'label' => __( 'Lazy Loading', 'sportspress' ),
-					'class' => 'SportsPress_Lazy_Loading',
-					'icon' => 'sp-icon-moon',
-					'link' => 'http://tboy.co/pro',
-					'desc' => __( 'Load players using Ajax to speed up the event edit screen.', 'sportspress' ),
 				),
 			),
 			'other' => array(

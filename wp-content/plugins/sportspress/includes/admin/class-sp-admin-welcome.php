@@ -9,7 +9,7 @@
  * @author 		ThemeBoy
  * @category 	Admin
  * @package 	SportsPress/Admin
- * @version     1.9.6
+ * @version     1.9.13
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -394,16 +394,17 @@ class SP_Admin_Welcome {
 					'thegreat',
 				),
 				'Nederlands' => array(
-					'SilverXp',
+					'demoyer',
 					'paulcoppen',
 					'poelie',
+					'SilverXp',
 					'valentijnreza',
 				),
 				'Suomi' => array(
-					'Taurus',
+					'hanro',
 					'Hermanni',
 					'JuKi',
-					'hanro',
+					'Taurus',
 				),
 				'Français' => array(
 					'francois53',
@@ -421,6 +422,8 @@ class SP_Admin_Welcome {
 					'FollowCandyPanda',
 					'green_big_frog',
 					'King3R',
+					'Tandor',
+					'tkausch',
 				),
 				'Ελληνικά' => array(
 					'filippos.sdr',
@@ -430,9 +433,9 @@ class SP_Admin_Welcome {
 					'ValliFudd',
 				),
 				'Italiano' => array(
+					'eNnvi',
 					'Flubber89',
 					'GhiMax',
-					'eNnvi',
 					'joegalaxy66',
 					'massimo.marra',
 					'sododesign',
@@ -450,10 +453,10 @@ class SP_Admin_Welcome {
 					'doncer',
 				),
 				'Norsk bokmål' => array(
-					'sijo',
-					'Laislebai',
 					'jenymoen',
+					'Laislebai',
 					'm4rsal',
+					'sijo',
 					'slappfiskene.no',
 					'vetsmi',
 				),
@@ -466,10 +469,10 @@ class SP_Admin_Welcome {
 					'krisop',
 				),
 				'Português do Brasil' => array(
-					'Ferenan',
 					'AugustoNeto',
-					'Ozias',
+					'Ferenan',
 					'lfrodines',
+					'Ozias',
 					'pgbenini',
 					'rochester',
 				),
@@ -500,26 +503,29 @@ class SP_Admin_Welcome {
 				),
 				'Español' => array(
 					'albertone',
+					'diego.battistella',
+					'elarequi',
 					'EmiDelCaz',
-					'GonerSTUDIO',
 					'edesl',
 					'fernandori',
+					'GonerSTUDIO',
 					'i1m3a7n92',
 					'latixns',
 					'opticadeharo',
 					'popeosorio',
 				),
 				'Svenska' => array(
-					'JensZ',
 					'fiiz',
+					'JensZ',
 				),
 				'தமிழ்' => array(
 					'chinnz25',
 				),
 				'Türkçe' => array(
 					'ALooNeBoy87',
-					'GuneshGamza95',
 					'ceyhunulas',
+					'GuneshGamza95',
+					'muhahmetkara',
 					'overbite',
 				),
 				'Українська' => array(

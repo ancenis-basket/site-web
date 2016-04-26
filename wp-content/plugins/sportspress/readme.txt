@@ -1,10 +1,10 @@
 === SportsPress - Manage Leagues & Sports Clubs ===
-Contributors: ThemeBoy, brianmiyaji, aylaview
+Contributors: ThemeBoy, brianmiyaji, aylaview, rochesterj
 Tags: sport, sports, club, clubs, teams, statistics, stats, metrics, data, fixtures, results, standings, league tables, leagues, shortcodes, sports data, sports club, themeboy, esports, wordpress sports, equations, calculations, events, calendars, players, profiles, staff, seasons, countdowns, club management, football, nfl, footy, afl, baseball, basketball, cricket, darts, handball, hockey, netball, rugby, snooker, soccer, squash, tennis, volleyball, dota 2, league of legends, golf
 Donate link: http://tboy.co/donate
 Requires at least: 3.8
-Tested up to: 4.3
-Stable tag: 1.9.10
+Tested up to: 4.4
+Stable tag: 1.9.20
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -122,6 +122,7 @@ Looking for more advanced sports functionality? Upgrade to [SportsPress Pro](htt
 = SportsPress Themes for Clubs =
 * [Football Club](http://tboy.co/fc)
 * [Premier](http://tboy.co/premier)
+* [Emblem](http://tboy.co/emblem)
 
 = Documentation =
 * [Getting Started](http://tboy.co/installation)
@@ -236,6 +237,69 @@ There are [4 different licenses](http://tboy.co/pro) that you can choose from: S
 When you upgrade to one of the SportsPress Pro licenses, you can simply activate the Pro version without losing any of your data. Please note that we recommend that you do a complete backup whenever you make big changes to your website.
 
 == Changelog ==
+
+= 1.9.20 =
+* Tweak - Expand event title section for team logos in countdown widget.
+* Tweak - Center align team logo images in event.
+* Tweak - Add iCal feed venue name and description.
+* Fix - Escape address, summary, and description in iCal feed.
+* Preset - Add ties and defense/offense definition to baseball preset.
+* Localization - Add West Indies to nationality options.
+* Localization - Update strings.
+
+= 1.9.19 =
+* Feature - Add Birthdays module.
+* Feature - Add Lazy Loading module.
+* Feature - Add separate offense and defense categories to player performance and box score.
+* Feature - Add format setting to player performance with the options Number and Text.
+* Feature - Add option to show and hide date and time in events.
+* Tweak - Improve compatibility between custom color settings and theme options.
+* Tweak - Add light shade to substitute rows in box score.
+* Tweak - Prevent box score section from appearing when event is set in the future.
+* Fix - Display icon setting in editor.
+* Fix - Empty variable button appearing in equation builder when equation is empty.
+* Preset - Update cricket preset with batting and bowling categories.
+
+= 1.9.15 =
+* Tweak - Add medium crop image size to ensure gallery images are square.
+* Tweak - Add shortcut icon to admin bar.
+* Fix - Mobile admin table cell width.
+* Fix - Tutorial tab styling.
+* Localization - Update Norwegian Bokmål and Turkish translations.
+
+= 1.9.14 =
+* Fix - Error appearing on team page in some cases when there are no competitions or seasons.
+* Localization - Update source language file.
+
+= 1.9.13 =
+* Feature - Add option to display positions in player lists.
+* Feature - Add option to show or hide player squad number and rank column.
+* Feature - Add ability to display staff members in team page.
+* Feature - Unique widget option added to hide widget when same as content.
+* Tweak - Get auto and manual league tables in team page.
+* Tweak - Add row numbers to league table and event list.
+* Tweak - Allow searching from middle of sport preset names.
+* Tweak - Remove deprecated settings from admin.
+* Tweak - Prevent unnecessary scrollbar from appearing under scrollable tables.
+* Tweak - Add spaces between results in event blocks widget.
+* Tweak - Default template positions adjusted to render main content first.
+* Tweak - Adjust checkbox column padding in admin.
+* Tweak - Prevent positions and jobs from automatically linking to archives.
+* Tweak - Adjust capabilities to allow team managers to edit venues.
+* Fix - Player gallery thumbnail size too small in some cases.
+* Fix - Competitive event icon in edit screen.
+* Fix - SportsPress widget icons not appearing in 4.4 admin.
+* Localization - Add demoyer to translation team.
+* Localization - Update Dutch translations.
+
+= 1.9.12 =
+* Tweak - Display team names and score template without logos.
+* Tweak - Validate hex color input.
+* Tweak - Add sp prefix to TGMPA notice to avoid conflict with other plugins.
+* Fix - Empty seasons displaying in player profiles.
+* Fix - Error on pages with no screen objects.
+* Localization - Add Tandor, muhahmetkara, elarequi, diego.battistella, and tkausch to translation team.
+* Localization - Update Polish, Tamil, German, Turkish, Spanish, Dutch, and Portuguese translations.
 
 = 1.9.10 =
 * Fix - Automatic event results calculating without player performance.

@@ -5,7 +5,7 @@
  * @author 		ThemeBoy
  * @category 	Admin
  * @package 	SportsPress/Admin
- * @version     1.9.6
+ * @version     1.9.19
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -62,6 +62,20 @@ class SP_Settings_Events extends SP_Settings_Page {
 						'default'	=> 'yes',
 						'type' 		=> 'checkbox',
 						'checkboxgroup'		=> 'start',
+					),
+					array(
+						'desc' 		=> __( 'Date', 'sportspress' ),
+						'id' 		=> 'sportspress_event_show_date',
+						'default'	=> 'yes',
+						'type' 		=> 'checkbox',
+						'checkboxgroup'		=> '',
+					),
+					array(
+						'desc' 		=> __( 'Time', 'sportspress' ),
+						'id' 		=> 'sportspress_event_show_time',
+						'default'	=> 'yes',
+						'type' 		=> 'checkbox',
+						'checkboxgroup'		=> '',
 					),
 					array(
 						'desc' 		=> __( 'Results', 'sportspress' ),
@@ -371,19 +385,15 @@ class SP_Settings_Events extends SP_Settings_Page {
 				),
 
 				array(
-					'desc' 		=> __( 'Split players by team', 'sportspress' ),
-					'id' 		=> 'sportspress_event_split_players_by_team',
-					'default'	=> 'yes',
-					'type' 		=> 'checkbox',
-					'checkboxgroup'		=> '',
-				),
-
-				array(
-					'desc' 		=> __( 'Split players by position', 'sportspress' ),
-					'id' 		=> 'sportspress_event_split_players_by_position',
-					'default'	=> 'no',
-					'type' 		=> 'checkbox',
-					'checkboxgroup'		=> 'end',
+					'title' 	=> __( 'Performance', 'sportspress' ),
+					'id' 		=> 'sportspress_event_performance_sections',
+					'default'	=> -1,
+					'type' 		=> 'radio',
+					'options' => array(
+						-1	  => __( 'Combined', 'sportspress' ),
+						0	  => __( 'Offense', 'sportspress' ) . ' &rarr; ' . __( 'Defense', 'sportspress' ),
+						1	  => __( 'Defense', 'sportspress' ) . ' &rarr; ' . __( 'Offense', 'sportspress' ),
+					),
 				),
 
 				array(

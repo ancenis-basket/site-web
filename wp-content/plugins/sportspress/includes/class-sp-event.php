@@ -5,7 +5,7 @@
  * The SportsPress event class handles individual event data.
  *
  * @class 		SP_Event
- * @version		1.9
+ * @version		1.9.19
  * @package		SportsPress/Classes
  * @category	Class
  * @author 		ThemeBoy
@@ -75,7 +75,30 @@ class SP_Event extends SP_Custom_Post{
 	public function performance( $admin = false ) {
 		$teams = get_post_meta( $this->ID, 'sp_team', false );
 		$performance = (array)get_post_meta( $this->ID, 'sp_players', true );
-		$labels = apply_filters( 'sportspress_event_performance_labels', sp_get_var_labels( 'sp_performance' ), $this );
+		
+		$args = array(
+			'post_type' => 'sp_performance',
+			'numberposts' => 100,
+			'posts_per_page' => 100,
+			'orderby' => 'menu_order',
+			'order' => 'ASC',
+		);
+
+		$vars = get_posts( $args );
+		
+		$labels = array();
+		foreach ( $vars as $var ) {
+			$labels[ $var->post_name ] = $var->post_title;
+			$format = get_post_meta( $var->ID, 'sp_format', true );
+			if ( '' === $format ) {
+				$format = 'number';
+			}
+			$formats[ $var->post_name ] = $format;
+		}
+		
+		$order = (array)get_post_meta( $this->ID, 'sp_order', true );
+		
+		$labels = apply_filters( 'sportspress_event_performance_labels', $labels, $this );
 		$columns = get_post_meta( $this->ID, 'sp_columns', true );
 		if ( is_array( $teams ) ):
 			foreach( $teams as $i => $team_id ):
@@ -111,7 +134,7 @@ class SP_Event extends SP_Custom_Post{
 		endif;
 
 		if ( $admin ):
-			return array( $labels, $columns, $performance, $teams );
+			return array( $labels, $columns, $performance, $teams, $formats, $order );
 		else:
 			// Add position to performance labels
 			if ( taxonomy_exists( 'sp_position' ) ):
@@ -127,6 +150,9 @@ class SP_Event extends SP_Custom_Post{
 
 			if ( 'no' == get_option( 'sportspress_event_show_position', 'yes' ) ):
 				unset( $labels['position'] );
+			endif;
+			if ( 'no' == get_option( 'sportspress_event_show_player_numbers', 'yes' ) ):
+				unset( $labels['number'] );
 			endif;
 			$performance[0] = $labels;
 			return apply_filters( 'sportspress_get_event_performance', $performance );

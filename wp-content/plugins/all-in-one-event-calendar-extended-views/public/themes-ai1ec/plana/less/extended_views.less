@@ -1,0 +1,22 @@
+//
+// @file
+//
+// Used to style Posterboard and Stream views .
+//
+
+@import "bootstrap/mixins.less";
+@import "timely-mixins.less";
+// TODO: Find better way to augment a child theme's LESS in an extension. In
+// current architecture, override.less will *override* core override.less, which
+// is undesirable. We want them BOTH included.
+@import "../../vortex/less/extended_views.less";
+
+.ai1ec-posterboard-view {
+  .ai1ec-event-wrap,
+  .ai1ec-event .post-edit-link {
+    .ai1ec-box-shadow( 0 0 1px @posterboard-tile-shadow );
+  }
+}
+.ai1ec-stream-view .ai1ec-event {
+  .ai1ec-box-shadow( none );
+}

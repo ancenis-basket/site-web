@@ -7,7 +7,7 @@
  * @author 		ThemeBoy
  * @category 	Core
  * @package 	SportsPress/Functions
- * @version     1.8.7
+ * @version     1.9.12
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -268,11 +268,14 @@ if ( ! function_exists( 'sp_format_hex' ) ) {
 	 */
 	function sp_format_hex( $hex ) {
 
+		$hex = preg_replace( '/[^A-Fa-f0-9]/', '', $hex );
 	    $hex = trim( str_replace( '#', '', $hex ) );
 
 	    if ( strlen( $hex ) == 3 ) {
 			$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
 	    }
+
+	    $hex = substr( $hex, 0, 6 );
 
 	    if ( $hex ) return '#' . $hex;
 	}

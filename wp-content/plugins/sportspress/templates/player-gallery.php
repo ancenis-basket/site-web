@@ -4,7 +4,7 @@
  *
  * @author 		ThemeBoy
  * @package 	SportsPress/Templates
- * @version     1.8.7
+ * @version     1.9.13
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -22,7 +22,7 @@ $defaults = array(
 	'captiontag' => 'dd',
 	'grouptag' => 'h4',
 	'columns' => 3,
-	'size' => 'thumbnail',
+	'size' => 'sportspress-crop-medium',
 	'show_all_players_link' => false,
 	'link_posts' => get_option( 'sportspress_link_players', 'yes' ) == 'yes' ? true : false,
 );
@@ -121,6 +121,8 @@ echo apply_filters( 'gallery_style', $gallery_style . "\n\t\t" );
 		$i = 0;
 
 		echo '<div class="sp-template sp-template-player-gallery sp-template-gallery">';
+		
+		echo '<div class="sp-player-gallery-wrapper">';
 
 		if ( ! empty( $group->name ) ):
 			echo '<a name="group-' . $group->slug . '" id="group-' . $group->slug . '"></a>';
@@ -136,7 +138,6 @@ echo apply_filters( 'gallery_style', $gallery_style . "\n\t\t" );
 
 		    sp_get_template( 'player-gallery-thumbnail.php', array(
 		    	'id' => $player_id,
-		    	'performance' => $performance,
 		    	'itemtag' => $itemtag,
 		    	'icontag' => $icontag,
 		    	'captiontag' => $captiontag,
@@ -154,6 +155,8 @@ echo apply_filters( 'gallery_style', $gallery_style . "\n\t\t" );
 		if ( ! $html5 && $columns > 0 && ++$i % $columns == 0 ) {
 			echo '<br style="clear: both" />';
 		}
+		
+		echo '</div>';
 
 		if ( $show_all_players_link && ( 'position' !== $grouping || $j == count( $groups ) ) ) {
 			echo '<div class="sp-player-gallery-link sp-gallery-link sp-view-all-link"><a href="' . get_permalink( $id ) . '">' . __( 'View all players', 'sportspress' ) . '</a></div>';

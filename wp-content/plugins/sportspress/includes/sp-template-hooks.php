@@ -7,7 +7,7 @@
  * @author 		ThemeBoy
  * @category 	Core
  * @package 	SportsPress/Functions
- * @version     1.9
+ * @version     1.9.13
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -70,19 +70,17 @@ add_action( 'sportspress_before_single_team', 'sportspress_output_post_excerpt',
 /**
  * Single Team Content
  *
+ * @see sportspress_output_team_link()
  * @see sportspress_output_team_details()
+ * @see sportspress_output_team_staff()
  * @see sportspress_output_team_lists()
  * @see sportspress_output_team_tables()
  */
+add_action( 'sportspress_single_team_content', 'sportspress_output_team_link', 0 );
 add_action( 'sportspress_single_team_content', 'sportspress_output_team_details', 10 );
+add_action( 'sportspress_single_team_content', 'sportspress_output_team_staff', 15 );
 add_action( 'sportspress_single_team_content', 'sportspress_output_team_lists', 20 );
 add_action( 'sportspress_single_team_content', 'sportspress_output_team_tables', 30 );
-
-/**
- * After Single Team
- * @see sportspress_output_team_link()
- */
-add_action( 'sportspress_after_single_team', 'sportspress_output_team_link', 10 );
 
 /**
  * Before Single Table
@@ -288,7 +286,7 @@ add_filter( 'the_title', 'sportspress_abbreviate_team', 10, 2 );
 
 function sportspress_no_terms_links( $term_list, $taxonomy ) {
 
-    if ( in_array( $taxonomy, array( 'sp_league', 'sp_season' ) ) )
+    if ( in_array( $taxonomy, array( 'sp_league', 'sp_season', 'sp_position', 'sp_role' ) ) )
         return wp_filter_nohtml_kses( $term_list );
 
     return $term_list;

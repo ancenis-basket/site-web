@@ -5,7 +5,7 @@
  * The SportsPress player class handles individual player data.
  *
  * @class 		SP_Player
- * @version		1.9.6
+ * @version		1.9.13
  * @package		SportsPress/Classes
  * @category	Class
  * @author 		ThemeBoy
@@ -91,7 +91,8 @@ class SP_Player extends SP_Custom_Post {
 		$metrics = (array)get_post_meta( $this->ID, 'sp_metrics', true );
 		$metric_labels = (array)sp_get_var_labels( 'sp_metric', $neg );
 		$data = array();
-		foreach( $metric_labels as $key => $value ):
+		
+		foreach ( $metric_labels as $key => $value ):
 			$metric = sp_array_value( $metrics, $key, null );
 			if ( $metric == null )
 				continue;
@@ -411,15 +412,12 @@ class SP_Player extends SP_Custom_Post {
 
 		foreach( $placeholders as $season_id => $season_data ):
 
-			if ( -1 == sp_array_value( $leagues, $season_id, 0 ) )
-				continue;
-
-			$season_name = sp_array_value( $season_names, $season_id, '&nbsp;' );
-
-			$team_id = sp_array_value( $leagues, $season_id, array() );
+			$team_id = sp_array_value( $leagues, $season_id, -1 );
 
 			if ( -1 == $team_id )
 				continue;
+
+			$season_name = sp_array_value( $season_names, $season_id, '&nbsp;' );
 
 			if ( $team_id ):
 				$team_name = get_the_title( $team_id );
