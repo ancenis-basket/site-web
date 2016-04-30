@@ -38,7 +38,7 @@
 		<div class='eventon entry-content'>
 			<div class="evo_location_tax" style='background-image:url(<?php echo $img_url;?>)'>
 				<?php if($img_url):?><div class="location_circle" style='background-image:url(<?php echo $img_url;?>)'></div><?php endif;?>
-				<h2 class="organizer_name"><span><?php echo $organizer_link_a.$term->name.$organizer_link_b;?></span></h2>
+				<h2 class="organizer_name"><span>blablas<?php echo $organizer_link_a.$term->name.$organizer_link_b;?></span></h2>
 				<div class='organizer_description'><?php echo category_description();?><p class='contactinfo'><?php echo $term_meta['evcal_org_contact'];?></p>
 					<?php
 						echo (!empty($term_meta['evcal_org_address']))? '<p>'.$term_meta['evcal_org_address'].'</p>':null; 

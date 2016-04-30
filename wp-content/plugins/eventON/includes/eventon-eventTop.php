@@ -87,6 +87,23 @@ function eventon_get_eventtop_print($array, $evOPT, $evOPT2){
 				if($object->fields_ && in_array('organizer',$object->fields) && !empty($org)){
 					$OT.="<em class='evcal_oganizer'><i>".( eventon_get_custom_language( $evOPT2,'evcal_evcard_org', 'Event Organized By')  ).':</i> '.$org."</em>";
 				}
+				
+				//pabaddition for arbitres table et bar
+$postssss = get_field('arbitres', 111);
+
+if( $postssss ){
+	foreach( $postssss  as $p ){
+	    $OT.="<em class='evcal_oganizer'><i>"."arbitres : ".':</i> '.get_the_title( $p->ID )."</em>";
+	}
+}
+
+				$org = (!empty($object->evvals['arbitres']))? $object->evvals['arbitres'][0]:'';
+				if($object->fields_ && in_array('organizer',$object->fields) && !empty($org)){
+					setup_postdata($org);
+					$OT.="<em class='evcal_oganizer'><i>"."arbitres : ".':</i> '.$org."</em>";
+				}
+				wp_reset_postdata();
+
 				//event type
 				if($object->tax)
 					$OT.= $object->tax;
