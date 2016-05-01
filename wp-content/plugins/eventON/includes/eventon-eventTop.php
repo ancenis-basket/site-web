@@ -11,7 +11,7 @@ function eventon_get_eventtop_print($array, $evOPT, $evOPT2){
 	$_additions = apply_filters('evo_eventtop_adds' , array());
 
 	foreach($array as $element =>$elm){
-
+		
 		// convert to an object
 		$object = new stdClass();
 		foreach ($elm as $key => $value){
@@ -88,21 +88,48 @@ function eventon_get_eventtop_print($array, $evOPT, $evOPT2){
 					$OT.="<em class='evcal_oganizer'><i>".( eventon_get_custom_language( $evOPT2,'evcal_evcard_org', 'Event Organized By')  ).':</i> '.$org."</em>";
 				}
 				
-				//pabaddition for arbitres table et bar
-$postssss = get_field('arbitres', 111);
 
-if( $postssss ){
-	foreach( $postssss  as $p ){
-	    $OT.="<em class='evcal_oganizer'><i>"."arbitres : ".':</i> '.get_the_title( $p->ID )."</em>";
-	}
-}
+				//======pab addition for arbitres table et bar=======
+				//arbitres
+				$OT.="</span>";
+				$OT.="<span class='evcal_desc3'>";
 
 				$org = (!empty($object->evvals['arbitres']))? $object->evvals['arbitres'][0]:'';
 				if($object->fields_ && in_array('organizer',$object->fields) && !empty($org)){
-					setup_postdata($org);
-					$OT.="<em class='evcal_oganizer'><i>"."arbitres : ".':</i> '.$org."</em>";
+					$OT.="<em class='evcal_oganizer'><i>"."Arbitres : </i> ";
+					$datas = unserialize($org);
+					foreach($datas as $arb){
+						$OT.=get_the_title($arb).", ";
+					}
+					$OT.="</em>";
 				}
-				wp_reset_postdata();
+				$OT.="</span>"; 
+				//table
+				$OT.="<span class='evcal_desc3'>";
+
+				$org = (!empty($object->evvals['table']))? $object->evvals['table'][0]:'';
+				if($object->fields_ && in_array('organizer',$object->fields) && !empty($org)){
+					$OT.="<em class='evcal_oganizer'><i>"."Table de marque : </i> ";
+					$datas = unserialize($org);
+					foreach($datas as $otm){
+						$OT.=get_the_title($otm).", ";
+					}
+					$OT.="</em>";
+				}
+				$OT.="</span>"; 
+				//bar
+				$OT.="<span class='evcal_desc3'>";
+
+				$org = (!empty($object->evvals['bar']))? $object->evvals['bar'][0]:'';
+				if($object->fields_ && in_array('organizer',$object->fields) && !empty($org)){
+					$OT.="<em class='evcal_oganizer'><i>"."Bar : </i> ";
+					$datas = unserialize($org);
+					foreach($datas as $bar){
+						$OT.=get_the_title($bar).", ";
+					}
+					$OT.="</em>";
+				}
+				$OT.="</span>"; 
 
 				//event type
 				if($object->tax)

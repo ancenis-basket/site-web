@@ -8,3 +8,7 @@ grosses images des content module sous le slider de la page d'accueil; les liens
 
 suppression des révisions dans la base :
 http://sql.sh/900-requetes-purger-bdd-wordpress
+
+mysql -u admin -p pabwp < C:\wamp\www\pab44\pabwp.sql
+
+
