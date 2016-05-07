@@ -11,7 +11,6 @@
       <p>ehoooo</p>
 <?php
 $post_objects = get_field('joueurs');
-//echo "<h1>blabla?".$post_objects."</h1>;
 if( $post_objects ): ?>
     <ul>
     <?php foreach( $post_objects as $post_object): ?>
