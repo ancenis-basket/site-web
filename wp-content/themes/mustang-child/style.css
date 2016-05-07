@@ -12,5 +12,6 @@
  * No need to use @import to import main Mustang CSS file here (unlike with other child themes).
  * Mustang will include this CSS file into the HTML head automatically.
  */
+//@import url("../mustang/style.css");
 
 /* Your custom styles start here... */
