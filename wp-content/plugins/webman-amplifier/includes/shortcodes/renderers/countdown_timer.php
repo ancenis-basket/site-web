@@ -5,9 +5,9 @@
  * This file is being included into "../class-shortcodes.php" file's shortcode_render() method.
  *
  * @since    1.0
- * @version  1.2
+ * @version  1.3
  *
- * @uses   $codes_globals['sizes']['values']
+ * @uses  $codes_globals['sizes']['values']
  *
  * @param  string class
  * @param  string size
@@ -28,8 +28,12 @@
 //Validation
 	//size
 		$atts['size'] = trim( $atts['size'] );
-		if ( in_array( $atts['size'], array_keys( $codes_globals['sizes']['values'] ) ) ) {
-			$atts['class'] .= ' size-' . $codes_globals['sizes']['values'][ $atts['size'] ];
+		if ( $atts['size'] ) {
+			if ( in_array( $atts['size'], array_keys( $codes_globals['sizes']['values'] ) ) ) {
+				$atts['class'] .= ' size-' . $codes_globals['sizes']['values'][ $atts['size'] ];
+			} else {
+				$atts['class'] .= ' size-' . $atts['size'];
+			}
 		}
 	//url
 		$atts['time'] = strtotime( trim( $atts['time'] ) );
@@ -41,11 +45,11 @@
 		$atts['class'] = apply_filters( 'wmhook_shortcode_' . $shortcode . '_classes', $atts['class'], $atts );
 	//labels
 		$atts['labels'] = array(
-				'weeks'   => __( 'Weeks', 'wm_domain' ),
-				'days'    => __( 'Days', 'wm_domain' ),
-				'hours'   => __( 'Hours', 'wm_domain' ),
-				'minutes' => __( 'Minutes', 'wm_domain' ),
-				'seconds' => __( 'Seconds', 'wm_domain' ),
+				'weeks'   => __( 'Weeks', 'webman-amplifier' ),
+				'days'    => __( 'Days', 'webman-amplifier' ),
+				'hours'   => __( 'Hours', 'webman-amplifier' ),
+				'minutes' => __( 'Minutes', 'webman-amplifier' ),
+				'seconds' => __( 'Seconds', 'webman-amplifier' ),
 			);
 		$atts['labels'] = apply_filters( 'wmhook_shortcode_' . $shortcode . '_labels', $atts['labels'] );
 

@@ -95,4 +95,11 @@ register_taxonomy(
 register_taxonomy_for_object_type( 'catégorie', 'equipe' );
 register_taxonomy_for_object_type( 'type de catégorie', 'equipe' );
 register_taxonomy_for_object_type( 'championnat', 'equipe' );
+
+define( 'PAB_ABSPATH', plugin_dir_path( __FILE__ ) );
+add_filter( 'tablepress_load_class_name', 'pab_load_class_name');
+function pab_load_class_name(  ) {
+	require_once PAB_ABSPATH . '/' . "Pab_TablePress_Table_Model.php";
+	return new Pab_TablePress_Table_Model();
+}
 ?>

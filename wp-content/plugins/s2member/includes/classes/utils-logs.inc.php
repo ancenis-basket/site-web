@@ -3,7 +3,7 @@
  * Log utilities.
  *
  * Copyright: © 2009-2011
- * {@link http://www.websharks-inc.com/ WebSharks, Inc.}
+ * {@link http://websharks-inc.com/ WebSharks, Inc.}
  * (coded in the USA)
  *
  * Released under the terms of the GNU General Public License.
@@ -63,16 +63,18 @@ if(!class_exists('c_ws_plugin__s2member_utils_logs'))
 			$log4 .= @$_SERVER['HTTP_HOST'].@$_SERVER['REQUEST_URI']."\n";
 			$log4 .= 'User-Agent: '.@$_SERVER['HTTP_USER_AGENT'];
 
-			$log2 = $slug.'-api.log'; // Initialize.
+			$log2 = $slug.'.log'; // Initialize.
 			if(is_multisite() && !is_main_site()) // Child blog in a multisite network?
-				$log2 = $slug.'-api-4-'.trim(preg_replace('/[^a-z0-9]/i', '-', $GLOBALS['current_blog']->domain.$GLOBALS['current_blog']->path), '-').'.log';
+				$log2 = $slug.'-4-'.trim(preg_replace('/[^a-z0-9]/i', '-', $GLOBALS['current_blog']->domain.$GLOBALS['current_blog']->path), '-').'.log';
 
 			c_ws_plugin__s2member_utils_logs::archive_oversize_log_files();
 
-			file_put_contents($logs_dir.'/'.$log2,
-			                  'LOG ENTRY: '.$logt."\n".$logv."\n".$logm."\n".$log4."\n".
-			                  c_ws_plugin__s2member_utils_logs::conceal_private_info(print_r($data, TRUE))."\n\n",
-			                  FILE_APPEND); // Append to an existing log file; if exists.
+			file_put_contents(
+				$logs_dir.'/'.$log2,
+			    'LOG ENTRY: '.$logt."\n".$logv."\n".$logm."\n".$log4."\n".
+					c_ws_plugin__s2member_utils_logs::conceal_private_info(print_r($data, TRUE))."\n\n",
+			    FILE_APPEND // Append to an existing log file; if exists.
+			);
 		}
 
 		/**
@@ -186,8 +188,7 @@ if(!class_exists('c_ws_plugin__s2member_utils_logs'))
 		 */
 		public static function cleanup_expired_s2m_transients($stagger = TRUE)
 		{
-			global $wpdb;
-			/** @var wpdb $wpdb */
+			global $wpdb; /** @var wpdb $wpdb */
 
 			if($stagger && !is_float($stagger = time() / 2))
 				return TRUE; // Bypass this time.
@@ -245,6 +246,9 @@ if(!class_exists('c_ws_plugin__s2member_utils_logs'))
 
 		  '/s2\-http\-api\-debug/' => array('short' => 'All outgoing HTTP connections related to s2Member.', 'long' => 'This log file records all outgoing WP_Http connections that are specifically related to s2Member. This log file can be extremely helpful. It includes technical details about remote HTTP connections that are not available in other log files.'),
 		  '/wp\-http\-api\-debug/' => array('short' => 'All outgoing WordPress HTTP connections.', 'long' => 'This log file records all outgoing HTTP connections processed by the WP_Http class. This includes everything processed by WordPress; even things unrelated to s2Member. This log file can be extremely helpful. It includes technical details about remote HTTP connections that are not available in other log files.'),
+
+		  '/auto\-eot\-system/'    => array('short' => 'EOTs processed via CRON job.', 'long' => 'This log file records all EOTs processed by the WP_Cron job that powers the s2Member Auto-EOT System. Once a customer has an EOT Time, the CRON job comes in and actually handles a demotion or deletion (based on your configuration). That is what this log file shows; i.e., the actual demotion or deletion taking place.'),
+		  '/eot\-reminders/'       => array('short' => 'EOT reminder emails processed via CRON job.', 'long' => 'This log file records all EOT reminder emails processed by the WP_Cron job that powers the s2Member Auto-EOT System. EOT Renewal/Reminder Email notifications are available only in the pro version of s2Member.'),
 		);
 	}
 }

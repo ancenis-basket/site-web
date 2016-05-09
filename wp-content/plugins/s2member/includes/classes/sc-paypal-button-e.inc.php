@@ -3,7 +3,7 @@
 * Shortcode `[s2Member-PayPal-Button]` (encryption sub-routines).
 *
 * Copyright: © 2009-2011
-* {@link http://www.websharks-inc.com/ WebSharks, Inc.}
+* {@link http://websharks-inc.com/ WebSharks, Inc.}
 * (coded in the USA)
 *
 * Released under the terms of the GNU General Public License.
@@ -46,7 +46,12 @@ if (!class_exists ("c_ws_plugin__s2member_sc_paypal_button_e"))
 						do_action("ws_plugin__s2member_before_sc_paypal_button_encryption", get_defined_vars ());
 						unset($__refs, $__v);
 
-						if ($GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_btn_encryption"] && $GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_business"] && $GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_api_username"])
+						if ($GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_btn_encryption"]
+							&& $GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_business"]
+							&& $GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_api_username"]
+							&& $GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_api_password"]
+							&& $GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_api_signature"]
+						) // Only if it is possible to connect to the PayPal API.
 							{
 								$cache = /* Are we caching? */ apply_filters("ws_plugin__s2member_sc_paypal_button_encryption_cache", true, get_defined_vars ());
 
@@ -77,7 +82,7 @@ if (!class_exists ("c_ws_plugin__s2member_sc_paypal_button_e"))
 												$default_image = "https://www.paypal.com/" . (($attr["lang"]) ? $attr["lang"] : _x ("en_US", "s2member-front paypal-button-lang-code", "s2member")) . "/i/btn/btn_xpressCheckout.gif";
 
 												$code = preg_replace ("/\<img[^\>]+\>/i", "", $code); // Remove 1x1 pixel tracking image that PayPal sticks in there.
-												$code = preg_replace ("/(\<input)([^\>]+)(\>)/ie", "'\\1'.rtrim(stripslashes('\\2'),'/').' /\\3'", $code); // Use XHTML!
+												$code = preg_replace_callback ("/(\<input)([^\>]+)(\>)/i", "c_ws_plugin__s2member_sc_paypal_button_e::_sc_paypal_button_encryption_preg_replace_xhtml_callback", $code);
 
 												$code = ($attr["image"] && $attr["image"] !== "default") ? preg_replace ('/ src\="(.*?)"/', ' src="' . c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($attr["image"])) . '"', $code) : preg_replace ('/ src\="(.*?)"/', ' src="' . c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($default_image)) . '"', $code);
 
@@ -91,6 +96,11 @@ if (!class_exists ("c_ws_plugin__s2member_sc_paypal_button_e"))
 						// No WordPress Filters apply here.
 						// Instead, use: `ws_plugin__s2member_sc_paypal_button`.
 						return $code; // Button Code. Possibly w/ API encryption now.
+					}
+
+				public static function _sc_paypal_button_encryption_preg_replace_xhtml_callback($m)
+					{
+						return $m[1].rtrim($m[2], " /\t\n\r\0\x0B").' /'.$m[3];
 					}
 			}
 	}

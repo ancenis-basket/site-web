@@ -6,7 +6,7 @@
  *   Instead, use the plugin options panel in WordPress to override these settings.
  *
  * Copyright: © 2009-2011
- * {@link http://www.websharks-inc.com/ WebSharks, Inc.}
+ * {@link http://websharks-inc.com/ WebSharks, Inc.}
  * (coded in the USA)
  *
  * Released under the terms of the GNU General Public License.
@@ -225,7 +225,7 @@ if(!function_exists('ws_plugin__s2member_configure_options_and_their_defaults'))
 		$default_options['paypal_api_password']   = '';
 		$default_options['paypal_api_signature']  = '';
 		$default_options['paypal_identity_token'] = '';
-		$default_options['paypal_btn_encryption'] = '0';
+		$default_options['paypal_btn_encryption'] = '1';
 
 		$default_options['paypal_payflow_api_username'] = '';
 		$default_options['paypal_payflow_api_partner']  = 'PayPal';
@@ -321,6 +321,7 @@ if(!function_exists('ws_plugin__s2member_configure_options_and_their_defaults'))
 		$default_options['amazon_cf_files_distro_streaming_cname']     = '';
 		$default_options['amazon_cf_files_distro_streaming_dname']     = '';
 		$default_options['amazon_cf_files_distros_auto_config_status'] = '';
+		$default_options['amazon_cf_files_rtmp_policy_include_ip']     = '1';
 
 		$default_options['ruris_case_sensitive'] = '0'; // No by default.
 

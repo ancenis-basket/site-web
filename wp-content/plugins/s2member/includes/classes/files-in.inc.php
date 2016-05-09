@@ -3,7 +3,7 @@
  * File Download routines for s2Member (inner processing routines).
  *
  * Copyright: © 2009-2011
- * {@link http://www.websharks-inc.com/ WebSharks, Inc.}
+ * {@link http://websharks-inc.com/ WebSharks, Inc.}
  * (coded in the USA)
  *
  * Released under the terms of the GNU General Public License.
@@ -996,8 +996,8 @@ if(!class_exists('c_ws_plugin__s2member_files_in'))
 
 			$cfc['expires'] = strtotime('+'.apply_filters('ws_plugin__s2member_amazon_cf_file_expires_time', '24 hours', get_defined_vars()));
 
-			$cf_extn                            = strtolower(substr($file, strrpos($file, '.') + 1)); // Parses the file extension out so we can scan it in some special scenarios.
-			$cf_ip_res                          = (c_ws_plugin__s2member_utils_conds::is_localhost()) ? FALSE : TRUE; // Do NOT restrict access to a particular IP during `localhost` development. The IP may NOT be the same one Amazon CloudFront sees.
+			$cf_extn                            = strtolower(substr($file, strrpos($file, '.') + 1));
+			$cf_ip_res                          = c_ws_plugin__s2member_utils_conds::is_localhost() || ($stream && !$cfc['rtmp_policy_include_ip']) ? FALSE : TRUE;
 			$cf_stream_extn_resource_exclusions = array_unique((array)apply_filters('ws_plugin__s2member_amazon_cf_file_streaming_extension_resource_exclusions', array('mp3'), get_defined_vars())); // MP3 files should NOT include an extension in their resource reference.
 			$cf_resource                        = ($stream) ? ((in_array($cf_extn, $cf_stream_extn_resource_exclusions)) ? substr($file, 0, strrpos($file, '.')) : $file) : 'http'.(($ssl) ? 's' : '').'://'.(($cfc['distro_downloads_cname']) ? $cfc['distro_downloads_cname'] : $cfc['distro_downloads_dname']).'/'.$url_e_file;
 			$cf_url                             = ($stream) ? 'rtmp'.(($ssl) ? 'e' : '').'://'.(($cfc['distro_streaming_cname']) ? $cfc['distro_streaming_cname'] : $cfc['distro_streaming_dname']).'/cfx/st/'.$file : 'http'.(($ssl) ? 's' : '').'://'.(($cfc['distro_downloads_cname']) ? $cfc['distro_downloads_cname'] : $cfc['distro_downloads_dname']).'/'.$url_e_file;

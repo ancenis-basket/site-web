@@ -3,7 +3,7 @@
  * Menu page for the s2Member plugin (File Download Options page).
  *
  * Copyright: © 2009-2011
- * {@link http://www.websharks-inc.com/ WebSharks, Inc.}
+ * {@link http://websharks-inc.com/ WebSharks, Inc.}
  * (coded in the USA)
  *
  * Released under the terms of the GNU General Public License.
@@ -58,7 +58,7 @@ if(!class_exists("c_ws_plugin__s2member_menu_page_down_ops"))
 				echo '<div class="ws-menu-page-section ws-plugin--s2member-restrictions-section">'."\n";
 				echo '<h3>File Download Restrictions (required, if providing access to protected files)</h3>'."\n";
 				echo '<p>If your Membership offering allows access to restricted files, you\'ll want to configure these options.</p>'."\n";
-				echo '<p class="info"><strong>NOTE:</strong> If you intend to offer File Downloads in one way or another, you must configure at least one of the options below. For security purposes, s2Member\'s File Download functionality is disabled unless &amp; until at least one of the options below have been configured; i.e., s2Member expects you to configure Basic Downloads for at least one Membership Level before any sort of download-related functionality will work. This includes functionality associated with the <code>[s2File /]</code> and <code>[s2Stream /]</code> Shortcodes also.</p>'."\n";
+				echo '<p class="info"><strong>NOTE:</strong> If you intend to offer File Downloads in one way or another, you must configure at least one of the options below (i.e., by filling in at least one row w/ the number of downloads and the number of days too). For security purposes, s2Member\'s File Download functionality is disabled unless &amp; until at least one of the options below have been configured; i.e., s2Member expects you to configure Basic Downloads for at least one Membership Level before any sort of download-related functionality will work. This includes functionality associated with the <code>[s2File /]</code> and <code>[s2Stream /]</code> Shortcodes also.</p>'."\n";
 				do_action("ws_plugin__s2member_during_down_ops_page_during_left_sections_during_restrictions", get_defined_vars());
 
 				echo '<div class="ws-menu-page-hr"></div>'."\n";
@@ -498,6 +498,30 @@ if(!class_exists("c_ws_plugin__s2member_menu_page_down_ops"))
 				echo '</tbody>'."\n";
 				echo '</table>'."\n";
 				echo '</div>'."\n";
+
+				echo '<div class="ws-menu-page-hr"></div>'."\n";
+
+				echo '<table class="form-table" style="margin-top:0;">'."\n";
+				echo '<tbody>'."\n";
+				echo '<tr>'."\n";
+
+				echo '<th>'."\n";
+				echo '<label for="ws-plugin--s2member-amazon-cf-files-rtmp-policy-include-ip">'."\n";
+				echo 'Exclude IPs from digitally signed links in CloudFront RTMP streams?'."\n";
+				echo '</label>'."\n";
+				echo '</th>'."\n";
+
+				echo '</tr>'."\n";
+				echo '<tr>'."\n";
+
+				echo '<td>'."\n";
+				echo '<input type="radio" name="ws_plugin__s2member_amazon_cf_files_rtmp_policy_include_ip" id="ws-plugin--s2member-amazon-cf-files-rtmp-policy-include-ip-1" value="1"'.(($GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["amazon_cf_files_rtmp_policy_include_ip"]) ? ' checked="checked"' : '').' /> <label for="ws-plugin--s2member-amazon-cf-files-rtmp-policy-include-ip-1"><strong>Yes,</strong> include IPs for best security (default behavior).</label><br /><input type="radio" name="ws_plugin__s2member_amazon_cf_files_rtmp_policy_include_ip" id="ws-plugin--s2member-amazon-cf-files-rtmp-policy-include-ip-0" value="0"'.((!$GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["amazon_cf_files_rtmp_policy_include_ip"]) ? ' checked="checked"' : '').' /> <label for="ws-plugin--s2member-amazon-cf-files-rtmp-policy-include-ip-0"><strong>No</strong>, exclude IPs when streaming to improve compatibility.</label><br />'."\n";
+				echo '<p><em>Excluding IP addresses from digitally signed links when streaming over the RTMP protocol will improve compatibility, at the expense of loosening security just a little bit. It\'s a trade-off, and for that reason you should only exclude IPs if you care more about compatibility than you do security. For instance, if your content is not super-senstivite and secret, you might exclude IPs from digitally signed links; putting more focus on preventing issues in various devices. On the other hand, if your streaming audio/video files should be guarded with tight security at all times, you will want to leave this at the default setting (Yes), thereby requiring a matching IP address across both the HTTP and RTMP protocols at all times. Some mobile devices (depending on the mobile carrier) will be unable to pass IP validation though; i.e., some mobile devices assign different IPs for HTTP than they do for RTMP; which can lead to cross-protocol validation failures if you include IP addresses in digitally signed links.</em></p>'."\n";
+				echo '</td>'."\n";
+
+				echo '</tr>'."\n";
+				echo '</tbody>'."\n";
+				echo '</table>'."\n";
 
 				echo '<div class="ws-menu-page-hr"></div>'."\n";
 

@@ -11,12 +11,11 @@
  *
  * @package    WebMan Amplifier
  * @copyright  2015 WebMan - Oliver Juhas
- * @license    GPL-2.0+, http://www.gnu.org/licenses/gpl-2.0.html
  *
  * @link  https://wordpress.org/plugins/webman-amplifier/
  *
  * @since    1.0
- * @version  1.2.2
+ * @version  1.3.3
  *
  * Contents:
  *
@@ -155,7 +154,6 @@
 					 */
 
 					// 'disable-fonticons',
-					// 'disable-isotope-notice',
 					// 'disable-shortcodes',
 					// 'disable-visual-composer-support',
 				) );

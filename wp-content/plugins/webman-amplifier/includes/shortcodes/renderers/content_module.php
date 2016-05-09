@@ -5,7 +5,7 @@
  * This file is being included into "../class-shortcodes.php" file's shortcode_render() method.
  *
  * @since    1.0
- * @version  1.2.5
+ * @version  1.3
  *
  * @param  string align
  * @param  string class
@@ -14,7 +14,7 @@
  * @param  integer desc_column_size
  * @param  boolean filter
  * @param  string filter_layout
- * @param  string heading_tag (heading tag setup option for better SEO)
+ * @param  string heading_tag (heading tag option for better accessibility setup)
  * @param  string image_size
  * @param  string layout (available options: content, image, morelink, tag, title)
  * @param  string module (ID or slug, if this is set, a single module will be displayed only)
@@ -31,12 +31,12 @@
 	$defaults = apply_filters( 'wmhook_shortcode_' . '_defaults', array(
 			'align'            => 'left',
 			'class'            => '',
-			'columns'          => 4,
-			'count'            => -1,
-			'desc_column_size' => 4,
+			'columns'          => 3,
+			'count'            => 3,
+			'desc_column_size' => 3,
 			'filter'           => '',
 			'filter_layout'    => 'fitRows',
-			'heading_tag'      => 'h3',
+			'heading_tag'      => 'h2',
 			'image_size'       => '',
 			'layout'           => '',
 			'module'           => '',
@@ -216,7 +216,7 @@
 								$filter_settings = $atts['filter'];
 
 							//"All" item
-								$filter_content .= '<li class="wm-filter-items-all active"><a href="#" data-filter="*">' . __( 'All', 'wm_domain' ) . '</a></li>';
+								$filter_content .= '<li class="wm-filter-items-all active"><a href="#" data-filter="*">' . __( 'All', 'webman-amplifier' ) . '</a></li>';
 
 							//Other items
 								$terms = get_terms( $atts['filter'] );
@@ -310,7 +310,7 @@
 					$layout_elements = array(
 							'content'  => do_shortcode( '<div class="wm-content-module-element wm-html-element content">' . wpautop( get_the_content() ) . '</div>' ),
 							'image'    => '',
-							'morelink' => ( $helpers['link'] ) ? ( '<div class="wm-content-module-element wm-html-element more-link"><a' . $helpers['link'] . '>' . sprintf( apply_filters( 'wmhook_shortcode_' . 'read_more_text', __( 'Read more <span class="screen-reader-text">about "%s"</span>&raquo;', 'wm_domain' ), $shortcode, $post_id, $atts ), get_the_title() ) . '</a></div>' ) : ( '' ),
+							'morelink' => ( $helpers['link'] ) ? ( '<div class="wm-content-module-element wm-html-element more-link"><a' . $helpers['link'] . '>' . sprintf( apply_filters( 'wmhook_shortcode_' . 'read_more_text', __( 'Read more <span class="screen-reader-text">about "%s"</span>&raquo;', 'webman-amplifier' ), $shortcode, $post_id, $atts ), get_the_title() ) . '</a></div>' ) : ( '' ),
 							'tag'      => '',
 							'title'    => ( $helpers['link'] ) ? ( '<header class="wm-content-module-element wm-html-element title"><' . tag_escape( $atts['heading_tag'] ) . '><a' . $helpers['link'] . '>' . get_the_title() . '</a></' . tag_escape( $atts['heading_tag'] ) . '></header>' ) : ( '<header class="wm-content-module-element wm-html-element title"><' . tag_escape( $atts['heading_tag'] ) . '>' . get_the_title() . '</' . tag_escape( $atts['heading_tag'] ) . '></header>' ),
 						);

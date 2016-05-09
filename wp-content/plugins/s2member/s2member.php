@@ -6,7 +6,7 @@
  * PHP, WordPress and other compatibility requirements.
  *
  * Copyright: © 2009-2011
- * {@link http://www.websharks-inc.com/ WebSharks, Inc.}
+ * {@link http://websharks-inc.com/ WebSharks, Inc.}
  * (coded in the USA)
  *
  * Released under the terms of the GNU General Public License.
@@ -19,8 +19,8 @@
  */
 /* -- This section for WordPress parsing. ------------------------------------------------------------------------------
 
-Version: 150925
-Stable tag: 150925
+Version: 160503
+Stable tag: 160503
 
 SSL Compatible: yes
 bbPress Compatible: yes
@@ -35,31 +35,36 @@ Authorize.Net Compatible: yes w/s2Member Pro
 Google Wallet Compatible: yes w/s2Member Pro
 ClickBank Compatible: yes w/s2Member Pro
 
-Tested up to: 4.4-alpha
+Tested up to: 4.5-alpha
 Requires at least: 4.2
+
+Requires PHP: 5.2+
+Tested up to PHP: 7.0
 
 Copyright: © 2009 WebSharks, Inc.
 License: GNU General Public License
 Contributors: WebSharks, JasWSInc, anguz, raamdev, bruce-caldwell
 
 Author: s2Member / WebSharks, Inc.
-Author URI: http://www.s2member.com/
-Donate link: http://www.s2member.com/donate/
+Author URI: http://s2member.com/
+Donate link: http://s2member.com/donate/
 
 Text Domain: s2member
 Domain Path: /includes/translations
 
 Plugin Name: s2Member Framework
-Forum URI: http://www.s2member.com/forums/
-Plugin URI: http://www.s2member.com/framework/
-Privacy URI: http://www.s2member.com/privacy/
-Changelog URI: http://www.s2member.com/changelog/
-Video Tutorials: http://www.s2member.com/videos/
-Pro Add-on / Home Page: http://www.s2member.com/
-Pro Add-on / Prices: http://www.s2member.com/prices/
-Pro Add-on / Auto-Update URL: http://www.s2member.com/
-PayPal Pro Integration: http://www.s2member.com/videos/ED70D90C6749DA3D/
-Professional Installation URI: http://www.s2member.com/professional-installation/
+Forum URI: http://s2member.com/forums/
+Plugin URI: http://s2member.com/
+Privacy URI: http://s2member.com/privacy-policy/
+Changelog URI: http://s2member.com/changelog/
+Video Tutorials: http://s2member.com/videos/
+Knowledge Base: http://s2member.com/kb/
+Newsletter: http://s2member.com/r/subscribe/
+Pro Add-on / Home Page: http://s2member.com/
+Pro Add-on / Prices: http://s2member.com/prices/
+Pro Add-on / Auto-Update URL: https://www.s2member.com/
+PayPal Pro Integration: http://s2member.com/r/pp-account-types/
+Professional Installation URI: http://s2member.com/r/professional-installation/
 
 Description: s2Member, a powerful (free) membership plugin for WordPress. Protect/secure members only content with roles/capabilities.
 Tags: s2, s2member, s2 member, membership, users, user, members, member, subscribers, subscriber, members only, roles, capabilities, capability, register, signup, paypal, paypal pro, pay pal, authorize, authorize.net, google wallet, clickbank, click bank, buddypress, buddy press, bbpress, bb press, shopping cart, cart, checkout, ecommerce
@@ -76,7 +81,7 @@ if(!defined('WPINC')) // MUST have WordPress.
  * @var string
  */
 if(!defined('WS_PLUGIN__S2MEMBER_VERSION'))
-	define('WS_PLUGIN__S2MEMBER_VERSION', '150925' /* !#distro-version#! */);
+	define('WS_PLUGIN__S2MEMBER_VERSION', '160503' /* !#distro-version#! */);
 /**
  * Minimum PHP version required to run s2Member.
  *
@@ -106,7 +111,7 @@ if(!defined('WS_PLUGIN__S2MEMBER_MIN_WP_VERSION'))
  * @var string
  */
 if(!defined('WS_PLUGIN__S2MEMBER_MIN_PRO_VERSION'))
-	define('WS_PLUGIN__S2MEMBER_MIN_PRO_VERSION', '150925' /* !#distro-version#! */);
+	define('WS_PLUGIN__S2MEMBER_MIN_PRO_VERSION', '160503' /* !#distro-version#! */);
 /*
 Several compatibility checks.
 If all pass, load the s2Member plugin.

@@ -1,5 +1,243 @@
 # WebMan Amplifier Changelog
 
+## 1.3.8
+
+* **Update**: Improved Slick slider functionality
+
+#### Files changed:
+
+	assets/js/shortcode-posts.js
+
+
+## 1.3.7
+
+* **Fix**: Typos
+* **Fix**: Duplicate button ID when set via Beaver Builder page builder
+
+#### Files changed:
+
+	includes/shortcodes/definitions/definitions.php
+	includes/shortcodes/page-builder/beaver-builder/beaver-builder.php
+	includes/shortcodes/renderers/button.php
+	includes/shortcodes/renderers/call_to_action.php
+	includes/shortcodes/renderers/image.php
+	includes/shortcodes/renderers/icon.php
+
+
+## 1.3.6
+
+* **Update**: Visual Composer 4.11+ compatible
+
+#### Files changed:
+
+	includes/shortcodes/class-shortcodes.php
+
+
+## 1.3.5
+
+* **Add**: Slick (v1.5.9) slider script support
+* **Update**: Improved compatibility with SSL
+* **Update**: Plugin info texts
+* **Update**: Removing localization files in favor of translate.wordpress.org
+
+#### Files changed:
+
+	class-wm-amplifier.php
+	readme.md
+	readme.txt
+	webman-amplifier.php
+	assets/js/shortcode-posts.js
+	assets/js/plugins/slick.js
+	assets/js/plugins/slick.min.js
+	includes/icons/class-icon-font.php
+	includes/metabox/class-metabox.php
+	includes/shortcodes/class-shortcodes.php
+
+
+## 1.3.4
+
+* **Update**: Improved scripts registering and loading
+* **Update**: Updated scripts versions (ImagesLoaded 4.1.0, Isotope 2.2.2)
+
+#### Files changed:
+
+	webman-amplifier.php
+	assets/js/plugins/imagesloaded.min.js
+	assets/js/plugins/isotope.pkgd.min.js
+	includes/icons/class-icon-font.php
+	includes/metabox/class-metabox.php
+	includes/shortcodes/class-shortcodes.php
+
+
+## 1.3.3
+
+* **Update**: Improved icon font admin screen
+* **Update**: Removed Isotope admin pointer message
+* **Update**: Updated localization
+
+#### Files changed:
+
+	class-wm-amplifier.php
+	webman-amplifier.php
+	webman-amplifier-setup.php
+	includes/icons/class-icon-font.php
+
+
+## 1.3.2
+
+* **Update**: Improved compatibility with child themes
+* **Update**: Passed attributes into widget title filter
+
+#### Files changed:
+
+	webman-amplifier.php
+	includes/widgets/w-contact.php
+	includes/widgets/w-module.php
+	includes/widgets/w-posts.php
+	includes/widgets/w-subnav.php
+	includes/widgets/w-tabbed-widgets.php
+	includes/widgets/w-twitter.php
+
+
+## 1.3.1
+
+* **Update**: Removing Beaver Builder Lite Version WordPress multisite installation fix
+
+#### Files changed:
+
+	webman-amplifier.php
+	includes/shortcodes/class-shortcodes.php
+
+
+## 1.3
+
+* **Update**: Beaver Builder 1.7 compatible (partial refresh activated for all modules)
+* **Update**: Removing obsolete Beaver Builder page builder modules
+* **Update**: Improved Beaver Builder page builder modules setup
+* **Update**: Improved Tabs and Content Modules accessibility
+* **Update**: Improved flexibility of shortcodes
+* **Update**: Improved Staff post labels
+* **Fix**: Unified the page builder modules naming style
+
+#### Files changed:
+
+	webman-amplifier.php
+	includes/custom-posts/staff.php
+	includes/icons/class-icon-font.php
+	includes/shortcodes/definitions/definitions.php
+	includes/shortcodes/page-builder/beaver-builder/beaver-builder.php
+	includes/shortcodes/page-builder/beaver-builder/modules/wm_accordion.php
+	includes/shortcodes/page-builder/beaver-builder/modules/wm_button.php
+	includes/shortcodes/page-builder/beaver-builder/modules/wm_call_to_action.php
+	includes/shortcodes/page-builder/beaver-builder/modules/wm_content_module.php
+	includes/shortcodes/page-builder/beaver-builder/modules/wm_divider.php
+	includes/shortcodes/page-builder/beaver-builder/modules/wm_message.php
+	includes/shortcodes/page-builder/beaver-builder/modules/wm_posts.php
+	includes/shortcodes/page-builder/beaver-builder/modules/wm_table.php
+	includes/shortcodes/page-builder/beaver-builder/modules/wm_tabs.php
+	includes/shortcodes/page-builder/beaver-builder/modules/wm_testimonials.php
+	includes/shortcodes/renderers/button.php
+	includes/shortcodes/renderers/call_to_action.php
+	includes/shortcodes/renderers/content_module.php
+	includes/shortcodes/renderers/countdown_timer.php
+	includes/shortcodes/renderers/divider.php
+	includes/shortcodes/renderers/dropcap.php
+	includes/shortcodes/renderers/icon.php
+	includes/shortcodes/renderers/marker.php
+	includes/shortcodes/renderers/message.php
+	includes/shortcodes/renderers/progress.php
+	includes/shortcodes/renderers/table.php
+
+
+## 1.2.9.2
+
+* **Update**: Improved Testimonials shortcode accessibility (heading tag setup)
+* **Update**: License updated to GPLv3
+* **Fix**: Typos in readme files
+
+#### Files changed:
+
+	license.txt
+	readme.txt
+	readme.md
+	webman-amplifier.php
+	includes/shortcodes/renderers/testimonials.php
+
+
+## 1.2.9.1
+
+* **Add**: Additional custom post type and taxonomy labels
+* **Update**: Shortcodes default options
+* **Update**: Shortcodes classes output
+* **Update**: Shortcodes accessibility (heading tag setup)
+* **Update**: Localization
+
+#### Files changed:
+
+	readme.txt
+	webman-amplifier.php
+	includes/custom-posts/logos.php
+	includes/custom-posts/modules.php
+	includes/custom-posts/projects.php
+	includes/custom-posts/staff.php
+	includes/custom-posts/testimonials.php
+	includes/shortcodes/definitions/definitions.php
+	includes/shortcodes/page-builder/beaver-builder/beaver-builder.php
+	includes/shortcodes/renderers/button.php
+	includes/shortcodes/renderers/call_to_action.php
+	includes/shortcodes/renderers/content_module.php
+	includes/shortcodes/renderers/countdown_timer.php
+	includes/shortcodes/renderers/divider.php
+	includes/shortcodes/renderers/dropcap.php
+	includes/shortcodes/renderers/icon.php
+	includes/shortcodes/renderers/item.php
+	includes/shortcodes/renderers/marker.php
+	includes/shortcodes/renderers/message.php
+	includes/shortcodes/renderers/posts.php
+	includes/shortcodes/renderers/price.php
+	includes/shortcodes/renderers/progress.php
+	includes/shortcodes/renderers/table.php
+	includes/shortcodes/renderers/testimonials.php
+	languages/webman-amplifier-sk_SK.mo
+	languages/webman-amplifier-sk_SK.po
+	languages/webman-amplifier-xx_XX.pot
+
+
+## 1.2.9
+
+* **Add**: Prepared for WordPress language packs
+* **Add**: Added WordPress 4.4 compatibility (additional custom post types and taxonomies labels)
+* **Update**: Visual Composer 4.9 plugin supported
+* **Update**: Icons font admin screen improved
+* **Update**: Renamed `sass` folder to `scss`
+* **Update**: Using specific number of posts in `WP_Query` objects in shortcodes
+* **Update**: Localization texts (updated also translation text domain) and files
+
+#### Files changed:
+
+	class-wm-amplifier.php
+	readme.txt
+	webman-amplifier.php
+	assets/css/shortcodes-vc-addons.css
+	assets/scss/shortcodes-vc-addons.scss
+	includes/custom-posts/logos.php
+	includes/custom-posts/modules.php
+	includes/custom-posts/projects.php
+	includes/custom-posts/staff.php
+	includes/custom-posts/testimonials.php
+	includes/icons/class-icon-font.php
+	includes/shortcodes/class-shortcodes.php
+	includes/shortcodes/page-builder/visual-composer/visual-composer.php
+	includes/shortcodes/renderers/content_module.php
+	includes/shortcodes/renderers/posts.php
+	includes/shortcodes/renderers/testimonials.php
+	languages/readme.md
+	languages/webman-amplifier-sk_SK.mo
+	languages/webman-amplifier-sk_SK.po
+	languages/webman-amplifier-xx_XX.pot
+	All the PHP files containing the translation strings.
+
+
 ## 1.2.8.1
 
 * **Fix**: Reverting back the custom post types custom capabilities in favour of WordPress native ones

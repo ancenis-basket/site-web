@@ -56,7 +56,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @author   WebMan
  *
  * @since    1.0
- * @version  1.1
+ * @version  1.3.5
  */
 if ( ! class_exists( 'WM_Metabox' ) && is_admin() ) {
 
@@ -201,51 +201,75 @@ if ( ! class_exists( 'WM_Metabox' ) && is_admin() ) {
 			 * Register (and include) styles and scripts
 			 *
 			 * @since    1.0
-			 * @version  1.1
+			 * @version  1.3.5
 			 *
 			 * @access  public
 			 */
 			public function assets() {
-				//Helper variables
-					$icon_font_url   = apply_filters( 'wmhook_metabox_' . 'iconfont_url', get_option( 'wmamp-icon-font' ) );
+
+				// Helper variables
+
+					$icon_font_url   = WM_Amplifier::fix_ssl_urls( esc_url_raw( apply_filters( 'wmhook_metabox_' . 'iconfont_url', get_option( 'wmamp-icon-font' ) ) ) );
 					$icon_font_posts = apply_filters( 'wmhook_metabox_' . 'iconfont_admin_screen_addon', array( 'edit-wm_modules' ) );
 
-				//Register
-					//Styles
-						wp_register_style( 'wm-metabox-styles',     WMAMP_ASSETS_URL . 'css/metabox.css',     false, WMAMP_VERSION, 'screen' );
-						wp_register_style( 'wm-metabox-styles-rtl', WMAMP_ASSETS_URL . 'css/rtl-metabox.css', false, WMAMP_VERSION, 'screen' );
-						if ( $icon_font_url ) {
-							wp_register_style( 'wm-fonticons', $icon_font_url, false, WMAMP_VERSION, 'screen' );
+
+				// Processing
+
+					// Register
+
+						// Styles
+
+							wp_register_style( 'wm-metabox-styles',     WMAMP_ASSETS_URL . 'css/metabox.css',     false, WMAMP_VERSION, 'screen' );
+							wp_register_style( 'wm-metabox-styles-rtl', WMAMP_ASSETS_URL . 'css/rtl-metabox.css', false, WMAMP_VERSION, 'screen' );
+							if ( $icon_font_url ) {
+								wp_register_style( 'wm-fonticons', $icon_font_url, false, WMAMP_VERSION, 'screen' );
+							}
+
+						// Scripts
+
+							wp_register_script( 'wm-metabox-scripts', WMAMP_ASSETS_URL . 'js/metabox.js', array( 'jquery', 'jquery-ui-tabs', 'jquery-ui-slider' ), WMAMP_VERSION, true );
+
+						// Allow hooking for deregistering
+
+							do_action( 'wmhook_metabox_' . 'assets_registered' );
+
+					// Enqueue (only on admin edit pages)
+
+						if ( $this->is_edit_page() ) {
+
+							// Styles
+
+								wp_enqueue_style( 'wp-color-picker' );
+								wp_enqueue_style( 'wm-metabox-styles' );
+								if ( is_rtl() ) {
+									wp_enqueue_style( 'wm-metabox-styles-rtl' );
+								}
+
+							// Scripts
+
+								wp_enqueue_script( 'media-upload' );
+								wp_enqueue_media();
+								wp_enqueue_script( 'jquery-ui-core' );
+								wp_enqueue_script( 'jquery-ui-tabs' );
+								wp_enqueue_script( 'jquery-ui-slider' );
+								wp_enqueue_script( 'wp-color-picker' );
+
+							// AJAX
+
+								wp_localize_script( 'jquery', 'wmGalleryPreviewNonce', wp_create_nonce( 'wm-gallery-preview-refresh' ) );
+
 						}
 
-					//Scripts
-						wp_register_script( 'wm-metabox-scripts', WMAMP_ASSETS_URL . 'js/metabox.js', array( 'jquery', 'jquery-ui-tabs', 'jquery-ui-slider' ), WMAMP_VERSION, true );
+						// Load icon font CSS also on Content Module posts table
 
-				//Enqueue (only on admin edit pages)
-				if ( $this->is_edit_page() ) {
-					//Styles
-						wp_enqueue_style( 'wp-color-picker' );
-						wp_enqueue_style( 'wm-metabox-styles' );
-						if ( is_rtl() ) {
-							wp_enqueue_style( 'wm-metabox-styles-rtl' );
-						}
+							if ( $this->is_edit_page( $icon_font_posts ) && $icon_font_url ) {
+								wp_enqueue_style( 'wm-fonticons' );
+							}
 
-					//Scripts
-						wp_enqueue_script( 'media-upload' );
-						wp_enqueue_media();
-						wp_enqueue_script( 'jquery-ui-core' );
-						wp_enqueue_script( 'jquery-ui-tabs' );
-						wp_enqueue_script( 'jquery-ui-slider' );
-						wp_enqueue_script( 'wp-color-picker' );
+						// Allow hooking for dequeuing
 
-					//AJAX
-						wp_localize_script( 'jquery', 'wmGalleryPreviewNonce', wp_create_nonce( 'wm-gallery-preview-refresh' ) );
-				}
+							do_action( 'wmhook_metabox_' . 'assets_enqueued' );
 
-				//Load icon font CSS also on Content Module posts table
-					if ( $this->is_edit_page( $icon_font_posts ) && $icon_font_url ) {
-						wp_enqueue_style( 'wm-fonticons' );
-					}
 			} // /assets
 
 
@@ -373,7 +397,7 @@ if ( ! class_exists( 'WM_Metabox' ) && is_admin() ) {
 							}
 						}
 
-						$output = "\r\n\r\n\t" . '<div class="modal-box"><a class="button-primary" data-action="stay">' . __( 'Wait, I need to save my changes first!', 'wm_domain' ) . '</a><a class="button" data-action="leave">' . __( 'OK, leave without saving...', 'wm_domain' ) . '</a></div>' . "\r\n";
+						$output = "\r\n\r\n\t" . '<div class="modal-box"><a class="button-primary" data-action="stay">' . __( 'Wait, I need to save my changes first!', 'webman-amplifier' ) . '</a><a class="button" data-action="leave">' . __( 'OK, leave without saving...', 'webman-amplifier' ) . '</a></div>' . "\r\n";
 					$output .= '</div> <!-- /wm-meta-wrap -->' . "\r\n\r\n";
 
 					echo $output;
@@ -431,7 +455,7 @@ if ( ! class_exists( 'WM_Metabox' ) && is_admin() ) {
 
 					//Tabs
 						$output .= "\t" . '<ul class="tabs no-js">' . "\r\n";
-						$output .= "\t\t" . '<li class="item-0 ' . WM_METABOX_FIELD_PREFIX . 'section-visual-editor"><a href="#' . WM_METABOX_FIELD_PREFIX . 'section-visual-editor">' . _x( 'Content', 'Metabox tab title for native WordPress visual editor tab.', 'wm_domain' ) . '</a></li>' . "\r\n";
+						$output .= "\t\t" . '<li class="item-0 ' . WM_METABOX_FIELD_PREFIX . 'section-visual-editor"><a href="#' . WM_METABOX_FIELD_PREFIX . 'section-visual-editor">' . _x( 'Content', 'Metabox tab title for native WordPress visual editor tab.', 'webman-amplifier' ) . '</a></li>' . "\r\n";
 						$i = 0;
 						foreach ( $meta_fields as $tab ) {
 							if ( isset( $tab['type'] ) && 'section-open' == $tab['type'] ) {
@@ -528,7 +552,7 @@ if ( ! class_exists( 'WM_Metabox' ) && is_admin() ) {
 						array(
 							array(
 								'type'      => 'html',
-								'content'   => '<div class="box yellow if-page-builder-on">' . __( 'Use page builder to create the content.', 'wm_domain' ) . '</div>',
+								'content'   => '<div class="box yellow if-page-builder-on">' . __( 'Use page builder to create the content.', 'webman-amplifier' ) . '</div>',
 								'condition' => wma_is_active_page_builder()
 							),
 							array(
@@ -547,7 +571,7 @@ if ( ! class_exists( 'WM_Metabox' ) && is_admin() ) {
 							}
 						}
 
-						$output = "\r\n\r\n\t" . '<div class="modal-box"><a class="button-primary" data-action="stay">' . __( 'Wait, I need to save my changes first!', 'wm_domain' ) . '</a><a class="button" data-action="leave">' . __( 'OK, leave without saving...', 'wm_domain' ) . '</a></div>' . "\r\n";
+						$output = "\r\n\r\n\t" . '<div class="modal-box"><a class="button-primary" data-action="stay">' . __( 'Wait, I need to save my changes first!', 'webman-amplifier' ) . '</a><a class="button" data-action="leave">' . __( 'OK, leave without saving...', 'webman-amplifier' ) . '</a></div>' . "\r\n";
 					$output .= '</div> <!-- /wm-meta-wrap -->' . "\r\n\r\n";
 
 					echo $output;

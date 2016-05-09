@@ -3,7 +3,7 @@
  * Primary Hooks/Filters used by the s2Member plugin.
  *
  * Copyright: © 2009-2011
- * {@link http://www.websharks-inc.com/ WebSharks, Inc.}
+ * {@link http://websharks-inc.com/ WebSharks, Inc.}
  * (coded in the USA)
  *
  * Released under the terms of the GNU General Public License.
@@ -19,9 +19,9 @@ if(!defined('WPINC')) // MUST have WordPress.
 /*
 Add the plugin Actions/Filters here.
 */
-add_action('set_current_user', 'c_ws_plugin__s2member_user_securities::set_current_user', 2);
+add_action('plugins_loaded', 'c_ws_plugin__s2member_translations::load');
 
-add_action('init', 'c_ws_plugin__s2member_translations::load', 2);
+add_action('set_current_user', 'c_ws_plugin__s2member_user_securities::set_current_user', 2);
 
 add_action('init', 'c_ws_plugin__s2member_ssl::check_force_ssl', 3);
 add_action('init', 'c_ws_plugin__s2member_user_securities::initialize', 3);
@@ -98,6 +98,7 @@ add_filter('random_password', 'c_ws_plugin__s2member_registrations::generate_pas
 add_action('user_register', 'c_ws_plugin__s2member_registrations::configure_user_registration');
 add_action('register_form', 'c_ws_plugin__s2member_custom_reg_fields::custom_registration_fields');
 add_filter('registration_errors', 'c_ws_plugin__s2member_registrations::custom_registration_field_errors', 10, 3);
+add_filter('send_password_change_email', '__return_false'); // Turn this off in favor of s2Member.
 
 add_filter('add_signup_meta', 'c_ws_plugin__s2member_registrations::ms_process_signup_meta');
 add_filter('bp_signup_usermeta', 'c_ws_plugin__s2member_registrations::ms_process_signup_meta');
@@ -155,7 +156,6 @@ add_action('network_admin_menu', 'c_ws_plugin__s2member_menu_pages::add_network_
 add_action('admin_bar_menu', 'c_ws_plugin__s2member_admin_lockouts::filter_admin_menu_bar', 100);
 add_action('admin_print_scripts', 'c_ws_plugin__s2member_menu_pages::add_admin_scripts');
 add_action('admin_print_styles', 'c_ws_plugin__s2member_menu_pages::add_admin_styles');
-add_filter('update_feedback', 'c_ws_plugin__s2member_mms_patches::sync_mms_patches');
 
 add_action('admin_notices', 'c_ws_plugin__s2member_admin_notices::admin_notices');
 add_action('user_admin_notices', 'c_ws_plugin__s2member_admin_notices::admin_notices');

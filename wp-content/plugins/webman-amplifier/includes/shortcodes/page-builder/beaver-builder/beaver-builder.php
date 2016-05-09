@@ -5,7 +5,7 @@
  * @link  https://www.wpbeaverbuilder.com/
  *
  * @since    1.1
- * @version  1.2.5
+ * @version  1.3.7
  *
  * @package     WebMan Amplifier
  * @subpackage  Shortcodes
@@ -13,7 +13,7 @@
  * @todo  Shortcode generator button in page builder.
  * @todo  Load on page builder pages only - needed Beaver Builder update to do so.
  * @todo  Beaver Builder contains a bug: you can not set up a form field ID to `type`.
- *        Reported this bug already. Applied a workaraound with a new shortcode parameter
+ *        Reported this bug already. Applied a workaround with a new shortcode parameter
  *        named `type_bb` (specifically in Divider, Price and Table shortcode).
  *
  * CONTENT:
@@ -87,7 +87,7 @@
 	 * Get Beaver Builder shortcode definitions
 	 *
 	 * @since    1.1
-	 * @version  1.2.5
+	 * @version  1.3
 	 *
 	 * @param  string $shortcode
 	 * @param  string $property
@@ -102,10 +102,10 @@
 				$def = wma_shortcodes()->get_definitions();
 				$def = $def['bb_plugin'];
 
-				$custom_modules_category = _x( 'WM Modules', 'Page builder modules category name.', 'wm_domain' );
+				$custom_modules_category = apply_filters( 'wmhook_shortcode_wma_bb_shortcode_def_category_custom_name', _x( 'Theme Modules', 'Page builder modules category name.', 'webman-amplifier' ) );
 
 				if ( apply_filters( 'wmhook_shortcode_wma_bb_shortcode_def_category_advanced', false, $shortcode ) ) {
-					$custom_modules_category = __( 'Advanced Modules', 'fl-builder' ); //Taking translation from Beaver Builder plugin
+					$custom_modules_category = __( 'Advanced Modules', 'fl-builder' ); // Taking translation from Beaver Builder plugin
 				}
 
 
@@ -113,7 +113,7 @@
 
 				if ( 'all' === $shortcode ) {
 
-					$output = $def;
+					$output = $def; // Get the array of definitions for all BB supported shortcodes
 
 				} elseif ( isset( $def[ $shortcode ] ) ) {
 
@@ -122,9 +122,10 @@
 							'description'     => '',
 							'category'        => $custom_modules_category,
 							'enabled'         => true,
-							'editor_export'   => true, //Export content to WP editor?
+							'editor_export'   => true, // Export content to WP editor after BB plugin uninstall?
 							'dir'             => trailingslashit( WMAMP_INCLUDES_DIR ) . 'shortcodes/page-builder/beaver-builder/modules/',
 							'url'             => trailingslashit( WMAMP_INCLUDES_URL ) . 'shortcodes/page-builder/beaver-builder/modules/',
+							'partial_refresh' => true,
 							'output'          => '',
 							'output_children' => '',
 							'params'          => array(),
@@ -136,6 +137,19 @@
 					// Allow filtering
 
 						$output = apply_filters( 'wmhook_shortcode_wma_bb_shortcode_def_output', $output, $shortcode );
+
+					// Put all BB module registration values into a single array
+
+						$output['register'] = array(
+								'name'            => $output['name'],
+								'description'     => $output['description'],
+								'category'        => $output['category'],
+								'enabled'         => $output['enabled'],
+								'editor_export'   => $output['editor_export'],
+								'dir'             => $output['dir'],
+								'url'             => $output['url'],
+								'partial_refresh' => $output['partial_refresh'],
+							);
 
 					if ( $property && isset( $output[ $property ] ) ) {
 						$output = $output[ $property ];
@@ -241,7 +255,7 @@
 	 * Module output
 	 *
 	 * @since    1.1
-	 * @version  1.2
+	 * @version  1.3.7
 	 *
 	 * @param  obj    $module   Page builder's current module object
 	 * @param  array  $settings Settings passed from page builder form
@@ -360,7 +374,7 @@
 					}
 
 				/**
-				 * Actual outputed shortcode
+				 * Actual outputted shortcode
 				 */
 
 					$shortcode_output = str_replace( array( '{{children}}', '{{items}}' ), $replace_children, $output['parent'] );

@@ -22,7 +22,10 @@ if( $post_objects ): ?>
     </ul>
 <?php endif;
 
+
+tablepress_print_table( array( 'id' => '2', 'use_datatables' => true, 'print_name' => true ) );
 ?>
+
 
 </div>
 

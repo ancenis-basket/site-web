@@ -3,7 +3,7 @@
  * Shortcode `[s2Eot /]` (inner processing routines).
  *
  * Copyright: © 2009-2011
- * {@link http://www.websharks-inc.com/ WebSharks, Inc.}
+ * {@link http://websharks-inc.com/ WebSharks, Inc.}
  * (coded in the USA)
  *
  * Released under the terms of the GNU General Public License.
@@ -92,9 +92,6 @@ if(!class_exists('c_ws_plugin__s2member_sc_eots_in'))
 				$eot = c_ws_plugin__s2member_utils_users::get_user_eot($user_id, true, $mode);
 				set_transient($transient, $eot, DAY_IN_SECONDS / 2);
 			}
-			if($eot['time'] && $attr['round_to'])
-				$eot['time'] = strtotime($attr['round_to'], $eot['time']);
-
 			if($eot['time'] && (integer)$attr['offset'])
 				$eot['time'] = $eot['time'] + (integer)$attr['offset'];
 
@@ -119,6 +116,8 @@ if(!class_exists('c_ws_plugin__s2member_sc_eots_in'))
 					$time = new DateTime(date('Y-m-d H:i:s', $eot['time']));
 					if($attr['timezone'] && strtoupper($attr['timezone']) !== 'UTC')
 						$time->setTimezone(new DateTimeZone($attr['timezone']));
+					if($attr['round_to'])
+						$time->modify($attr['round_to']);
 				}
 			if($time && $attr['date_format'] === 'timestamp')
 				$date = (string)$time->getTimestamp();

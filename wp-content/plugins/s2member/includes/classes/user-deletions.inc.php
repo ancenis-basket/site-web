@@ -3,7 +3,7 @@
  * User deletion routines.
  *
  * Copyright: © 2009-2011
- * {@link http://www.websharks-inc.com/ WebSharks, Inc.}
+ * {@link http://websharks-inc.com/ WebSharks, Inc.}
  * (coded in the USA)
  *
  * Released under the terms of the GNU General Public License.
@@ -121,9 +121,11 @@ if(!class_exists('c_ws_plugin__s2member_user_deletions'))
 				delete_user_option($user_id, 's2member_sp_references');
 
 				delete_user_option($user_id, 's2member_last_status_scan');
+				delete_user_option($user_id, 's2member_last_reminder_scan');
 				delete_user_option($user_id, 's2member_first_payment_txn_id');
 				delete_user_option($user_id, 's2member_last_payment_time');
 				delete_user_option($user_id, 's2member_auto_eot_time');
+				delete_user_option($user_id, 's2member_reminders_enable');
 
 				delete_user_option($user_id, 's2member_file_download_access_arc');
 				delete_user_option($user_id, 's2member_file_download_access_log');
@@ -132,11 +134,11 @@ if(!class_exists('c_ws_plugin__s2member_user_deletions'))
 				delete_user_option($user_id, 's2member_login_counter');
 				delete_user_option($user_id, 's2member_notes');
 
-				if(is_object($user = new WP_User ($user_id)) && $user->ID && $GLOBALS['WS_PLUGIN__']['s2member']['o']['eot_del_notification_urls'] && is_array($cv = preg_split('/\|/', $custom)))
+				if(is_object($user = new WP_User ($user_id)) && $user->ID && $GLOBALS['WS_PLUGIN__']['s2member']['o']['eot_del_notification_urls'])
 				{
 					foreach(preg_split("/[\r\n\t]+/", $GLOBALS['WS_PLUGIN__']['s2member']['o']['eot_del_notification_urls']) as $url) // Handle EOT Notifications on user deletion.
 
-						if(($url = preg_replace('/%%cv([0-9]+)%%/ei', 'urlencode(trim(@$cv[$1]))', $url)) && ($url = preg_replace('/%%eot_del_type%%/i', c_ws_plugin__s2member_utils_strings::esc_refs(urlencode($eot_del_type)), $url)) && ($url = preg_replace('/%%subscr_id%%/i', c_ws_plugin__s2member_utils_strings::esc_refs(urlencode($subscr_id)), $url)))
+						if(($url = c_ws_plugin__s2member_utils_strings::fill_cvs($url, $custom, true)) && ($url = preg_replace('/%%eot_del_type%%/i', c_ws_plugin__s2member_utils_strings::esc_refs(urlencode($eot_del_type)), $url)) && ($url = preg_replace('/%%subscr_id%%/i', c_ws_plugin__s2member_utils_strings::esc_refs(urlencode($subscr_id)), $url)))
 							if(($url = preg_replace('/%%subscr_baid%%/i', c_ws_plugin__s2member_utils_strings::esc_refs(urlencode($subscr_baid)), $url)) && ($url = preg_replace('/%%subscr_cid%%/i', c_ws_plugin__s2member_utils_strings::esc_refs(urlencode($subscr_cid)), $url)))
 								if(($url = preg_replace('/%%user_first_name%%/i', c_ws_plugin__s2member_utils_strings::esc_refs(urlencode($user->first_name)), $url)) && ($url = preg_replace('/%%user_last_name%%/i', c_ws_plugin__s2member_utils_strings::esc_refs(urlencode($user->last_name)), $url)))
 									if(($url = preg_replace('/%%user_full_name%%/i', c_ws_plugin__s2member_utils_strings::esc_refs(urlencode(trim($user->first_name.' '.$user->last_name))), $url)))
@@ -154,7 +156,7 @@ if(!class_exists('c_ws_plugin__s2member_user_deletions'))
 															c_ws_plugin__s2member_utils_urls::remote($url);
 													}
 				}
-				if(is_object($user = new WP_User ($user_id)) && $user->ID && $GLOBALS['WS_PLUGIN__']['s2member']['o']['eot_del_notification_recipients'] && is_array($cv = preg_split('/\|/', $custom)))
+				if(is_object($user = new WP_User ($user_id)) && $user->ID && $GLOBALS['WS_PLUGIN__']['s2member']['o']['eot_del_notification_recipients'])
 				{
 					$email_configs_were_on = c_ws_plugin__s2member_email_configs::email_config_status();
 					c_ws_plugin__s2member_email_configs::email_config_release();
@@ -189,7 +191,7 @@ if(!class_exists('c_ws_plugin__s2member_user_deletions'))
 					$msg .= 'cv8: %%cv8%%'."\n";
 					$msg .= 'cv9: %%cv9%%';
 
-					if(($msg = preg_replace('/%%cv([0-9]+)%%/ei', 'trim(@$cv[$1])', $msg)) && ($msg = preg_replace('/%%eot_del_type%%/i', c_ws_plugin__s2member_utils_strings::esc_refs($eot_del_type), $msg)) && ($msg = preg_replace('/%%subscr_id%%/i', c_ws_plugin__s2member_utils_strings::esc_refs($subscr_id), $msg)))
+					if(($msg = c_ws_plugin__s2member_utils_strings::fill_cvs($msg, $custom)) && ($msg = preg_replace('/%%eot_del_type%%/i', c_ws_plugin__s2member_utils_strings::esc_refs($eot_del_type), $msg)) && ($msg = preg_replace('/%%subscr_id%%/i', c_ws_plugin__s2member_utils_strings::esc_refs($subscr_id), $msg)))
 						if(($msg = preg_replace('/%%subscr_baid%%/i', c_ws_plugin__s2member_utils_strings::esc_refs($subscr_baid), $msg)) && ($msg = preg_replace('/%%subscr_cid%%/i', c_ws_plugin__s2member_utils_strings::esc_refs($subscr_cid), $msg)))
 							if(($msg = preg_replace('/%%user_first_name%%/i', c_ws_plugin__s2member_utils_strings::esc_refs($user->first_name), $msg)) && ($msg = preg_replace('/%%user_last_name%%/i', c_ws_plugin__s2member_utils_strings::esc_refs($user->last_name), $msg)))
 								if(($msg = preg_replace('/%%user_full_name%%/i', c_ws_plugin__s2member_utils_strings::esc_refs(trim($user->first_name.' '.$user->last_name)), $msg)))

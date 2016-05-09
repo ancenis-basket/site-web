@@ -3,7 +3,7 @@
 * Shortcode `[s2Member-PayPal-Button]` (inner processing routines).
 *
 * Copyright: © 2009-2011
-* {@link http://www.websharks-inc.com/ WebSharks, Inc.}
+* {@link http://websharks-inc.com/ WebSharks, Inc.}
 * (coded in the USA)
 *
 * Released under the terms of the GNU General Public License.
@@ -50,7 +50,7 @@ if (!class_exists ("c_ws_plugin__s2member_sc_paypal_button_in"))
 
 						$attr = /* Force array. Trim quote entities. */ c_ws_plugin__s2member_utils_strings::trim_qts_deep ((array)$attr);
 
-						$attr = shortcode_atts (apply_filters("ws_plugin__s2member_sc_paypal_button_default_attrs", array("ids" => "0", "exp" => "72", "level" => "1", "ccaps" => "", "desc" => "", "ps" => "paypal", "lc" => "", "lang" => "", "cc" => "USD", "dg" => "0", "ns" => "1", "custom" => $_SERVER["HTTP_HOST"], "ta" => "0", "tp" => "0", "tt" => "D", "ra" => "0.01", "rp" => "1", "rt" => "M", "rr" => "1", "rrt" => "", "rra" => "1", "modify" => "0", "cancel" => "0", "sp" => "0", "image" => "default", "output" => "button"), get_defined_vars ()), $attr);
+						$attr = shortcode_atts (apply_filters("ws_plugin__s2member_sc_paypal_button_default_attrs", array("ids" => "0", "exp" => "72", "level" => "1", "ccaps" => "", "desc" => "", "ps" => "paypal", "lc" => "", "lang" => "", "cc" => "USD", "dg" => "0", "ns" => "0", "custom" => $_SERVER["HTTP_HOST"], "ta" => "0", "tp" => "0", "tt" => "D", "ra" => "0.01", "rp" => "1", "rt" => "M", "rr" => "1", "rrt" => "", "rra" => "1", "modify" => "0", "cancel" => "0", "sp" => "0", "image" => "default", "output" => "button"), get_defined_vars ()), $attr);
 
 						$attr["modify"] = ($attr["modify"] === "1" && (!is_user_logged_in () || !get_user_option ("s2member_subscr_id")) && $attr["tp"]) ? "0" : $attr["modify"];
 
@@ -63,6 +63,9 @@ if (!class_exists ("c_ws_plugin__s2member_sc_paypal_button_in"))
 						$attr["rr"] = /* Lifetime Subscriptions require Buy Now. Only after running shortcode_atts(). */ ($attr["rt"] === "L") ? "BN" : $attr["rr"];
 						$attr["rr"] = /* Independent Ccaps require Buy Now. Only after running shortcode_atts(). */ ($attr["level"] === "*") ? "BN" : $attr["rr"];
 						$attr["ns"] = /* No shipping directive must be 1 for digital items. After shortcode_atts(). */ ($attr["dg"] === "1") ? "1" : $attr["ns"];
+
+						$force_notify_url_scheme = apply_filters("ws_plugin__s2member_during_sc_paypal_button_force_notify_url_scheme", null, get_defined_vars ());
+						$force_return_url_scheme = apply_filters("ws_plugin__s2member_during_sc_paypal_button_force_return_url_scheme", null, get_defined_vars ());
 
 						foreach(array_keys(get_defined_vars())as$__v)$__refs[$__v]=&$$__v;
 						do_action("ws_plugin__s2member_before_sc_paypal_button_after_shortcode_atts", get_defined_vars ());
@@ -106,7 +109,7 @@ if (!class_exists ("c_ws_plugin__s2member_sc_paypal_button_in"))
 
 								$attr["sp_ids_exp"] = /* Combined "sp:ids:expiration hours". */ "sp:" . $attr["ids"] . ":" . $attr["exp"];
 
-								$success_return_url = /* s2Member handles this all by itself. However, it can be Filtered. */ home_url ("/?s2member_paypal_return=1");
+								$success_return_url = /* s2Member handles this all by itself. However, it can be Filtered. */ home_url ("/?s2member_paypal_return=1", $force_return_url_scheme);
 								$success_return_url = apply_filters("ws_plugin__s2member_during_sc_paypal_button_success_return_url", $success_return_url, get_defined_vars ());
 
 								$code = trim (c_ws_plugin__s2member_utilities::evl (file_get_contents (dirname (dirname (__FILE__)) . "/templates/buttons/paypal-sp-checkout-button.php")));
@@ -117,7 +120,7 @@ if (!class_exists ("c_ws_plugin__s2member_sc_paypal_button_in"))
 								$code = preg_replace ("/%%paypal_business%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_business"])), $code);
 								$code = preg_replace ("/%%paypal_merchant_id%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_merchant_id"])), $code);
 								$code = preg_replace ("/%%cancel_return%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr (home_url ("/"))), $code);
-								$code = preg_replace ("/%%notify_url%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr (home_url ("/?s2member_paypal_notify=1"))), $code);
+								$code = preg_replace ("/%%notify_url%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr (home_url ("/?s2member_paypal_notify=1", $force_notify_url_scheme))), $code);
 								$code = preg_replace ("/%%return%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($success_return_url)), $code);
 								$code = preg_replace ("/%%custom%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($attr["custom"])), $code);
 
@@ -162,7 +165,7 @@ if (!class_exists ("c_ws_plugin__s2member_sc_paypal_button_in"))
 								$attr["level_ccaps_eotper"] = ($attr["rr"] === "BN" && $attr["rt"] !== "L") ? $attr["level"] . ":" . $attr["ccaps"] . ":" . $attr["rp"] . " " . $attr["rt"] : $attr["level"] . ":" . $attr["ccaps"];
 								$attr["level_ccaps_eotper"] = /* Clean any trailing separators from this string. */ rtrim ($attr["level_ccaps_eotper"], ":");
 
-								$success_return_url = /* s2Member handles this all by itself. However, it can be Filtered. */ home_url ("/?s2member_paypal_return=1");
+								$success_return_url = /* s2Member handles this all by itself. However, it can be Filtered. */ home_url ("/?s2member_paypal_return=1", $force_return_url_scheme);
 								$success_return_url = apply_filters("ws_plugin__s2member_during_sc_paypal_button_success_return_url", $success_return_url, get_defined_vars ());
 
 								$code = trim (c_ws_plugin__s2member_utilities::evl (file_get_contents (dirname (dirname (__FILE__)) . "/templates/buttons/paypal-ccaps-checkout-button.php")));
@@ -173,7 +176,7 @@ if (!class_exists ("c_ws_plugin__s2member_sc_paypal_button_in"))
 								$code = preg_replace ("/%%paypal_business%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_business"])), $code);
 								$code = preg_replace ("/%%paypal_merchant_id%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_merchant_id"])), $code);
 								$code = preg_replace ("/%%cancel_return%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr (home_url ("/"))), $code);
-								$code = preg_replace ("/%%notify_url%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr (home_url ("/?s2member_paypal_notify=1"))), $code);
+								$code = preg_replace ("/%%notify_url%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr (home_url ("/?s2member_paypal_notify=1", $force_notify_url_scheme))), $code);
 								$code = preg_replace ("/%%return%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($success_return_url)), $code);
 								$code = preg_replace ("/%%custom%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($attr["custom"])), $code);
 
@@ -222,7 +225,7 @@ if (!class_exists ("c_ws_plugin__s2member_sc_paypal_button_in"))
 
 								$success_return_tra = array("ta" => $attr["ta"], "tp" => $attr["tp"], "tt" => $attr["tt"], "ra" => $attr["ra"], "rp" => $attr["rp"], "rt" => $attr["rt"], "rr" => $attr["rr"], "rrt" => $attr["rrt"], "rra" => $attr["rra"], "invoice" => $paypal_invoice_input_value, "checksum" => md5 ($paypal_invoice_input_value . $_SERVER["REMOTE_ADDR"] . $attr["level_ccaps_eotper"]));
 
-								$success_return_url = /* s2Member handles this all by itself. However, it can be Filtered (see below). */ home_url ("/?s2member_paypal_return=1");
+								$success_return_url = /* s2Member handles this all by itself. However, it can be Filtered (see below). */ home_url ("/?s2member_paypal_return=1", $force_return_url_scheme);
 								$success_return_url = add_query_arg ("s2member_paypal_return_tra", urlencode (c_ws_plugin__s2member_utils_encryption::encrypt (serialize ($success_return_tra))), $success_return_url);
 								$success_return_url = apply_filters("ws_plugin__s2member_during_sc_paypal_button_success_return_url", $success_return_url, get_defined_vars ());
 
@@ -235,7 +238,7 @@ if (!class_exists ("c_ws_plugin__s2member_sc_paypal_button_in"))
 								$code = preg_replace ("/%%paypal_merchant_id%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_merchant_id"])), $code);
 								$code = preg_replace ("/%%level_label%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["level" . $attr["level"] . "_label"])), $code);
 								$code = preg_replace ("/%%cancel_return%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr (home_url ("/"))), $code); // This brings them back to Front Page.
-								$code = preg_replace ("/%%notify_url%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr (home_url ("/?s2member_paypal_notify=1"))), $code);
+								$code = preg_replace ("/%%notify_url%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr (home_url ("/?s2member_paypal_notify=1", $force_notify_url_scheme))), $code);
 								$code = preg_replace ("/%%return%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($success_return_url)), $code);
 								$code = preg_replace ("/%%custom%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($attr["custom"])), $code);
 								$code = preg_replace ("/%%level%%/", c_ws_plugin__s2member_utils_strings::esc_refs (esc_attr ($attr["level"])), $code);

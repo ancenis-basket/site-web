@@ -5,13 +5,13 @@
  * This file is being included into "../class-shortcodes.php" file's shortcode_render() method.
  *
  * @since    1.0
- * @version  1.2
+ * @version  1.3
  *
- * @uses   $this->$codes_globals['colors'], $codes_globals['sizes']['values']
+ * @uses  $codes_globals['sizes']['values']
  *
  * @param  string class
  * @param  string color
- * @param  string heading_tag (heading tag setup option for better SEO)
+ * @param  string heading_tag (heading tag option for better accessibility setup)
  * @param  string icon
  * @param  string size
  * @param  string title
@@ -41,7 +41,7 @@
 		$atts['content'] = '<div class="wm-message-content wm-message-element' . esc_attr( $iconated ) . '">' . $atts['content'] . '</div>';
 	//color
 		$atts['color'] = trim( $atts['color'] );
-		if ( in_array( $atts['color'], array_keys( $codes_globals['colors'] ) ) ) {
+		if ( $atts['color'] ) {
 			$atts['class'] .= ' color-' . $atts['color'];
 		}
 	//icon
@@ -51,8 +51,12 @@
 		}
 	//size
 		$atts['size'] = trim( $atts['size'] );
-		if ( in_array( $atts['size'], array_keys( $codes_globals['sizes']['values'] ) ) ) {
-			$atts['class'] .= ' size-' . $codes_globals['sizes']['values'][ $atts['size'] ];
+		if ( $atts['size'] ) {
+			if ( in_array( $atts['size'], array_keys( $codes_globals['sizes']['values'] ) ) ) {
+				$atts['class'] .= ' size-' . $codes_globals['sizes']['values'][ $atts['size'] ];
+			} else {
+				$atts['class'] .= ' size-' . $atts['size'];
+			}
 		}
 	//title
 		$atts['title'] = trim( $atts['title'] );

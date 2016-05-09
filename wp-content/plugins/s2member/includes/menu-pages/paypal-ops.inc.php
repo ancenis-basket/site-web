@@ -3,7 +3,7 @@
  * Menu page for the s2Member plugin (PayPal Options page).
  *
  * Copyright: © 2009-2011
- * {@link http://www.websharks-inc.com/ WebSharks, Inc.}
+ * {@link http://websharks-inc.com/ WebSharks, Inc.}
  * (coded in the USA)
  *
  * Released under the terms of the GNU General Public License.
@@ -177,7 +177,8 @@ if(!class_exists("c_ws_plugin__s2member_menu_page_paypal_ops"))
 
 				echo '<td>'."\n";
 				echo '<input type="radio" name="ws_plugin__s2member_paypal_sandbox" id="ws-plugin--s2member-paypal-sandbox-0" value="0"'.((!$GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_sandbox"]) ? ' checked="checked"' : '').' /> <label for="ws-plugin--s2member-paypal-sandbox-0">No</label> &nbsp;&nbsp;&nbsp; <input type="radio" name="ws_plugin__s2member_paypal_sandbox" id="ws-plugin--s2member-paypal-sandbox-1" value="1"'.(($GLOBALS["WS_PLUGIN__"]["s2member"]["o"]["paypal_sandbox"]) ? ' checked="checked"' : '').' /> <label for="ws-plugin--s2member-paypal-sandbox-1">Yes, enable support for Sandbox testing.</label><br />'."\n";
-				echo '<em>Only enable this if you\'ve provided Sandbox credentials above.<br />This puts the API, IPN, PDT and Form/Button Generators all into Sandbox mode.<br />See: <a href="http://s2member.com/r/paypal-developers/" target="_blank" rel="external">PayPal Developers</a></em>'."\n";
+				echo '<em>Only enable this if you\'ve provided Sandbox credentials above.<br />This puts the API, IPN, PDT and Form/Button Generators all into Sandbox mode. See: <a href="http://s2member.com/r/paypal-developers/" target="_blank" rel="external">PayPal Developers</a></em><br />'."\n";
+				echo '<em><strong>Warning:</strong> The PayPal Sandbox doesn\'t always give you an accurate view of what will happen once you go live, and in fact it is sometimes buggy at best. For this reason, our strong recommendation is that instead of using Sandbox Mode to run tests, that you go live and run tests with low-dollar amounts; i.e., $0.01 transactions are possible with PayPal in live mode, and that is a better way to test your installation of s2Member.</em>'."\n";
 				echo '</td>'."\n";
 
 				echo '</tr>'."\n";
@@ -347,10 +348,15 @@ if(!class_exists("c_ws_plugin__s2member_menu_page_paypal_ops"))
 
 				echo '<div class="ws-menu-page-section ws-plugin--s2member-paypal-ipn-section">'."\n";
 				echo '<h3>PayPal IPN / Instant Payment Notifications (required, please enable)</h3>'."\n";
-				echo '<p>Log into your PayPal account and navigate to this section:<br /><strong>Account Profile → Instant Payment Notification Preferences</strong></p>'."\n";
+				echo '<p>Log into your PayPal account and navigate to this section:<br /><strong>Account Profile → <a href="http://s2member.com/r/paypal-com-ipn-configuration-page/" target="_blank" rel="external">Instant Payment Notification Preferences</a></strong></p>'."\n";
 				echo '<p>Edit your IPN settings &amp; turn IPN Notifications: <strong><code>On</code></strong></p>'."\n";
-				echo '<p>You\'ll need your IPN URL, which is:<br /><code>'.esc_html(home_url("/?s2member_paypal_notify=1")).'</code></p>'."\n";
+				echo '<p>You\'ll need your IPN URL, which is:<br /><code>'.esc_html(home_url("/?s2member_paypal_notify=1", "https")).'</code></p>'."\n";
 				do_action("ws_plugin__s2member_during_paypal_ops_page_during_left_sections_during_paypal_ipn", get_defined_vars());
+
+				echo '<h4 style="margin-bottom:0;"><strong class="ws-menu-page-hilite">Note: SSL is required by PayPal</strong></h4>'."\n";
+				echo '<p style="margin-top:0;">If you configure your PayPal.com account using the URL above, your site <strong><em>must</em> support SSL</strong> (i.e., the <code>https://</code> protocol). In other words, PayPal\'s system will refuse to accept any URL that does not begin with <code>https://</code>. The IPN URL that s2Member provides (see above) <em>does</em> start with <code>https://</code>. However, that doesn\'t necessarily mean that the URL actually works. Please be sure that your hosting account is configured with a valid SSL certificate before giving this URL to PayPal.</p>'."\n";
+
+				echo '<div class="ws-menu-page-hr"></div>'."\n";
 
 				echo '<h3 style="margin:0;">More Information (<a href="#" onclick="jQuery(\'div#ws-plugin--s2member-paypal-ipn-details\').toggle(); return false;" class="ws-dotted-link">click here</a>)</h3>'."\n";
 				echo '<div id="ws-plugin--s2member-paypal-ipn-details" style="margin-top:10px; display:none;">'."\n";
@@ -364,7 +370,7 @@ if(!class_exists("c_ws_plugin__s2member_menu_page_paypal_ops"))
 				echo '<h3 style="margin:0;">IPN w/ Proxy Key (<a href="#" onclick="jQuery(\'div#ws-plugin--s2member-paypal-ipn-proxy-details\').toggle(); return false;" class="ws-dotted-link">optional, for 3rd-party integrations</a>)</h3>'."\n";
 				echo '<div id="ws-plugin--s2member-paypal-ipn-proxy-details" style="margin-top:10px; display:none;">'."\n";
 				echo '<p>If you\'re using a 3rd-party application that needs to POST simulated IPN transactions to your s2Member installation, you can use this alternate IPN URL, which includes a Proxy Key. This encrypted Proxy Key verifies incoming data being received by s2Member\'s IPN processor. You can change <em>[proxy-gateway]</em> to whatever you like. The <em>[proxy-gateway]</em> value is required. It will be stored by s2Member as the Customer\'s Paid Subscr. Gateway. Your [proxy-gateway] value will also be reflected in s2Member\'s IPN log.</p>'."\n";
-				echo '<input type="text" autocomplete="off" value="'.format_to_edit(home_url("/?s2member_paypal_notify=1&s2member_paypal_proxy=[proxy-gateway]&s2member_paypal_proxy_verification=".urlencode(c_ws_plugin__s2member_paypal_utilities::paypal_proxy_key_gen()))).'" style="width:99%;" />'."\n";
+				echo '<input type="text" autocomplete="off" value="'.format_to_edit(home_url("/?s2member_paypal_notify=1&s2member_paypal_proxy=[proxy-gateway]&s2member_paypal_proxy_verification=".urlencode(c_ws_plugin__s2member_paypal_utilities::paypal_proxy_key_gen()), "https")).'" style="width:99%;" />'."\n";
 				echo '<p><em>Any 3rd-party application that is sending IPN transactions to your s2Member installation must include the <code>custom</code> POST variable, and that variable must always start with your installation domain (i.e., custom=<code>'.esc_html($_SERVER["HTTP_HOST"]).'</code>). In addition, the <code>item_number</code> variable must always match a format that s2Member looks for. Generally speaking, the <code>item_number</code> should be <code>1, 2, 3, or 4</code>, indicating a specific s2Member Level #. However, s2Member also uses some advanced formats in this field. Just to be sure, we suggest creating a PayPal Button with the s2Member Button Generator, and then taking a look at the Full Button Code to see how s2Member expects <code>item_number</code> to be formatted. Other than the aforementioned exceptions, all other POST variables should follow PayPal standards. Please see: <a href="http://www.s2member.com/paypal-ipn-pdt-vars" target="_blank" rel="external">PayPal\'s IPN/PDT reference guide</a> for full documentation.</em></p>'."\n";
 				do_action("ws_plugin__s2member_during_paypal_ops_page_during_left_sections_during_paypal_ipn_after_proxy", get_defined_vars());
 				echo '</div>'."\n";

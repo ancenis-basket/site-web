@@ -8,7 +8,7 @@
  * @subpackage  Widgets
  *
  * @since    1.0.9.9
- * @version  1.2.2
+ * @version  1.3.2
  *
  * CONTENT:
  * - 10) Actions and filters
@@ -85,13 +85,15 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 			// Helper variables
 
+				$theme = ( is_child_theme() ) ? ( wp_get_theme()->parent()->get_template() ) : ( null );
+
 				$atts = array();
 
 				$atts['id']          = 'wm-twitter';
-				$atts['name']        = wp_get_theme()->get( 'Name' ) . ' ' . esc_html_x( 'Twitter', 'Widget name.', 'wm_domain' );
+				$atts['name']        = wp_get_theme( $theme )->get( 'Name' ) . ' ' . esc_html_x( 'Twitter', 'Widget name.', 'webman-amplifier' );
 				$atts['widget_ops']  = array(
 						'classname'   => 'wm-twitter',
-						'description' => _x( 'Your recent tweets', 'Widget description.', 'wm_domain' )
+						'description' => _x( 'Your recent tweets', 'Widget description.', 'webman-amplifier' )
 					);
 				$atts['control_ops'] = array();
 
@@ -138,57 +140,57 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 				?>
 
-				<p class="wm-desc"><?php _ex( 'Displays recent tweets from specific Twitter account. Also displays Twitter account details. Tweets are being cached to optimize the page loading speeds.', 'Widget description.', 'wm_domain' ) ?></p>
+				<p class="wm-desc"><?php _ex( 'Displays recent tweets from specific Twitter account. Also displays Twitter account details. Tweets are being cached to optimize the page loading speeds.', 'Widget description.', 'webman-amplifier' ) ?></p>
 
 				<p>
-					<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'wm_domain' ) ?></label><br />
+					<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'webman-amplifier' ) ?></label><br />
 					<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $instance['title'] ); ?>" />
 				</p>
 
 				<p>
-					<label for="<?php echo $this->get_field_id( 'username' ); ?>"><?php _e( 'Twitter username:', 'wm_domain' ) ?></label><br />
+					<label for="<?php echo $this->get_field_id( 'username' ); ?>"><?php _e( 'Twitter username:', 'webman-amplifier' ) ?></label><br />
 					<input class="widefat" id="<?php echo $this->get_field_id( 'username' ); ?>" name="<?php echo $this->get_field_name( 'username' ); ?>" type="text" value="<?php echo esc_attr( $instance['username'] ); ?>" />
 				</p>
 
 				<p>
-					<label for="<?php echo $this->get_field_id( 'count' ); ?>"><?php _e( 'Number of tweets to display:', 'wm_domain' ) ?></label><br />
+					<label for="<?php echo $this->get_field_id( 'count' ); ?>"><?php _e( 'Number of tweets to display:', 'webman-amplifier' ) ?></label><br />
 					<input class="text-center" type="number" id="<?php echo $this->get_field_id( 'count' ); ?>" name="<?php echo $this->get_field_name( 'count' ); ?>" value="<?php echo absint( $instance['count'] ); ?>" size="5" maxlength="2" min="1" max="10" />
 				</p>
 
 				<p>
 					<input id="<?php echo $this->get_field_id( 'userinfo' ); ?>" name="<?php echo $this->get_field_name( 'userinfo' ); ?>" type="checkbox" <?php checked( $instance['userinfo'], 'on' ); ?>/>
-					<label for="<?php echo $this->get_field_id( 'userinfo' ); ?>"><?php _e( 'Display Twitter user info', 'wm_domain' ); ?></label>
+					<label for="<?php echo $this->get_field_id( 'userinfo' ); ?>"><?php _e( 'Display Twitter user info', 'webman-amplifier' ); ?></label>
 				</p>
 
 				<p>
 					<input id="<?php echo $this->get_field_id( 'replies' ); ?>" name="<?php echo $this->get_field_name( 'replies' ); ?>" type="checkbox" <?php checked( $instance['replies'], 'on' ); ?>/>
-					<label for="<?php echo $this->get_field_id( 'replies' ); ?>"><?php _e( 'Display reply tweets', 'wm_domain' ); ?></label>
+					<label for="<?php echo $this->get_field_id( 'replies' ); ?>"><?php _e( 'Display reply tweets', 'webman-amplifier' ); ?></label>
 				</p>
 
 				<!-- Twitter API -->
 
 					<p class="wm-desc-separator">
-						<strong><?php _e( 'Twitter API settings', 'wm_domain' ) ?></strong><br />
-						<?php _e( 'To set the fields below you need to <a href="https://dev.twitter.com/apps" target="_blank">create a Twitter Application</a>. See theme user manual for more info.', 'wm_domain' ) ?>
+						<strong><?php _e( 'Twitter API settings', 'webman-amplifier' ) ?></strong><br />
+						<?php _e( 'To set the fields below you need to <a href="https://dev.twitter.com/apps" target="_blank">create a Twitter Application</a>. See theme user manual for more info.', 'webman-amplifier' ) ?>
 					</p>
 
 					<p>
-						<label for="<?php echo $this->get_field_id( 'consumer_key' ); ?>"><?php _e( 'Consumer key:', 'wm_domain' ) ?></label><br />
+						<label for="<?php echo $this->get_field_id( 'consumer_key' ); ?>"><?php _e( 'Consumer key:', 'webman-amplifier' ) ?></label><br />
 						<input class="widefat" id="<?php echo $this->get_field_id( 'consumer_key' ); ?>" name="<?php echo $this->get_field_name( 'consumer_key' ); ?>" type="text" value="<?php echo esc_attr( $consumer_key ); ?>" />
 					</p>
 
 					<p>
-						<label for="<?php echo $this->get_field_id( 'consumer_secret' ); ?>"><?php _e( 'Consumer secret:', 'wm_domain' ) ?></label><br />
+						<label for="<?php echo $this->get_field_id( 'consumer_secret' ); ?>"><?php _e( 'Consumer secret:', 'webman-amplifier' ) ?></label><br />
 						<input class="widefat" id="<?php echo $this->get_field_id( 'consumer_secret' ); ?>" name="<?php echo $this->get_field_name( 'consumer_secret' ); ?>" type="text" value="<?php echo esc_attr( $consumer_secret ); ?>" />
 					</p>
 
 					<p>
-						<label for="<?php echo $this->get_field_id( 'access_token' ); ?>"><?php _e( 'Access token:', 'wm_domain' ) ?></label><br />
+						<label for="<?php echo $this->get_field_id( 'access_token' ); ?>"><?php _e( 'Access token:', 'webman-amplifier' ) ?></label><br />
 						<input class="widefat" id="<?php echo $this->get_field_id( 'access_token' ); ?>" name="<?php echo $this->get_field_name( 'access_token' ); ?>" type="text" value="<?php echo esc_attr( $access_token ); ?>" />
 					</p>
 
 					<p>
-						<label for="<?php echo $this->get_field_id( 'access_token_secret' ); ?>"><?php _e( 'Access token secret:', 'wm_domain' ) ?></label><br />
+						<label for="<?php echo $this->get_field_id( 'access_token_secret' ); ?>"><?php _e( 'Access token secret:', 'webman-amplifier' ) ?></label><br />
 						<input class="widefat" id="<?php echo $this->get_field_id( 'access_token_secret' ); ?>" name="<?php echo $this->get_field_name( 'access_token_secret' ); ?>" type="text" value="<?php echo esc_attr( $access_token_secret ); ?>" />
 					</p>
 
@@ -390,7 +392,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					$output .= $args['before_widget'];
 
 					if ( trim( $instance['title'] ) ) {
-						$output .= $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title'];
+						$output .= $args['before_title'] . apply_filters( 'widget_title', $instance['title'], $instance, $this->id_base, $args ) . $args['after_title'];
 					}
 
 					$output .= '<div class="wm-twitter-container">';
@@ -431,7 +433,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 					} else {
 
-						$output .= __( 'No tweets.', 'wm_domain' );
+						$output .= __( 'No tweets.', 'webman-amplifier' );
 
 					}
 

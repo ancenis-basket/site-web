@@ -6,7 +6,7 @@
  * @subpackage  Widgets
  *
  * @since    1.0.9.9
- * @version  1.2
+ * @version  1.3.2
  *
  * CONTENT:
  * - 10) Actions and filters
@@ -64,13 +64,16 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		function __construct() {
 
 			//Helper variables
+
+				$theme = ( is_child_theme() ) ? ( wp_get_theme()->parent()->get_template() ) : ( null );
+
 				$atts = array();
 
 				$atts['id']          = 'wm-module-widget';
-				$atts['name']        = wp_get_theme()->get( 'Name' ) . ' ' . esc_html_x( 'Content Module', 'Widget name.', 'wm_domain' );
+				$atts['name']        = wp_get_theme( $theme )->get( 'Name' ) . ' ' . esc_html_x( 'Content Module', 'Widget name.', 'webman-amplifier' );
 				$atts['widget_ops']  = array(
 						'classname'   => 'wm-module-widget',
-						'description' => _x( 'Displays specific Content Module post', 'Widget description.', 'wm_domain' )
+						'description' => _x( 'Displays specific Content Module post', 'Widget description.', 'webman-amplifier' )
 					);
 				$atts['control_ops'] = array();
 
@@ -97,10 +100,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 			//Output
 				?>
-				<p class="wm-desc"><?php _ex( 'Displays content of the specific Content Module custom post. Please choose the Content Module below.', 'Widget description.', 'wm_domain' ) ?></p>
+				<p class="wm-desc"><?php _ex( 'Displays content of the specific Content Module custom post. Please choose the Content Module below.', 'Widget description.', 'webman-amplifier' ) ?></p>
 
 				<p>
-					<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'wm_domain' ) ?></label><br />
+					<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'webman-amplifier' ) ?></label><br />
 					<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $instance['title'] ); ?>" />
 				</p>
 
@@ -115,9 +118,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 					if ( ! empty( $posts ) ) {
 						?>
-						<label for="<?php echo $this->get_field_id( 'module' ); ?>"><?php _e( 'Content Module to display:', 'wm_domain' ) ?></label><br />
+						<label for="<?php echo $this->get_field_id( 'module' ); ?>"><?php _e( 'Content Module to display:', 'webman-amplifier' ) ?></label><br />
 						<select class="widefat" id="<?php echo $this->get_field_id( 'module' ); ?>" name="<?php echo $this->get_field_name( 'module' ); ?>">
-							<option value="" <?php selected( $instance['module'], '' ); ?>><?php _e( '- Select Content Module -', 'wm_domain' ); ?></option>
+							<option value="" <?php selected( $instance['module'], '' ); ?>><?php _e( '- Select Content Module -', 'webman-amplifier' ); ?></option>
 						<?php
 						foreach ( $posts as $post ) {
 							$terms = get_the_terms( $post->ID , apply_filters( 'wmhook_widgets_' . 'wm_module_widget' . '_form' . '_taxonomy', 'module_tag' ) );
@@ -129,7 +132,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 										$taxonomy[] = $term->name;
 									}
 								}
-								$tags .= sprintf( __( ' (tags: %s)', 'wm_domain' ), implode( ', ', $taxonomy ) );
+								$tags .= sprintf( __( ' (tags: %s)', 'webman-amplifier' ), implode( ', ', $taxonomy ) );
 							}
 
 							?>
@@ -140,13 +143,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 						</select>
 						<?php
 					} else {
-						_e( 'There are no Content Modules to choose from. Please add a new Content Module first.', 'wm_domain' );
+						_e( 'There are no Content Modules to choose from. Please add a new Content Module first.', 'webman-amplifier' );
 					};
 					?>
 				</p>
 
 				<p>
-					<label for="<?php echo $this->get_field_id( 'class' ); ?>"><?php _e( 'Optional CSS class:', 'wm_domain' ) ?></label><br />
+					<label for="<?php echo $this->get_field_id( 'class' ); ?>"><?php _e( 'Optional CSS class:', 'webman-amplifier' ) ?></label><br />
 					<input class="widefat" id="<?php echo $this->get_field_id( 'class' ); ?>" name="<?php echo $this->get_field_name( 'class' ); ?>" type="text" value="<?php echo esc_attr( $instance['class'] ); ?>" />
 				</p>
 				<?php
@@ -195,7 +198,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 				$output .= $args['before_widget'];
 
 				if ( trim( $instance['title'] ) ) {
-					$output .= $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title'];
+					$output .= $args['before_title'] . apply_filters( 'widget_title', $instance['title'], $instance, $this->id_base, $args ) . $args['after_title'];
 				}
 
 				$output .= do_shortcode( apply_filters( 'wmhook_widgets_' . 'wm_module_widget' . '_shortcode', '[wm_content_module class="' . $instance['class'] . '" module="' . $instance['module'] . '" /]', $args, $instance ) );

@@ -2,7 +2,7 @@
 * Core JavaScript routines for s2Member menu pages.
 *
 * Copyright: © 2009-2011
-* {@link http://www.websharks-inc.com/ WebSharks, Inc.}
+* {@link http://websharks-inc.com/ WebSharks, Inc.}
 * (coded in the USA)
 *
 * Released under the terms of the GNU General Public License.
@@ -160,6 +160,16 @@ jQuery(document).ready(function($)
                      $(':input', $loginRegDesign).removeAttr('disabled'), $loginRegDesign.css('opacity', ''), $loginRegDesign.show();
 
                }).trigger /* Fire on ready too. */('change');
+
+				$('select#ws-plugin--s2member-custom-reg-password').change(function()
+					{
+						var $this = $(this), $newUserNotification = $('div#ws-plugin--s2member-new-user-email-details');
+
+						if($this.val() === '1') // Disable this section.
+							$newUserNotification.css('opacity', '0.5');
+						else $newUserNotification.css('opacity', '');
+
+					}).trigger /* Fire on ready too. */('change');
 
 				if($('input#ws-plugin--s2member-custom-reg-fields').length && $('div#ws-plugin--s2member-custom-reg-field-configuration').length)
 					{

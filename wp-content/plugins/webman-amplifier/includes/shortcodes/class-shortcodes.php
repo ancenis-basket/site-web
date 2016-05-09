@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @subpackage  Shortcodes
  *
  * @since    1.0
- * @version  1.2.8
+ * @version  1.3.6
  */
 if ( ! class_exists( 'WM_Shortcodes' ) ) {
 
@@ -82,22 +82,25 @@ if ( ! class_exists( 'WM_Shortcodes' ) ) {
 			 * Constructor
 			 *
 			 * @since    1.0
-			 * @version  1.0.8
+			 * @version  1.3.4
 			 * @access   public
 			 */
 			public function __construct() {
+
 				$this->setup_globals();
-				$this->assets_register();
 				$this->setup_filters();
 				$this->add_shortcodes();
 
-				//Beaver Builder plugin integration
+				// Beaver Builder plugin integration
+
 					$this->beaver_builder_support();
 
-				//Visual Composer plugin integration
+				// Visual Composer plugin integration
+
 					if ( wma_is_active_vc() ) {
 						$this->visual_composer_support();
 					}
+
 			} // /__construct
 
 
@@ -136,15 +139,15 @@ if ( ! class_exists( 'WM_Shortcodes' ) ) {
 					} else {
 						$fonticons = array();
 					}
-					$post_types = array( 'post' => __( 'Posts', 'wm_domain' ) );
+					$post_types = array( 'post' => __( 'Posts', 'webman-amplifier' ) );
 					if ( in_array( 'wm_logos', $postTypes ) ) {
-						$post_types['wm_logos'] = __( 'Logos', 'wm_domain' );
+						$post_types['wm_logos'] = __( 'Logos', 'webman-amplifier' );
 					}
 					if ( in_array( 'wm_projects', $postTypes ) ) {
-						$post_types['wm_projects'] = __( 'Projects', 'wm_domain' );
+						$post_types['wm_projects'] = __( 'Projects', 'webman-amplifier' );
 					}
 					if ( in_array( 'wm_staff', $postTypes ) ) {
-						$post_types['wm_staff'] = __( 'Staff', 'wm_domain' );
+						$post_types['wm_staff'] = __( 'Staff', 'webman-amplifier' );
 					}
 					$post_types = apply_filters( 'wmhook_shortcode_' . 'post_types', $post_types );
 					asort( $post_types );
@@ -165,43 +168,38 @@ if ( ! class_exists( 'WM_Shortcodes' ) ) {
 				//Shortcodes globals (variables used across multiple shortcodes)
 					$this->inline_tags   = apply_filters( 'wmhook_shortcode_' . 'inline_tags',   '<a><abbr><b><br><code><em><i><img><mark><small><span><strong><u>' );
 					self::$codes_globals = apply_filters( 'wmhook_shortcode_' . 'codes_globals', array(
-							'align' => array(
-									'left'   => __( 'Left', 'wm_domain' ),
-									'center' => __( 'Center', 'wm_domain' ),
-									'right'  => __( 'Right', 'wm_domain' ),
-								),
 							'colors' => array(
-									'blue'   => __( 'Blue', 'wm_domain' ),
-									'gray'   => __( 'Gray', 'wm_domain' ),
-									'green'  => __( 'Green', 'wm_domain' ),
-									'orange' => __( 'Orange', 'wm_domain' ),
-									'red'    => __( 'Red', 'wm_domain' ),
+									'blue'   => __( 'Blue', 'webman-amplifier' ),
+									'gray'   => __( 'Gray', 'webman-amplifier' ),
+									'green'  => __( 'Green', 'webman-amplifier' ),
+									'orange' => __( 'Orange', 'webman-amplifier' ),
+									'red'    => __( 'Red', 'webman-amplifier' ),
 								),
 							'column_widths' => array( '1/2', '1/3', '2/3', '1/4', '3/4', '1/5', '2/5', '3/5', '4/5' ),
 							'divider_appearance'  => array(
-									'line'        => __( 'Line', 'wm_domain' ),
-									'dotted'      => __( 'Dotted', 'wm_domain' ),
-									'dashed'      => __( 'Dashed', 'wm_domain' ),
-									'double-line' => __( 'Double line', 'wm_domain' ),
-									'whitespace'  => __( 'Whitespace', 'wm_domain' ),
+									'line'        => __( 'Line', 'webman-amplifier' ),
+									'dotted'      => __( 'Dotted', 'webman-amplifier' ),
+									'dashed'      => __( 'Dashed', 'webman-amplifier' ),
+									'double-line' => __( 'Double line', 'webman-amplifier' ),
+									'whitespace'  => __( 'Whitespace', 'webman-amplifier' ),
 								),
 							'dropcap_shapes' => array(
-									'circle'         => __( 'Circle', 'wm_domain' ),
-									'square'         => __( 'Square', 'wm_domain' ),
-									'rounded-square' => __( 'Rounded square', 'wm_domain' ),
-									'leaf-left'      => __( 'Leaf left', 'wm_domain' ),
-									'leaf-right'     => __( 'Leaf right', 'wm_domain' ),
-									'half-circle'    => __( 'Half circle', 'wm_domain' ),
+									'circle'         => __( 'Circle', 'webman-amplifier' ),
+									'square'         => __( 'Square', 'webman-amplifier' ),
+									'rounded-square' => __( 'Rounded square', 'webman-amplifier' ),
+									'leaf-left'      => __( 'Leaf left', 'webman-amplifier' ),
+									'leaf-right'     => __( 'Leaf right', 'webman-amplifier' ),
+									'half-circle'    => __( 'Half circle', 'webman-amplifier' ),
 								),
 							'font_icons' => $fonticons,
 							'post_types' => $post_types,
 							'sizes' => array(
 								//Actual sizes options used in select form field
 									'options' => array(
-										's'  => __( 'Small', 'wm_domain' ),
-										'm'  => __( 'Medium', 'wm_domain' ),
-										'l'  => __( 'Large', 'wm_domain' ),
-										'xl' => __( 'Extra-large', 'wm_domain' ),
+										's'  => __( 'Small', 'webman-amplifier' ),
+										'm'  => __( 'Medium', 'webman-amplifier' ),
+										'l'  => __( 'Large', 'webman-amplifier' ),
+										'xl' => __( 'Extra-large', 'webman-amplifier' ),
 									),
 								//Parameter value to CSS class translation
 									'values' =>	array(
@@ -213,10 +211,10 @@ if ( ! class_exists( 'WM_Shortcodes' ) ) {
 								),
 							'social_icons' => array( 'Behance', 'Blogger', 'Delicious', 'DeviantART', 'Digg', 'Dribbble', 'Facebook', 'Flickr', 'Forrst', 'Github', 'Google+', 'Instagram', 'LinkedIn', 'MySpace', 'Pinterest', 'Reddit', 'RSS', 'Skype', 'SoundCloud', 'StumbleUpon', 'Tumblr', 'Twitter', 'Vimeo', 'WordPress', 'YouTube' ),
 							'table_appearance' => array(
-									'basic'            => __( 'Basic', 'wm_domain' ),
-									'bordered'         => __( 'Bordered', 'wm_domain' ),
-									'striped'          => __( 'Zebra striping', 'wm_domain' ),
-									'bordered-striped' => __( 'Bordered zebra striping', 'wm_domain' ),
+									'basic'            => __( 'Basic', 'webman-amplifier' ),
+									'bordered'         => __( 'Bordered', 'webman-amplifier' ),
+									'striped'          => __( 'Zebra striping', 'webman-amplifier' ),
+									'bordered-striped' => __( 'Bordered zebra striping', 'webman-amplifier' ),
 								),
 						), $post_types, $fonticons );
 
@@ -344,37 +342,55 @@ if ( ! class_exists( 'WM_Shortcodes' ) ) {
 			 * Register styles and scripts
 			 *
 			 * @since    1.0
-			 * @version  1.2.8
+			 * @version  1.3.5
 			 *
 			 * @access   public
 			 */
 			public function assets_register() {
-				//Helper variables
-					$icon_font_url = apply_filters( 'wmhook_shortcode_' . 'iconfont_url', get_option( 'wmamp-icon-font' ) );
+
+				// Helper variables
+
+					$icon_font_url = WM_Amplifier::fix_ssl_urls( esc_url_raw( apply_filters( 'wmhook_metabox_' . 'iconfont_url', get_option( 'wmamp-icon-font' ) ) ) );
 					$rtl           = ( is_rtl() ) ? ( '.rtl' ) : ( '' );
 
-				//Styles
-					wp_register_style( 'wm-radio',               WMAMP_ASSETS_URL . 'css/input-wm-radio.css',           array(), WMAMP_VERSION, 'screen' );
-					wp_register_style( 'wm-shortcodes-bb-addon', WMAMP_ASSETS_URL . 'css/shortcodes-bb-addons.css',     array(), WMAMP_VERSION, 'screen' );
-					wp_register_style( 'wm-shortcodes-vc-addon', WMAMP_ASSETS_URL . 'css/shortcodes-vc-addons.css',     array(), WMAMP_VERSION, 'screen' );
-					if ( $icon_font_url ) {
-						wp_register_style( 'wm-fonticons', $icon_font_url, array(), WMAMP_VERSION, 'screen' );
-					}
+					$vc_backend_dependencies = ( defined( 'WPB_VC_VERSION' ) && version_compare( WPB_VC_VERSION, '4.9', '<' ) ) ? ( array( 'wpb_js_composer_js_atts', 'wpb_js_composer_js_custom_views' ) ) : ( array( 'vc-backend-min-js' ) );
 
-				//Scripts
-					wp_register_script( 'imagesloaded',            WMAMP_ASSETS_URL . 'js/plugins/imagesloaded.min.js',             array(),                              WMAMP_VERSION, true );
-					wp_register_script( 'isotope',                 WMAMP_ASSETS_URL . 'js/plugins/isotope.pkgd.min.js',             array(),                              WMAMP_VERSION, true );
-					wp_register_script( 'jquery-bxslider',         WMAMP_ASSETS_URL . 'js/plugins/jquery.bxslider.min.js',          array( 'jquery' ),                    WMAMP_VERSION, true );
-					wp_register_script( 'jquery-lwtCountdown',     WMAMP_ASSETS_URL . 'js/plugins/jquery.lwtCountdown.min.js',      array( 'jquery' ),                    WMAMP_VERSION, true );
-					wp_register_script( 'jquery-owl-carousel',     WMAMP_ASSETS_URL . 'js/plugins/owl.carousel' . $rtl . '.min.js', array( 'jquery' ),                    WMAMP_VERSION, true );
-					wp_register_script( 'jquery-parallax',         WMAMP_ASSETS_URL . 'js/plugins/jquery.parallax.min.js',          array( 'jquery' ),                    WMAMP_VERSION, true );
-					wp_register_script( 'wm-shortcodes-accordion', WMAMP_ASSETS_URL . 'js/shortcode-accordion.js',                  array( 'jquery' ),                    WMAMP_VERSION, true );
-					wp_register_script( 'wm-shortcodes-ie',        WMAMP_ASSETS_URL . 'js/shortcodes-ie.js',                        array( 'jquery' ),                    WMAMP_VERSION, true );
-					wp_register_script( 'wm-shortcodes-parallax',  WMAMP_ASSETS_URL . 'js/shortcode-parallax.js',                   array( 'jquery', 'jquery-parallax' ), WMAMP_VERSION, true );
-					wp_register_script( 'wm-shortcodes-posts',     WMAMP_ASSETS_URL . 'js/shortcode-posts.js',                      array( 'jquery', 'imagesloaded' ),    WMAMP_VERSION, true );
-					wp_register_script( 'wm-shortcodes-slideshow', WMAMP_ASSETS_URL . 'js/shortcode-slideshow.js',                  array( 'jquery' ),                    WMAMP_VERSION, true );
-					wp_register_script( 'wm-shortcodes-tabs',      WMAMP_ASSETS_URL . 'js/shortcode-tabs.js',                       array( 'jquery' ),                    WMAMP_VERSION, true );
-					wp_register_script( 'wm-shortcodes-vc-addon',  WMAMP_ASSETS_URL . 'js/shortcodes-vc-addons.js',                 array( 'wpb_js_composer_js_atts', 'wpb_js_composer_js_custom_views', 'isotope' ), WMAMP_VERSION, true );
+
+				// Processing
+
+					// Styles
+
+						wp_register_style( 'wm-radio',               WMAMP_ASSETS_URL . 'css/input-wm-radio.css',       array(), WMAMP_VERSION, 'screen' );
+						wp_register_style( 'wm-shortcodes-bb-addon', WMAMP_ASSETS_URL . 'css/shortcodes-bb-addons.css', array(), WMAMP_VERSION, 'screen' );
+						wp_register_style( 'wm-shortcodes-vc-addon', WMAMP_ASSETS_URL . 'css/shortcodes-vc-addons.css', array(), WMAMP_VERSION, 'screen' );
+						if ( $icon_font_url ) {
+							wp_register_style( 'wm-fonticons', $icon_font_url, array(), WMAMP_VERSION, 'screen' );
+						}
+
+					// Scripts
+
+						wp_register_script( 'wm-shortcodes-accordion', WMAMP_ASSETS_URL . 'js/shortcode-accordion.js',  array( 'jquery' ),                    WMAMP_VERSION, true );
+						wp_register_script( 'wm-shortcodes-ie',        WMAMP_ASSETS_URL . 'js/shortcodes-ie.js',        array( 'jquery' ),                    WMAMP_VERSION, true );
+						wp_register_script( 'wm-shortcodes-parallax',  WMAMP_ASSETS_URL . 'js/shortcode-parallax.js',   array( 'jquery', 'jquery-parallax' ), WMAMP_VERSION, true );
+						wp_register_script( 'wm-shortcodes-posts',     WMAMP_ASSETS_URL . 'js/shortcode-posts.js',      array( 'jquery', 'imagesloaded' ),    WMAMP_VERSION, true );
+						wp_register_script( 'wm-shortcodes-slideshow', WMAMP_ASSETS_URL . 'js/shortcode-slideshow.js',  array( 'jquery' ),                    WMAMP_VERSION, true );
+						wp_register_script( 'wm-shortcodes-tabs',      WMAMP_ASSETS_URL . 'js/shortcode-tabs.js',       array( 'jquery' ),                    WMAMP_VERSION, true );
+						wp_register_script( 'wm-shortcodes-vc-addon',  WMAMP_ASSETS_URL . 'js/shortcodes-vc-addons.js', (array) $vc_backend_dependencies,     WMAMP_VERSION, true );
+
+						// 3rd party scripts
+
+							wp_register_script( 'imagesloaded',        WMAMP_ASSETS_URL . 'js/plugins/imagesloaded.min.js',             array(),           WMAMP_VERSION, true );
+							wp_register_script( 'isotope',             WMAMP_ASSETS_URL . 'js/plugins/isotope.pkgd.min.js',             array(),           WMAMP_VERSION, true );
+							wp_register_script( 'jquery-bxslider',     WMAMP_ASSETS_URL . 'js/plugins/jquery.bxslider.min.js',          array( 'jquery' ), WMAMP_VERSION, true );
+							wp_register_script( 'jquery-lwtCountdown', WMAMP_ASSETS_URL . 'js/plugins/jquery.lwtCountdown.min.js',      array( 'jquery' ), WMAMP_VERSION, true );
+							wp_register_script( 'jquery-owl-carousel', WMAMP_ASSETS_URL . 'js/plugins/owl.carousel' . $rtl . '.min.js', array( 'jquery' ), WMAMP_VERSION, true );
+							wp_register_script( 'jquery-parallax',     WMAMP_ASSETS_URL . 'js/plugins/jquery.parallax.min.js',          array( 'jquery' ), WMAMP_VERSION, true );
+							wp_register_script( 'slick',               WMAMP_ASSETS_URL . 'js/plugins/slick.min.js',                    array( 'jquery' ), WMAMP_VERSION, true );
+
+					// Allow hooking for deregistering
+
+						do_action( 'wmhook_shortcode_' . 'assets_registered' );
+
 			} // /assets_register
 
 
@@ -383,42 +399,55 @@ if ( ! class_exists( 'WM_Shortcodes' ) ) {
 			 * Enqueue frontend styles and scripts
 			 *
 			 * @since    1.0
-			 * @version  1.2.2
+			 * @version  1.3.4
 			 *
 			 * @access  public
 			 */
 			public function assets_frontend() {
-				//Helper variables
+
+				// Helper variables
+
 					global $is_IE;
 					$icon_font_url = apply_filters( 'wmhook_shortcode_' . 'iconfont_url', get_option( 'wmamp-icon-font' ) );
 
-				//Styles
-					if ( $icon_font_url ) {
-						wp_enqueue_style( 'wm-fonticons' );
-					}
 
-					//Visual Composer - deregister frontend styles
-						if ( wma_supports_subfeature( 'remove_vc_shortcodes' ) || wma_supports_subfeature( 'remove-vc-shortcodes' ) ) {
-							wp_deregister_style( 'js_composer_front' );
+				// Processing
+
+					// Styles
+
+						if ( $icon_font_url ) {
+							wp_enqueue_style( 'wm-fonticons' );
 						}
 
-				//Scripts
-					if ( $is_IE && apply_filters( 'wmhook_shortcode_' . 'enqueue_shortcode_ie_script', true ) ) {
-						wp_enqueue_script( 'wm-shortcodes-ie' );
-					}
+						// Visual Composer - deregister frontend styles
+
+							if ( wma_supports_subfeature( 'remove_vc_shortcodes' ) || wma_supports_subfeature( 'remove-vc-shortcodes' ) ) {
+								wp_deregister_style( 'js_composer_front' );
+							}
+
+					// Scripts
+
+						if ( $is_IE && apply_filters( 'wmhook_shortcode_' . 'enqueue_shortcode_ie_script', true ) ) {
+							wp_enqueue_script( 'wm-shortcodes-ie' );
+						}
+
+					// Allow hooking for dequeuing
+
+						do_action( 'wmhook_shortcode_' . 'assets_frontend_enqueued' );
+
 			} // /assets_frontend
 
 
 
 			/**
-			 * Enqueue backend (admin) styles and scripts
+			 * Enqueue backend (admin) styles and scripts for Visual Composer
 			 *
-			 * @since    1.0
-			 * @version  1.2.8
+			 * @since    1.2.9
+			 * @version  1.3.6
 			 *
 			 * @access  public
 			 */
-			public function assets_backend() {
+			public function assets_backend_vc() {
 
 				// Requirements check
 
@@ -431,8 +460,9 @@ if ( ! class_exists( 'WM_Shortcodes' ) ) {
 
 					global $pagenow, $post_type;
 
-					$admin_pages   = array( 'post.php', 'post-new.php' );
-					$icon_font_url = apply_filters( 'wmhook_shortcode_' . 'iconfont_url', get_option( 'wmamp-icon-font' ) );
+					$admin_pages = array( 'post.php', 'post-new.php' );
+
+					$vc_backend_dependencies = ( defined( 'WPB_VC_VERSION' ) && version_compare( WPB_VC_VERSION, '4.9', '<' ) ) ? ( array( 'wpb_js_composer_js_atts', 'wpb_js_composer_js_custom_views' ) ) : ( array( 'vc-backend-min-js' ) );
 
 
 				// Processing
@@ -450,16 +480,25 @@ if ( ! class_exists( 'WM_Shortcodes' ) ) {
 
 							// Styles
 
-								wp_enqueue_style( 'wm-shortcodes-vc-addon' );
-								wp_enqueue_style( 'wm-radio' );
+								wp_enqueue_style( 'wm-shortcodes-vc-addon', WMAMP_ASSETS_URL . 'css/shortcodes-vc-addons.css', array(), WMAMP_VERSION, 'screen' );
+								wp_enqueue_style( 'wm-radio', WMAMP_ASSETS_URL . 'css/input-wm-radio.css', array(), WMAMP_VERSION, 'screen' );
 
 							// Scripts
 
-								wp_enqueue_script( 'wm-shortcodes-vc-addon' );
+								wp_enqueue_script( 'wm-shortcodes-vc-addon', WMAMP_ASSETS_URL . 'js/shortcodes-vc-addons.js', (array) $vc_backend_dependencies, WMAMP_VERSION, true );
+
+							/**
+							 * Yes, we need to set the whole `wp_enqueue_style/script()` function as Visual Composer loads
+							 * assets strangely and those handles are not registered yet.
+							 */
 
 						}
 
-			} // /assets_backend
+					// Allow hooking for dequeuing
+
+						do_action( 'wmhook_shortcode_' . 'assets_backend_vc_enqueued' );
+
+			} // /assets_backend_vc
 
 
 
@@ -467,33 +506,44 @@ if ( ! class_exists( 'WM_Shortcodes' ) ) {
 			 * Setup filter hooks
 			 *
 			 * @since    1.0
-			 * @version  1.1
+			 * @version  1.3.4
 			 *
 			 * @access  private
 			 */
 			public function setup_filters() {
-				//Assets
-					add_action( 'wp_enqueue_scripts',    array( $this, 'assets_frontend' ) );
-					add_action( 'admin_enqueue_scripts', array( $this, 'assets_backend' )  );
 
-				//Shortcodes in text widget
-					add_filter( 'widget_text', 'do_shortcode' );
+				// Processing
 
-				//Preprocess certain shortcodes
-					add_filter( 'the_content',            array( $this, 'preprocess_shortcodes' ), 7 );
-					add_filter( 'wmhook_content_filters', array( $this, 'preprocess_shortcodes' ), 7 );
-					add_filter( 'widget_text',            array( $this, 'preprocess_shortcodes' ), 7 );
+					// Assets
 
-				//Fixes HTML issues created by wpautop
-					add_filter( 'the_content', array( $this, 'fix_shortcodes' ) );
+						add_action( 'wp_enqueue_scripts', array( $this, 'assets_register' ) );
+						add_action( 'wp_enqueue_scripts', array( $this, 'assets_frontend' ) );
+						add_action( 'vc_backend_editor_enqueue_js_css', array( $this, 'assets_backend_vc' ) );
 
-				//Shortcodes' $content variable filtering
-					add_filter( 'wmhook_shortcode_' . '_content',          array( $this, 'shortcodes_content' ),     20, 2 );
-					add_filter( 'wmhook_shortcode_' . 'pre' . '_content',  array( $this, 'shortcodes_content_pre' ), 10    );
-					add_filter( 'wmhook_shortcode_' . 'list' . '_content', 'shortcode_unautop',                      10    );
+					// Shortcodes in text widget
 
-				//Shortcodes' output filtering
-					add_filter( 'wmhook_shortcode_' . 'widget_area' . '_output', 'wma_minify_html', 10 );
+						add_filter( 'widget_text', 'do_shortcode' );
+
+					// Preprocess certain shortcodes
+
+						add_filter( 'the_content',            array( $this, 'preprocess_shortcodes' ), 7 );
+						add_filter( 'wmhook_content_filters', array( $this, 'preprocess_shortcodes' ), 7 );
+						add_filter( 'widget_text',            array( $this, 'preprocess_shortcodes' ), 7 );
+
+					// Fixes HTML issues created by wpautop
+
+						add_filter( 'the_content', array( $this, 'fix_shortcodes' ) );
+
+					// Shortcodes' $content variable filtering
+
+						add_filter( 'wmhook_shortcode_' . '_content',          array( $this, 'shortcodes_content' ),     20, 2 );
+						add_filter( 'wmhook_shortcode_' . 'pre' . '_content',  array( $this, 'shortcodes_content_pre' ), 10    );
+						add_filter( 'wmhook_shortcode_' . 'list' . '_content', 'shortcode_unautop',                      10    );
+
+					// Shortcodes' output filtering
+
+						add_filter( 'wmhook_shortcode_' . 'widget_area' . '_output', 'wma_minify_html', 10 );
+
 			} // /setup_filters
 
 
@@ -1219,7 +1269,7 @@ function wma_shortcodes() {
 				// Filter
 
 					if ( $field['filter'] ) {
-						$output .= '<div class="filter"><input type="text" value="" placeholder="' . esc_attr__( 'Filter: start typing...', 'wm_domain' ) . '" class="filter-text" /></div>';
+						$output .= '<div class="filter"><input type="text" value="" placeholder="' . esc_attr__( 'Filter: start typing...', 'webman-amplifier' ) . '" class="filter-text" /></div>';
 					}
 
 				// Radio buttons
@@ -1325,54 +1375,6 @@ function wma_shortcodes() {
 				return $output;
 
 		} // /wma_custom_field_wm_radio
-
-
-
-
-
-/**
- * Beaver Builder Lite Version multisite support
- *
- * Fixing the plugin's deactivation on a single sites in multisite environment.
- * Runs only during the Beaver Builder activation attempt.
- *
- * @uses  register_activation_hook()
- *
- * @todo  Remove when Beaver Builder Lite Version supports multisite.
- *
- * @since    1.1
- * @version  1.1
- */
-if ( is_multisite() && ! class_exists( 'FLBuilderMultisite' ) ) {
-
-	/**
-	 * Activating Beaver Builder
-	 *
-	 * Need to declare the missing `FLBuilderMultisite` class inside
-	 * the function to hook into plugin activation.
-	 * Otherwise, if Pro version of Beaver Builder plugin installed,
-	 * a duplicate class definition error might appear.
-	 */
-	function wma_bb_multisite() {
-		if ( defined( 'FL_BUILDER_LITE' ) && FL_BUILDER_LITE ) {
-
-			/**
-			 * Just a placeholder
-			 */
-			class FLBuilderMultisite {
-				static public function init() {}
-				static public function install() {}
-				static private function uninstall() {}
-			} // /FLBuilderMultisite
-
-			add_action( 'init', 'FLBuilderMultisite::init' );
-
-		}
-	} // /wma_bb_multisite
-
-	register_activation_hook( str_replace( array( 'webman-amplifier/', 'webman-amplifier\\' ), 'beaver-builder-lite-version\\', WMAMP_PLUGIN_DIR ) . '\\fl-builder.php', 'wma_bb_multisite' );
-
-} // /FLBuilderMultisite check
 
 
 

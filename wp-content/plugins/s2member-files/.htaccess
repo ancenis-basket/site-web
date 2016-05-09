@@ -9,7 +9,7 @@
 
 # Enable rewrite and configure base.
 	RewriteEngine On
-	RewriteBase /wordpress/
+	RewriteBase /pab44/
 
 # Initialize all environment variables we're using below.
 	RewriteCond %{ENV:s2member_file_download_setup} !^complete$
@@ -17,7 +17,7 @@
 
 # Handle virtual directories, common on multisite networks.
 	RewriteCond %{ENV:s2member_file_download_wp_vdir_check} !^complete$
-	RewriteCond %{THE_REQUEST} ^(?:GET|HEAD)(?:[\ ]+)(?:/wordpress/)([_0-9a-zA-Z\-]+/)(?:wp-content/)
+	RewriteCond %{THE_REQUEST} ^(?:GET|HEAD)(?:[\ ]+)(?:/pab44/)([_0-9a-zA-Z\-]+/)(?:wp-content/)
 	RewriteRule ^(.*)$ - [E=s2member_file_download_wp_vdir:,E=s2member_file_download_wp_vdir:%1,E=s2member_file_download_wp_vdir_check:complete]
 
 # Handle streaming download requests via the rewrite engine.

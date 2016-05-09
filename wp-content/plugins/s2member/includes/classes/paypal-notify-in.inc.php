@@ -3,7 +3,7 @@
  * s2Member's PayPal IPN handler (inner processing routines).
  *
  * Copyright: © 2009-2011
- * {@link http://www.websharks-inc.com/ WebSharks, Inc.}
+ * {@link http://websharks-inc.com/ WebSharks, Inc.}
  * (coded in the USA)
  *
  * Released under the terms of the GNU General Public License.
@@ -158,6 +158,11 @@ if(!class_exists('c_ws_plugin__s2member_paypal_notify_in'))
 				}
 				else // Extensive log reporting here. This is an area where many site owners find trouble. Depending on server configuration; remote HTTPS connections may fail.
 				{
+					if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET' && !empty($_SERVER['HTTP_USER_AGENT'])) {
+						if (preg_match('/(msie|trident|gecko|webkit|presto|konqueror|playstation)[\/ ]([0-9\.]+)/i', $_SERVER['HTTP_USER_AGENT'])) {
+							$paypal['s2member_indicator'] = 'This PayPal IPN Handler by s2Member® is active & listening.';
+						}
+					}
 					$paypal['s2member_log'][] = 'Unable to verify $_POST vars. This is most likely related to an invalid configuration of s2Member, or a problem with server compatibility.';
 					$paypal['s2member_log'][] = 'Please see this KB article: `http://www.s2member.com/kb/server-scanner/`. We suggest that you run the s2Member Server Scanner.';
 					$paypal['s2member_log'][] = var_export($_REQUEST, TRUE); // Recording _POST + _GET vars for analysis and debugging.
@@ -185,33 +190,30 @@ if(!class_exists('c_ws_plugin__s2member_paypal_notify_in'))
 				if(!empty($_REQUEST['s2member_paypal_proxy_verification']))
 					$paypal['s2member_paypal_proxy_verification'] = esc_html(trim(stripslashes((string)$_REQUEST['s2member_paypal_proxy_verification'])));
 				/*
-				If debugging/logging is enabled; we need to append ``$paypal`` to the log file.
-					Logging now supports Multisite Networking as well.
+				Log this IPN post-processing event now.
 				*/
-				$logt = c_ws_plugin__s2member_utilities::time_details();
-				$logv = c_ws_plugin__s2member_utilities::ver_details();
-				$logm = c_ws_plugin__s2member_utilities::mem_details();
-				$log4 = $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."\n".'User-Agent: '.@$_SERVER['HTTP_USER_AGENT'];
-				$log4 = (is_multisite() && !is_main_site()) ? ($_log4 = $current_blog->domain.$current_blog->path)."\n".$log4 : $log4;
-				$log2 = (is_multisite() && !is_main_site()) ? 'gateway-core-ipn-4-'.trim(preg_replace('/[^a-z0-9]/i', '-', (!empty($_log4) ? $_log4 : '')), '-').'.log' : 'gateway-core-ipn.log';
-
-				if($GLOBALS['WS_PLUGIN__']['s2member']['o']['gateway_debug_logs'])
-					if(is_dir($logs_dir = $GLOBALS['WS_PLUGIN__']['s2member']['c']['logs_dir']))
-						if(is_writable($logs_dir) && c_ws_plugin__s2member_utils_logs::archive_oversize_log_files())
-							file_put_contents($logs_dir.'/'.$log2,
-							                  'LOG ENTRY: '.$logt."\n".$logv."\n".$logm."\n".$log4."\n".
-							                  c_ws_plugin__s2member_utils_logs::conceal_private_info(var_export($paypal, TRUE))."\n\n",
-							                  FILE_APPEND);
-
+				c_ws_plugin__s2member_utils_logs::log_entry('gateway-core-ipn', $paypal);
+				/*
+				Hook during core IPN post-processing might be useful for developers.
+				*/
 				foreach(array_keys(get_defined_vars()) as $__v) $__refs[$__v] =& $$__v;
 				do_action('ws_plugin__s2member_during_paypal_notify', get_defined_vars());
 				unset($__refs, $__v);
+				/*
+				Output response headers & content body.
+				*/
+				status_header(200); // OK status code.
+				header('Content-Type: text/plain; charset=UTF-8');
 
-				status_header(200); // Send a 200 OK status header.
-				header('Content-Type: text/plain; charset=UTF-8'); // Content-Type text/plain with UTF-8.
-				while(@ob_end_clean()) ; // Clean any existing output buffers.
+				while(@ob_end_clean()); // Clean output buffers.
 
-				exit (((!empty($paypal['s2member_paypal_proxy_return_url'])) ? $paypal['s2member_paypal_proxy_return_url'] : ''));
+				if (!empty($paypal['s2member_paypal_proxy_return_url'])) {
+					exit($paypal['s2member_paypal_proxy_return_url']);
+				} elseif (!empty($paypal['s2member_indicator'])) {
+					exit($paypal['s2member_indicator']);
+				} else {
+					exit(); // Default behavior.
+				}
 			}
 			foreach(array_keys(get_defined_vars()) as $__v) $__refs[$__v] =& $$__v;
 			do_action('ws_plugin__s2member_after_paypal_notify', get_defined_vars());
