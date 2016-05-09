@@ -92,9 +92,9 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 				
 				$data .= "[\"";
 				$data.=get_the_title($post_object->ID);
-				$data.="\",\"".the_field('numerolicence', $post_object->ID);
-				$data.="\",\"".the_field("taille", $post_object->ID);
-				$data.="\",\"".the_field('anniversaire', $post_object->ID);
+				$data.="\",\"".get_field('numerolicence', $post_object->ID);
+				$data.="\",\"".get_field("taille", $post_object->ID);
+				$data.="\",\"".get_field('anniversaire', $post_object->ID);
 				$data .= "\"]";      
     			}
 		}
