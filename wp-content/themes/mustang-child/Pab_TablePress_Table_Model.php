@@ -52,7 +52,8 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 			return $table;
 		}
 
-		$table['data'] = json_decode( "[[\"paf\",\"paf\",\"paf\",\"paf\",\"paf\"],[\"qdf\",\"qsdf\",\"qsdf\",\"qsdf\",\"qsdf\"],[\"dqsdf\",\"qs\",\"qsdf\",\"qsdf\",\"qsdf\"],[\"qsd\",\"fqs\",\"dfqs\",\"df\",\"qsdf\"],[\"qsdf\",\"qsdf\",\"qsdf\",\"qsdf\",\"qsdf\"],[\"\",\"\",\"\",\"\",\"\"]]", true );
+		$data = $this->_getDatas();
+		$table['data'] = json_decode($data , true );
 
 		// Check if JSON could be decoded.
 		if ( is_null( $table['data'] ) ) {
@@ -80,4 +81,24 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 		return $table;
 	}
 
+	
+	protected function _getDatas(){
+		$post_objects = get_field('joueurs');
+		$data .= "[";
+		$data .= "[\"Nom Prenom\", \"Numero de licence\", \"Taille\", \"Anniversaire\"]";
+
+		if( $post_objects ){
+   			foreach( $post_objects as $post_object){
+				
+				$data .= "[\"";
+				$data.=get_the_title($post_object->ID);
+				$data.="\",\"".the_field('numerolicence', $post_object->ID);
+				$data.="\",\"".the_field("taille", $post_object->ID);
+				$data.="\",\"".the_field('anniversaire', $post_object->ID);
+				$data .= "\"]";      
+    			}
+		}
+		$data = str_replace("][","],[",$data)."]";
+		return $data;
+	}
 }
