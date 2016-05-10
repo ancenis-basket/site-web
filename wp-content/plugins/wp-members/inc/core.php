@@ -7,12 +7,12 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2015  Chad Butler
+ * Copyright (c) 2006-2016  Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
  * @package   WP-Members
  * @author    Chad Butler 
- * @copyright 2006-2015
+ * @copyright 2006-2016
  */
 
 
@@ -499,7 +499,7 @@ function wpmem_wp_reg_validate( $errors, $sanitized_user_login, $user_email ) {
 			if ( ( $field[3] != 'checkbox' ) && ( ! $_POST[ $field[2] ] ) ) {
 				$is_error = true;
 			}
-			if ( $is_error ) { $errors->add( 'wpmem_error', sprintf( __('Sorry, %s is a required field.', 'wp-members'), $field[1] ) ); }
+			if ( $is_error ) { $errors->add( 'wpmem_error', sprintf( $wpmem->get_text( 'reg_empty_field' ), __( $field[1], 'wp-members' ) ) ); }
 		}
 	}
 
@@ -614,7 +614,7 @@ function wpmem_redirect_to_login() {
 		$current_page = home_url( add_query_arg( array(), $wp->request ) );
 		$redirect_to  = urlencode( $current_page );
 		
-		$url = wpmem_chk_qstr( $wpmem->user_pages['login'] ) . 'redirect_to=' . $redirect_to;
+		$url = add_query_arg( 'redirect_to', $redirect_to, $wpmem->user_pages['login'] );
 		
 		wp_redirect( $url );
 		exit();
@@ -622,5 +622,46 @@ function wpmem_redirect_to_login() {
 	return;
 }
 
+
+/**
+ * Handles retrieving a forgotten username.
+ *
+ * @since 3.0.8
+ *
+ * @return string $regchk The regchk value.
+ */
+function wpmem_retrieve_username() {
+	
+	if ( isset( $_POST['formsubmit'] ) ) {
+	
+		$user = ( isset( $_POST['user_email'] ) ) ? get_user_by( 'email', $_POST['user_email'] ) : false;
+	
+		if ( $user ) {
+
+			/**
+			 * Load the email functions.
+			 */
+			require_once( WPMEM_PATH . 'inc/email.php' );
+			
+			// Send it in an email.
+			wpmem_inc_regemail( $user->ID, '', 4 );
+	
+			/**
+			 * Fires after retrieving username.
+			 *
+			 * @since 3.0.8
+			 *
+			 * @param int $user_ID The user's numeric ID.
+			 */
+			do_action( 'wpmem_get_username', $user->ID );
+
+			return 'usernamesuccess';
+			
+		} else {
+			return 'usernamefailed';
+		}
+	}
+	return;
+}
 
 // End of file.

@@ -10,10 +10,6 @@
 
 // Prohibit direct script loading.
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
-// Define certain plugin variables as constants.
-//define( 'TABLEPRESS_ABSPATH', plugin_dir_path( __FILE__ ) );
-//define( 'TABLEPRESS__FILE__', __FILE__ );
-//define( 'TABLEPRESS_BASENAME', plugin_basename( TABLEPRESS__FILE__ ) );
 
 /**
  * Load TablePress class, which holds common functions and variables.
@@ -96,7 +92,7 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 				$data.="\",\"".get_field("taille", $post_object->ID);
 				$data.="\",\"".get_field('anniversaire', $post_object->ID);
 				$data .= "\"]";      
-    			}
+    		}
 		}
 		$data = str_replace("][","],[",$data)."]";
 		return $data;

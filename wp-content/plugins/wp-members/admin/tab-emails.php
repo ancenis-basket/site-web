@@ -6,13 +6,12 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2015  Chad Butler
+ * Copyright (c) 2006-2016  Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
- * @package WordPress
- * @subpackage WP-Members
+ * @package WP-Members
  * @author Chad Butler
- * @copyright 2006-2015
+ * @copyright 2006-2016
  *
  * Functions included:
  * - wpmem_a_build_emails
@@ -24,35 +23,12 @@
  * Builds the emails panel.
  *
  * @since 2.7
+ *
+ * @global object $wpmem
  */
 function wpmem_a_build_emails() {
 
-	global $wpmem;
-
-	if ( $wpmem->mod_reg == 0 ) {
-		$wpmem_email_title_arr = array(
-			array( __( "New Registration", 'wp-members' ), 'wpmembers_email_newreg' ),
-		);
-	} else {
-		$wpmem_email_title_arr = array(
-			array( __( "Registration is Moderated", 'wp-members' ), 'wpmembers_email_newmod' ),
-			array( __( "Registration is Moderated, User is Approved", 'wp-members' ), 'wpmembers_email_appmod' ),
-		);
-	}
-	array_push( 
-		$wpmem_email_title_arr,
-		array( __( "Password Reset", 'wp-members' ), 'wpmembers_email_repass' )
-	);
-	if ( $wpmem->notify == 1 ) {
-		array_push(
-			$wpmem_email_title_arr,
-			array( __( "Admin Notification", 'wp-members' ), 'wpmembers_email_notify' )
-		);
-	}
-	array_push(
-		$wpmem_email_title_arr,
-		array( __( "Email Signature", 'wp-members' ), 'wpmembers_email_footer' )
-	); ?>
+	global $wpmem; ?>
 	<div class="metabox-holder">
 
 		<div id="post-body">
@@ -71,35 +47,22 @@ function wpmem_a_build_emails() {
 							<table class="form-table"> 
 								<tr valign="top"> 
 									<th scope="row"><?php _e( 'Set a custom email address', 'wp-members' ); ?></th> 
-									<td><input type="text" name="wp_mail_from" size="40" value="<?php echo get_option( 'wpmembers_email_wpfrom' ); ?>" />&nbsp;<span class="description"><?php _e( '(optional)', 'wp-members' ); ?> email@yourdomain.com</span></td> 
+									<td><input type="text" name="wp_mail_from" size="40" value="<?php echo $wpmem->email['from']; ?>" />&nbsp;<span class="description"><?php _e( '(optional)', 'wp-members' ); ?> email@yourdomain.com</span></td> 
 								</tr>
 								<tr valign="top"> 
 									<th scope="row"><?php _e( 'Set a custom email name', 'wp-members' ); ?></th> 
-									<td><input type="text" name="wp_mail_from_name" size="40" value="<?php echo stripslashes( get_option( 'wpmembers_email_wpname' ) ); ?>" />&nbsp;<span class="description"><?php _e( '(optional)', 'wp-members' ); ?> John Smith</span></td>
+									<td><input type="text" name="wp_mail_from_name" size="40" value="<?php echo stripslashes( $wpmem->email['from_name'] ); ?>" />&nbsp;<span class="description"><?php _e( '(optional)', 'wp-members' ); ?> John Smith</span></td>
 								</tr>
 								<tr><td colspan="2"><hr /></td></tr>
-
-							<?php for ( $row = 0; $row < ( count( $wpmem_email_title_arr ) - 1 ); $row++ ) {
-
-								$arr = get_option( $wpmem_email_title_arr[$row][1] );
-							?>
-								<tr valign="top"><td colspan="2"><strong><?php echo $wpmem_email_title_arr[$row][0]; ?></strong></td></tr>
+							<?php if ( ! empty ( $wpmem->admin->emails ) ) {	
+									foreach( $wpmem->admin->emails as $email ) {
+										$wpmem->admin->do_email_input( $email );
+									}
+								}
+								$arr = get_option( 'wpmembers_email_footer' ); ?>
 								<tr valign="top">
-									<th scope="row"><?php _e( 'Subject', 'wp-members' ); ?></th>
-									<td><input type="text" name="<?php echo $wpmem_email_title_arr[$row][1] . '_subj'; ?>" size="80" value="<?php echo stripslashes( $arr['subj'] ); ?>"></td> 
-								</tr>
-								<tr valign="top">
-									<th scope="row"><?php _e( 'Body', 'wp-members' ); ?></th>
-									<td><textarea name="<?php echo $wpmem_email_title_arr[$row][1] . '_body'; ?>" rows="12" cols="50" id="" class="large-text code"><?php echo stripslashes( $arr['body'] ); ?></textarea></td>
-								</tr>
-								<tr><td colspan="2"><hr /></td></tr>
-							<?php }
-
-								$arr = get_option( $wpmem_email_title_arr[$row][1] ); ?>
-
-								<tr valign="top">
-									<th scope="row"><strong><?php echo $wpmem_email_title_arr[$row][0]; ?></strong> <span class="description"><?php _e( '(optional)', 'wp-members' ); ?></span></th>
-									<td><textarea name="<?php echo $wpmem_email_title_arr[$row][1] . '_body'; ?>" rows="10" cols="50" id="" class="large-text code"><?php echo stripslashes( $arr ); ?></textarea></td>
+									<th scope="row"><strong><?php echo __( "Email Signature", 'wp-members' ); ?></strong> <span class="description"><?php _e( '(optional)', 'wp-members' ); ?></span></th>
+									<td><textarea name="<?php echo 'wpmembers_email_footer_body'; ?>" rows="10" cols="50" id="" class="large-text code"><?php echo stripslashes( $arr ); ?></textarea></td>
 								</tr>
 								<tr><td colspan="2"><hr /></td></tr>
 								<tr valign="top">
@@ -131,7 +94,8 @@ function wpmem_a_build_emails() {
  *
  * @since 2.8
  *
- * @return string The emails updated message.
+ * @global object $wpmem The WP_Members object class.
+ * @return string        The emails updated message.
  */
 function wpmem_update_emails() {
 
@@ -141,12 +105,17 @@ function wpmem_update_emails() {
 	check_admin_referer( 'wpmem-update-emails' );
 
 	// Update the email address (if applicable).
-	( $_POST['wp_mail_from'] ) ? update_option( 'wpmembers_email_wpfrom', $_POST['wp_mail_from'] ) : delete_option( 'wpmembers_email_wpfrom' );
-	( $_POST['wp_mail_from_name'] ) ? update_option( 'wpmembers_email_wpname', $_POST['wp_mail_from_name'] ) : delete_option( 'wpmembers_email_wpname' );
-
+	$wpmem->email['from']      = $_POST['wp_mail_from'];
+	$wpmem->email['from_name'] = $_POST['wp_mail_from_name'];
+	$wpmem_newsettings = get_option( 'wpmembers_settings' );
+	$wpmem_newsettings['email']['from']      = $_POST['wp_mail_from'];
+	$wpmem_newsettings['email']['from_name'] = $_POST['wp_mail_from_name'];
+	update_option( 'wpmembers_settings', $wpmem_newsettings );
+	
 	// Update the various emails being used.
 	( $wpmem->mod_reg == 0 ) ? $arr = array( 'wpmembers_email_newreg' ) : $arr = array( 'wpmembers_email_newmod', 'wpmembers_email_appmod' );
 	array_push( $arr, 'wpmembers_email_repass' );
+	array_push( $arr, 'wpmembers_email_getuser' );
 	( $wpmem->notify == 1 ) ? array_push( $arr, 'wpmembers_email_notify' ) : false;
 	array_push(	$arr, 'wpmembers_email_footer' );
 
@@ -161,9 +130,15 @@ function wpmem_update_emails() {
 
 	// Updated the email footer.
 	update_option( $arr[$row], $_POST[$arr[$row] . '_body'], false );
+	
+	if ( ! empty ( $wpmem->admin->emails ) ) {
+		foreach( $wpmem->admin->emails as $email ) {
+			$wpmem->admin->email_update( $email );
+		}
+	}
 
 	return __( 'WP-Members emails were updated', 'wp-members' );
 
 }
 
-/** End of File **/
+// End of file.

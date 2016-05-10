@@ -6,13 +6,13 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2015 Chad Butler
+ * Copyright (c) 2006-2016 Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
- * @package WordPress
- * @subpackage WP-Members
+ * @package WP-Members
+ * @subpackage WP-Members Email Functions
  * @author Chad Butler
- * @copyright 2006-2015
+ * @copyright 2006-2016
  *
  * Functions Included:
  * - wpmem_inc_regemail
@@ -28,19 +28,21 @@ if ( ! function_exists( 'wpmem_inc_regemail' ) ):
  *
  * @since 1.8
  *
- * @uses wp_mail
- *
- * @param int    $user_ID      The User's ID.
- * @param string $password     Password from the registration process.
- * @param string $toggle       Toggle indicating the email being sent (newreg|newmod|appmod|repass).
- * @param array  $wpmem_fields Array of the WP-Members fields (defaults to null).
- * @param array  $fields       Array of the registration data (defaults to null).
+ * @global object $wpmem                The WP_Members object.
+ * @global string $wpmem_mail_from      The email from address.
+ * @global string $wpmem_mail_from_name The email from name.
+ * @param  int    $user_ID              The User's ID.
+ * @param  string $password             Password from the registration process.
+ * @param  string $toggle               Toggle indicating the email being sent (newreg|newmod|appmod|repass).
+ * @param  array  $wpmem_fields         Array of the WP-Members fields (defaults to null).
+ * @param  array  $fields               Array of the registration data (defaults to null).
+ * @param  array  $custom               Array of custom email information (defaults to null).
  */
-function wpmem_inc_regemail( $user_id, $password, $toggle, $wpmem_fields = null, $field_data = null ) {
+function wpmem_inc_regemail( $user_id, $password, $toggle, $wpmem_fields = null, $field_data = null, $custom = null ) {
 
 	global $wpmem;
 
-	/**
+	/*
 	 * Determine which email is being sent.
 	 *
 	 * Stored option is an array with keys 'body' and 'subj'.
@@ -70,6 +72,18 @@ function wpmem_inc_regemail( $user_id, $password, $toggle, $wpmem_fields = null,
 		$arr = get_option( 'wpmembers_email_repass' );
 		$arr['toggle'] = 'repass';
 		break;
+		
+	case 4:
+		// This is a password reset.
+		$arr = get_option( 'wpmembers_email_getuser' );
+		$arr['toggle'] = 'getuser';
+		break;
+	
+	case 5:
+		// This is a custom email.
+		$arr['subj']   = $custom['subj'];
+		$arr['body']   = $custom['body'];
+		$arr['toggle'] = $custom['toggle'];
 
 	}
 
@@ -83,17 +97,17 @@ function wpmem_inc_regemail( $user_id, $password, $toggle, $wpmem_fields = null,
 	$arr['blogname']      = wp_specialchars_decode( get_option ( 'blogname' ), ENT_QUOTES );
 	$arr['exp_type']      = ( defined( 'WPMEM_EXP_MODULE' ) && $wpmem->use_exp == 1 ) ? get_user_meta( $user_id, 'exp_type', true ) : '';
 	$arr['exp_date']      = ( defined( 'WPMEM_EXP_MODULE' ) && $wpmem->use_exp == 1 ) ? get_user_meta( $user_id, 'expires',  true ) : '';
-	$arr['wpmem_msurl']   = $wpmem->user_pages['profile'];
+	$arr['wpmem_msurl']   = esc_url( $wpmem->user_pages['profile'] );
+	$arr['wpmem_reg']     = esc_url( $wpmem->user_pages['register'] );
+	$arr['wpmem_login']   = esc_url( $wpmem->user_pages['login'] );
 	$arr['reg_link']      = esc_url( get_user_meta( $user_id, 'wpmem_reg_url', true ) );
 	$arr['do_shortcodes'] = true;
 	$arr['add_footer']    = true;
+	$arr['footer']        = get_option( 'wpmembers_email_footer' );
 	$arr['disable']       = false;
 
 	// Apply filters (if set) for the sending email address.
-	global $wpmem_mail_from, $wpmem_mail_from_name;
-	add_filter( 'wp_mail_from',      'wpmem_mail_from'      );
-	add_filter( 'wp_mail_from_name', 'wpmem_mail_from_name' );
-	$default_header = ( $wpmem_mail_from && $wpmem_mail_from_name ) ? 'From: ' . $wpmem_mail_from_name . ' <' . $wpmem_mail_from . '>' : '';
+	$default_header = ( $wpmem->email['from'] && $wpmem->email['from_name'] ) ? 'From: "' . $wpmem->email['from_name'] . '" <' . $wpmem->email['from'] . '>' : '';
 
 	/**
 	 * Filters the email headers.
@@ -107,27 +121,46 @@ function wpmem_inc_regemail( $user_id, $password, $toggle, $wpmem_fields = null,
 
 	// Handle backward compatibility for customizations that may call the email function directly.
 	if ( ! $wpmem_fields ) {
-		$wpmem_fields = $wpmem->fields; //get_option( 'wpmembers_fields' );
+		$wpmem_fields = $wpmem->fields;
 	}
 
 	/**
 	 * Filter the email.
 	 *
-	 * This is a new and more powerful filter than was previously available for
-	 * emails. This new filter passes the email subject, body, user ID, and several
-	 * other settings and parameters for use in the filter function. It also passes
-	 * an array of the WP-Members fields, and an array of the posted registration
+	 * This filter passes the email subject, body, user ID, and several other
+	 * settings and parameters for use in the filter function. It also passes an
+	 * array of the WP-Members fields, and an array of the posted registration
 	 * data from the register function.
 	 *
 	 * @since 2.9.7
+	 * @since 3.1.0 Added footer content to the array.
 	 *
-	 * @param array $arr          An array containing email body, subject, user id, and additional settings.
+	 * @param array $arr {
+	 *     An array containing email body, subject, user id, and additional settings.
+	 *
+	 *     @type string subj
+	 *     @type string body
+	 *     @type string toggle
+	 *     @type int    user_id
+	 *     @type string user_login
+	 *     @type string user_email
+	 *     @type string blogname
+	 *     @type string exp_type
+	 *     @type string exp_date
+	 *     @type string wpmem_msurl
+	 *     @type string reg_link
+	 *     @type string do_shortcodes
+	 *     @type bool   add_footer
+	 *     @type string footer
+	 *     @type bool   disable
+	 *     @type mixed  headers
+	 * }
 	 * @param array $wpmem_fields An array of the WP-Members fields.
 	 * @param array $field_data   An array of the posted registration data.
 	 */
 	$arr = apply_filters( 'wpmem_email_filter', $arr, $wpmem_fields, $field_data );
 
-	//If emails are not disabled, continue the email process.
+	// If emails are not disabled, continue the email process.
 	if ( ! $arr['disable'] ) {
 
 		// Legacy email filters applied.
@@ -184,37 +217,50 @@ function wpmem_inc_regemail( $user_id, $password, $toggle, $wpmem_fields = null,
 		}
 
 		// Get the email footer if needed.
-		$foot = ( $arr['add_footer'] ) ? get_option ( 'wpmembers_email_footer' ) : '';
+		$foot = ( $arr['add_footer'] ) ? $arr['footer'] : '';
 
 		// If doing shortcode replacements.
 		if ( $arr['do_shortcodes'] ) {
-
-			// Setup default shortcodes.
-			$shortcd = array(
-				'[blogname]',
-				'[username]',
-				'[password]',
-				'[reglink]',
-				'[members-area]',
-				'[exp-type]',
-				'[exp-data]',
+			
+			$shortcodes = array(
+				'blogname'     => $arr['blogname'],
+				'username'     => $arr['user_login'],
+				'password'     => $password,
+				'email'        => $arr['user_email'],
+				'reglink'      => $arr['reg_link'],
+				'members-area' => $arr['wpmem_msurl'],
+				'user-profile' => $arr['wpmem_msurl'],
+				'exp-type'     => $arr['exp_type'],
+				'exp-data'     => $arr['exp_date'],
+				'exp-date'     => $arr['exp_date'],
+				'login'        => $arr['wpmem_login'],
+				'register'     => $arr['wpmem_reg'],
 			);
 
-			// Replacement values for default shortcodes.
-			$replace = array(
-				$arr['blogname'],
-				$arr['user_login'],
-				$password,
-				$arr['reg_link'],
-				$arr['wpmem_msurl'],
-				$arr['exp_type'],
-				$arr['exp_date'],
-			);
-
-			// Setup custom field shortcodes.
+			// Add custom field shortcodes.
 			foreach ( $wpmem_fields as $field ) {
-				$shortcd[] = '[' . $field[2] . ']'; 
-				$replace[] = get_user_meta( $user_id, $field[2], true );
+				$key = '[' . $field[2] . ']'; 
+				$val = ( is_array( $field_data ) && 'y' == $field[4] ) ? $field_data[ $field[2] ] : get_user_meta( $user_id, $field[2], true );
+				$shortcodes[ $key ] = $val;
+			}
+			
+			/**
+			 * Filter available email shortcodes.
+			 *
+			 * @since 3.1.0
+			 *
+			 * @param array  $shortcodes
+			 * @param string $toggle 
+			 */
+			$shortcodes = apply_filters( 'wpmem_email_shortcodes', $shortcodes, $arr['toggle'] );
+			
+			$shortcd = array();
+			$replace = array();
+			foreach ( $shortcodes as $key => $val ) {
+				// Shortcodes.
+				$shortcd[] = '[' . $key . ']';
+				// Replacement values.
+				$replace[] = $val;
 			}
 
 			// Do replacements for subject, body, and footer shortcodes.
@@ -225,6 +271,10 @@ function wpmem_inc_regemail( $user_id, $password, $toggle, $wpmem_fields = null,
 
 		// Append footer if needed.
 		$arr['body'] = ( $arr['add_footer'] ) ? $arr['body'] . "\r\n" . $foot : $arr['body'];
+		
+		// Apply from and from name email filters.
+		add_filter( 'wp_mail_from',      'wpmem_mail_from' );
+		add_filter( 'wp_mail_from_name', 'wpmem_mail_from_name' );
 
 		// Send the message.
 		wp_mail( $arr['user_email'], stripslashes( $arr['subj'] ), stripslashes( $arr['body'] ), $arr['headers'] );
@@ -243,11 +293,12 @@ if ( ! function_exists( 'wpmem_notify_admin' ) ):
  *
  * @since 2.3
  *
- * @uses wp_mail
- *
- * @param int   $user_id
- * @param array $wpmem_fields
- * @param array $field_data
+ * @global object $wpmem                The WP_Members object.
+ * @global string $wpmem_mail_from      The email from address.
+ * @global string $wpmem_mail_from_name The email from name.
+ * @param  int    $user_ID              The User's ID.
+ * @param  array  $wpmem_fields         Array of the WP-Members fields (defaults to null).
+ * @param  array  $fields               Array of the registration data (defaults to null).
  */
 function wpmem_notify_admin( $user_id, $wpmem_fields, $field_data = null ) {
 
@@ -277,30 +328,32 @@ function wpmem_notify_admin( $user_id, $wpmem_fields, $field_data = null ) {
 	$arr['user_login']    = stripslashes( $user->user_login );
 	$arr['user_email']    = stripslashes( $user->user_email );
 	$arr['blogname']      = wp_specialchars_decode( get_option ( 'blogname' ), ENT_QUOTES );
-	$arr['user_ip']       = get_user_meta( $user_id, 'wpmem_reg_ip', true );
+	$arr['user_ip']       = ( is_array( $field_data ) ) ? $field_data['wpmem_reg_ip'] : get_user_meta( $user_id, 'wpmem_reg_ip', true );
 	$arr['reg_link']      = esc_url( get_user_meta( $user_id, 'wpmem_reg_url', true ) );
-	$arr['act_link']      = get_bloginfo ( 'wpurl' ) . "/wp-admin/user-edit.php?user_id=".$user_id;
+	$arr['act_link']      = esc_url( add_query_arg( 'user_id', $user_id, get_admin_url( '', 'user-edit.php' ) ) );
 	$arr['exp_type']      = ( defined( 'WPMEM_EXP_MODULE' ) && $wpmem->use_exp == 1 ) ? get_user_meta( $user_id, 'exp_type', true ) : '';
 	$arr['exp_date']      = ( defined( 'WPMEM_EXP_MODULE' ) && $wpmem->use_exp == 1 ) ? get_user_meta( $user_id, 'expires',  true ) : '';
 	$arr['do_shortcodes'] = true;
 	$arr['add_footer']    = true;
+	$arr['footer']        = get_option( 'wpmembers_email_footer' );
 	$arr['disable']       = false;
 
 	// Builds an array of the user data fields.
 	$field_arr = array();
 	foreach ( $wpmem_fields as $meta ) {
 		if ( $meta[4] == 'y' ) {
-			$name = $meta[1];
 			if ( ! in_array( $meta[2], wpmem_get_excluded_meta( 'email' ) ) ) {
 				if ( ( $meta[2] != 'user_email' ) && ( $meta[2] != 'password' ) ) {
 					if ( $meta[2] == 'user_url' ) {
 						$val = esc_url( $user->user_url );
 					} elseif ( in_array( $meta[2], $wp_user_fields ) ) {
 						$val = esc_html( $user->$meta[2] );
+					} elseif ( 'file' == $meta[3] || 'image' == $meta[3] ) {
+						$val = wp_get_attachment_url( get_user_meta( $user_id, $meta[2], true ) );
 					} else {
-						$val = esc_html( get_user_meta( $user_id, $meta[2], true ) );
+						$val = ( is_array( $field_data ) ) ? esc_html( $field_data[ $meta[2] ] ) : esc_html( get_user_meta( $user_id, $meta[2], true ) );
 					}
-					$field_arr[ $name ] = $val;
+					$field_arr[ $meta[1] ] = $val;
 				}
 			}
 		}
@@ -308,24 +361,14 @@ function wpmem_notify_admin( $user_id, $wpmem_fields, $field_data = null ) {
 	$arr['field_arr'] = $field_arr;
 
 	// Apply filters (if set) for the sending email address.
-	global $wpmem_mail_from, $wpmem_mail_from_name;
-	add_filter( 'wp_mail_from',      'wpmem_mail_from'      );
-	add_filter( 'wp_mail_from_name', 'wpmem_mail_from_name' );
-	$default_header = ( $wpmem_mail_from && $wpmem_mail_from_name ) ? 'From: ' . $wpmem_mail_from_name . ' <' . $wpmem_mail_from . '>' : '';
+	$default_header = ( $wpmem->email['from'] && $wpmem->email['from_name'] ) ? 'From: "' . $wpmem->email['from_name'] . '" <' . $wpmem->email['from'] . '>' : '';
 
-	/**
-	 * Filters the email headers.
-	 *
-	 * @since 2.7.4
-	 *
-	 * @param mixed  $default_header The email headers (default = null).
-	 * @param string $toggle         Toggle to determine what email is being generated (newreg|newmod|appmod|repass|admin).
-	 */
+	/** This filter is documented in email.php */
 	$arr['headers'] = apply_filters( 'wpmem_email_headers', $default_header, 'admin' );
 
 	// Handle backward compatibility for customizations that may call the email function directly.
 	if ( ! $wpmem_fields ) {
-		$wpmem_fields = $wpmem->fields; //get_option( 'wpmembers_fields' );
+		$wpmem_fields = $wpmem->fields;
 	}
 
 	/**
@@ -364,41 +407,54 @@ function wpmem_notify_admin( $user_id, $wpmem_fields, $field_data = null ) {
 		}
 
 		// Get the email footer if needed.
-		$foot = ( $arr['add_footer'] ) ? get_option ( 'wpmembers_email_footer' ) : '';
+		$foot = ( $arr['add_footer'] ) ? $arr['footer'] : '';
 
 		// If doing shortcode replacements.
 		if ( $arr['do_shortcodes'] ) {
-
-			// Setup default shortcodes.
-			$shortcd = array(
-				'[blogname]',
-				'[username]',
-				'[email]',
-				'[reglink]',
-				'[exp-type]',
-				'[exp-data]',
-				'[user-ip]',
-				'[activate-user]',
-				'[fields]',
-			);
-
-			// Replacement values for default shortcodes.
-			$replace = array(
-				$arr['blogname'],
-				$arr['user_login'],
-				$arr['user_email'],
-				$arr['reg_link'],
-				$arr['exp_type'],
-				$arr['exp_date'],
-				$arr['user_ip'],
-				$arr['act_link'],
-				$field_str,
-			);
+			
+			$shortcodes = array(
+				'blogname'      => $arr['blogname'],
+				'username'      => $arr['user_login'],
+				'email'         => $arr['user_email'],
+				'reglink'       => $arr['reg_link'],
+				'exp-type'      => $arr['exp_type'],
+				'exp-data'      => $arr['exp_date'],
+				'exp-date'      => $arr['exp_date'],
+				'user-ip'       => $arr['user_ip'],
+				'activate-user' => $arr['act_link'],
+				'fields'        => $field_str,
+			);			
+			
+			// Add custom field shortcodes.
+			foreach ( $wpmem_fields as $field ) {
+				$key = '[' . $field[2] . ']'; 
+				$val = ( is_array( $field_data ) && 'y' == $field[4] ) ? $field_data[ $field[2] ] : get_user_meta( $user_id, $field[2], true );
+				$shortcodes[ $key ] = $val;
+			}
+			
+			/**
+			 * Filter available email shortcodes.
+			 *
+			 * @since 3.1.0
+			 *
+			 * @param array  $shortcodes
+			 * @param string $toggle
+			 */
+			$shortcodes = apply_filters( 'wpmem_email_shortcodes', $shortcodes, 'notify' );
+			
+			$shortcd = array();
+			$replace = array();
+			foreach ( $shortcodes as $key => $val ) {
+				// Shortcodes.
+				$shortcd[] = '[' . $key . ']';
+				// Replacement values.
+				$replace[] = $val;
+			}
 
 			// Create the custom field shortcodes.
 			foreach ( $wpmem_fields as $field ) {
 				$shortcd[] = '[' . $field[2] . ']';
-				$replace[] = get_user_meta( $user_id, $field[2], true );
+				$replace[] = ( is_array( $field_data ) && 'y' == $field[4] ) ? $field_data[ $field[2] ] : get_user_meta( $user_id, $field[2], true );
 			}
 
 			// Get the subject, body, and footer shortcodes.
@@ -418,6 +474,10 @@ function wpmem_notify_admin( $user_id, $wpmem_fields, $field_data = null ) {
 		 * @param string $arr['body'] The admin notification email body.
 		 */
 		$arr['body'] = apply_filters( 'wpmem_email_notify', $arr['body'] );
+		
+		// Apply from and from name email filters.
+		add_filter( 'wp_mail_from',      'wpmem_mail_from' );
+		add_filter( 'wp_mail_from_name', 'wpmem_mail_from_name' );
 
 		// Send the message.
 		wp_mail( $arr['admin_email'], stripslashes( $arr['subj'] ), stripslashes( $arr['body'] ), $arr['headers'] );
@@ -430,14 +490,15 @@ endif;
  * Filters the wp_mail from address (if set).
  *
  * @since 2.7
+ * @since 3.1 Converted to use email var in object.
  *
+ * @global object $wpmem
  * @param  string $email
- * @return string $email
+ * @return string $wpmem_mail_from|$email
  */
 function wpmem_mail_from( $email ) {
-	global $wpmem_mail_from;
-	$wpmem_mail_from = ( get_option( 'wpmembers_email_wpfrom' ) ) ? get_option( 'wpmembers_email_wpfrom' ) : $email;
-	return $wpmem_mail_from;
+	global $wpmem;
+	return ( $wpmem->email['from'] ) ? $wpmem->email['from'] : $email;
 }
 
 
@@ -445,14 +506,15 @@ function wpmem_mail_from( $email ) {
  * Filters the wp_mail from name (if set).
  *
  * @since 2.7
+ * @since 3.1 Converted to use email var in object.
  *
+ * @global object $wpmem
  * @param  string $name
- * @return string $name
+ * @return string $wpmem_mail_from_name|$name
  */
 function wpmem_mail_from_name( $name ) {
-	global $wpmem_mail_from_name;
-	$wpmem_mail_from_name = ( get_option( 'wpmembers_email_wpname' ) ) ? stripslashes( get_option( 'wpmembers_email_wpname' ) ) : $name;
-	return $wpmem_mail_from_name;
+	global $wpmem;
+	return ( $wpmem->email['from_name'] ) ? stripslashes( $wpmem->email['from_name'] ) : stripslashes( $name );
 }
 
-/** End of File **/
+// End of file.

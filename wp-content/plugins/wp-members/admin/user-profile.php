@@ -6,13 +6,12 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2015  Chad Butler
+ * Copyright (c) 2006-2016  Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
- * @package WordPress
- * @subpackage WP-Members
+ * @package WP-Members
  * @author Chad Butler
- * @copyright 2006-2015
+ * @copyright 2006-2016
  *
  * Functions included:
  * - wpmem_admin_fields
@@ -65,40 +64,96 @@ function wpmem_admin_fields() {
 		 */
 		do_action( 'wpmem_admin_before_profile', $user_id, $wpmem_fields );
 
+		$rows = array();
 		foreach ( $wpmem_fields as $meta ) {
 
-			$valtochk = '';
+			$valtochk = ''; $values = '';
 
 			// Determine which fields to show in the additional fields area.
 			$show = ( $meta[6] == 'n' && ! in_array( $meta[2], $exclude ) ) ? true : false;
 			$show = ( $meta[1] == 'TOS' && $meta[4] != 'y' ) ? null : $show;
 
 			if ( $show ) {
-				// Is the field required?
-				$req = ( $meta[5] == 'y' ) ? ' <span class="description">' . __( '(required)' ) . '</span>' : '';
 
-				$show_field = '
-					<tr>
-						<th><label>' . __( $meta[1], 'wp-members' ) . $req . '</label></th>
-						<td>';
-				$val = htmlspecialchars( get_user_meta( $user_id, $meta[2], true ) );
-				if ( $meta[3] == 'checkbox' || $meta[3] == 'select' ) {
+				$val = get_user_meta( $user_id, $meta[2], true );
+				$val = ( $meta[3] == 'multiselect' || $meta[3] == 'multicheckbox' ) ? $val : htmlspecialchars( $val );
+				if ( $meta[3] == 'checkbox' ) {
 					$valtochk = $val;
 					$val = $meta[7];
 				}
-				$show_field.=  wpmem_create_formfield( $meta[2], $meta[3], $val, $valtochk ) . '
-						</td>
-					</tr>';
-
-				/**
-				 * Filter the profile field.
-				 * 
-				 * @since 2.8.2
-				 *
-				 * @param string $show_field The HTML string for the additional profile field.
-				 */
-				echo apply_filters( 'wpmem_admin_profile_field', $show_field );
+				
+				if ( 'multicheckbox' == $meta[3] || 'select' == $meta[3] || 'multiselect' == $meta[3] || 'radio' == $meta[3] ) {
+					$values = $meta[7];
+					$valtochk = $val;
+				}
+				
+				// Is this an image or a file?
+				if ( 'file' == $meta[3] || 'image' == $meta[3] ) {
+					$attachment_url = wp_get_attachment_url( $val );
+					$empty_file = '<span class="description">' . __( 'None' ) . '</span>';
+					if ( 'file' == $meta[3] ) {
+						$input = ( $attachment_url ) ? '<a href="' . $attachment_url . '">' . $attachment_url . '</a>' : $empty_file;
+					} else {
+						$input = ( $attachment_url ) ? '<img src="' . $attachment_url . '">' : $empty_file;
+					}
+					// @todo - come up with a way to handle file updates - user profile form does not support multitype
+					//$show_field.= ' <span class="description">' . __( 'Update this file:' ) . '</span><br />';
+					//$show_field.= wpmem_create_formfield( $meta[2] . '_update_file', $meta[3], $val, $valtochk );
+				} else {
+					if ( 'multicheckbox' == $meta[3] || 'select' == $meta[3] || 'multiselect' == $meta[3] || 'radio' == $meta[3] ) {
+						$input =  wpmem_create_formfield( $meta[2], $meta[3], $values, $valtochk );
+					} else {
+						$input =  wpmem_create_formfield( $meta[2], $meta[3], $val, $valtochk );
+					}
+				}
+				
+				// Is the field required?
+				$req = ( $meta[5] == 'y' ) ? ' <span class="description">' . __( '(required)' ) . '</span>' : '';
+				$label = '<label>' . __( $meta[1], 'wp-members' ) . $req . '</label>';
+				
+				// Build the form rows for filtering.
+				$rows[ $meta[2] ] = array(
+					'order'        => $meta[0],
+					'meta'         => $meta[2],
+					'type'         => $meta[3],
+					'value'        => $val,
+					'values'       => $values,
+					'label_text'   => __( $meta[1], 'wp-members' ),
+					'row_before'   => '',
+					'label'        => $label,
+					'field_before' => '',
+					'field'        => $input,
+					'field_after'  => '',
+					'row_after'    => '',
+				);
 			}
+		}
+		
+		/**
+		 * Filter for rows
+		 *
+		 * @since 3.1.0
+		 *
+		 * @param array  $rows
+		 * @param string $toggle
+		 */
+		$rows = apply_filters( 'wpmem_register_form_rows_admin', $rows, 'adminprofile' );
+		
+		foreach ( $rows as $row ) {
+			$show_field = '
+				<tr>
+					<th>' . $row['label'] . '</th>
+					<td>' . $row['field'] . '</td>
+				</tr>';
+
+			/**
+			 * Filter the profile field.
+			 * 
+			 * @since 2.8.2
+			 *
+			 * @param string $show_field The HTML string for the additional profile field.
+			 */
+			echo apply_filters( 'wpmem_admin_profile_field', $show_field );
 		}
 
 		// See if reg is moderated, and if the user has been activated.
@@ -184,12 +239,20 @@ function wpmem_admin_update() {
 	$fields = array();
 	$chk_pass = false;
 	foreach ( $wpmem_fields as $meta ) {
-		if ( $meta[6] == "n" && $meta[3] != 'password' && $meta[3] != 'checkbox' ) {
+		if ( $meta[6] == "n" 
+		  && $meta[3] != 'password' 
+		  && $meta[3] != 'checkbox' 
+		  && $meta[3] != 'multiselect' 
+		  && $meta[3] != 'multicheckbox' 
+		  && $meta[3] != 'file' 
+		  && $meta[3] != 'image' ) {
 			( isset( $_POST[ $meta[2] ] ) ) ? $fields[ $meta[2] ] = $_POST[ $meta[2] ] : false;
 		} elseif ( $meta[2] == 'password' && $meta[4] == 'y' ) {
 			$chk_pass = true;
 		} elseif ( $meta[3] == 'checkbox' ) {
 			$fields[ $meta[2] ] = ( isset( $_POST[ $meta[2] ] ) ) ? $_POST[ $meta[2] ] : '';
+		} elseif ( $meta[3] == 'multiselect' || $meta[3] == 'multicheckbox' ) {
+			$fields[ $meta[2] ] = ( isset( $_POST[ $meta[2] ] ) ) ? implode( '|', $_POST[ $meta[2] ] ) : '';
 		}
 	}
 
@@ -236,4 +299,4 @@ function wpmem_admin_update() {
 	return;
 }
 
-/** End of File **/
+// End of file.

@@ -6,18 +6,18 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2015  Chad Butler
+ * Copyright (c) 2006-2016  Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
- * @package WordPress
- * @subpackage WP-Members
+ * @package WP-Members
  * @author Chad Butler
- * @copyright 2006-2015
+ * @copyright 2006-2016
  *
  * Functions included:
  * - wpmem_do_install
  * - wpmem_update_settings
  * - wpmem_append_email
+ * - wpmem_default_dialogs
  * - wpmem_update_captcha
  */
 
@@ -47,7 +47,7 @@ function wpmem_do_install() {
 		$wpmem_settings = array(
 			'version' => WPMEM_VERSION,
 			'block'   => array(
-				'post' => 1,
+				'post' => ( is_multisite() ) ? 0 : 1,
 				'page' => 0,
 			),
 			'show_excerpt' => array(
@@ -62,6 +62,10 @@ function wpmem_do_install() {
 				'post' => 1,
 				'page' => 1,
 			),
+			'autoex' => array(
+				'post' => array( 'enabled' => 0, 'length' => '' ),
+				'page' => array( 'enabled' => 0, 'length' => '' ),
+			),
 			'notify'    => 0,
 			'mod_reg'   => 0,
 			'captcha'   => 0,
@@ -75,11 +79,10 @@ function wpmem_do_install() {
 			),
 			'cssurl'    => '',
 			'style'     => plugin_dir_url ( __FILE__ ) . 'css/generic-no-float.css',
-			'autoex'    => array(
-				'auto_ex'     => '',
-				'auto_ex_len' => '',
-			),
 			'attrib'    => 0,
+			'post_types' => array(),
+			'form_tags'  => array( 'default' => 'Registration Default' ),
+			'email'      => array( 'from' => '', 'from_name' => '' ),
 		);
 
 		// Using update_option to allow for forced update.
@@ -110,9 +113,9 @@ function wpmem_do_install() {
 			array( 7,  'Zip',                'zip',              'text',     'y', 'y', 'n' ),
 			array( 8,  'Country',            'country',          'text',     'y', 'y', 'n' ),
 			array( 9,  'Day Phone',          'phone1',           'text',     'y', 'y', 'n' ),
-			array( 10, 'Email',              'user_email',       'text',     'y', 'y', 'y' ),
-			array( 11, 'Confirm Email',      'confirm_email',    'text',     'n', 'n', 'n' ),
-			array( 12, 'Website',            'user_url',         'text',     'n', 'n', 'y' ),
+			array( 10, 'Email',              'user_email',       'email',    'y', 'y', 'y' ),
+			array( 11, 'Confirm Email',      'confirm_email',    'email',    'n', 'n', 'n' ),
+			array( 12, 'Website',            'user_url',         'url',      'n', 'n', 'y' ),
 			array( 13, 'Biographical Info',  'description',      'textarea', 'n', 'n', 'y' ),
 			array( 14, 'Password',           'password',         'password', 'n', 'n', 'n' ),
 			array( 15, 'Confirm Password',   'confirm_password', 'password', 'n', 'n', 'n' ),
@@ -144,9 +147,9 @@ function wpmem_do_install() {
 
 	} else {
 		
-		wpmem_update_settings();
-		wpmem_update_captcha();
-		wpmem_update_dialogs();
+		wpmem_upgrade_settings();
+		wpmem_upgrade_captcha();
+		wpmem_upgrade_dialogs();
 		wpmem_append_email();
 		
 	}
@@ -156,23 +159,67 @@ function wpmem_do_install() {
 /**
  * Updates the existing settings if doing an update.
  *
- * @since 3.0
+ * @since 3.0.0
+ * @since 3.1.0 Changed from wpmem_update_settings() to wpmem_upgrade_settings().
  *
  * @return array $wpmem_newsettings
  */
-function wpmem_update_settings() {
+function wpmem_upgrade_settings() {
 
 	$wpmem_settings = get_option( 'wpmembers_settings' );
 
 	// Is this an update from pre-3.0 or 3.0+?
 	$is_three = ( array_key_exists( 'version', $wpmem_settings ) ) ? true : false;
 
+	// If install is 3.0 or higher.
 	if ( $is_three ) {
-		return;
+	
+		// If old auto excerpt settings exists, update it.
+		if ( isset( $wpmem_settings['autoex']['auto_ex'] ) ) {
+			// Update Autoex setting.
+			if ( $wpmem_settings['autoex']['auto_ex'] == 1 || $wpmem_settings['autoex']['auto_ex'] == "1" ) {
+				// If Autoex is set, move it to posts/pages.
+				$wpmem_settings['autoex']['post'] = array( 'enabled' => 1, 'length' => $wpmem_settings['autoex']['auto_ex_len'] );
+				$wpmem_settings['autoex']['page'] = array( 'enabled' => 1, 'length' => $wpmem_settings['autoex']['auto_ex_len'] );
+			} else {
+				// If it is not turned on (!=1), set it to off in new setting (-1).
+				$wpmem_settings['autoex']['post'] = array( 'enabled' => 0, 'length' => '' );
+				$wpmem_settings['autoex']['page'] = array( 'enabled' => 0, 'length' => '' );
+			}
+			unset( $wpmem_settings['autoex']['auto_ex'] );
+			unset( $wpmem_settings['autoex']['auto_ex_len'] );
+		}
+		
+		// If post types settings does not exist, set as empty array.
+		if ( ! isset( $wpmem_settings['post_types'] ) ) {
+			 $wpmem_settings['post_types'] = array();
+		}
+		
+		// If form tags is not set, add default.
+		if ( ! isset( $wpmem_settings['form_tags'] ) ) {
+			$wpmem_settings['form_tags'] = array( 'default' => 'Registration Default' );
+		}
+		
+		// If email is not set, add it with existing setting or default.
+		if ( ! isset( $wpmem_settings['email'] ) ) {
+			$from = get_option( 'wpmembers_email_wpfrom' );
+			$name = get_option( 'wpmembers_email_wpname' );
+			$wpmem_settings['email'] = array(
+				'from'      => ( $from ) ? $from : '',
+				'from_name' => ( $name ) ? $name : '',
+			);
+		}
+		
+		// Version number should be updated no matter what.
+		$wpmem_settings['version'] = WPMEM_VERSION;
+		
+		update_option( 'wpmembers_settings', $wpmem_settings );
+		return $wpmem_settings;
 	} else {
-
-		// Can only upgrade from 2.5.1 or higher.
+		// Update pre 3.0 installs (must be 2.5.1 or higher).
+		// Handle show registration setting change.
 		$show_reg = ( $wpmem_settings[7] == 0 ) ? 1 : 0;
+		// Create new settings array.
 		$wpmem_newsettings = array(
 			'version' => WPMEM_VERSION,
 			'block'   => array(
@@ -204,24 +251,34 @@ function wpmem_update_settings() {
 			),
 			'cssurl'     => get_option( 'wpmembers_cssurl' ),
 			'style'      => get_option( 'wpmembers_style'  ),
-			'autoex'     => get_option( 'wpmembers_autoex' ),
 			'attrib'     => get_option( 'wpmembers_attrib' ),
 		);
+		// Handle auto excerpt setting change and add to setting array.
+		$autoex = get_option( 'wpmembers_autoex' );
+		if ( $autoex['auto_ex'] == 1 || $autoex['auto_ex'] == "1" ) {
+			// If Autoex is set, move it to posts/pages.
+			$wpmem_newsettings['autoex']['post'] = array( 'enabled' => 1, 'length' => $autoex['auto_ex_len'] );
+			$wpmem_newsettings['autoex']['page'] = array( 'enabled' => 1, 'length' => $autoex['auto_ex_len'] );
+		} else {
+			// If it is not turned on, set it to off in new setting.		
+			$wpmem_newsettings['autoex']['post'] = array( 'enabled' => 0, 'length' => '' );
+			$wpmem_newsettings['autoex']['page'] = array( 'enabled' => 0, 'length' => '' );
+		}
 		
+		// Add new settings.
+		$wpmem_newsettings['post_types'] = array();
+		$wpmem_settings['form_tags'] = array( 'default' => 'Registration Default' );
+		$from = get_option( 'wpmembers_email_wpfrom' );
+		$name = get_option( 'wpmembers_email_wpname' );
+		$wpmem_settings['email'] = array(
+			'from'      => ( $from ) ? $from : '',
+			'from_name' => ( $name ) ? $name : '',
+		);
+		
+		// Merge settings.
 		$wpmem_newsettings = array_merge( $wpmem_settings, $wpmem_newsettings ); 
 		
 		update_option( 'wpmembers_settings', $wpmem_newsettings );
-
-		// Final 3.0 will remove the following settings when updating. 
-		/*
-		delete_option( 'wpmembers_msurl'  );
-		delete_option( 'wpmembers_regurl' );
-		delete_option( 'wpmembers_logurl' );
-		delete_option( 'wpmembers_cssurl' );
-		delete_option( 'wpmembers_style'  );
-		delete_option( 'wpmembers_autoex' );
-		delete_option( 'wpmembers_attrib' );
-		*/
 		
 		return $wpmem_newsettings;
 	}
@@ -366,6 +423,24 @@ Please do not reply to this address';
 	if ( ! get_option( 'wpmembers_email_footer' ) ) {
 		update_option( 'wpmembers_email_footer', $body, false );
 	}
+	
+	$arr = $subj = $body = '';
+	
+	// Email for retrieve username.
+	$subj = 'Username for [blogname]';
+	$body = 'Your username for [blogname] is below.
+
+username: [username]
+';
+
+		$arr = array(
+		"subj" => $subj,
+		"body" => $body,
+	);
+
+	if ( ! get_option( 'wpmembers_email_getuser' ) ) {
+		update_option( 'wpmembers_email_getuser', $arr, false );
+	}
 
 	return true;
 }
@@ -374,11 +449,11 @@ Please do not reply to this address';
 /**
  * Checks the dialogs array for string changes.
  *
- * Was update_dialogs() since 2.9.3, changed to wpmem_update_dialogs() in 3.0.
- *
  * @since 2.9.3
+ * @since 3.0.0 Changed from update_dialogs() to wpmem_update_dialogs().
+ * @since 3.1.0 Changed from wpmem_update_dialogs() to wpmem_upgrade_dialogs().
  */
-function wpmem_update_dialogs() {
+function wpmem_upgrade_dialogs() {
 
 	$wpmem_dialogs_arr = get_option( 'wpmembers_dialogs' );
 	$do_update = false;
@@ -407,8 +482,10 @@ function wpmem_update_dialogs() {
  * Was update_captcha() since 2.9.5, changed to wpmem_update_captcha() in 3.0.
  *
  * @since 2.9.5
+ * @since 3.0.0 Changed from update_captcha() to wpmem_update_captcha().
+ * @since 3.1.0 Changed from wpmem_update_captcha() to wpmem_upgrade_captcha().
  */
-function wpmem_update_captcha() {
+function wpmem_upgrade_captcha() {
 
 	$captcha_settings = get_option( 'wpmembers_captcha' );
 
@@ -433,4 +510,4 @@ function wpmem_update_captcha() {
 	return;
 }
 
-/** End of File **/
+// End of file.

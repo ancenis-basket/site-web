@@ -6,13 +6,13 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2015  Chad Butler
+ * Copyright (c) 2006-2016  Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
  * @package WP-Members
  * @subpackage WP-Members Shortcodes
  * @author Chad Butler 
- * @copyright 2006-2015
+ * @copyright 2006-2016
  *
  * Functions Included:
  * - wpmem_sc_forms
@@ -107,13 +107,17 @@ function wpmem_sc_forms( $atts, $content = null, $tag = 'wpmem_form' ) {
 					 */
 					$content = ( $content ) ? $content : wpmem_inc_memberlinks( 'register' );
 				} else {
+					if ( $wpmem->regchk == 'loginfailed' ) {
+						$content = wpmem_inc_loginfailed() . wpmem_inc_login( 'login', $redirect_to );
+						break;
+					}
 					// @todo Can this be moved into another function? Should $wpmem get an error message handler?
 					if ( $wpmem->regchk == 'captcha' ) {
 						global $wpmem_captcha_err;
 						$wpmem_themsg = __( 'There was an error with the CAPTCHA form.' ) . '<br /><br />' . $wpmem_captcha_err;
 					}
 					$content  = ( $wpmem_themsg || $wpmem->regchk == 'success' ) ? wpmem_inc_regmessage( $wpmem->regchk, $wpmem_themsg ) : '';
-					$content .= ( $wpmem->regchk == 'success' ) ? wpmem_inc_login() : wpmem_inc_registration( 'new', '', $redirect_to );
+					$content .= ( $wpmem->regchk == 'success' ) ? wpmem_inc_login( 'login', $redirect_to ) : wpmem_inc_registration( 'new', '', $redirect_to );
 				}
 				break;
 	
@@ -245,36 +249,6 @@ function wpmem_sc_logged_out( $atts, $content = null, $tag ) {
 }
 
 
-/**
- * Displays login form when called by shortcode.
- *
- * @since 3.0.0
- *
- * @global object $wpmem The WP_Members object.
- *
- * @param $atts
- * @param $content
- * @param $tag
- * @return $content
-
-function wpmem_sc_login_form( $atts, $content, $tag ) {
-	
-	// Dependencies.
-	global $wpmem;
-	include_once( WPMEM_PATH . 'inc/core.php' );
-	include_once( WPMEM_PATH . 'inc/dialogs.php' );
-	// Defaults.
-	$redirect_to = ( isset( $atts['redirect_to'] ) ) ? $atts['redirect_to'] : null;
-	$texturize   = ( isset( $atts['texturize']   ) ) ? $atts['texturize']   : false;
-	
-	if ( is_user_logged_in() ) {
-		return ( $content ) ? $content : wpmem_inc_memberlinks( 'login' );
-	} else {
-		return ( $wpmem->regchk == 'loginfailed' ) ? wpmem_inc_loginfailed() : wpmem_inc_login( 'login', $redirect_to, $texturize );
-	}
-} */
-
-
 if ( ! function_exists( 'wpmem_shortcode' ) ):
 /**
  * Executes various shortcodes.
@@ -339,14 +313,6 @@ function wpmem_shortcode( $attr, $content = null, $tag = 'wp-members' ) {
 		return do_shortcode( wpmem_sc_logged_in( $atts, $content, $tag ) );
 	}
 
-	// @deprecated 3.0.0
-	// Handles the wpmem_logged_out tag with no attributes & the user is not logged in.
-	/*
-	if ( $tag == 'wpmem_logged_out' && ( ! $attr ) && ! is_user_logged_in() ) {
-		return do_shortcode( $content );
-	}
-	*/
-
 	// Handles the 'field' attribute.
 	if ( $atts['field'] || $tag == 'wpmem_field' ) {
 		if ( $atts['id'] ) {
@@ -371,7 +337,7 @@ function wpmem_shortcode( $attr, $content = null, $tag = 'wp-members' ) {
 
 	// Logout link shortcode.
 	if ( is_user_logged_in() && $tag == 'wpmem_logout' ) {
-		$link = ( $atts['url'] ) ? wpmem_chk_qstr( $atts['url'] ) . 'a=logout' : wpmem_chk_qstr( get_permalink() ) . 'a=logout';
+		$link = ( $atts['url'] ) ? add_query_arg( 'a', 'logout', $atts['url'] ) : add_query_arg( 'a', 'logout' );
 		$text = ( $content ) ? $content : __( 'Click here to log out.', 'wp-members' );
 		return do_shortcode( "<a href=\"$link\">$text</a>" );
 	}
@@ -439,6 +405,10 @@ function wpmem_do_sc_pages( $page, $redirect_to = null ) {
 
 				$content = wpmem_page_pwd_reset( $wpmem->regchk, $content );
 
+			} elseif( $wpmem->action == 'getusername' ) {
+				
+				$content = wpmem_page_forgot_username( $wpmem->regchk, $content );
+				
 			} else {
 
 				$content = ( $page == 'members-area' ) ? $content . wpmem_inc_login( 'members' ) : $content;
@@ -545,6 +515,19 @@ function wpmem_sc_user_count( $atts, $content = null ) {
 		) );
 	}
 	return ( $do_query ) ? $atts['label'] . $user_meta_query : '';
+}
+
+
+/**
+ * Creates the user profile dashboard area (to replace page=user-profile shortcode).
+ *
+ * @since 3.1.0
+ *
+ * @return string $content
+ */
+function wpmem_sc_user_profile() {
+	$content = wpmem_do_sc_pages( 'user-profile' );
+	return $content;
 }
 
 // End of file.

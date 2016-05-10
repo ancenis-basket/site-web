@@ -6,13 +6,13 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2015 Chad Butler
+ * Copyright (c) 2006-2016 Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
- * @package WordPress
- * @subpackage WP-Members
+ * @package WP-Members
+ * @subpackage WP-Members Registration Functions
  * @author Chad Butler
- * @copyright 2006-2015
+ * @copyright 2006-2016
  *
  * Functions Included:
  * - wpmem_registration
@@ -49,7 +49,7 @@ function wpmem_registration( $toggle ) {
 
 	// Is this a registration or a user profile update?
 	if ( $toggle == 'register' ) { 
-		$fields['username'] = ( isset( $_POST['log'] ) ) ? sanitize_user( $_POST['log'] ) : '';
+		$fields['username'] = ( isset( $_POST['user_login'] ) ) ? sanitize_user( $_POST['user_login'] ) : '';
 	}
 	
 	// Add the user email to the $fields array for _data hooks.
@@ -59,17 +59,40 @@ function wpmem_registration( $toggle ) {
 	$wpmem_fields = $wpmem->fields; // get_option( 'wpmembers_fields' );
 	foreach ( $wpmem_fields as $meta ) {
 		if ( $meta[4] == 'y' ) {
-			if ( $meta[2] != 'password' ) {
-				$fields[ $meta[2] ] = ( isset( $_POST[ $meta[2] ] ) ) ? sanitize_text_field( $_POST[ $meta[2] ] ) : '';
+			if ( $meta[2] != 'password' || $meta[2] != 'confirm_password' ) {
+				if ( isset( $_POST[ $meta[2] ] ) ) {
+					switch ( $meta[3] ) {
+					case 'checkbox':
+						$fields[ $meta[2] ] = $_POST[ $meta[2] ];
+						break;
+					case 'multiselect':
+					case 'multicheckbox':
+						$fields[ $meta[2] ] = ( isset( $_POST[ $meta[2] ] ) ) ? implode( '|', $_POST[ $meta[2] ] ) : '';
+						break;
+					case 'textarea':
+						$fields[ $meta[2] ] = $_POST[ $meta[2] ];
+						break;
+					default:
+						$fields[ $meta[2] ] = sanitize_text_field( $_POST[ $meta[2] ] );
+						break;
+					}
+				} else {
+					$fields[ $meta[2] ] = '';
+				}
 			} else {
 				// We do have password as part of the registration form.
-				$fields['password'] = ( isset( $_POST['password'] ) ) ? $_POST['password'] : '';
+				if ( isset( $_POST['password'] ) ) {
+					$fields['password'] = $_POST['password'];
+				}
+				if ( isset( $_POST['confirm_password'] ) ) {
+					$fields['confirm_password'] = $_POST['confirm_password'];
+				}
 			}
 		}
 	}
 	
 	/**
-	 * Filter the submitted form field date prior to validation.
+	 * Filter the submitted form fields prior to validation.
 	 *
 	 * @since 2.8.2
 	 *
@@ -83,9 +106,18 @@ function wpmem_registration( $toggle ) {
 	foreach ( $wpmem_fields_rev as $meta ) {
 		$pass_arr = array( 'password', 'confirm_password', 'password_confirm' );
 		$pass_chk = ( $toggle == 'update' && in_array( $meta[2], $pass_arr ) ) ? true : false;
+		// Validation if the field is required.
 		if ( $meta[5] == 'y' && $pass_chk == false ) {
-			if ( ! $fields[ $meta[2] ] ) { 
-				$wpmem_themsg = sprintf( __( 'Sorry, %s is a required field.', 'wp-members' ), $meta[1] ); 
+			if ( 'file' == $meta[3] || 'image' == $meta[3] ) {
+				// If the required field is a file type.
+				if ( empty( $_FILES[ $meta[2] ]['name'] ) ) {
+					$wpmem_themsg = sprintf( $wpmem->get_text( 'reg_empty_field' ), __( $meta[1], 'wp-members' ) );
+				}
+			} else {
+				// If the required field is any other field type.
+				if ( ! $fields[ $meta[2] ] ) { 
+					$wpmem_themsg = sprintf( $wpmem->get_text( 'reg_empty_field' ), __( $meta[1], 'wp-members' ) );
+				}
 			}
 		}
 	}
@@ -106,9 +138,9 @@ function wpmem_registration( $toggle ) {
 			// Validate username and email fields.
 			$wpmem_themsg = ( email_exists( $fields['user_email'] ) ) ? "email" : $wpmem_themsg;
 			$wpmem_themsg = ( username_exists( $fields['username'] ) ) ? "user" : $wpmem_themsg;
-			$wpmem_themsg = ( ! is_email( $fields['user_email']) ) ? __( 'You must enter a valid email address.', 'wp-members' ) : $wpmem_themsg;
-			$wpmem_themsg = ( ! validate_username( $fields['username'] ) ) ? __( 'The username cannot include non-alphanumeric characters.', 'wp-members' ) : $wpmem_themsg;
-			$wpmem_themsg = ( ! $fields['username'] ) ? __( 'Sorry, username is a required field', 'wp-members' ) : $wpmem_themsg;
+			$wpmem_themsg = ( ! is_email( $fields['user_email']) ) ? $wpmem->get_text( 'reg_valid_email' ) : $wpmem_themsg;
+			$wpmem_themsg = ( ! validate_username( $fields['username'] ) ) ? $wpmem->get_text( 'reg_non_alphanumeric' ) : $wpmem_themsg;
+			$wpmem_themsg = ( ! $fields['username'] ) ? $wpmem->get_text( 'reg_empty_username' ) : $wpmem_themsg;
 			
 			// If there is an error from username, email, or required field validation, stop registration and return the error.
 			if ( $wpmem_themsg ) {
@@ -119,10 +151,10 @@ function wpmem_registration( $toggle ) {
 
 		// If form contains password and email confirmation, validate that they match.
 		if ( array_key_exists( 'confirm_password', $fields ) && $fields['confirm_password'] != $fields ['password'] ) { 
-			$wpmem_themsg = __( 'Passwords did not match.', 'wp-members' );
+			$wpmem_themsg = $wpmem->get_text( 'reg_password_match' );
 		}
 		if ( array_key_exists( 'confirm_email', $fields ) && $fields['confirm_email'] != $fields ['user_email'] ) { 
-			$wpmem_themsg = __( 'Emails did not match.', 'wp-members' ); 
+			$wpmem_themsg = $wpmem->get_text( 'reg_email_match' ); 
 		}
 		
 		// Get the captcha settings (api keys).
@@ -134,7 +166,7 @@ function wpmem_registration( $toggle ) {
 			// If there is no api key, the captcha never displayed to the end user.
 			if ( $wpmem_captcha['recaptcha']['public'] && $wpmem_captcha['recaptcha']['private'] ) {   
 				if ( ! $_POST["recaptcha_response_field"] ) { // validate for empty captcha field
-					$wpmem_themsg = __( 'You must complete the CAPTCHA form.', 'wp-members' );
+					$wpmem_themsg = $wpmem->get_text( 'reg_empty_captcha' );
 					return "empty"; exit();
 				}
 			}
@@ -200,7 +232,7 @@ function wpmem_registration( $toggle ) {
 			
 			// If there is no captcha value, return error.
 			if ( ! $captcha ) {
-				$wpmem_themsg = __( 'You must complete the CAPTCHA form.', 'wp-members' );
+				$wpmem_themsg = $wpmem->get_text( 'reg_empty_captcha' );
 				return "empty"; exit();
 			}
 			
@@ -215,7 +247,7 @@ function wpmem_registration( $toggle ) {
 			
 			// If captcha validation was unsuccessful.
 			if ( $response['success'] == false ) {
-				$wpmem_themsg = __( 'CAPTCHA was not valid.', 'wp-members' );
+				$wpmem_themsg = $wpmem->get_text( 'reg_invalid_captcha' );
 				return "empty"; exit();
 			}
 		}
@@ -224,7 +256,7 @@ function wpmem_registration( $toggle ) {
 		$fields['password'] = ( ! isset( $_POST['password'] ) ) ? wp_generate_password() : $_POST['password'];
 
 		// Add for _data hooks
-		$fields['user_registered'] = gmdate( 'Y-m-d H:i:s' );
+		$fields['user_registered'] = current_time( 'mysql', 1 );
 		$fields['user_role']       = get_option( 'default_role' );
 		$fields['wpmem_reg_ip']    = $_SERVER['REMOTE_ADDR'];
 		$fields['wpmem_reg_url']   = ( isset( $_REQUEST['wpmem_reg_page'] ) ) ? $_REQUEST['wpmem_reg_page'] : $_REQUEST['redirect_to'];
@@ -312,7 +344,25 @@ function wpmem_registration( $toggle ) {
 		update_user_meta( $fields['ID'], 'wpmem_reg_url', $fields['wpmem_reg_url'] );
 
 		// Set user expiration, if used.
-		if ( $wpmem->use_exp == 1 && $wpmem->mod_reg != 1 ) { wpmem_set_exp( $fields['ID'] ); }
+		if ( $wpmem->use_exp == 1 && $wpmem->mod_reg != 1 ) {
+			wpmem_set_exp( $fields['ID'] );
+		}
+		
+		// Handle file uploads, if any.
+		if ( ! empty( $_FILES ) ) {
+	
+			foreach ( $wpmem->fields as $file_field ) {
+	
+				if ( ( 'file' == $file_field[3] || 'image' == $file_field[3] ) && is_array( $_FILES[ $file_field[2] ] ) ) {
+	
+					// Upload the file and save it as an attachment.
+					$file_post_id = $wpmem->forms->do_file_upload( $_FILES[ $file_field[2] ], $fields['ID'] );
+	
+					// Save the attachment ID as user meta.
+					update_user_meta( $fields['ID'], $file_field[2], $file_post_id );
+				}
+			}
+		}
 
 		/**
 		 * Fires after user insertion but before email.
@@ -333,15 +383,21 @@ function wpmem_registration( $toggle ) {
 
 		// Notify admin of new reg, if needed.
 		if ( $wpmem->notify == 1 ) { 
-			wpmem_notify_admin( $fields['ID'], $wpmem_fields );
+			wpmem_notify_admin( $fields['ID'], $wpmem_fields, $fields );
+		}
+		
+		if ( isset( $_POST['redirect_to'] ) ) {
+			wp_redirect( $_POST['redirect_to'] );
+			exit();
 		}
 
 		/**
 		 * Fires after registration is complete.
 		 *
 		 * @since 2.7.1
+		 * @since 3.1.0 Added $fields
 		 */
-		do_action( 'wpmem_register_redirect' );
+		do_action( 'wpmem_register_redirect', $fields );
 
 		// successful registration message
 		return "success"; exit();
@@ -358,14 +414,14 @@ function wpmem_registration( $toggle ) {
 		 * Doing a check for existing email is not the same as a new reg. check first to 
 		 * see if it's different, then check if it is a valid address and it exists.
 		 */
-		global $current_user; get_currentuserinfo();
+		global $current_user; wp_get_current_user();
 		if ( $fields['user_email'] !=  $current_user->user_email ) {
 			if ( email_exists( $fields['user_email'] ) ) { 
 				return "email";
 				exit();
 			} 
 			if ( !is_email( $fields['user_email']) ) { 
-				$wpmem_themsg = __( 'You must enter a valid email address.', 'wp-members' );
+				$wpmem_themsg = $wpmem->get_text( 'reg_valid_email' );
 				return "updaterr";
 				exit();
 			}
@@ -373,20 +429,15 @@ function wpmem_registration( $toggle ) {
 
 		// If form includes email confirmation, validate that they match.
 		if ( array_key_exists( 'confirm_email', $fields ) && $fields['confirm_email'] != $fields ['user_email'] ) { 
-			$wpmem_themsg = __( 'Emails did not match.', 'wp-members' );
+			$wpmem_themsg = $wpmem->get_text( 'reg_email_match' );
+			return "updaterr";
+			exit();
 		}
 		
 		// Add the user_ID to the fields array.
 		$fields['ID'] = $user_ID;
 		
-		/**
-		 * Filter registration data after validation before data insertion.
-		 *
-		 * @since 2.8.2
-		 *
-		 * @param array  $fields An array of the registration field data.
-		 * @param string $toggle A switch to indicate the action (new|edit).
-		 */
+		/** This filter is documented in register.php */
 		$fields = apply_filters( 'wpmem_register_data', $fields, 'edit' ); 
 		
 		/**
@@ -403,11 +454,10 @@ function wpmem_registration( $toggle ) {
 		 */
 		do_action( 'wpmem_pre_update_data', $fields );
 		
-		/*
-		 * If the _pre_update_data hook sends back an error message.
-		 * @todo - double check this. it should probably return "updaterr" and the hook should globalize wpmem_themsg
-		 */
-		if ( $wpmem_themsg ){ return $wpmem_themsg; }
+		// If the _pre_update_data hook sends back an error message.
+		if ( $wpmem_themsg ){ 
+			return "updaterr";
+		}
 
 		// A list of fields that can be updated by wp_update_user.
 		$native_fields = array( 
@@ -429,25 +479,44 @@ function wpmem_registration( $toggle ) {
 		foreach ( $wpmem_fields as $meta ) {
 			// If the field is not excluded, update accordingly.
 			if ( ! in_array( $meta[2], wpmem_get_excluded_meta( 'update' ) ) ) {
-				switch ( $meta[2] ) {
-
-				// If the field can be updated by wp_update_user.
-				case( in_array( $meta[2], $native_fields ) ):
-					$fields[ $meta[2] ] = ( isset( $fields[ $meta[2] ] ) ) ? $fields[ $meta[2] ] : '';
-					$native_update[ $meta[2] ] = $fields[ $meta[2] ];
-					break;
-
-				// If the field is password.
-				case( 'password' ):
-					// Do nothing.
-					break;
-
-				// Everything else goes into wp_usermeta.
-				default:
-					if ( $meta[4] == 'y' ) {
-						update_user_meta( $user_ID, $meta[2], $fields[ $meta[2] ] );
+				if ( 'file' != $meta[3] && 'image' != $meta[3] ) {
+					switch ( $meta[2] ) {
+	
+					// If the field can be updated by wp_update_user.
+					case( in_array( $meta[2], $native_fields ) ):
+						$fields[ $meta[2] ] = ( isset( $fields[ $meta[2] ] ) ) ? $fields[ $meta[2] ] : '';
+						$native_update[ $meta[2] ] = $fields[ $meta[2] ];
+						break;
+	
+					// If the field is password.
+					case( 'password' ):
+						// Do nothing.
+						break;
+	
+					// Everything else goes into wp_usermeta.
+					default:
+						if ( $meta[4] == 'y' ) {
+							update_user_meta( $user_ID, $meta[2], $fields[ $meta[2] ] );
+						}
+						break;
 					}
-					break;
+				}
+			}
+		}
+		
+		// Handle file uploads, if any.
+		if ( ! empty( $_FILES ) ) {
+	
+			foreach ( $wpmem->fields as $file_field ) {
+	
+				if ( ( 'file' == $file_field[3] || 'image' == $file_field[3] ) && is_array( $_FILES[ $file_field[2] ] ) ) {
+					if ( ! empty( $_FILES[ $file_field[2] ]['name'] ) ) {
+						// Upload the file and save it as an attachment.
+						$file_post_id = $wpmem->forms->do_file_upload( $_FILES[ $file_field[2] ], $fields['ID'] );
+	
+						// Save the attachment ID as user meta.
+						update_user_meta( $fields['ID'], $file_field[2], $file_post_id );
+					}
 				}
 			}
 		}
@@ -521,4 +590,4 @@ function wpmem_get_captcha_err( $wpmem_captcha_err ) {
 }
 endif;
 
-/** End of File **/
+// End of file.

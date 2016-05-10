@@ -6,13 +6,12 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2015  Chad Butler
+ * Copyright (c) 2006-2016  Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
- * @package WordPress
- * @subpackage WP-Members
+ * @package WP-Members
  * @author Chad Butler
- * @copyright 2006-2015
+ * @copyright 2006-2016
  *
  * Functions included:
  * - wpmem_bulk_user_action
@@ -390,8 +389,8 @@ function wpmem_a_activate_user( $user_id, $chk_pass = false ) {
 		$wpdb->update( $wpdb->users, array( 'user_pass' => $new_hash ), array( 'ID' => $user_id ), array( '%s' ), array( '%d' ) );
 	}
 
-	// If subscriptions can expire, set the user's expiration date.
-	if( $wpmem->use_exp == 1 ) {
+	// If subscriptions can expire, and the user has no expiration date, set one.
+	if( $wpmem->use_exp == 1 && ! get_user_meta( $user_id, 'expires', true ) ) {
 		wpmem_set_exp( $user_id );
 	}
 
@@ -538,4 +537,4 @@ function wpmem_set_user_status( $user_id, $status ) {
 	return;
 }
 
-/** End of File **/
+// End of file.

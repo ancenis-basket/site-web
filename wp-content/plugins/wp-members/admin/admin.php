@@ -6,12 +6,12 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2015  Chad Butler
+ * Copyright (c) 2006-2016  Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
  * @package WP-Members
  * @author Chad Butler
- * @copyright 2006-2015
+ * @copyright 2006-2016
  *
  * Functions included:
  * - wpmem_a_do_field_reorder
@@ -26,12 +26,6 @@
  * - wpmem_admin_add_new_user
  * - wpmem_admin_enqueue_scripts
  */
-
-
-/**
- * Load dialog functions.
- */
-include_once( WPMEM_PATH . 'admin/dialogs.php' );
 
 
 /** 
@@ -105,11 +99,6 @@ function wpmem_load_admin_js() {
  */
 function wpmem_a_captcha_tab( $tab ) {
 	if ( $tab == 'captcha' ) {
-		/**
-		 * Load the captcha tab functions.
-		 */
-		include_once( WPMEM_PATH . 'admin/tab-captcha.php' );
-		// Render the captcha tab.
 		return wpmem_a_build_captcha_options();
 	} else {
 		return false;
@@ -134,6 +123,7 @@ function wpmem_add_captcha_tab( $tabs ) {
  * Primary admin function.
  *
  * @since 2.1.0
+ * @since 3.1.0 Added WP_Members_Admin_API.
  *
  * @global object $wpmem The WP_Members object.
  */
@@ -155,7 +145,7 @@ function wpmem_admin() {
 		$tab = ( isset( $_GET['tab'] ) ) ? $_GET['tab'] : 'options';
 
 		// Render the tab being displayed.
-		wpmem_admin_tabs( $tab );
+		$wpmem->admin->do_tabs( $tab );
 
 		// Render any warning messages.
 		wpmem_a_do_warnings( $did_update );
@@ -195,19 +185,15 @@ function wpmem_admin_do_tab( $tab ) {
 	switch ( $tab ) {
 
 	case 'options' :
-		include_once( WPMEM_PATH . 'admin/tab-options.php' );
 		wpmem_a_build_options();
 		break;
 	case 'fields' :
-		include_once( WPMEM_PATH . 'admin/tab-fields.php' );
 		wpmem_a_build_fields();
 		break;
 	case 'dialogs' :
-		include_once( WPMEM_PATH . 'admin/tab-dialogs.php' );
 		wpmem_a_build_dialogs();
 		break;
 	case 'emails' :
-		include_once( WPMEM_PATH . 'admin/tab-emails.php' );
 		wpmem_a_build_emails();
 		break;
 	}
@@ -221,38 +207,14 @@ function wpmem_admin_do_tab( $tab ) {
  * can be extended for custom admin tabs with the wpmem_admin_tabs filter.
  *
  * @since 2.8.0
+ * @since 3.1.0 Wrapper for API admin_tabs().
  *
- * @param string $current The tab that we are on.
+ * @global object $wpmem   The WP_Members object class.
+ * @param  string $current he tab that we are on.
  */
 function wpmem_admin_tabs( $current = 'options' ) {
-
-	$tabs = array(
-		'options' => 'WP-Members ' . __( 'Options', 'wp-members' ),
-		'fields'  => __( 'Fields', 'wp-members' ),
-		'dialogs' => __( 'Dialogs', 'wp-members' ),
-		'emails'  => __( 'Emails', 'wp-members' ),
-	);
-
-	/**
-	 * Filter the admin tabs for the plugin settings page.
-	 *
-	 * @since 2.8.0
-	 *
-	 * @param array $tabs An array of the tabs to be displayed on the plugin settings page.
-	 */
-	$tabs = apply_filters( 'wpmem_admin_tabs', $tabs );
-
-	$links = array();
-	foreach ( $tabs as $tab => $name ) {
-		$class = ( $tab == $current ) ? 'nav-tab nav-tab-active' : 'nav-tab';
-		$links[] = '<a class="' . $class . '" href="?page=wpmem-settings&amp;tab=' . $tab . '">' . $name . '</a>';
-	}
-
-	echo '<h2 class="nav-tab-wrapper">';
-	foreach ( $links as $link ) {
-		echo $link;
-	}
-	echo '</h2>';
+	global $wpmem;
+	$wpmem->admin->do_tabs( $current );
 }
 
 
@@ -270,44 +232,25 @@ function wpmem_admin_action( $action ) {
 	switch ( $action ) {
 
 	case 'update_settings':
-		/**
-		 * Load Options tab functions.
-		 */
-		include_once( WPMEM_PATH . 'admin/tab-options.php' );
-		$did_update = wpmem_update_options();
+	case 'update_cpts':
+		$did_update = ( 'update_cpts' == $action ) ? wpmem_update_cpts() : wpmem_update_options();
 		break;
 
 	case 'update_fields':
 	case 'add_field': 
 	case 'edit_field':
-		/**
-		 * Load Fields tab functions.
-		 */
-		include_once( WPMEM_PATH . 'admin/tab-fields.php' );
 		$did_update = wpmem_update_fields( $action );
 		break;
 
 	case 'update_dialogs':
-		/**
-		 * Load Dialogs tab functions.
-		 */
-		include_once( WPMEM_PATH . 'admin/tab-dialogs.php' );
 		$did_update = wpmem_update_dialogs();
 		break;
 
 	case 'update_emails':
-		/**
-		 * Load Emails tab functions.
-		 */
-		include_once( WPMEM_PATH . 'admin/tab-emails.php' );
 		$did_update = wpmem_update_emails();
 		break;
 
 	case 'update_captcha':
-		/**
-		 * Load Captcha tab functions.
-		 */
-		include_once( WPMEM_PATH . 'admin/tab-captcha.php' );
 		$did_update = wpmem_update_captcha();
 		break;
 	}

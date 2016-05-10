@@ -3,7 +3,7 @@
 Plugin Name: WP-Members
 Plugin URI:  http://rocketgeek.com
 Description: WP access restriction and user registration.  For more information on plugin features, refer to <a href="http://rocketgeek.com/plugins/wp-members/users-guide/">the online Users Guide</a>. A <a href="http://rocketgeek.com/plugins/wp-members/quick-start-guide/">Quick Start Guide</a> is also available. WP-Members(tm) is a trademark of butlerblog.com.
-Version:     3.0.7.2
+Version:     3.1.0.3
 Author:      Chad Butler
 Author URI:  http://butlerblog.com/
 Text Domain: wp-members
@@ -13,7 +13,7 @@ License:     GPLv2
 
 
 /*  
-	Copyright (c) 2006-2015  Chad Butler
+	Copyright (c) 2006-2016  Chad Butler
 
 	The name WP-Members(tm) is a trademark of butlerblog.com
 
@@ -62,7 +62,7 @@ License:     GPLv2
 
 
 // Initialize constants.
-define( 'WPMEM_VERSION', '3.0.7.2' );
+define( 'WPMEM_VERSION', '3.1.0.3' );
 define( 'WPMEM_DEBUG', false );
 define( 'WPMEM_DIR',  plugin_dir_url ( __FILE__ ) );
 define( 'WPMEM_PATH', plugin_dir_path( __FILE__ ) );
@@ -131,8 +131,16 @@ function wpmem_init() {
 	}
 
 	// Preload the expiration module, if available.
-	$exp_module = ( in_array( 'wp-members-expiration/module.php', get_option( 'active_plugins' ) ) ) ? true : false;
-	define( 'WPMEM_EXP_MODULE', $exp_module ); 
+	$exp_plugin = 'wp-members-expiration/module.php';
+	$exp_active = ( in_array( $exp_plugin, get_option( 'active_plugins' ) ) ) ? true : false;
+	// Check multisite network active
+	if ( is_multisite() ) {
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+		$exp_active = ( is_plugin_active_for_network( $exp_plugin ) ) ? true : $exp_active;
+	}
+	define( 'WPMEM_EXP_MODULE', $exp_active ); 
 
 	/**
 	 * Load the WP-Members core functions file.
@@ -167,8 +175,13 @@ function wpmem_init() {
  * current users capabilities.
  *
  * @since 2.5.2
+ * @since 3.1.0 Added admin api object.
+ *
+ * @global object $wpmem WP_Members object class.
  */
 function wpmem_chk_admin() {
+
+	global $wpmem;
 
 	/**
 	 * Fires before initialization of admin options.
@@ -177,66 +190,15 @@ function wpmem_chk_admin() {
 	 */
 	do_action( 'wpmem_pre_admin_init' );
 
-	if ( is_multisite() && current_user_can( 'edit_theme_options' ) ) {
-		/**
-		 * Load the main admin file.
-		 */
-		require_once(  WPMEM_PATH . 'admin/admin.php' );
-	}
-
 	/**
-	 * If user has a role that can edit users, load the admin functions,
-	 * otherwise, load profile actions for non-admins.
-	 */
-	if ( current_user_can( 'edit_users' ) ) { 
-
-		/**
-		 * Load the main admin file if not already loaded.
-		 */
-		require_once( WPMEM_PATH . 'admin/admin.php' );
-
-		/**
-		 * Load the admin user functions.
-		 */
-		require_once( WPMEM_PATH . 'admin/users.php' );
-
-		/**
-		 * Load the admin user profile functions.
-		 */
-		require_once( WPMEM_PATH . 'admin/user-profile.php' );
-
-	} else {
-
-		/**
-		 * Load the admin user functions.
-		 */
-		require_once( WPMEM_PATH . 'inc/users.php' );
-
-		// User actions and filters.
-		add_action( 'show_user_profile', 'wpmem_user_profile'   );
-		add_action( 'edit_user_profile', 'wpmem_user_profile'   );
-		add_action( 'profile_update',    'wpmem_profile_update' );
-	}
-
-	/**
-	 * If user has a role that can edit posts, add the block/unblock
-	 * meta boxes and custom post/page columns.
-	 */
-	if ( current_user_can( 'edit_posts' ) ) {
-
-		/**
-		 * Load the admin post functions.
-		 */
-		require_once( WPMEM_PATH . 'admin/post.php' );
-
-		// Post actions and filters.
-		add_action( 'add_meta_boxes',             'wpmem_block_meta_add' );
-		add_action( 'save_post',                  'wpmem_block_meta_save' );
-		add_filter( 'manage_posts_columns',       'wpmem_post_columns' );
-		add_action( 'manage_posts_custom_column', 'wpmem_post_columns_content', 10, 2 );
-		add_filter( 'manage_pages_columns',       'wpmem_post_columns' );
-		add_action( 'manage_pages_custom_column', 'wpmem_post_columns_content', 10, 2 );
-	}
+	 * Load the admin api class.
+	 *
+	 * @since 3.1
+	 */	
+	include_once( WPMEM_PATH . 'admin/includes/class-wp-members-admin-api.php' );
+	
+	// Initilize the admin api.
+	$wpmem->load_admin_api();
 
 	/**
 	 * Fires after initialization of admin options.

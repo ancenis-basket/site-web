@@ -6,13 +6,12 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2015  Chad Butler
+ * Copyright (c) 2006-2016  Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
- * @package WordPress
- * @subpackage WP-Members
+ * @package WP-Members
  * @author Chad Butler
- * @copyright 2006-2015
+ * @copyright 2006-2016
  */
 
 
@@ -218,7 +217,11 @@ function wpmem_update_fields( $action ) {
 			$arr[8] = ( isset( $_POST['add_checked_default'] ) ) ? $_POST['add_checked_default'] : 'n';
 		}
 
-		if ( $_POST['add_type'] == 'select' ) {
+		if (   $_POST['add_type'] == 'select' 
+			|| $_POST['add_type'] == 'multiselect' 
+			|| $_POST['add_type'] == 'radio'
+			|| $_POST['add_type'] == 'multicheckbox' 
+		) {
 			// Get the values.
 			$str = stripslashes( $_POST['add_dropdown_value'] );
 			// Remove linebreaks.
@@ -231,7 +234,7 @@ function wpmem_update_fields( $action ) {
 			}
 		}
 		
-		if ( $_POST['add_type'] == 'file' ) {
+		if ( $_POST['add_type'] == 'file' || $_POST['add_type'] == 'image' ) {
 			$arr[7] = stripslashes( $_POST['add_file_value'] );
 		}
 
@@ -248,8 +251,8 @@ function wpmem_update_fields( $action ) {
 			for ( $row = 0; $row < count( $wpmem_fields ); $row++ ) {
 				if ( $wpmem_fields[$row][2] == $_GET['edit'] ) {
 					$arr[0] = $wpmem_fields[$row][0];
-					$x = ( $arr[3] == 'checkbox' ) ? 8 : ( ( $arr[3] == 'select' || $arr[3] == 'file' ) ? 7 : 6 );
-					for ( $r = 0; $r < $x+1; $r++ ) {
+					//$x = ( $arr[3] == 'checkbox' ) ? 8 : ( ( $arr[3] == 'select' || $arr[3] == 'file' ) ? 7 : 6 );
+					for ( $r = 0; $r < count( $arr ); $r++ ) {
 						$wpmem_fields[$row][$r] = $arr[$r];
 					}
 				}
@@ -328,14 +331,21 @@ function wpmem_a_field_edit( $mode, $wpmem_fields = null, $field = null ) {
 						<?php if ( $mode == 'edit' ) {
 							echo $field_arr[3]; ?>
 							<input type="hidden" name="add_type" value="<?php echo $field_arr[3]; ?>" /> 							
-						<?php } else { ?>						
+						<?php } else { ?>
 							<select name="add_type" id="wpmem_field_type_select">
-								<option value="text"><?php     _e( 'text',     'wp-members' ); ?></option>
-								<option value="textarea"><?php _e( 'textarea', 'wp-members' ); ?></option>
-								<option value="checkbox"><?php _e( 'checkbox', 'wp-members' ); ?></option>
-								<option value="select"><?php   _e( 'dropdown', 'wp-members' ); ?></option>
-								<option value="password"><?php _e( 'password', 'wp-members' ); ?></option>
-								<option value="file"><?php     _e( 'file',     'wp-members' ); ?></option>
+                                <option value="text"><?php     _e( 'text',        'wp-members' ); ?></option>
+                                <option value="email"><?php    _e( 'email',       'wp-members' ); ?></option>
+                                <option value="textarea"><?php _e( 'textarea',    'wp-members' ); ?></option>
+                                <option value="checkbox"><?php _e( 'checkbox',    'wp-members' ); ?></option>
+                                <option value="multicheckbox"><?php _e( 'multiple checkbox', 'wp-members' ); ?></option>
+                                <option value="select"><?php   _e( 'select (dropdown)',    'wp-members' ); ?></option>
+                                <option value="multiselect"><?php   _e( 'multiple select', 'wp-members' ); ?></option>
+                                <option value="radio"><?php    _e( 'radio group', 'wp-members' ); ?></option>
+                                <option value="password"><?php _e( 'password',    'wp-members' ); ?></option>
+                                <option value="image"><?php    _e( 'image',       'wp-members' ); ?></option>
+                                <option value="file"><?php     _e( 'file',        'wp-members' ); ?></option>
+                                <option value="url"><?php      _e( 'url',         'wp-members' ); ?></option>
+                                <option value="hidden"><?php   _e( 'hidden',      'wp-members' ); ?></option>
 							</select>
 						<?php } ?>
 					</li>
@@ -376,8 +386,12 @@ function wpmem_a_field_edit( $mode, $wpmem_fields = null, $field = null ) {
 						<input type="text" name="add_checked_value" value="<?php echo ( $mode == 'edit' && $field_arr[3] == 'checkbox' ) ? $field_arr[7] : false; ?>" class="small-text" />
 					</li>
 				<?php echo ( $mode == 'add' ) ? '</div>' : ''; ?>
-				<?php } ?>
-				<?php if ( $mode == 'add' || ( $mode == 'edit' && $field_arr[3] == 'select' ) ) { ?>
+				<?php } 
+				
+				if ( isset( $field_arr[3] ) ) {
+					$additional_settings = ( $field_arr[3] == 'select' || $field_arr[3] == 'multiselect' || $field_arr[3] == 'multicheckbox' || $field_arr[3] == 'radio' ) ? true : false;
+				}
+				if ( $mode == 'add' || ( $mode == 'edit' && $additional_settings ) ) { ?>
 				<?php echo ( $mode == 'add' ) ? '<div id="wpmem_dropdown_info">' : ''; ?>
 					<li>
 						<strong><?php _e( 'Additional information for dropdown fields', 'wp-members' ); ?></strong>
@@ -568,4 +582,4 @@ function wpmem_a_field_table( $wpmem_fields ) {
 	<?php
 }
 
-/** End of File **/
+// End of file.
