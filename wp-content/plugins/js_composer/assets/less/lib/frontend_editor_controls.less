@@ -12,7 +12,7 @@
       top: -30px;
     }
   }
-  .vc_vc_tabs, {
+  .vc_vc_tabs {
     padding-top: 30px;
     .controls- {
       &out-tr {
@@ -27,6 +27,9 @@
 
 // Custom elements css
 .vc_vc_row_inner, .vc_vc_row > .vc_parallax {
+  padding-top: @vc_controls-padding;
+}
+.vc_vc_row_inner, .vc_vc_row > [data-vc-full-width="true"] {
   padding-top: @vc_controls-padding;
 }
 
@@ -86,15 +89,7 @@
 .vc_vc_tweetmeme {
   .vc_social-placeholder {
     height: 32px;
-    background: transparent url(../vc/fe/social/tw/horizontal.png) left center no-repeat;
-
-    &.vc_socialtype-vertical {
-      background-image: url(../vc/fe/social/tw/vertical.png);
-      height: 69px;
-    }
-    &.vc_socialtype-none {
-      background-image: url(../vc/fe/social/tw/none.png);
-    }
+    background: transparent url(../vc/fe/social/tw/none.png) left center no-repeat;
   }
 }
 

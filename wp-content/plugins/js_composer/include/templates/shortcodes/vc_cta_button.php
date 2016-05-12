@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 /**
  * Shortcode attributes
  * @var $atts
@@ -26,14 +30,14 @@ if ( 'same' === $target || '_self' === $target ) {
 	$target = '';
 }
 if ( '' !== $target ) {
-	$target = ' target="' . $target . '"';
+	$target = ' target="' . esc_attr( $target ) . '"';
 }
 
 $icon = ( '' !== $icon && 'none' !== $icon ) ? ' ' . $icon : '';
 $i_icon = ( '' !== $icon ) ? ' <i class="icon"> </i>' : '';
 
 $color = ( '' !== $color ) ? ' wpb_' . $color : '';
-$size = ( '' !== $size && $size !== 'wpb_regularsize' ) ? ' wpb_' . $size : ' ' . $size;
+$size = ( '' !== $size && 'wpb_regularsize' !== $size ) ? ' wpb_' . $size : ' ' . $size;
 
 $a_class = '';
 if ( '' !== $el_class ) {
@@ -47,8 +51,8 @@ if ( '' !== $el_class ) {
 }
 
 if ( '' !== $href ) {
-	$button = '<span class="wpb_button ' . $color . $size . $icon . '">' . $title . $i_icon . '</span>';
-	$button = '<a class="wpb_button_a' . $a_class . '" href="' . $href . '"' . $target . '>' . $button . '</a>';
+	$button = '<span class="wpb_button ' . esc_attr( $color . $size . $icon ) . '">' . $title . $i_icon . '</span>';
+	$button = '<a class="wpb_button_a' . esc_attr( $a_class ) . '" href="' . $href . '"' . $target . '>' . $button . '</a>';
 } else {
 	$button = '';
 	$el_class .= ' cta_no_button';
@@ -56,7 +60,7 @@ if ( '' !== $href ) {
 $css_class = apply_filters( VC_SHORTCODE_CUSTOM_CSS_FILTER_TAG, 'wpb_call_to_action wpb_content_element vc_clearfix ' . $position . $el_class, $this->settings['base'], $atts );
 $css_class .= $this->getCSSAnimation( $css_animation );
 
-$output .= '<div class="' . $css_class . '">';
+$output .= '<div class="' . esc_attr( $css_class ) . '">';
 if ( 'cta_align_bottom' !== $position ) {
 	$output .= $button;
 }

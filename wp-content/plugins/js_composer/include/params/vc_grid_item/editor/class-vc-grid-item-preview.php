@@ -1,11 +1,14 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 
-Class Vc_Grid_Item_Preview {
+class Vc_Grid_Item_Preview {
 	protected $shortcodes_string = '';
 	protected $post_id = false;
 
 	public function render() {
-		$this->post_id = (int)vc_request_param( 'post_id' );
+		$this->post_id = (int) vc_request_param( 'post_id' );
 		$this->shortcodes_string = stripslashes( vc_request_param( 'shortcodes_string', true ) );
 		require_once vc_path_dir( 'PARAMS_DIR', 'vc_grid_item/class-vc-grid-item.php' );
 		$grid_item = new Vc_Grid_Item();
@@ -100,18 +103,35 @@ Class Vc_Grid_Item_Preview {
 
 	public function mockingPost() {
 		$post = get_post( $this->post_id );
+		setup_postdata( $post );
 		$post->post_title = __( 'Post title', 'js_composer' );
 		$post->post_content = __( 'The WordPress Excerpt is an optional summary or description of a post; in short, a post summary.', 'js_composer' );
 		$post->post_excerpt = __( 'The WordPress Excerpt is an optional summary or description of a post; in short, a post summary.', 'js_composer' );
+		add_filter( 'get_the_categories', array(
+			&$this,
+			'getTheCategories',
+		), 10, 2 );
 		$GLOBALS['post'] = $post;
 
 		return $post;
 	}
 
+	public function getTheCategories( $categories, $post_id ) {
+		$ret = $categories;
+		if ( ! $post_id || ( $post_id && $post_id == $this->post_id ) ) {
+			$cat = get_categories( 'number=5' );
+			if ( empty( $ret ) && ! empty( $cat ) ) {
+				$ret += $cat;
+			}
+		}
+
+		return $ret;
+	}
+
 	public function addPlaceholderImage( $img ) {
 		if ( null === $img || false === $img ) {
 			$img = array(
-				'thumbnail' => '<img class="vc_img-placeholder vc_single_image-img" src="' . vc_asset_url( 'vc/vc_gitem_image.png' ) . '" />'
+				'thumbnail' => '<img class="vc_img-placeholder vc_single_image-img" src="' . vc_asset_url( 'vc/vc_gitem_image.png' ) . '" />',
 			);
 		}
 

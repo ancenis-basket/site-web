@@ -1,3 +1,142 @@
+15.04.2016 - ver 4.11.2.1
+   - # is properly escaped for updated jQuery
+
+07.04.2016 - ver 4.11.2
+   - Added: Compatibility with WP 4.5
+   - Added: Filter for database query limits
+   - Improved: Input Sanitization
+   - Improved: TGMPA compatibility
+   - Improved: Pageable Container Back button behavior
+   - Improved: vc_siteAttachedImages now uses get_posts instead of direct query
+   - Improved: Ordering by meta key in grid elements
+   - Improved: loop param work with multiple taxonomies selection
+   - Fixed: Google maps scroll behavior
+   - Fixed: Initial loading for Masonry Media Grid
+   - Fixed: Advanced Custom Fields vendor initialization
+   - Fixed: Post Grid filter taxonomy names collapsing
+
+16.03.2016 - ver 4.11.1
+   - Fixed: WPML + Image selection is working again
+   - Fixed: vc_remove_param() + Custom WP Theme Front-end editor broke Text block
+
+10.03.2016 - ver 4.11
+   - Added: New predefined templates added
+   - Added: Mono Social icons added to icon library list
+   - Added: 'All' text in grid element filters can be modified in param window
+   - Added: Gradient button style for buttons
+   - Added: Grid element initial loading controls (including 'Disable' option)
+   - Added: TweetMe Button content element params description added
+   - Update: WordPress 4.5 compatibility added
+   - Update: Additional element description in Backend editor
+   - Update: Video background autoplay on mobile devices
+   - Update: Refactor grid params array system
+   - Update: In some cases relative path to admin-ajax.php returned 404, replaced with full path
+   - Fixed: Russian language adds new content tab
+   - Fixed: Content display on video background in IE10
+   - Fixed: wp_get_attachment_url work with arg
+   - Fixed: php7 array slice indexes
+   - Fixed: '_self' attribute fix in CTA and button
+   - Fixed: get_currentuserinfo() updated
+   - Fixed: Full height row and iteration issue
+   - Fixed: ACF foreach warning fixed
+   - Fixed: Link stripping from images added from "Add Media"
+
+5.02.2016 - ver 4.10
+	- Added: Compatibility with option to add ACF to page
+	- Added: Video width and alignment controls
+	- Added: Parallax speed parameter added
+	- Added: Category and Author elements added to Grid Builder
+	- Added: Link to author in Grid Builder
+	- Update: License tab available with 'set as theme’
+	- Update: TweetMe button updated to support new styles
+	- Update: Fontawesome library updated
+	- Update: Grid Builder templates include user templates
+	- Fixed: Add Media image sorting in WYSIWYG
+	- Fixed: Single image preview in Grid Builder
+	- Fixed: WP Theme 2016 underline fix
+	- Fixed: Tabs outline style fix
+	- Fixed: Iconpicker icons rendering on category change
+	- Fixed: ACF fields rendering in Grid Builder
+
+12.01.2016 - ver 4.9.2
+   - Fixed: "Editing an existing Post Grid, page IDs are displayed instead of titles."
+   - Fixed: Extra CSS class name for single image in post grid
+   - Fixed: Third elements not working in templates
+   - Fixed: Visual Composer button is now added even if psot doesn't support title
+   - Fixed: Yoast + single image without default value
+   - Fixed: Grid builder on multisite
+   - Fixed: 404 error on WP multisite
+   - Improved: Tab activation through menu (links on same page)
+   - Improved: PHP7 compatibility
+
+23.12.2015 - ver 4.9.1
+   - Improved: VC save action is fired on wp save_post instead of edit_post
+   - Improved: Some unneded files removed from package
+   - Fixed: Element is calling save method only if changes were made
+   - Fixed: svg image selection in single image element
+   - Fixed: image style in post grid is now applied correctly
+   - Fixed: Equal height in Safari
+
+7.12.2015 - ver 4.9
+   - Improved: Now Visual Composer is faster at least for 30%
+   - Added: Equal height columns
+   - Added: Vertical alignment of element within a column
+   - Added: Vertical aligment of column within a row
+   - Added: Fullscreen editing mode in backend editor
+   - Improved: Single click License activation
+   - Improved: Removed margins from row and now applied to content elements
+   - Improved: All loaders are unified in VC interface
+   - Removed: Guides on/off removed from backend editor
+   - Fixed: ACF repeater field
+   - Fixed: Presets for columns
+   - Fixed: Ninja Forms
+   - Fixed: WPML taxonomies (thanks to dev guys from WPML)
+   - Fixed: Social button breaks ssl
+   - Fixed: Template search
+   - Fixed: Rem units in Design options
+   - Fixed: Advanced TinyMCE support
+   - Fixed: Icon display for nested shortcodes
+   - Other minor improvements and fixes
+
+6.11.2015 - ver 4.8.1
+   - Added: Support for Advanced TinyMCE
+   - Improved: Envato API changed to new version 2.0
+   - Improved: ABSPATH check added to all php files
+   - Improved: Filter in getParamTabsList method of the TTA added
+   - Fixed: Post grid loads in http when using https
+   - Fixed: Responsiveness in full height row
+   - Fixed: Responsive Column Behavior
+   - Fixed: Numbers of line chart displayed properly
+   - Fixed: Text display on grid buttons
+   - Fixed: Error 404 on vc-general on WP multi site install
+   - Fixed: wp multisite hardcoded 'js_composer/js_composer.php', so impossible to use other plugin name
+   - Fixed: Backend display proper column width
+   - Fixed: Column offset resets after update
+   - Fixed: Full image is broken on Firefox
+   - Fixed: Error for non-logged in users
+   - Fixed: Image Carousel display correctly
+   - Fixed: Text element with animation is properly displayed in TTA
+   - Fixed: Grid Element display price prefix $ per WooCommerce Settings
+
+22.10.2015 - ver 4.8
+   - New: Advanced Role manager for Visual Composer. Now you can fine tune access to Visual Composer functionality based on user roles
+   - New: New interface with template preview option in Default Templates and My Templates sections
+   - New: No need for license activation on localhost
+   - New: "vc_register_settings_preset" action is added. Theme authors can add elements presets through the inner API
+   - New: New design styles for Separator element
+   - New: Option to add icon to Separator element
+   - Improved: Single image element markup revises and improved
+   - Improved: UX improvements for "Save template" under the Templates section
+   - Improved: Load more button in grid now use latest VC button version
+   - Improved: Lighter and cleaner welcome screen on empty page
+   - Fixed: Protocol is replaced with // in css import (google fonts)
+   - Fixed: Loading of Google subsets
+   - Fixed: Display of icons for nested shortcodes
+   - Fixed: Post grid display if loaded from Templatera element
+   - Fixed: Fast switching between tabs
+   - Fixed: Autocomplete of categories (woocommerce)
+   - Fixed: Separator text moves to the next line when no space available
+
 2.10.2015 - ver 4.7.4
    - Fixed: Bug in grid builder presets
    - Added extra ajax check

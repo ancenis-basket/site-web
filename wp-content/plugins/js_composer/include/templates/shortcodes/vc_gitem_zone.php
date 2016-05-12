@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 /**
  * Shortcode attributes
  * @var $atts
@@ -22,8 +25,6 @@ $css_style = $css_style_mini = '';
 $image_block = $image = '';
 
 $atts = vc_map_get_attributes( $this->getShortcode(), $atts );
-extract( $atts );
-
 extract( $atts );
 
 if ( 'no' === $render ) {
@@ -57,7 +58,7 @@ if ( 'custom' === $height_mode ) {
 		. ( strlen( $height_mode ) > 0 ? ' vc-gitem-zone-height-mode-auto-' . $height_mode : '' );
 }
 if ( 'yes' === $featured_image ) {
-	$css_style .= "{{ post_image_background_image_css }}";
+	$css_style .= '{{ post_image_background_image_css }}';
 	$image = '<img src="{{ post_image_url'
 		. ( false !== $background_image_css_editor ? ':' . rawurlencode( $background_image_css_editor ) . '' : '' )
 		. ' }}" class="vc_gitem-zone-img" alt="{{ post_image_alt }}">';
@@ -78,11 +79,13 @@ if ( strlen( $link ) > 0 && 'none' !== $link ) {
 			. '" class="vc_gitem-link vc-zone-link"></a>';
 	} elseif ( 'post_link' === $link ) {
 		$image_block = '<a href="{{ post_link_url }}" title="{{ post_title }}" class="vc_gitem-link vc-zone-link"></a>';
+	} elseif ( 'post_author' === $link ) {
+		$image_block = '<a href="{{ post_author_href }}" title="{{ post_author }}" class="vc_gitem-link vc-zone-link"></a>';
 	} elseif ( 'image' === $link ) {
 		$image_block = '<a href="{{ post_image_url }}" title="{{ post_title }}" class="vc_gitem-link vc-zone-link"></a>';
 	} elseif ( 'image_lightbox' === $link ) {
 		if ( ! isset( $this->prettyphoto_rel ) ) {
-			$this->prettyphoto_rel = ' rel="prettyPhoto[rel-' . get_the_ID() . '-' . rand() . ']"';
+			$this->prettyphoto_rel = ' data-rel="prettyPhoto[rel-' . get_the_ID() . '-' . rand() . ']"';
 		}
 		$image_block .= '<a href="{{ post_image_url }}" title="{{ post_title }}" ' . $this->prettyphoto_rel . ' data-vc-gitem-zone="prettyphotoLink" class="vc_gitem-link prettyphoto vc-zone-link vc-prettyphoto-link"></a>';
 	}
@@ -94,9 +97,7 @@ echo( empty( $css_style ) ? '' : ' style="' . esc_attr( $css_style ) . '"' )
 ?>>
 	<?php echo $image_block ?>
 	<?php echo $image ?>
-	<div class="<?php echo esc_attr( $css_class_mini ) ?>"<?php
-	echo( empty( $css_style_mini ) ? '' : ' style="' . esc_attr( $css_style_mini ) . '"' )
-	?>>
+	<div class="<?php echo esc_attr( $css_class_mini ) ?>"<?php echo( empty( $css_style_mini ) ? '' : ' style="' . esc_attr( $css_style_mini ) . '"' ) ?>>
 		<?php echo do_shortcode( $content ) ?>
 	</div>
 </div>
