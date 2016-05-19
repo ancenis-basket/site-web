@@ -47,8 +47,15 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 		if ( ! $load_data ) {
 			return $table;
 		}
-
-		$data = $this->_getDatas();
+		switch ($table_id) {
+			case 2 :
+				$data = $this->_getDatasForEquipe ();
+				break;
+			case 3 :
+				$data = $this->_getDatasForDesignations ();
+				break;
+		}
+		
 		$table['data'] = json_decode($data , true );
 
 		// Check if JSON could be decoded.
@@ -78,7 +85,10 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 	}
 
 	
-	protected function _getDatas(){
+	/**
+	 * 
+	 */
+	protected function _getDatasForEquipe(){
 		$post_objects = get_field('joueurs');
 		$data .= "[";
 		$data .= "[\"Nom Prenom\", \"Numero de licence\", \"Taille\", \"Anniversaire\"]";
@@ -93,6 +103,39 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 				$data.="\",\"".get_field('anniversaire', $post_object->ID);
 				$data .= "\"]";      
     		}
+		}
+		$data = str_replace("][","],[",$data)."]";
+		return $data;
+	}
+
+	/**
+	 * 
+	 */
+	protected function _getDatasForDesignations(){
+		$args = array( 'numberposts' => -1, 'order'=> 'ASC', 'orderby' => 'title', 'post_type' => 'wm_staff');
+		$postslist = get_posts( $args );
+		
+		
+		$data .= "[";
+		//$data .= "[\"Nom Prenom\", \"Numero de licence\", \"Taille\", \"Anniversaire\"]";
+		$data .= "[\"Nom Prenom\", \"Departement\"]";
+		if( $postslist ){
+			foreach( $postslist as $post_object){
+				setup_postdata( $post_object );
+				$termsss = get_the_term_list($post_object->ID, "staff_department");
+				if (!$termsss) {
+					$termsss = "                               ";
+				} else if ($termsss instanceof WP_Error){
+					$termsss = $termsss->get_error_code();
+				}
+				$data .= "[\"";
+				$data.="<a href='#'>".get_the_title($post_object->ID)."</a>";
+				$data.="\",\"".substr($termsss, 0, 4) ;
+				//$data.="\",\"".get_field("taille", $post_object->ID);
+				//$data.="\",\"".get_field('anniversaire', $post_object->ID);
+				$data .= "\"]";
+			}
+			wp_reset_postdata();
 		}
 		$data = str_replace("][","],[",$data)."]";
 		return $data;
