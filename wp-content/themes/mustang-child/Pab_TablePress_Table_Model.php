@@ -122,18 +122,22 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 		$data .= "[";
 		//$data .= "[\"Nom Prenom\", \"Numero de licence\", \"Taille\", \"Anniversaire\"]";
 		$data .= "[\"Nom Prenom\", \"Departement\"]";
+		
 		if( $postslist ){
 			foreach( $postslist as $post_object){
 				setup_postdata( $post_object );
-				$termsss = get_the_term_list($post_object->ID, "staff_department");
-				if (!$termsss) {
-					$termsss = "                               ";
-				} else if ($termsss instanceof WP_Error){
-					$termsss = $termsss->get_error_code();
+				$terms = get_the_terms($post_object->ID, "staff_department");
+				$departments = "";
+				if ($terms) {
+					foreach ( $terms as $term) {
+						$departments .= $term->name .", ";
+					}
+				} else if ($terms instanceof WP_Error){
+					$terms = $terms->get_error_code();
 				}
 				$data .= "[\"";
 				$data.="<a href='#'>".get_the_title($post_object->ID)."</a>";
-				$data.="\",\"".substr($termsss, 0, 8) ;
+				$data.="\",\"".$departments ;
 				//$data.="\",\"".get_field("taille", $post_object->ID);
 				//$data.="\",\"".get_field('anniversaire', $post_object->ID);
 				$data .= "\"]";
@@ -158,20 +162,25 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 		if( $postslist ){
 			foreach( $postslist as $post_object){
 				setup_postdata( $post_object );
-				$termsss = get_the_term_list($post_object->ID, "staff_department");
-				
-				if (!$termsss) {
-					$termsss = "  dd                             ";
-				} else if ($termsss instanceof WP_Error){
-					$termsss = $termsss->get_error_code();
-				} 
-				$data .= "[\"";
-				$data.="<a href='#'>".get_the_title($post_object->ID)."</a>";
-				$data.="\",\"".$termsss;
-				
-				//$data.="\",\"".get_field("taille", $post_object->ID);
-				//$data.="\",\"".get_field('anniversaire', $post_object->ID);
-				$data .= "\"]";
+				$terms = get_the_terms($post_object->ID, "staff_department");
+				$departments = "";
+				if ($terms) {
+					foreach ( $terms as $term) {
+						$departments .= $term->name .", ";
+					}
+				} else if ($terms instanceof WP_Error){
+					$terms = $terms->get_error_code();
+				}
+
+				if (!strpos($departments, "sportive")===false) {
+					$data .= "[\"";
+					$data.="<a href='#'>".get_the_title($post_object->ID)."</a>";
+					$data.="\",\"".$departments;
+					
+					//$data.="\",\"".get_field("taille", $post_object->ID);
+					//$data.="\",\"".get_field('anniversaire', $post_object->ID);
+					$data .= "\"]";
+				}
 			}
 			wp_reset_postdata();
 		}
