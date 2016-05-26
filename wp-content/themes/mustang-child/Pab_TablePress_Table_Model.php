@@ -54,6 +54,9 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 			case 3 :
 				$data = $this->_getDatasForDesignations ();
 				break;
+			case 4 :
+				$data = $this->_getDatasForEntraineurs ();
+				break;
 		}
 		
 		$table['data'] = json_decode($data , true );
@@ -130,7 +133,7 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 				}
 				$data .= "[\"";
 				$data.="<a href='#'>".get_the_title($post_object->ID)."</a>";
-				$data.="\",\"".substr($termsss, 0, 4) ;
+				$data.="\",\"".substr($termsss, 0, 8) ;
 				//$data.="\",\"".get_field("taille", $post_object->ID);
 				//$data.="\",\"".get_field('anniversaire', $post_object->ID);
 				$data .= "\"]";
@@ -140,4 +143,40 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 		$data = str_replace("][","],[",$data)."]";
 		return $data;
 	}
+	
+	/**
+	 *
+	 */
+	protected function _getDatasForEntraineurs(){
+		$args = array( 'numberposts' => -1, 'order'=> 'ASC', 'orderby' => 'title', 'post_type' => 'wm_staff');
+		$postslist = get_posts( $args );
+		
+		
+		$data .= "[";
+		//$data .= "[\"Nom Prenom\", \"Numero de licence\", \"Taille\", \"Anniversaire\"]";
+		$data .= "[\"Nom Prenom\", \"Departement\"]";
+		if( $postslist ){
+			foreach( $postslist as $post_object){
+				setup_postdata( $post_object );
+				$termsss = get_the_term_list($post_object->ID, "staff_department");
+				
+				if (!$termsss) {
+					$termsss = "  dd                             ";
+				} else if ($termsss instanceof WP_Error){
+					$termsss = $termsss->get_error_code();
+				} 
+				$data .= "[\"";
+				$data.="<a href='#'>".get_the_title($post_object->ID)."</a>";
+				$data.="\",\"".$termsss;
+				
+				//$data.="\",\"".get_field("taille", $post_object->ID);
+				//$data.="\",\"".get_field('anniversaire', $post_object->ID);
+				$data .= "\"]";
+			}
+			wp_reset_postdata();
+		}
+		$data = str_replace("][","],[",$data)."]";
+		return $data;
+	}
+	
 }
