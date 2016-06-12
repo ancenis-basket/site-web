@@ -37,12 +37,17 @@ class EVO_Template_Loader {
 		global $eventon_sin_event, $eventon;
 		
 		$file='';
-		$sure_path = AJDE_EVCAL_PATH . '/templates/';		
+		$sure_path = AJDE_EVCAL_PATH . '/templates/';	
+
+		// get child theme path incase user is using child theme
+		$childThemePath = get_stylesheet_directory();	
 		
 		// Paths to check
 		$paths = apply_filters('eventon_template_paths', array(
 			0=>TEMPLATEPATH.'/',
 			1=>TEMPLATEPATH.'/'.$eventon->template_url,
+			2=>$childThemePath.'/',
+			3=>$childThemePath.'/'.$eventon->template_url
 		));
 		
 		$evOpt = evo_get_options('1');

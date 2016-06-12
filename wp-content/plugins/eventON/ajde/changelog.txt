@@ -1,5 +1,8 @@
 AJDE Library Changelog
 ----------------------------
+v 1.5.8 (2016-4-19)
+FIXED: dropdown fiels options have type radio
+
 v 1.5.7. (2016-3-3)
 FIXED: rearrange order not showing newly added items
 

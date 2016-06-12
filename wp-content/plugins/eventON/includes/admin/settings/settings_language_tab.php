@@ -2,7 +2,7 @@
 /**
  * Language Settings 
  *
- * @version		2.3.9
+ * @version		2.3.21
  * @package		EventON/settings
  * @category	Settings
  * @author 		AJDE
@@ -169,7 +169,8 @@ class evo_settings_lang{
 				array('type'=>'togheader','name'=>__('General Calendar','eventon')),
 					array('label'=>'No Events','name'=>'evcal_lang_noeve',),
 					array('label'=>'All Day','name'=>'evcal_lang_allday',),
-					array('label'=>'Year Around Event','name'=>'evcal_lang_yrrnd',),
+					array('label'=>'Year Around Event','name'=>'evcal_lang_yrrnd'),
+					array('label'=>'Month Long Event','name'=>'evcal_lang_mntlng'),
 					array(
 						'label'=>'Events',
 						'name'=>'evcal_lang_events',
@@ -219,10 +220,9 @@ class evo_settings_lang{
 					array(
 						'label'=>'Location Name','name'=>'evcal_lang_location_name',
 					)
-					//,array('label'=>'Location','name'=>'evcal_lang_location',)
+					,array('label'=>'Location','name'=>'evcal_lang_location')
+					,array('label'=>'Event Location','name'=>'evcal_evcard_loc')
 					,array(
-						'label'=>'Event Location','name'=>'evcal_evcard_loc',
-					),array(
 						'label'=>'Type your address','name'=>'evcalL_getdir_placeholder',
 						'legend'=>'Get directions section'
 					),array(

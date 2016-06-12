@@ -183,7 +183,7 @@ class evo_helper{
 			$text_NO = eventon_get_custom_language($this->opt2, 'evo_lang_no', 'NO', $args['lang']);
 			$text_YES = eventon_get_custom_language($this->opt2, 'evo_lang_yes', 'YES', $args['lang']);
 
-			return '<span id="'.$args['id'].'" class="ajde_yn_btn '.($no? 'NO':null).''.(($args['abs']=='yes')? ' absolute':null).'" '.$_attr.'><span class="btn_inner" style=""><em class="no">'.$text_NO.'</em><span class="catchHandle"></span><em class="yes">'.$text_YES.'</em></span></span>'.$input.$label;
+			return '<span id="'.$args['id'].'" class="ajde_yn_btn '.($no? 'NO':null).''.(($args['abs']=='yes')? ' absolute':null).'" '.$_attr.' data-afterstatement="'.$args['afterstatement'].'"><span class="btn_inner" style=""><em class="no">'.$text_NO.'</em><span class="catchHandle"></span><em class="yes">'.$text_YES.'</em></span></span>'.$input.$label;
 		}
 
 		

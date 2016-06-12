@@ -65,7 +65,7 @@ class evo_frontend {
 			wp_register_script( 'evcal_gmaps', apply_filters('eventon_google_map_url', 'https://maps.googleapis.com/maps/api/js'), array('jquery'),'1.0',true);
 
 			// STYLES
-			wp_register_style('evo_font_icons',AJDE_EVCAL_URL.'/assets/fonts/font-awesome.css');		
+			wp_register_style('evo_font_icons',AJDE_EVCAL_URL.'/assets/fonts/font-awesome.css','','4.6.2');		
 			
 			// Defaults styles and dynamic styles
 			wp_register_style('evcal_cal_default',AJDE_EVCAL_URL.'/assets/css/eventon_styles.css', array(), $eventon->version);	

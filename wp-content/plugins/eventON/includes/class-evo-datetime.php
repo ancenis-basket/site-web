@@ -35,8 +35,12 @@ class evo_datetime{
 					$intervals = unserialize($post_meta['repeat_intervals'][0]);
 
 					return array(
-						'start'=> $intervals[$repeat_interval][0],
-						'end'=> $intervals[$repeat_interval][1],
+						'start'=> (isset($intervals[$repeat_interval][0])? 
+							$intervals[$repeat_interval][0]:
+							$intervals[0][0]),
+						'end'=> (isset($intervals[$repeat_interval][1])? 
+							$intervals[$repeat_interval][1]:
+							$intervals[0][1]) ,
 					);
 
 				}else{// no repeat interval values saved
@@ -138,14 +142,17 @@ class evo_datetime{
 			return $output;	
 		}
 
+
 	// return datetime string for a given format using date-time data array
-		public function date($dateformat, $array){		
-			$items = str_split($dateformat);
+		public function date($dateformat, $array){	
+			return eventon_get_lang_formatted_timestr($dateformat, $array);
+			
+			/*$items = str_split($dateformat);
 			$newtime = '';
 			foreach($items as $item){
 				$newtime .= (array_key_exists($item, $array))? $array[$item]: $item;
 			}
-			return $newtime;
+			return $newtime;*/
 		} 
 
 	// eventon version of converted date time 

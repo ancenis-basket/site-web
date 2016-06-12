@@ -88,6 +88,7 @@ class evo_cal_shell {
 				'show_repeats'=>'no', // show repeating events while hide multiple occurance
 				'show_upcoming'=>0,
 				'show_limit'=>'no',		// show only event count but add view more 
+				'show_limit_redir'=>'',		// url to redirect show more button
 					'tiles'=>'no',		// tile box style cal
 					'tile_height'=>0,		// tile height
 					'tile_bg'=>0,		// tile background
@@ -270,7 +271,9 @@ class evo_cal_shell {
 						do_action("eventon_event_sorting_{$ecv['sort_by']}", $events_array);
 					break;
 					case 'sort_date':
+						usort($events_array, 'cmp_esort_enddate' );
 						usort($events_array, 'cmp_esort_startdate' );
+						
 					break;case 'sort_title':
 						usort($events_array, 'cmp_esort_title' );
 					break; case 'sort_color':
@@ -309,6 +312,7 @@ class evo_cal_shell {
 			 		
 			$this->cal->lang_array['no_event'] = $this->cal->lang('evcal_lang_noeve','No Events',$lang);
 			$this->cal->lang_array['evcal_lang_yrrnd'] = $this->cal->lang('evcal_lang_yrrnd','Year Around Event',$lang);
+			$this->cal->lang_array['evcal_lang_mntlng'] = $this->cal->lang('evcal_lang_mntlng','Month Long Event',$lang);
 			$this->cal->lang_array['evloc'] = $this->cal->lang('evcal_lang_evloc','Event Location', $lang);
 			$this->cal->lang_array['evorg'] = $this->cal->lang('evcal_lang_evorg','Event Organizer', $lang);
 			$this->cal->lang_array['evsme'] = $this->cal->lang('evcal_lang_sme','Show More Events', $lang);

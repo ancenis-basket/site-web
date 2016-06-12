@@ -7,7 +7,7 @@
  * @author 		AJDE
  * @category 	Admin
  * @package 	EventON/Admin
- * @version     2.3.11
+ * @version     2.3.21
  */
 class eventon_admin_shortcode_box{
 	
@@ -151,13 +151,22 @@ class eventon_admin_shortcode_box{
 				'var'=>'lang',
 				'default'=>'L1',
 				'options'=>array('L1'=>'L1','L2'=>'L2','L3'=>'L3')
-			),'hide_mult_occur'=>array(
+			),
+			'hide_mult_occur'=>array(
 				'name'=>'Hide multiple occurence (HMO)',
 				'type'=>'YN',
 				'guide'=>'Hide events from showing more than once between months',
 				'var'=>'hide_mult_occur',
 				'default'=>'no',
-			),'fixed_mo_yr'=>array(
+			),
+			'show_repeats'=>array(
+				'name'=>'Show all repeating events while HMO',
+				'type'=>'YN',
+				'guide'=>'If you are hiding multiple occurence of event but want to show all repeating events set this to yes',
+				'var'=>'show_repeats',
+				'default'=>'no',
+			),
+			'fixed_mo_yr'=>array(
 				'name'=>'Fixed Month/Year',
 				'type'=>'fmy',
 				'guide'=>'Set fixed month and year value (Both values required)(integer)',
@@ -236,6 +245,12 @@ class eventon_admin_shortcode_box{
 				'guide'=>'Require "event count limit" to work, then this will add a button to show rest of the events for calendar in increments',
 				'var'=>'show_limit',
 				'default'=>'no',
+			),'show_limit_redir'=>array(
+				'name'=>'Redirect load more events button',
+				'type'=>'text',
+				'guide'=>'http:// URL the load more events button will redirect to instead of loading more events on the same calendar.',
+				'var'=>'show_limit_redir',
+				'default'=>'no',
 			),'only_logged_user'=>array(
 				'name'=>'Make this calendar only visible to loggedin user',
 				'type'=>'YN',
@@ -269,6 +284,7 @@ class eventon_admin_shortcode_box{
 						,$this->shortcode_default_field('event_order')
 						,$this->shortcode_default_field('event_count')
 						,$this->shortcode_default_field('show_limit')
+						,$this->shortcode_default_field('show_limit_redir')
 						,$this->shortcode_default_field('month_incre')
 						,$this->shortcode_default_field('event_type')
 						,$this->shortcode_default_field('event_type_2')
@@ -377,6 +393,7 @@ class eventon_admin_shortcode_box{
 							'default'=>'0'
 						)
 						,$this->shortcode_default_field('show_limit')
+						,$this->shortcode_default_field('show_limit_redir')
 						,$this->shortcode_default_field('month_incre')
 						,$this->shortcode_default_field('fixed_mo_yr')
 						,$this->shortcode_default_field('cal_id')

@@ -308,64 +308,67 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			
 			//$_wp_date_str = split("[\s|.|,|/|-]",$_wp_date_format);
 			
+			date_default_timezone_set('UTC');	
+
 			// ---
 			// START UNIX
-			if( !empty($data['evcal_start_time_hour'])  && !empty($data['evcal_start_date']) ){
-				
-				$__Sampm = (!empty($data['evcal_st_ampm']))? $data['evcal_st_ampm']:null;
+			$unix_start =0;
+			if( !empty($data['evcal_start_date']) ){
 
-				//get hours minutes am/pm 
-				$time_string = $data['evcal_start_time_hour']
-					.':'.$data['evcal_start_time_min'].$__Sampm;
-				
-				// event start time string
-				$date = $data['evcal_start_date'].' '.$time_string;
-				
-				// parse string to array by time format
-				$__ti = ($_is_24h)?
-					date_parse_from_format($_wp_date_format.' H:i', $date):
-					date_parse_from_format($_wp_date_format.' g:ia', $date);
-					
-				date_default_timezone_set('UTC');	
-				// GENERATE unix time
-				// correct start time to beginning of day for all day events
+				// ALL day event
 				if(!empty($data['evcal_allday']) && $data['evcal_allday']=='yes'){
-					$unix_start = mktime(00, 05,00, $__ti['month'], $__ti['day'], $__ti['year'] );
+					$Date = date_parse_from_format($_wp_date_format, $data['evcal_start_date']);
+					$unix_start = mktime(00, 05,00, $Date['month'], $Date['day'], $Date['year'] );
 				}else{
-					$unix_start = mktime($__ti['hour'], $__ti['minute'],0, $__ti['month'], $__ti['day'], $__ti['year'] );
-				}
+					if(!empty($data['evcal_start_time_hour'])){
+						$__Sampm = (!empty($data['evcal_st_ampm']))? $data['evcal_st_ampm']:null;
+
+						//get hours minutes am/pm 
+						$time_string = $data['evcal_start_time_hour']
+							.':'.$data['evcal_start_time_min'].$__Sampm;
 						
-			}else{ $unix_start =0; }
+						// event start time string
+						$date = $data['evcal_start_date'].' '.$time_string;
+						
+						// parse string to array by time format
+						$__ti = ($_is_24h)?
+							date_parse_from_format($_wp_date_format.' H:i', $date):
+							date_parse_from_format($_wp_date_format.' g:ia', $date);
+
+						$unix_start = mktime($__ti['hour'], $__ti['minute'],0, $__ti['month'], $__ti['day'], $__ti['year'] );
+					}
+				}
+			}
 			
 			// ---
 			// END TIME UNIX
-			if( !empty($data['evcal_end_time_hour'])  && !empty($data['evcal_end_date']) ){
+			$unix_end =0;
+			if( !empty($data['evcal_end_date']) ){
 				
-				$__Eampm = (!empty($data['evcal_et_ampm']))? $data['evcal_et_ampm']:null;
-
-				//get hours minutes am/pm 
-				$time_string = $data['evcal_end_time_hour']
-					.':'.$data['evcal_end_time_min'].$__Eampm;
-				
-				// event start time string
-				$date = $__evo_end_date.' '.$time_string;
-						
-				
-				// parse string to array by time format
-				$__ti = ($_is_24h)?
-					date_parse_from_format($_wp_date_format.' H:i', $date):
-					date_parse_from_format($_wp_date_format.' g:ia', $date);
-				
-				date_default_timezone_set('UTC');		
-				// GENERATE unix time
-				// correct start time to beginning of day for all day events
-				if(!empty($data['evcal_allday']) && $data['evcal_allday']=='yes'){
-					$unix_end = mktime(23,55 ,00, $__ti['month'], $__ti['day'], $__ti['year'] );
+				// ALL DAY
+				if(!empty($data['evcal_allday']) && $data['evcal_allday']=='yes' ){
+					$Date = date_parse_from_format($_wp_date_format, $data['evcal_end_date']);
+					$unix_end = mktime(00, 05,00, $Date['month'], $Date['day'], $Date['year'] );
 				}else{
-					$unix_end = mktime($__ti['hour'], $__ti['minute'],0, $__ti['month'], $__ti['day'], $__ti['year'] );
-				}						
-				
-			}else{ $unix_end =0; }
+					if( !empty($data['evcal_end_time_hour'])  ){
+						$__Eampm = (!empty($data['evcal_et_ampm']))? $data['evcal_et_ampm']:null;
+
+						//get hours minutes am/pm 
+						$time_string = $data['evcal_end_time_hour']
+							.':'.$data['evcal_end_time_min'].$__Eampm;
+						
+						// event start time string
+						$date = $__evo_end_date.' '.$time_string;
+														
+						// parse string to array by time format
+						$__ti = ($_is_24h)?
+							date_parse_from_format($_wp_date_format.' H:i', $date):
+							date_parse_from_format($_wp_date_format.' g:ia', $date);
+						
+						$unix_end = mktime($__ti['hour'], $__ti['minute'],0, $__ti['month'], $__ti['day'], $__ti['year'] );	
+					}
+				}	
+			}
 			$unix_end =(!empty($unix_end) )?$unix_end:$unix_start;
 			
 		}else{
@@ -605,6 +608,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 // return event date-time in given date format using date item array
 // deprecating -> evo_datetime
+// version 2.3.21 used in evo datetime function
 	function eventon_get_lang_formatted_timestr($dateform, $datearray){
 		$time = str_split($dateform);
 		$newtime = '';
@@ -772,6 +776,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /** SORTING arrangement functions **/
 	function cmp_esort_startdate($a, $b){
 		return $a["event_start_unix"] - $b["event_start_unix"];
+	}
+	function cmp_esort_enddate($a, $b){
+		return $a["event_end_unix"] - $b["event_end_unix"];
 	}
 	function cmp_esort_title($a, $b){
 		return strcmp($a["event_title"], $b["event_title"]);
@@ -1398,13 +1405,14 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 				$repeating = evo_check_yn($eventPMV, 'evcal_repeat');
 				$yearLong = evo_check_yn($eventPMV, 'evo_year_long');
+				$monthLong = evo_check_yn($eventPMV, '_evo_month_long');
 				
 				$row_end = ( !empty($eventPMV['evcal_erow']) )? 
 					$eventPMV['evcal_erow'][0]:
 					((!empty($eventPMV['evcal_srow']))? 
 					$eventPMV['evcal_srow'][0] :false);
 
-				if(!$repeating && !$yearLong && $row_end){
+				if(!$repeating && !$yearLong && !$monthLong && $row_end){
 
 					if($row_end< $rightnow){
 						$event = get_post($event_id, 'ARRAY_A');
@@ -1619,6 +1627,55 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		}
 
 // SUPPORT FUNCTIONS
+	// Generate location latLon from address
+		function eventon_get_latlon_from_address($address){
+			
+			$lat = $lon = '3';
+
+		    //$request_url = "//maps.googleapis.com/maps/api/geocode/xml?address=".$address."&sensor=true";
+			//$xml = simplexml_load_file($request_url) or die("url not loading");
+			//$status = $xml->status;
+			
+			//json 
+			// $json = file_get_contents("http://maps.google.com/maps/api/geocode/json?address=$address&sensor=false&region=$region");
+			//$json = json_decode($json);
+			
+			$address = str_replace(" ", "+", $address);
+			$address = urlencode($address);
+			
+			$url = "http://maps.google.com/maps/api/geocode/json?address=$address&sensor=false";
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_PROXYPORT, 3128);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+			$response = curl_exec($ch);
+			curl_close($ch);
+			$response_a = json_decode($response);
+
+			if (!empty($response_a) && !empty($response_a->results)) {
+			    $lat = $response_a->results[0]->geometry->location->lat;
+			    $lon = $response_a->results[0]->geometry->location->lng;
+
+			    //$lat = $xml->result->geometry->location->lat;
+			    //$lon = $xml->result->geometry->location->lng;
+			}
+
+		    return array(
+		        'lat' => $lat,
+		        'lng' => $lon,
+		    );
+		}
+
+	// if the calendar is set to hidden
+	// @version 2.3.21
+		function evo_cal_hidden(){
+			global $eventon;
+
+			$options = $eventon->frontend->evo_options;
+			return (!empty($options['evcal_cal_hide']) && $options['evcal_cal_hide']=='yes')? true: false;
+		}
 
 	// Returns a proper form of labeling for custom post type
 	/** Function that returns an array containing the IDs of the products that are on sale. */
@@ -1661,25 +1718,27 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 					// Post type
 					"publish_{$capability_type}",
-					"edit_{$capability_type}",
-					"read_{$capability_type}",
-					"delete_{$capability_type}",
 					"publish_{$capability_type}s",
+					"edit_{$capability_type}",
 					"edit_{$capability_type}s",
-					"edit_others_{$capability_type}s",	
-					"read_private_{$capability_type}s",
-					"delete_{$capability_type}s",
-					"delete_private_{$capability_type}s",
-					"delete_published_{$capability_type}s",
-					"delete_others_{$capability_type}s",
+					"edit_others_{$capability_type}s",
 					"edit_private_{$capability_type}s",
 					"edit_published_{$capability_type}s",
 
+					"read_{$capability_type}s",
+					"read_private_{$capability_type}s",
+					"delete_{$capability_type}",
+					"delete_{$capability_type}s",
+					"delete_private_{$capability_type}s",
+					"delete_published_{$capability_type}s",
+					"delete_others_{$capability_type}s",					
+
 					// Terms
+					"assign_{$capability_type}_terms",
 					"manage_{$capability_type}_terms",
 					"edit_{$capability_type}_terms",
 					"delete_{$capability_type}_terms",
-					"assign_{$capability_type}_terms",
+					
 					"upload_files"
 				);
 			}

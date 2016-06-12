@@ -3,9 +3,9 @@ Contributors: Ashan Jay
 Plugin Name: EventON
 Author URI: http://ashanjay.com/
 Tags: calendar, event calendar, event posts
-Requires at least: 3.8
-Tested up to: 4.4.2
-Stable tag: 2.3.20
+Requires at least: 4.0
+Tested up to: 4.5.1
+Stable tag: 2.3.22
 
 Event calendar plugin for wordpress that utilizes WP's custom post type.  
 
@@ -19,10 +19,53 @@ Event calendar plugin for wordpress that utilizes WP's custom post type. This pl
 1. Activate the plugin through the 'Plugins' menu in WordPress
 
 == Changelog ==
-= 2.3.21 (2016-
-FIXED: Addons list not showing up
+= 2.3.23 (2016-5-18) =
+ADDED: Option to set organizer link to open in new window
+ADDED: Year long and month long events to show applicable year/month
+FIXED: sites without visual composer error
+FIXED: some event class names not passing to event elements
+FIXED: get directions to location field missing
+FIXED: Font awesome font files not loading correct
+FIXED: All events to show location columns using taxonomy data
+UPDATED: script update to ajde library
 
-= 2.3.20 (2016-3-9)
+= 2.3.22 (2016-5-6) =
+ADDED: Basic Visual Composer element for eventON
+ADDED: Month long events - support for addons coming after release
+ADDED: filters to allow location and organizer taxonomy slug name
+ADDED: Event Locations to auto save location coordinates for faster map generation
+ADDED: Option for select google add to cal or ICS download
+ADDED: Events from next month widget
+ADDED: Completed event option for each event with line through event title
+ADDED: event edit page, saved locations and organizer fields to be hidden if set
+FIXED: Sort and filter dropdowns not closing up correct
+FIXED: Styles for sorting and filtering section
+UPDATED: Existing locations to generate loc. coords on update
+UPDATED: font awesome fonts library to version 4.6.2
+
+= 2.3.21 (2016-4-19) =
+ADDED: show more events button be able to redirect to a link
+ADDED: Terrain option for google maps
+ADDED: edit event link direct into eventTop works with lightbox & sliderDown interaction
+FIXED: event list sorted by end date as secondary sorting after start date
+FIXED: Featured event priority not showing all featured events
+FIXED: Addons list not showing up
+FIXED: Location text in event card missing in language settings
+FIXED: Eventcard with no fields but addon fields not working
+FIXED: go to today button showing when filtering and sorting
+FIXED: Stripslashes on location address in eventcard
+FIXED: eventon_get_unix_time() return correct times for all day events
+FIXED: Eventon version not showing correct & addons not listing out in addons tab
+FIXED: event list ext addon event count not working
+FIXED: event list ext addon featured image not working
+FIXED: deleting plugin will not delete evo settings
+FIXED: License tab showing incorrect eventon version
+FIXED: location and organizer drop down set to select a location reset & clear all fields
+FIXED: Event time not showing without location info
+UPDATED: child theme based template loading support
+
+= 2.3.20 (2016-3-9) =
+ADDED: Option to show eventtop various data even on widgets
 ADDED: Option to show eventtop various data even on widgets
 ADDED: improved troubleshoot tab in eventON settings
 FIXED: organizer link return null

@@ -5,7 +5,7 @@
  * @author   AJDE
  * @category Admin
  * @package  eventon/Classes
- * @version  2.3.17
+ * @version  2.3.22
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,7 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 class evo_install {
 
 	private static $evo_updates = array(
-		'2.3.16'=>'updates/eventon-update-2.3.16.php'
+		'2.3.16'=>'updates/eventon-update-2.3.16.php',
+		'2.3.22'=>'updates/eventon-update-2.3.22.php'
 	);
 
 	public static function init(){

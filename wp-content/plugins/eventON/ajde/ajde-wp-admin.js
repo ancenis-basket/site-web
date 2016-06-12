@@ -4,6 +4,15 @@
  */
 jQuery(document).ready(function($){
 
+	// self hosted tooltips
+		$('body').find('.ajdethistooltip').each(function(){
+			tipContent = $(this).find('.ajdeToolTip em').html();
+			toolTip = $(this).find('.ajdeToolTip');
+			classes = toolTip.attr('class').split('ajdeToolTip');
+			toolTip.remove();
+			$(this).append('<em>' +tipContent +'</em>').addClass(classes[1]);
+		});
+
 	// lightbox hide
 		$('body').on('click',' .ajde_close_pop_trig',function(){
 			var obj = $(this).parent();

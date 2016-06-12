@@ -1,9 +1,7 @@
 /**
  * Javascript code that is associated with the front end of the calendar
- * version: 2.3.16
+ * version: 2.3.21
  */
-
-
 jQuery(document).ready(function($){
 	
 	init();
@@ -61,8 +59,7 @@ jQuery(document).ready(function($){
 						$('body').trigger('lightbox_event_closing');
 				}, 500);
 			}
-			
-	
+		
 	// OPENING event card -- USER INTREACTION and loading google maps
 		//event full description\		
 		$('body').on('click','.eventon_events_list .desc_trig', function(event){
@@ -231,8 +228,10 @@ jQuery(document).ready(function($){
 			obj.fadeOut();
 		});
 
-		$('body').on('evo_main_ajax', function(event, calendar, evodata){
-			calendar.find('.evo-gototoday-btn').fadeIn();
+		$('body').on('evo_main_ajax', function(event, calendar, evodata, ajaxtype){
+
+			if(ajaxtype != 'sorting' &&  ajaxtype != 'filering')
+				calendar.find('.evo-gototoday-btn').fadeIn();
 		});
 		$('body').on('evo_main_ajax_complete', function(event, calendar, evodata){
 			var today = calendar.find('.evo-gototoday-btn');
@@ -300,13 +299,21 @@ jQuery(document).ready(function($){
 		if( $('.ajde_evcal_calendar').hasClass('evcal_widget')){
 			cal.find('.evcal_gmaps').each(function(){
 				var gmap_id = obj.attr('id');
-				var new_gmal_id =gmap_id+'_widget';
+				var new_gmal_id =gmap_id+'_widget'; 
 				obj.attr({'id':new_gmal_id})
 			});
 		}
 
 	// show more events on the list
 		$('body').on('click','.evoShow_more_events',  function(){
+			var ReDir = $(this).data('dir');
+
+			// redirect to an external link 
+			if(ReDir != '0'){
+				window.location = ReDir;
+				return false;
+			}
+
 			var evCal = $(this).closest('.ajde_evcal_calendar');
 			var evoData = evCal.find('.evo-data');
 			var event_count = parseInt(evoData.data('ev_cnt'));
@@ -344,11 +351,14 @@ jQuery(document).ready(function($){
 		$('.evo_srt_sel p.fa').click(function(){
 			if($(this).hasClass('onlyone')) return;	
 			$(this).siblings('.evo_srt_options').fadeToggle();
+
+			// close sorting
+				filterSelect = $(this).closest('.eventon_sorting_section').find('.eventon_filter_dropdown');
+				if(filterSelect.is(':visible') == true) filterSelect.fadeToggle();
 		});
 		
 			// update calendar based on the sorting selection
-			$('.evo_srt_options').on('click','p',function(){	
-					
+			$('.evo_srt_options').on('click','p',function(){
 
 				var evodata = $(this).closest('.eventon_sorting_section').siblings('.evo-data');
 				var cmonth = parseInt( evodata.attr('data-cmonth'));
@@ -378,6 +388,11 @@ jQuery(document).ready(function($){
 		
 		// filtering section
 		$('.filtering_set_val').click(function(){
+
+			// close sorting
+				sortSelect = $(this).closest('.eventon_sorting_section').find('.evo_srt_options');
+				if(sortSelect.is(':visible') == true) sortSelect.fadeToggle();
+
 			var obj = $(this);
 			var current_Drop = obj.siblings('.eventon_filter_dropdown');
 			var current_drop_pare = obj.closest('.eventon_filter');
@@ -474,7 +489,7 @@ jQuery(document).ready(function($){
 			
 			if(ev_cal.attr('data-runajax')!='0'){
 
-				$('body').trigger('evo_main_ajax', [ev_cal, evodata]);
+				$('body').trigger('evo_main_ajax', [ev_cal, evodata, ajaxtype]);
 
 				// category filtering for the calendar
 				var cat = ev_cal.find('.evcal_sort').attr('cat');
@@ -660,6 +675,15 @@ jQuery(document).ready(function($){
 			return ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) )? true: false;
 		}
 
+	// edit event button redirect
+		$('body').on('click','.editEventBtnET', function(event){
+			event.stopPropagation();
+
+			href = $(this).attr('href');
+			//console.log(href);
+			window.open(href);
+		});
+
 	// event location card page
 		$('body').find('.evo_location_map').each(function(){
 			THIS = $(this);
@@ -714,4 +738,4 @@ jQuery(document).ready(function($){
 				}
 			});
 
-})
+});

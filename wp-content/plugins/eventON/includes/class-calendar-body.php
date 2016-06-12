@@ -10,22 +10,19 @@
  */
 class evo_cal_body{
 	private $cal;
-	/**
-	 * construct the calendar body 
-	 */
-	public function __construct(){
-		global $eventon;
-		$this->cal = $eventon->evo_generator;
-		$this->rtl = (!empty($this->cal->evopt1['evo_rtl'])  && $this->cal->evopt1['evo_rtl']=='yes')? true: false;
-	}
+	public $redirect_no_login = false;
 
-	/**
-	 * Above the mail calendar header HTML content
-	 * @param  array $args 
-	 * @return string       HTML
-	 */
+	// construct the calendar body 
+		public function __construct(){
+			global $eventon;
+			$this->cal = $eventon->evo_generator;
+			$this->rtl = (!empty($this->cal->evopt1['evo_rtl'])  && $this->cal->evopt1['evo_rtl']=='yes')? true: false;			
+		}
+
+	// Above the mail calendar header HTML content/
 		public function cal_above_header($args){
-			//print_r($args);
+			
+			if($this->calendar_nonlogged()) return false;
 
 			extract($args);
 
@@ -115,14 +112,10 @@ class evo_cal_body{
 			return ob_get_clean();
 		}
 
-	/**
-	 * get single calendar month body content
-	 * @param  [type] $get_new_monthyear      [description]
-	 * @param  string $focus_start_date_range [description]
-	 * @param  string $focus_end_date_range   [description]
-	 * @return HTML    
-	 */
+	// get single calendar month body content
 		public function get_calendar_month_body( $get_new_monthyear, $focus_start_date_range='', $focus_end_date_range=''){
+
+			if($this->calendar_nonlogged()) return false;
 				
 			// CHECK if start and end day ranges are provided for this function
 			$defined_date_ranges = ( empty($focus_start_date_range) && empty($focus_end_date_range) )?false: true;
@@ -193,12 +186,11 @@ class evo_cal_body{
 			return ob_get_clean();			
 		}
 
-	/**
-	 * Calendar header content
-	 * @param  array $arguments 
-	 * @return string            HTML content
-	 */
+	// Calendar header content
 		function get_calendar_header($arguments){
+
+			if($this->calendar_nonlogged()) return false;
+
 			global $eventon;
 
 			// SHORTCODE
@@ -366,12 +358,10 @@ class evo_cal_body{
 			}
 
 	// Independant components of the calendar body
-	/**
-	 * Header
-	 * @param  array $arg 
-	 * @return string      
-	 */
 		public function calendar_shell_header($arg){
+
+			if($this->calendar_nonlogged()) return false;
+
 			$defaults = array(
 				'sort_bar'=> true,
 				'title'=>'none',
@@ -406,12 +396,10 @@ class evo_cal_body{
 			return $content;
 		}
 
-	/**
-	 * footer
-	 * @return string 
-	 */
+	// Footer
 		public function calendar_shell_footer($args=''){
 
+			if($this->calendar_nonlogged()) return false;
 			global $eventon;
 
 			ob_start();
@@ -429,8 +417,16 @@ class evo_cal_body{
 			return ob_get_clean();
 		}
 
+	// HTML to show when the user is not logged in and calendar is not set to display then
+		function calendar_nonlogged(){
+			$this->redirect_no_login = (!empty($this->cal->evopt1['evcal_only_loggedin'])  && $this->cal->evopt1['evcal_only_loggedin']=='yes')? true: false;
+
+			//echo "<p>You need to login</p>";
+
+			return false;
+		}
 	
-	
+
 
 
 

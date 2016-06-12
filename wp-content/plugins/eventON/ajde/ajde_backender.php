@@ -4,7 +4,7 @@
  * print out back end customization form set up for the plugin settings
  * 
  * @updated 2016-1
- * @version 1.5.4
+ * @version 1.5.8
  */
 
 if ( function_exists( 'print_ajde_customization_form' ) ) return;
@@ -317,7 +317,7 @@ function print_ajde_customization_form($cutomization_pg_array, $ajdePT, $extra_t
 						$rightside.= "<p class='acus_line {$field['id']}'>".__($field['name'],$textdomain)." <select class='ajdebe_dropdown' name='".$field['id']."'>";
 						
 						foreach($field['options'] as $option=>$option_val){
-							$rightside.="<option type='radio' name='".$field['id']."' value='".$option."' "
+							$rightside.="<option name='".$field['id']."' value='".$option."' "
 							.  ( ($option == $dropdown_opt)? 'selected=\"selected\"':null)  ."/> ".$option_val."</option>";
 						}						
 						$rightside.= "</select>";
@@ -460,6 +460,26 @@ function print_ajde_customization_form($cutomization_pg_array, $ajdePT, $extra_t
 							}
 						$rightside .= '</p>';
 					break;
+
+					case 'yesnoALT':
+					   $__default = (!empty( $field['default'] ) )?
+					      $field['default']
+					      :'no';
+
+					   $yesno_value = (!empty( $ajdePT[$field['id'] ]) )?
+					      $ajdePT[$field['id']]:$__default;
+					   
+					   $after_statement = (isset($field['afterstatement']) )?$field['afterstatement']:'';
+
+					   $rightside.= "<p class='yesno_row'>".$wp_admin->html_yesnobtn(array('var'=>$yesno_value,'attr'=>array('afterstatement'=>$after_statement) ))."<input type='hidden' name='".$field['id']."' value='".$yesno_value."'/><span class='field_name'>".__($field['name'],$textdomain)."{$legend_code}</span>";
+
+					      // description text for this field
+					      if(!empty( $field['desc'] )){
+					         $rightside.= "<i style='opacity:0.6; padding-top:8px; display:block'>".$field['desc']."</i>";
+					      }
+					   $rightside .= '</p>';
+					break;
+
 					case 'begin_afterstatement': 
 						
 						$yesno_val = (!empty($ajdePT[$field['id']]))? $ajdePT[$field['id']]:'no';

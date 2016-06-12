@@ -163,7 +163,7 @@ class eventon_taxonomies{
 			        	$term = get_term_by('id', $term_id, 'event_location'); 
 			        	$imgID = !empty($term_meta['evo_loc_img'])? $term_meta['evo_loc_img']:false;
 
-			        	$ADDRESS = esc_attr( $term_meta['location_address'] ) ? esc_attr( $term_meta['location_address'] ) : '-';
+			        	$ADDRESS = esc_attr( !empty($term_meta['location_address']) ) ? esc_attr( $term_meta['location_address'] ) : '-';
 
 			        	$lon = (!empty($term_meta['location_lon']))? esc_attr( $term_meta['location_lon'] ) : false;
 			        	$lat = (!empty($term_meta['location_lat']))? esc_attr( $term_meta['location_lat'] ) : false;	
@@ -295,6 +295,11 @@ class eventon_taxonomies{
 						<input class='evo_loc_img evo_meta_img' type="hidden" name="term_meta[evo_loc_img]" id="term_meta[evo_loc_img]" value="<?php echo !empty( $term_meta['evo_loc_img'] ) ? esc_attr( $term_meta['evo_loc_img'] ) : ''; ?>">
 						<p class="description"><?php _e( '(Optional) Location Image','eventon' ); ?></p>
 					</td>
+				</tr>
+				<tr>
+					<th colspan="2">
+						<a target='_blank' href="http://itouchmap.com/latlong.html"><?php _e('Find LanLat for address','eventon');?></a>
+					</th>
 				</tr>
 			<?php
 			}

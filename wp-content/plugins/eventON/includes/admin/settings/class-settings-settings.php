@@ -1,7 +1,8 @@
 <?php
 /**
-* evo settings class
-*/
+  * evo settings class
+  * @version 2.3.23
+  */
 class evo_settings_settings{
 	function __construct($evcal_opt)	{
 		$this->evcal_opt = $evcal_opt;
@@ -21,7 +22,10 @@ class evo_settings_settings{
 				'tab_name'=>__('General Settings','eventon'),
 				'top'=>'4',
 				'fields'=> apply_filters('eventon_settings_general', array(
-					array('id'=>'evcal_cal_hide','type'=>'yesno','name'=>__('Hide Calendar from front-end','eventon'),),
+					array('id'=>'evcal_cal_hide','type'=>'yesno','name'=>__('Hide Calendars from front-end','eventon'),),
+					
+					//array('id'=>'evcal_only_loggedin','type'=>'yesno','name'=>__('Show calendars only to logged-in Users','eventon'),),
+					
 					array('id'=>'evcal_cal_hide_past','type'=>'yesno','name'=>__('Hide past events for default calendar(s)','eventon'),'afterstatement'=>'evcal_cal_hide_past'),	
 											
 					array('id'=>'evcal_cal_hide_past','type'=>'begin_afterstatement'),
@@ -57,7 +61,9 @@ class evo_settings_settings{
 					array('id'=>'evcal_header_format','type'=>'text','name'=>__('Calendar Header month/year format. <i>(<b>Allowed values:</b> m = month name, Y = 4 digit year, y = 2 digit year)</i>','eventon') , 'default'=>'m, Y'),
 					array('id'=>'evcal_additional','type'=>'subheader','name'=>__('Additional EventON Settings' ,'eventon')),
 
-					array('id'=>'evcal_export','type'=>'customcode','code'=>$this->export(),),
+					array('id'=>'evcal_export','type'=>'customcode','code'=>$this->export()),
+
+					array('id'=>'evcal_additional','type'=>'note','name'=>sprintf(__('Looking for additional functionality including event tickets, frontend event submissions, RSVP to events, photo gallery and more? <br/><a href="%s" target="_blank">Check out eventON addons</a>.' ,'eventon'), 'http://www.myeventon.com/addons/')),
 			))),
 			array(
 				'id'=>'evcal_005',
@@ -81,6 +87,7 @@ class evo_settings_settings{
 							'roadmap'=>__('ROADMAP Displays the normal default 2D','eventon'),
 							'satellite'=>__('SATELLITE Displays photographic tiles','eventon'),
 							'hybrid'=>__('HYBRID Displays a mix of photographic tiles and a tile layer','eventon'),
+							'terrain'=>__('TERRAIN Displays a physical map based on terrain information','eventon'),
 						)),
 					array('id'=>'evcal_gmap_zoomlevel', 'type'=>'dropdown','name'=>__('Google starting zoom level:','eventon'),
 						'desc'=>__('18 = zoomed in (See few roads), 7 = zoomed out. (See most of the country)','eventon'),
@@ -141,7 +148,7 @@ class evo_settings_settings{
 				'icon'=>'filter',
 				'fields'=>array(
 					array('id'=>'evcal_hide_sort','type'=>'yesno','name'=>__('Hide Sort Bar on Calendar','eventon')),
-					array('id'=>'evcal_sort_options', 'type'=>'checkboxes','name'=>__('Event sorting options to show on Calendar <i>(Note: Event Date will be default sorting option that will be always on)</i>','eventon'),
+					array('id'=>'evcal_sort_options', 'type'=>'checkboxes','name'=>__('Event sorting options to show on Calendar <i>(Note: Event Date is default sorting method.)</i>','eventon'),
 						'options'=>array(
 							'title'=>__('Event Main Title','eventon'),
 							'color'=>__('Event Color','eventon'),
@@ -195,6 +202,8 @@ class evo_settings_settings{
 					array('id'=>'evo_widget_eventtop','type'=>'yesno','name'=>__('Display all these fields in widget as well','eventon'),'legend'=>__('By default only few of the data is shown in eventtop in order to make that calendar look nice on a widget where space is limited.','eventon')),
 
 					array('id'=>'evcal_eventtop','type'=>'note','name'=>__('NOTE: Lot of these fields are NOT available in Tile layout. Reason: we dont want to potentially break the tile layout and over-crowd the clean design aspect of tile boxes.','eventon')),
+
+					array('id'=>'evo_showeditevent','type'=>'yesno','name'=>__('Show edit event button for each event','eventon'),'legend'=>'This will show an edit event button on eventTop - only for admin - that will open in a new window edit event page. Works only for lightbox and slideDown interaction methods.'),
 				)
 			)
 			// event card
@@ -224,16 +233,23 @@ class evo_settings_settings{
 					array('id'=>'evcal_sh001','type'=>'subheader','name'=>__('Location Image','eventon')),
 					array('id'=>'evo_locimgheight','type'=>'text','name'=>__('Set event location image height (value in pixels)','eventon'), 'default'=>'eg. 400'),
 
+					// Add to Calendar section
+					array('id'=>'evcal_sh001','type'=>'subheader','name'=>__('Add to Calendar Options','eventon')),
+						array('id'=>'evo_addtocal','type'=>'dropdown','name'=>__('Select which options to show for add to your calendar','eventon'),'legend'=>'Learn More & Add to your calendar field must be selected for these options to reflect on eventCard','options'=>array(
+								'all'=>'All options',
+								'gcal'=>'Only Google Add to Calendar',
+								'ics'=>'Only ICS download event',
+								'none'=>'Do not show any add to calendar options',
+							)
+						),
+
+					// Other EventCard Settings
 					array('id'=>'evcal_sh001','type'=>'subheader','name'=>__('Other EventCard Settings','eventon')),
-					
-					
-					array('id'=>'evo_ics','type'=>'yesno','name'=>__('Show ICS download to your calendar','eventon'),'legend'=>'This will allow users to download each event as ICS file which can be imported to their calendar of choice.','desc'=>__('Once this is activated, make sure the field is saved in Rearrange order below.','eventon')),
-					
-					array('id'=>'evo_getdir','type'=>'yesno','name'=>__('Show get directions to text field','eventon'),'legend'=>'This will add an input field to eventCard that will allow user to type in their address and get directions to event location in a new window.','desc'=>__('Once this is activated, make sure the field is saved in Rearrange order below.','eventon')),
-					
-					array('id'=>'evo_morelass','type'=>'yesno','name'=>__('Show full event description','eventon'),'legend'=>'If you select this option, you will not see More/less button on EventCard event description.'),
-					
-					array('id'=>'evo_opencard','type'=>'yesno','name'=>__('Open all eventCards by default','eventon'),'legend'=>'This option will load the calendar with all the eventCards open by default and will not need to be clicked to slide down and see details.'),
+																
+						array('id'=>'evo_morelass','type'=>'yesno','name'=>__('Show full event description','eventon'),'legend'=>'If you select this option, you will not see More/less button on EventCard event description.'),
+						
+						array('id'=>'evo_opencard','type'=>'yesno','name'=>__('Open all eventCards by default','eventon'),'legend'=>'This option will load the calendar with all the eventCards open by default and will not need to be clicked to slide down and see details.'),
+
 
 					array('id'=>'evo_EVC_arrange',
 						'type'=>'rearrange',
@@ -307,11 +323,12 @@ class evo_settings_settings{
 				'fields'=>array(			
 					array('id'=>'evcal__note','type'=>'note','name'=>__('This page will allow you to control templates and permalinks related to eventon event pages.','eventon')),
 					
-					array('id'=>'evo_event_archive_page_id','type'=>'dropdown','name'=>__('Select Events Page','eventon'), 'options'=>$this->event_pages(), 'desc'=>__('This will allow you to use this page with url slug /events/ as event archive page','eventon')),
+					array('id'=>'evo_event_archive_page_id','type'=>'dropdown','name'=>__('Select Events Page','eventon'), 'options'=>$this->event_pages(), 'desc'=>__('This will allow you to use this page with url slug /events/ as event archive page. Be sure to insert eventon shortcode in this page.','eventon')),
 					array('id'=>'evo_event_archive_page_template','type'=>'dropdown','name'=>__('Select Events Page Template','eventon'), 'options'=>$this->theme_templates()),
 					
 					array('id'=>'evo_event_slug','type'=>'text','name'=>__('EventOn Event Post Slug','eventon'), 'default'=>'events'),
 					array('id'=>'evcal__note','type'=>'note','name'=>__('NOTE: If you change the slug for events please be sure to refresh permalinks for the new single event pages to work properly..','eventon')),
+					array('id'=>'evcal__note','type'=>'note','name'=>__('PROTIP: If the /events page does not work due to theme/plugin conflicts, create a new page, call it <b>"Events Directory"</b> Insert eventon shortcode and use that as your main events page which will have a URL ending like /events-directory. This would be a perfect solution if you have conflicts with /events slug.','eventon')),
 				)
 			),array(
 				'id'=>'evcal_012',
@@ -404,8 +421,7 @@ class evo_settings_settings{
 
 			// otehr values
 				//get directions
-				if(!empty($this->evcal_opt[1]['evo_getdir']) && $this->evcal_opt[1]['evo_getdir']=='yes')
-					$rearrange_items['getdirection']=array('getdirection',__('Get Directions','eventon'));
+				$rearrange_items['getdirection']=array('getdirection',__('Get Directions','eventon'));
 				
 				//eventbrite
 				if(!empty($this->evcal_opt[1]['evcal_evb_events']) && $this->evcal_opt[1]['evcal_evb_events']=='yes')
@@ -575,7 +591,7 @@ class evo_settings_settings{
 	public function appearance(){
 		return apply_filters('eventon_appearance_add', 
 			array(
-				array('id'=>'evo_notice_1','type'=>'notice','name'=>__('Once you make changes to appearance make sure to clear browser and website cache to see results.','eventon'))
+				array('id'=>'evo_notice_1','type'=>'notice','name'=>sprintf(__('Once you make changes to appearance make sure to clear browser and website cache to see results. <br/>Can not find appearance? <a href="%s" target="_blank">See how you can add custom styles to change additional appearances</a>','eventon'),'http://www.myeventon.com/documentation/change-css-calendar/') )
 				
 				,array('id'=>'evoapp_code_1', 'type'=>'customcode','code'=>$this->appearance_theme_selector(), )
 				,array('id'=>'fc_mcolor','type'=>'multicolor','name'=>__('Multiple colors','eventon'),
@@ -693,42 +709,42 @@ class evo_settings_settings{
 				array('id'=>'evcal__bc1H','type'=>'color','name'=>'Event Card Background Color (Hover on clickable section)', 'default'=>'d8d8d8'),			
 				array('id'=>'evcal__evcbrb','type'=>'color','name'=>'Event Card Border Color', 'default'=>'cdcdcd'),
 
-				// get direction fiels
-				array('id'=>'evcal_fcx','type'=>'subheader','name'=>__('Get Directions Field','eventon')),
-				array('id'=>'fs_fonti3','type'=>'fontation','name'=>__('Get Directions','eventon'),
-					'variations'=>array(
-						array('id'=>'evcal_getdir_001', 'name'=>'Background Color', 'type'=>'color', 'default'=>'ffffff'),
-						array('id'=>'evcal_getdir_002', 'name'=>'Text Color', 'type'=>'color', 'default'=>'888888'),
-						array('id'=>'evcal_getdir_003', 'name'=>'Button Icon Color', 'type'=>'color', 'default'=>'858585'),
-					)
-				),			
+					// get direction fiels
+					array('id'=>'evcal_fcx','type'=>'subheader','name'=>__('Get Directions Field','eventon')),
+					array('id'=>'fs_fonti3','type'=>'fontation','name'=>__('Get Directions','eventon'),
+						'variations'=>array(
+							array('id'=>'evcal_getdir_001', 'name'=>'Background Color', 'type'=>'color', 'default'=>'ffffff'),
+							array('id'=>'evcal_getdir_002', 'name'=>'Text Color', 'type'=>'color', 'default'=>'888888'),
+							array('id'=>'evcal_getdir_003', 'name'=>'Button Icon Color', 'type'=>'color', 'default'=>'858585'),
+						)
+					),			
 
-				array('id'=>'evcal_fcx','type'=>'subheader','name'=>__('Buttons','eventon')),
-				array('id'=>'fs_fonti3','type'=>'fontation','name'=>__('Button Color','eventon'),
-					'variations'=>array(
-						array('id'=>'evcal_gen_btn_bgc', 'name'=>'Default State', 'type'=>'color', 'default'=>'237ebd'),
-						array('id'=>'evcal_gen_btn_bgcx', 'name'=>'Hover State', 'type'=>'color', 'default'=>'237ebd'),
-					)
-				),array('id'=>'fs_fonti4','type'=>'fontation','name'=>__('Button Text Color','eventon'),
-					'variations'=>array(
-						array('id'=>'evcal_gen_btn_fc', 'name'=>'Default State', 'type'=>'color', 'default'=>'ffffff'),
-						array('id'=>'evcal_gen_btn_fcx', 'name'=>'Hover State', 'type'=>'color', 'default'=>'ffffff'),
-					)
-				),
-				array('id'=>'fs_fonti5','type'=>'fontation','name'=>__('Close Button Color','eventon'),
-					'variations'=>array(
-						array('id'=>'evcal_closebtn', 'name'=>'Default State', 'type'=>'color', 'default'=>'eaeaea'),
-						array('id'=>'evcal_closebtnx', 'name'=>'Hover State', 'type'=>'color', 'default'=>'c7c7c7'),
-					)
-				),
-				array('id'=>'evcal_fcx','type'=>'hiddensection_close',),
+					array('id'=>'evcal_fcx','type'=>'subheader','name'=>__('Buttons','eventon')),
+					array('id'=>'fs_fonti3','type'=>'fontation','name'=>__('Button Color','eventon'),
+						'variations'=>array(
+							array('id'=>'evcal_gen_btn_bgc', 'name'=>'Default State', 'type'=>'color', 'default'=>'237ebd'),
+							array('id'=>'evcal_gen_btn_bgcx', 'name'=>'Hover State', 'type'=>'color', 'default'=>'237ebd'),
+						)
+					),array('id'=>'fs_fonti4','type'=>'fontation','name'=>__('Button Text Color','eventon'),
+						'variations'=>array(
+							array('id'=>'evcal_gen_btn_fc', 'name'=>'Default State', 'type'=>'color', 'default'=>'ffffff'),
+							array('id'=>'evcal_gen_btn_fcx', 'name'=>'Hover State', 'type'=>'color', 'default'=>'ffffff'),
+						)
+					),
+					array('id'=>'fs_fonti5','type'=>'fontation','name'=>__('Close Button Color','eventon'),
+						'variations'=>array(
+							array('id'=>'evcal_closebtn', 'name'=>'Default State', 'type'=>'color', 'default'=>'eaeaea'),
+							array('id'=>'evcal_closebtnx', 'name'=>'Hover State', 'type'=>'color', 'default'=>'c7c7c7'),
+						)
+					),
+					array('id'=>'evcal_fcx','type'=>'hiddensection_close',),
 
-				// featured events
-				array('id'=>'evcal_fcx','type'=>'subheader','name'=>__('Featured Events','eventon')),
-				array('id'=>'evo_fte_override','type'=>'yesno','name'=>'Override featured event color','legend'=>'This will override the event color you chose for featured event with a different color.','afterstatement'=>'evo_fte_override'),
-				array('id'=>'evo_fte_override','type'=>'begin_afterstatement'),
-					array('id'=>'evcal__ftec','type'=>'color','name'=>'Featured event left bar color', 'default'=>'ca594a'),
-				array('id'=>'evcal_ftovrr','type'=>'end_afterstatement'),
+					// featured events
+					array('id'=>'evcal_fcx','type'=>'subheader','name'=>__('Featured Events','eventon')),
+					array('id'=>'evo_fte_override','type'=>'yesno','name'=>'Override featured event color','legend'=>'This will override the event color you chose for featured event with a different color.','afterstatement'=>'evo_fte_override'),
+					array('id'=>'evo_fte_override','type'=>'begin_afterstatement'),
+						array('id'=>'evcal__ftec','type'=>'color','name'=>'Featured event left bar color', 'default'=>'ca594a'),
+					array('id'=>'evcal_ftovrr','type'=>'end_afterstatement'),
 			)
 		);
 	}

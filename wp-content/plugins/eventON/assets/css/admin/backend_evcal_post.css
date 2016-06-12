@@ -438,8 +438,9 @@
 	.eventon_settings_table{
 		border-top: 1px solid #999;
 		margin-top: 10px;
+		border-spacing:0px;
 	}	
-	.eventon_settings_table tr.yesnosub td:first-child{border-left: 2px solid #F9CA8D}
+	.eventon_settings_table tr.yesnosub td:first-child{border-left: 5px solid #F9CA8D}
 	.evo_negative_25 .eventon_settings_table td{padding-left: 25px; padding-right: 25px;}
 	.eventon_settings_table td{
 		border-bottom: 1px solid #858484;
@@ -447,6 +448,16 @@
 	}
 	.eventon_settings_table .yesno_leg_line{padding-top: 5px;padding-bottom: 8px;}
 	.eventon_settings_table input{width: 100%;}
+
+/* other general */
+	.evoselectfield_data_view{
+		background-color: #B9B8B8;
+		border-radius: 5px;
+		padding: 4px 8px 6px;
+		margin:0px 0 0 5px;
+		cursor: pointer;
+	}
+	.evoselectfield_data_view:hover{opacity: 0.7;}
 
 /*------------------ */
 /* ui v3 */
@@ -514,27 +525,20 @@
 		font:13px 'open sans';
 		border-top:2px solid #666565
 	}
-	.evomb_body.closed{
-		display:none
-	}
-	.evomb_body p{
-		margin:0; padding-bottom:5px;
-	}
+	.evomb_body.closed{	display:none	}
+	.evomb_body p{	margin:0; padding-bottom:5px;	}
 	#evo_mb input{
 		border-radius: 4px;
 		padding:3px 6px 4px;
 		font-style: italic;
 	}
-
 	.evomb_body input, select.evo_select_field, .evo_metafield_image input[type=button]{
 		-webkit-box-shadow: 0px 2px #686767;
 		box-shadow: 0px 2px #686767;
 		border:none;
 		border-radius: 4px;
 		line-height: 130%
-	}
-
-	
+	}	
 	#evo_mb label{
 		font-style:italic;
 		font-size:12px;
@@ -543,11 +547,7 @@
 		cursor: default;
 		color: #C9C6C6;
 	}
-
-
-	.evMB_end{
-		height:10px;width:100%;
-	}
+	.evMB_end{	height:10px;width:100%;	}
 
 /*-- third party meta fields */
 	.evoThirdparty_meta .evcal_db_data{

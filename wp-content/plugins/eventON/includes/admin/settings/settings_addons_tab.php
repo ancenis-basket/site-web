@@ -3,7 +3,7 @@
  * EventON Settings Tab for addons and licensing
  * 
  * @version 2.3.21
- * @updated 2016-3
+ * @updated 2016-4
  */
 
 global $ajde, $eventon;
@@ -29,6 +29,8 @@ global $ajde, $eventon;
 			$evo_licenses = $eventon->evo_updater->product->get_products_array();
 
 			$_evo_products = get_option('_evo_products');
+
+			$eventonVersion = $eventon->version; //$_evo_products['eventon']['version']
 			
 			// ACTIVATED
 				if($eventon->evo_updater->product->is_activated()):
@@ -42,7 +44,7 @@ global $ajde, $eventon;
 					?>
 						<div class="addon main activated <?php echo ($_hasUpdate)? 'hasupdate':null;?>">
 							<h2>EventON</h2>
-							<p class='version'><?php echo $_evo_products['eventon']['version'];?> <i>(<?php echo $_evo_products['eventon']['remote_version'];?>)</i></p>
+							<p class='version'><?php echo $eventonVersion;?> <i>(<?php echo $_evo_products['eventon']['remote_version'];?>)</i></p>
 							<p>License Status: <strong><?php _e('Activated','eventon');?></strong> | <a id='evoDeactLic' style='cursor:pointer'><?php _e('Deactivate','eventon');?></a></p>
 							<p>Purchase Key: <strong><?php echo $eventon->evo_updater->product->get_partial_license();?></strong></p>
 							<p><i><?php _e('Info: You have successfully activated this license on this site. You will need a seperate license to activate eventON for another site.','eventon');?></i><?php $ajde->wp_admin->echo_tooltips('EventON license you have purchased from Codecanyon, either regular or extended will allow you to install eventON in ONE site only. In order to install eventON in another site you will need a seperate license.');?></p>
@@ -55,7 +57,7 @@ global $ajde, $eventon;
 				?>
 				<div id='evo_license_main' class="addon main">
 					<h2>EventON</h2>
-					<p class='version'><?php echo $_evo_products['eventon']['version'];?><span>/<?php echo $_evo_products['eventon']['remote_version'];?></span></p>
+					<p class='version'><?php echo $eventonVersion;?><span>/<?php echo $_evo_products['eventon']['remote_version'];?></span></p>
 					<p class='status'><?php _e('License Status','eventon');?>: <strong><?php _e('Not Activated','eventon');?></strong></p>
 					<p class='action'><a class='ajde_popup_trig evo_admin_btn btn_prime' dynamic_c='1' content_id='eventon_pop_content_001' poptitle='Activate EventON License'>Activate Now</a></p>
 					<p class='activation_text'><i>EventON plugin and its addons should function 100% regardless license activation in here. Also we have cut down on autoupdate check times due to server crashes on our end and hope to resolve this in future versions. <a href='http://www.myeventon.com/documentation/how-to-find-eventon-license-key/' target='_blank'>How to find activation key</a><?php $eventon->throw_guide('EventON license you have purchased from Codecanyon, either regular or extended will allow you to install eventON in ONE site only. In order to install eventON in another site you will need a seperate license.');?></i>

@@ -3,7 +3,7 @@
  * helper fnctions for calendar
  *
  * @class 		evo_cal_help
- * @version		2.2.28
+ * @version		2.3.23
  * @package		EventON/Classes
  * @category	Class
  * @author 		AJDE
@@ -11,20 +11,36 @@
 
 class evo_cal_help {
 	
-	function get_eventinclasses($atts){
-		 
-		$classnames[] = (!empty($atts['img_thumb_src']) && !empty($atts['show_et_ft_img']) && $atts['show_et_ft_img']=='yes')? 'hasFtIMG':'';
+	// return classes array as a string
+		function get_eventinclasses($atts){
+			 
+			$classnames[] = (!empty($atts['img_thumb_src']) && !empty($atts['show_et_ft_img']) && $atts['show_et_ft_img']=='yes')? 'hasFtIMG':'';
 
-		$classnames[] = ($atts['event_type']!='nr')? 'event_repeat':null;		
-		$classnames[] = $atts['event_description_trigger'];
-		$classnames[] = (!empty($atts['existing_classes']['__featured']) && $atts['existing_classes']['__featured'])? 'featured_event':null;
-		$classnames[] = (!empty($atts['existing_classes']['_cancel']) && $atts['existing_classes']['_cancel'])? 'cancel_event':null;
+			$classnames[] = ($atts['event_type']!='nr')? 'event_repeat':null;	
+			$classnames[] = $atts['event_description_trigger'];
 
-		$classnames = array_merge($classnames, $atts['existing_classes']);
-		$classnames = array_filter($classnames);
+			$classnames[] = (!empty($atts['existing_classes']['__featured']) && $atts['existing_classes']['__featured'])? 'featured_event':null;
+			$classnames[] = (!empty($atts['existing_classes']['_cancel']) && $atts['existing_classes']['_cancel'])? 'cancel_event':null;
+			$classnames[] = (!empty($atts['existing_classes']['_completed']) && $atts['existing_classes']['_completed'])? 'completed-event':null;
 
-		return implode(' ',  $classnames);
-	}
+			$classnames[] = ($atts['monthlong'])? 'month_long':null;
+			$classnames[] = ($atts['yearlong'])? 'year_long':null;
+
+			
+			// filter through existing class and remove true false values
+				$existingClasses = array();
+				if(is_array($atts)){
+					foreach($atts['existing_classes'] as $field=>$value){
+						//if($field==0 || $field ==1) continue;
+						$existingClasses[$field]= $value;
+					}
+				}
+
+			$classnames = array_merge($classnames, $existingClasses);
+			$classnames = array_filter($classnames);
+
+			return implode(' ',  $classnames);
+		}
 
 	function implode($array=''){
 		if(empty($array))
@@ -70,32 +86,39 @@ class evo_cal_help {
 	}
 
 	// sort eventcard fields 
-	function eventcard_sort($array, $opt){
+		function eventcard_sort($array, $opt){
 
-		$evoCard_order = $opt['evoCard_order'];
-		
-		$new_array = array();
-		
-		// create an array
-		$correct_order = (!empty($evoCard_order))? 
-			explode(',',$evoCard_order): null;
-		
-		if(!empty($correct_order)){
-			$evoCard_hide = (!empty($opt['evoCard_hide']))? 
-				explode(',',$opt['evoCard_hide']): null;
+			$evoCard_order = $opt['evoCard_order'];
+			
+			$new_array = array();
+			
+			// create an array
+			$correct_order = (!empty($evoCard_order))? 
+				explode(',',$evoCard_order): null;
+			
+			if(!empty($correct_order)){
+				$evoCard_hide = (!empty($opt['evoCard_hide']))? 
+					explode(',',$opt['evoCard_hide']): null;
 
-			// each saved order item
-			foreach($correct_order as $box){
-				if(array_key_exists($box, $array) 
-					&& (!empty($evoCard_hide) && !in_array($box, $evoCard_hide) || empty($evoCard_hide)) 
-				){
-					$new_array[$box]=$array[$box];
+				// each saved order item
+				foreach($correct_order as $box){
+					if(array_key_exists($box, $array) 
+						&& (!empty($evoCard_hide) && !in_array($box, $evoCard_hide) || empty($evoCard_hide)) 
+					){
+						$new_array[$box]=$array[$box];
+					}
 				}
-			}
-		}else{
-			$new_array = $array;
-		}	
-		return $new_array;
-	}
+			}else{
+				$new_array = $array;
+			}	
+			return $new_array;
+		}
+
+	// get repeating intervals for the event
+		function get_ri_for_event($event_){
+			return (!empty($event_['event_repeat_interval'])? 
+				$event_['event_repeat_interval']: 
+				( !empty($_GET['ri'])?$_GET['ri']: 0) );
+		}
 
 }

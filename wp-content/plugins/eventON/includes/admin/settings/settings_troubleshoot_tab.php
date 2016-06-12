@@ -19,6 +19,7 @@
 								'How do I change the time to 24 hour format instead or AM/PM?'=>'Go to Settings> General on the lower part on this page you should find “Date Format” and “Time Format” settings for your website. Simply making changes in here to reflect 24 hour time format will change the time on Event Calendar to 24 hour time format.',
 								'Some data fields (like RSVP box, Event Tickets etc.) are not showing in the eventcard, why is this?'=>'Once you activate these new data field boxes make sure to go to <b>myeventon> settings> eventCard</b> and under Re-arrange the order of eventCard event data boxes – make sure the new box is showing up and placed correct. Then click Save Changes',
 								'How do I show more fields on event top?'=>'Go to  <b>myEventon> Settings> EventTop</b>  and select other fields you want to show on eventtop.',
+								'Add to calendar time is incorrect'=>'Go to  <b>Settings > General> Timezone</b> and make sure the timezone set is correct timezone for your location. Add to calendar ICS and google calendar will adjust time based on this timezone value set.',
 
 						),
 						'Common Issues'=>array(

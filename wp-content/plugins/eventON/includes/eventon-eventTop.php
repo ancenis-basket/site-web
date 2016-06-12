@@ -11,7 +11,7 @@ function eventon_get_eventtop_print($array, $evOPT, $evOPT2){
 	$_additions = apply_filters('evo_eventtop_adds' , array());
 
 	foreach($array as $element =>$elm){
-		
+
 		// convert to an object
 		$object = new stdClass();
 		foreach ($elm as $key => $value){
@@ -32,11 +32,11 @@ function eventon_get_eventtop_print($array, $evOPT, $evOPT2){
 			case 'ft_img':
 				$url = !empty($object->url_med)? $object->url_med: $object->url;
 				$url = apply_filters('eventon_eventtop_image_url', $url);
-				$OT.= "<span class='ev_ftImg' style='background-image:url(".$url.")'></span>";
+				$OT.= "<span class='ev_ftImg' data-img='".(!empty($object->url_full)? $object->url_full[0]: '')."' data-thumb='".$url."' style='background-image:url(".$url.")'></span>";
 			break;
 			case 'day_block':
 
-				$OT.="<span class='evcal_cblock' data-bgcolor='".$object->color."' data-smon='".$object->start['F']."' data-syr='".$object->start['Y']."'><em class='evo_date' >".$object->day_name.$object->html['html_date'].'</em>';
+				$OT.="<span class='evcal_cblock ".( $object->yearlong?'yrl ':null).( $object->monthlong?'mnl ':null)."' data-bgcolor='".$object->color."' data-smon='".$object->start['F']."' data-syr='".$object->start['Y']."'><em class='evo_date' >".$object->day_name.$object->html['html_date'].'</em>';
 				$OT.="<em class='evo_time'>".$object->html['html_time']."</em>";
 				$OT.= "<em class='clear'></em></span>";
 
@@ -44,8 +44,8 @@ function eventon_get_eventtop_print($array, $evOPT, $evOPT2){
 
 			// title section of the event top
 			case 'titles':
-				$show_widget_eventtops = (!empty($evOPT['evo_widget_eventtop']) && $evOPT['evo_widget_eventtop']=='yes')? '':'hide_eventtopdata';
-				$OT.= "<span class='evcal_desc evo_info ".$show_widget_eventtops. ( $object->yearlong?'yrl':null)."' {$object->loc_vars} >";
+				$show_widget_eventtops = (!empty($evOPT['evo_widget_eventtop']) && $evOPT['evo_widget_eventtop']=='yes')? '':'hide_eventtopdata ';
+				$OT.= "<span class='evcal_desc evo_info ".$show_widget_eventtops. ( $object->yearlong?'yrl ':null).( $object->monthlong?'mnl ':null)."' {$object->loc_vars} >";
 				
 				// above title inserts
 				$OT.= "<span class='evo_above_title'>";
@@ -54,8 +54,13 @@ function eventon_get_eventtop_print($array, $evOPT, $evOPT2){
 					if($object->cancel)
 						$OT.= "<span class='evo_event_headers canceled' title='".(!empty($object->cancel_reason)? $object->cancel_reason: null)."'>".( eventon_get_custom_language( $evOPT2,'evcal_evcard_evcancel', 'Event Cancelled')  )."</span>";
 				$OT.="</span>";
+
+				// event edit button
+					$editBTN = '';
+					if( current_user_can('manage_options') && !empty($evOPT['evo_showeditevent']) && $evOPT['evo_showeditevent']=='yes')
+						$editBTN = "<i href='".get_edit_post_link($object->eventid)."' class='editEventBtnET fa fa-pencil'></i>";
 				
-				$OT.= "<span class='evcal_desc2 evcal_event_title' itemprop='name'>".$object->title."</span>";
+				$OT.= "<span class='evcal_desc2 evcal_event_title' itemprop='name'>".$object->title.$editBTN."</span>";
 				
 				// below title inserts
 				$OT.= "<span class='evo_below_title'>";
@@ -87,50 +92,6 @@ function eventon_get_eventtop_print($array, $evOPT, $evOPT2){
 				if($object->fields_ && in_array('organizer',$object->fields) && !empty($org)){
 					$OT.="<em class='evcal_oganizer'><i>".( eventon_get_custom_language( $evOPT2,'evcal_evcard_org', 'Event Organized By')  ).':</i> '.$org."</em>";
 				}
-				
-
-				//======pab addition for arbitres table et bar=======
-				//arbitres
-				$OT.="</span>";
-				$OT.="<span class='evcal_desc3'>";
-
-				$org = (!empty($object->evvals['arbitres']))? $object->evvals['arbitres'][0]:'';
-				if($object->fields_ && in_array('organizer',$object->fields) && !empty($org)){
-					$OT.="<em class='evcal_oganizer'><i>"."Arbitres : </i> ";
-					$datas = unserialize($org);
-					foreach($datas as $arb){
-						$OT.=get_the_title($arb).", ";
-					}
-					$OT.="</em>";
-				}
-				$OT.="</span>"; 
-				//table
-				$OT.="<span class='evcal_desc3'>";
-
-				$org = (!empty($object->evvals['table']))? $object->evvals['table'][0]:'';
-				if($object->fields_ && in_array('organizer',$object->fields) && !empty($org)){
-					$OT.="<em class='evcal_oganizer'><i>"."Table de marque : </i> ";
-					$datas = unserialize($org);
-					foreach($datas as $otm){
-						$OT.=get_the_title($otm).", ";
-					}
-					$OT.="</em>";
-				}
-				$OT.="</span>"; 
-				//bar
-				$OT.="<span class='evcal_desc3'>";
-
-				$org = (!empty($object->evvals['bar']))? $object->evvals['bar'][0]:'';
-				if($object->fields_ && in_array('organizer',$object->fields) && !empty($org)){
-					$OT.="<em class='evcal_oganizer'><i>"."Bar : </i> ";
-					$datas = unserialize($org);
-					foreach($datas as $bar){
-						$OT.=get_the_title($bar).", ";
-					}
-					$OT.="</em>";
-				}
-				$OT.="</span>"; 
-
 				//event type
 				if($object->tax)
 					$OT.= $object->tax;

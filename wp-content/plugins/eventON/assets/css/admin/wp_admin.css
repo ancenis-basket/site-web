@@ -29,6 +29,7 @@
  	.yesno_leg_line span.ajde_yn_btn {position: absolute;}
  	.evomb_body .ajdeToolTip:before{color: #CECECE}
  	.evomb_body .ajdeToolTip{opacity: 0.9;}
+ 	.yesno_row {display: inline-block;}
 
 /* transitions */
 	.ajde_popup_text .eventon_shortcode_btn, table.evo_metatable tr{
@@ -658,7 +659,10 @@
 	.evoLANG_subsec{padding-left: 10px; padding-bottom: 10px;}
 	.eventon_custom_lang_line span.ajdeToolTip{margin-top: 5px;}
 	.eventon_custom_lang_line span.ajdeToolTip:before{color:#000;}
-
+/* RTL for backend */
+	.evo_settings_box.adminRTL .yesno_row span.field_name{padding-left: 0;padding-right: 80px;}
+	.evo_settings_box.adminRTL .ajde_yn_btn.NO .btn_inner{margin-right: -43px; }
+	.evo_settings_box.adminRTL .catchHandle:before{margin-right: 0px;}
 /* support */	
 	.evo_support_box{
 		border-radius:3px;

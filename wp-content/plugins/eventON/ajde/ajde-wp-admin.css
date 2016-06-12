@@ -208,13 +208,13 @@
 		display:inline-block;		
 	}
 	.ajdeToolTip:hover, .yesno_row .ajdeToolTip:hover{opacity: 1}
-	.ajdeToolTip:hover em, .yesno_row .ajdeToolTip:hover em{
+	.ajdeToolTip:hover em, .yesno_row .ajdeToolTip:hover em, .ajdethistooltip:hover em{
 		opacity: 1;
 		visibility: visible;
 		-webkit-transform: translateY(0);
 		transform: translateY(0);
 	}
-	.ajdeToolTip em{
+	.ajdeToolTip em, .ajdethistooltip em{
 		visibility: hidden;
 		font:12px 'open sans';
 		position: absolute;
@@ -235,12 +235,12 @@
 		transform: translateY(-15px);
 		pointer-event:none;
 	}
-	.ajdeToolTip em a{color:#fff}
-	.ajdeToolTip.L em{
+	.ajdeToolTip em a, .ajdethistooltip em a{color:#fff}
+	.ajdeToolTip.L em, .ajdethistooltip.L em{
 		right:5px;
 		left:auto;
 	}
-	.ajdeToolTip em:before{
+	.ajdeToolTip em:before, .ajdethistooltip em:before{
 		content: "";
 		width: 0px;
 		height: 0px;
@@ -251,7 +251,7 @@
 		bottom: -9px;
 		left: 0px;
 	}
-	.ajdeToolTip.L em:before{
+	.ajdeToolTip.L em:before, .ajdethistooltip.L em:before{
 		left:auto;
 		right:0px;
 		border-width: 0 9px 9px 0 ;
@@ -259,29 +259,32 @@
 	}
 	
 	/* under left */
-	.ajdeToolTip.UL em{
+	.ajdeToolTip.UL em, .ajdethistooltip.UL em{
 		bottom: auto;
 		top: 30px;
 		left: auto;
 		right: 4px;
 	}
-	.ajdeToolTip.UL em:before{
+	.ajdeToolTip.UL em:before, .ajdethistooltip.UL em:before{
 		left: auto; right: 0; top: -9px;
 		border-width: 0 0 9px 9px;
 		border-color: transparent transparent #6B6B6B transparent;
 	}
 	/* under right */
-	.ajdeToolTip.U em{
+	.ajdeToolTip.U em, .ajdethistooltip.U em{
 		bottom: auto;
 		top: 30px;
 		right: auto;
 		left: 4px;
 	}
-	.ajdeToolTip.U em:before{
+	.ajdeToolTip.U em:before, .ajdethistooltip.U em:before{
 		right: auto; left: 0; top: -9px;
 		border-width: 9px 0 0 9px;
 		border-color: transparent transparent transparent #6B6B6B ;
 	}
+	/* self hosted tooltip*/
+		.ajdethistooltip{position: relative;}
+		.ajdethistooltip.L em{right: 15px;}
 /* icon selector */
 	.ajde_fa_icons_selector {
 	  background-color: #fff;

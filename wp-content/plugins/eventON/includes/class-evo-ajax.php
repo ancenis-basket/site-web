@@ -169,6 +169,8 @@ class evo_ajax{
 
 			// summary for ICS file
 			$event = get_post($event_id);
+			if(empty($event)) return false;
+			
 			$content = (!empty($event->post_content))? $event->post_content:'';
 			if(!empty($content)){
 				$content = strip_tags($content);
@@ -215,6 +217,7 @@ class evo_ajax{
 		    $text = str_replace("\r", "\r\n ", $text);
 		    $text = str_replace("\n", "\r\n ", $text);
 		    $text = str_replace(",", "\, ", $text);
+		    $text = htmlspecialchars_decode($text);
 		    return $text;
 		}
 
@@ -309,7 +312,9 @@ class evo_ajax{
 						$csvRow.= '"'.$eventName.'",';
 
 					$event_content = get_the_content();
-					$csvRow.= '"'.str_replace('"', "'", $event_content).'",';
+						$event_content = str_replace('"', "'", $event_content);
+						$event_content = str_replace(',', "\,", $event_content);
+					$csvRow.= '"'.$event_content.'",';
 
 					// start time
 						$start = (!empty($pmv['evcal_srow'])?$pmv['evcal_srow'][0]:'');
@@ -327,7 +332,7 @@ class evo_ajax{
 					foreach($fields as $var=>$val){
 						
 						// yes no values
-						if(in_array($val, array('featured','all_day','hide_end_time','event_gmap','evo_year_long','repeatevent'))){
+						if(in_array($val, array('featured','all_day','hide_end_time','event_gmap','evo_year_long','_evo_month_long','repeatevent'))){
 							$csvRow.= ( (!empty($pmv[$var]) && $pmv[$var][0]=='yes') ? 'yes': 'no').',';
 						}
 
@@ -351,7 +356,7 @@ class evo_ajax{
 							}
 
 						// skip fields
-						if(in_array($val, array('featured','all_day','hide_end_time','event_gmap','evo_year_long','repeatevent','color','publish_status','event_name','event_description','event_start_date','event_start_time','event_end_date','event_end_time','evo_organizer_id', 'evo_location_id'))) continue;
+						if(in_array($val, array('featured','all_day','hide_end_time','event_gmap','evo_year_long','_evo_month_long','repeatevent','color','publish_status','event_name','event_description','event_start_date','event_start_time','event_end_date','event_end_time','evo_organizer_id', 'evo_location_id'))) continue;
 
 						// image
 						if($val =='image_url'){

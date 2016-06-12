@@ -1,7 +1,7 @@
 <?php
 /**
  * event card content processed and output as html
- * @version 2.3.11
+ * @version 2.3.21
  */
 function eventon_eventcard_print($array, $evOPT, $evoOPT2){
 	global $eventon;
@@ -105,7 +105,7 @@ function eventon_eventcard_print($array, $evOPT, $evoOPT2){
 								<div class='evcal_evdata_row evo_location'>
 									<span class='evcal_evdata_icons'><i class='fa ".get_eventON_icon('evcal__fai_003', 'fa-map-marker',$evOPT )."'></i></span>
 									<div class='evcal_evdata_cell'>							
-										<h3 class='evo_h3'>".($locationLink? $locationLink:'').eventon_get_custom_language($evoOPT2, 'evcal_lang_location','Location').($locationLink?'</a>':'')."</h3>". ( (!empty($object->location_name))? "<p class='evo_location_name'>".stripslashes($object->location_name)."</p>":null ) ."<p>". ( !empty($object->address)? $object->address: null)."</p>
+										<h3 class='evo_h3'>".($locationLink? $locationLink:'').eventon_get_custom_language($evoOPT2, 'evcal_lang_location','Location').($locationLink?'</a>':'')."</h3>". ( (!empty($object->location_name))? "<p class='evo_location_name'>".stripslashes($object->location_name)."</p>":null ) ."<p>". ( !empty($object->address)? stripslashes($object->address): null)."</p>
 									</div>
 								</div>
 							</div><div class='clear'></div>
@@ -171,10 +171,13 @@ function eventon_eventcard_print($array, $evOPT, $evoOPT2){
 					$img_src = (!empty($ORGMeta['evo_org_img'])? 
 						wp_get_attachment_image_src($ORGMeta['evo_org_img'],'medium'): null);
 
-					// organizer name text
-						$orgNAME = (!empty($ORGMeta['evcal_org_exlink']))?
-							"<span class='evo_card_organizer_name_t'><a href='{$ORGMeta['evcal_org_exlink']}'>".$object->organizer_name."</a></span>":
-							"<span class='evo_card_organizer_name_t'>".$object->organizer_name."</span>";
+					// organizer name text openinnewwindow
+						if(!empty($ORGMeta['evcal_org_exlink'])){
+							$orgNAME = "<span class='evo_card_organizer_name_t'><a ".( $object->openinnewwindow=='yes'?'target="_blank"':'')." href='{$ORGMeta['evcal_org_exlink']}'>".$object->organizer_name."</a></span>";
+						}else{
+							$orgNAME = "<span class='evo_card_organizer_name_t'>".$object->organizer_name."</span>";
+						}					
+							
 					
 					$OT.= "<div class='evo_metarow_organizer evorow evcal_evdata_row bordb evcal_evrow_sm ".$end_row_class."'>
 							<span class='evcal_evdata_icons'><i class='fa ".get_eventON_icon('evcal__fai_004', 'fa-headphones',$evOPT )."'></i></span>
@@ -184,8 +187,7 @@ function eventon_eventcard_print($array, $evOPT, $evoOPT2){
 									"<p class='evo_data_val evo_card_organizer_image'><img src='{$img_src[0]}'/></p>":null)."
 								<div class='evo_card_organizer'><p class='evo_data_val evo_card_organizer_name'>
 									".$orgNAME.(!empty($ORGMeta['evcal_org_contact'])? 
-									"<span class='evo_card_organizer_contact'>{$ORGMeta['evcal_org_contact']}</span>":null)."</p></div>
-								
+									"<span class='evo_card_organizer_contact'>{$ORGMeta['evcal_org_contact']}</span>":null)."</p></div>								
 							</div>
 						".$end."</div>";
 					
@@ -210,15 +212,32 @@ function eventon_eventcard_print($array, $evOPT, $evoOPT2){
 			// learnmore ICS and close button
 				case 'learnmoreICS':				
 
-					//$__ics_data_vars = "data-start='{$object->estart}' data-end='{$object->eend}' data-location='{$object->eloc}' data-summary='{$object->etitle}' data-stamp='{$object->estamp}'";
-					$__ics_url =admin_url('admin-ajax.php').'?action=eventon_ics_download&amp;event_id='.$object->event_id.'&amp;sunix='.$object->estart.'&amp;eunix='.$object->eend;
+					// Initial 
+						$__ics_url =admin_url('admin-ajax.php').'?action=eventon_ics_download&amp;event_id='.$object->event_id.'&amp;sunix='.$object->estart.'&amp;eunix='.$object->eend;
+						$__googlecal_link = eventon_get_addgoogle_cal($object);
 
-					// /print_r($object);
+					// which options to show for add to calendar
+						$addCaloptions = !empty($evOPT['evo_addtocal'])? $evOPT['evo_addtocal']: 'all';
+						$addCalContent = '';
 
-					$__googlecal_link = eventon_get_addgoogle_cal($object);
+					// add to cal section
+						switch($addCaloptions){
+							case 'ics':
+								$addCalContent = "<a href='{$__ics_url}' class='evo_ics_nCal' title='".eventon_get_custom_language($evoOPT2, 'evcal_evcard_addics','Add to your calendar')."'>".eventon_get_custom_language($evoOPT2, 'evcal_evcard_calncal','Calendar')."</a>";
+							break;
+							case 'gcal':
+								$addCalContent = "<a href='{$__googlecal_link}' target='_blank' class='evo_ics_gCal' title='".eventon_get_custom_language($evoOPT2, 'evcal_evcard_addgcal','Add to google calendar')."'>".eventon_get_custom_language($evoOPT2, 'evcal_evcard_calgcal','GoogleCal')."</a>";
+							break;
+							case 'all':
+								$addCalContent = "<a href='{$__ics_url}' class='evo_ics_nCal' title='".eventon_get_custom_language($evoOPT2, 'evcal_evcard_addics','Add to your calendar')."'>".eventon_get_custom_language($evoOPT2, 'evcal_evcard_calncal','Calendar')."</a>".
+									"<a href='{$__googlecal_link}' target='_blank' class='evo_ics_gCal' title='".eventon_get_custom_language($evoOPT2, 'evcal_evcard_addgcal','Add to google calendar')."'>".eventon_get_custom_language($evoOPT2, 'evcal_evcard_calgcal','GoogleCal')."</a>";
+							break;
+						}
+
+					
 
 					// learn more and ICS
-					if( !empty($object->learnmorelink) && !empty($evOPT['evo_ics']) && $evOPT['evo_ics']=='yes'){
+					if( !empty($object->learnmorelink) && $addCaloptions!='none'){
 						
 						ob_start();					
 						?>
@@ -235,15 +254,12 @@ function eventon_eventcard_print($array, $evOPT, $evoOPT2){
 								<div class='evcal_evdata_row'>
 									<span class="evcal_evdata_icons"><i class="fa fa-calendar"></i></span>
 									<div class='evcal_evdata_cell'>
-										<p><a href='<?php echo $__ics_url;?>' class='evo_ics_nCal' title='<?php echo eventon_get_custom_language($evoOPT2, 'evcal_evcard_addics','Add to your calendar');?>'><?php echo eventon_get_custom_language($evoOPT2, 'evcal_evcard_calncal','Calendar');?></a>
-										<a href='<?php echo $__googlecal_link;?>' target='_blank' class='evo_ics_gCal' title='<?php echo eventon_get_custom_language($evoOPT2, 'evcal_evcard_addgcal','Add to google calendar');?>'><?php echo eventon_get_custom_language($evoOPT2, 'evcal_evcard_calgcal','GoogleCal');?></a>
-										</p>	
+										<p><?php echo $addCalContent;?></p>	
 									</div>
 								</div>
 							</div></div></div>
 						<?php echo $end;?></div>
 						<?php
-
 						$OT.= ob_get_clean();
 					
 					// only learn more
@@ -256,7 +272,7 @@ function eventon_eventcard_print($array, $evOPT, $evoOPT2){
 							".$end."</div>";
 
 					// only ICS
-					}else if(!empty($evOPT['evo_ics']) && $evOPT['evo_ics']=='yes'){
+					}else if($addCaloptions!='none'){
 
 						ob_start();
 						//echo get_option('gmt_offset', 0).'ttt';
@@ -264,15 +280,10 @@ function eventon_eventcard_print($array, $evOPT, $evoOPT2){
 						<div class='evo_metarow_ICS evorow bordb evcal_evdata_row'>
 							<span class="evcal_evdata_icons"><i class="fa fa-calendar"></i></span>
 							<div class='evcal_evdata_cell'>
-								<p><a href='<?php echo $__ics_url;?>' class='evo_ics_nCal' title='<?php echo eventon_get_custom_language($evoOPT2, 'evcal_evcard_addics','Add to your calendar');?>'><?php echo eventon_get_custom_language($evoOPT2, 'evcal_evcard_calncal','Calendar');?></a>
-								<a href='<?php echo $__googlecal_link;?>' target='_blank' class='evo_ics_gCal' title='<?php echo eventon_get_custom_language($evoOPT2, 'evcal_evcard_addgcal','Add to google calendar');?>'><?php echo eventon_get_custom_language($evoOPT2, 'evcal_evcard_calgcal','GoogleCal');?></a>
-								</p>	
+								<p><?php echo $addCalContent;?></p>	
 							</div><?php echo $end;?>
 						</div>
-
-
 						<?php
-
 						$OT.= ob_get_clean();
 					}
 				

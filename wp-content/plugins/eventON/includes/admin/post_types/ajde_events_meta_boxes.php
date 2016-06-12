@@ -49,6 +49,7 @@ class evo_event_metaboxes{
 				$_featured = evo_meta($event_pmv, '_featured');
 				$_cancel = evo_meta($event_pmv, '_cancel');
 				$_onlyloggedin = evo_meta($event_pmv, '_onlyloggedin');
+				$_completed = evo_meta($event_pmv, '_completed');
 			?>
 				<div class="misc-pub-section" >
 				<div class='evo_event_opts'>
@@ -72,6 +73,18 @@ class evo_event_metaboxes{
 								'input'=>true,
 								'label'=>__('Featured Event','eventon'),
 								'guide'=>__('Make this event a featured event','eventon'),
+								'guide_position'=>'L'
+							));
+						?>	
+					</p>
+					<p class='yesno_row evo'>
+						<?php 	echo $ajde->wp_admin->html_yesnobtn(
+							array(
+								'id'=>'_completed', 
+								'var'=>$_completed,
+								'input'=>true,
+								'label'=>__('Event Completed','eventon'),
+								'guide'=>__('Mark this event as completed','eventon'),
 								'guide_position'=>'L'
 							));
 						?>	
@@ -351,11 +364,24 @@ class evo_event_metaboxes{
 				}else{
 					switch($mBOX['id']){
 						case 'ev_learnmore':
+							
+
 							echo "<div class='evcal_data_block_style1'>
 							<div class='evcal_db_data'>
-								<input type='text' id='evcal_lmlink' name='evcal_lmlink' value='". ((!empty($ev_vals["evcal_lmlink"]) )? $ev_vals["evcal_lmlink"][0]:null)."' style='width:100%'/><br/>
-								<input type='checkbox' name='evcal_lmlink_target' value='yes' ". ((!empty($ev_vals["evcal_lmlink_target"]) && $ev_vals["evcal_lmlink_target"][0]=='yes')? 'checked="checked"':null)."/> "._e('Open in New window','eventon').
-							"</div></div>";
+								<input type='text' id='evcal_lmlink' name='evcal_lmlink' value='". ((!empty($ev_vals["evcal_lmlink"]) )? $ev_vals["evcal_lmlink"][0]:null)."' style='width:100%'/><br/>";
+								?>
+								<span class='yesno_row evo'>
+									<?php 	
+									$openInNewWindow = (!empty($ev_vals["evcal_lmlink_target"]))? $ev_vals["evcal_lmlink_target"][0]: null;
+									echo $ajde->wp_admin->html_yesnobtn(array(
+										'id'=>'evcal_lmlink_target',
+										'var'=>$openInNewWindow,
+										'input'=>true,
+										'label'=>__('Open in New window','eventon')
+									));?>											
+								</span>
+
+							<?php echo "</div></div>";
 						break;
 
 						case 'ev_uint':
@@ -406,7 +432,8 @@ class evo_event_metaboxes{
 							?>
 							<div class='evcal_data_block_style1'>
 								<p class='edb_icon evcal_edb_map'></p>
-								<div class='evcal_db_data'>			
+								<div class='evcal_db_data'>
+									<div class='evcal_location_data_section'>		
 									<p>
 									<?php
 										// organier terms for event post
@@ -422,7 +449,7 @@ class evo_event_metaboxes{
 											
 											if(count($terms)>0){
 												echo "<select id='evcal_organizer_field' name='evcal_organizer_name_select' class='evo_select_field'>
-													<option value=''>".__('Select a saved organizer','eventon')."</option>";
+													<option value='-'>".__('Select a saved organizer','eventon')."</option>";
 											    foreach ( $terms as $term ) {
 
 											    	$ORG_imgid = $ORG_imgsrc = '';
@@ -436,14 +463,22 @@ class evo_event_metaboxes{
 															wp_get_attachment_image_src($ORG_imgid,'medium'): false;
 															$ORG_imgsrc = ($img_src)? $img_src[0]: '';
 
-											       	echo "<option value='". $term->name ."' data-tid='{$t_id}' data-contact='".( $this->termmeta($term_meta,'evcal_org_contact'))  ."' data-img='". ( $this->termmeta($term_meta,'evo_org_img') ) ."' {$__selected} data-imgsrc='{$ORG_imgsrc}' data-exlink='".( $this->termmeta($term_meta,'evcal_org_exlink') )  ."'>" . $term->name . "</option>";						        
+											       	echo "<option value='". $term->name ."' data-tid='{$t_id}' data-contact='".( $this->termmeta($term_meta,'evcal_org_contact'))  ."' data-img='". ( $this->termmeta($term_meta,'evo_org_img') ) ."' {$__selected} data-imgsrc='{$ORG_imgsrc}' data-exlink='".( $this->termmeta($term_meta,'evcal_org_exlink') )  ."' data-address='".( $this->termmeta($term_meta,'evcal_org_address') )  ."'>" . $term->name . "</option>";						        
 											    }						    
-											    echo "</select> <label for='evcal_organizer_field'>".__('Choose already saved organizer or type new one below. NOTE: if you retype an existing organizer it will replace old information for that saved organizer','eventon')."</label>";
+											    echo "</select>";
+
+											    echo "<span class='evoselectfield_data_view evo_btn' style='display:".($evo_organizer_tax_id?'':'none')."'>".__('Edit Organizer','eventon')."</span>";
+
+											    echo "<label for='evcal_organizer_field'>".__('Choose already saved organizer or type new one below. NOTE: if you retype an existing organizer it will replace old information for that saved organizer','eventon')."</label>";
 											}
 									?>
-									<input id='evo_organizer_tax_id' type='hidden' name='evo_organizer_tax_id' value='<?php echo $evo_organizer_tax_id;?>'/>
-									<input type='text' id='evcal_organizer_name' name='evcal_organizer' value="<?php echo !empty($organizer_terms[0])? $organizer_terms[0]->name:''; ?>" style='width:100%' placeholder='<?php _e('eg. Blue Light Band','eventon');?>'/><label for='evcal_organizer'><?php _e('Event Organizer Name','eventon')?></label></p>
+
 									
+									<input id='evo_organizer_tax_id' type='hidden' name='evo_organizer_tax_id' value='<?php echo $evo_organizer_tax_id;?>'/>
+									</p>
+									
+									<div class='evoselectfield_saved_data'>
+									<p><input type='text' id='evcal_organizer_name' name='evcal_organizer' value="<?php echo !empty($organizer_terms[0])? $organizer_terms[0]->name:''; ?>" style='width:100%' placeholder='<?php _e('eg. Blue Light Band','eventon');?>'/><label for='evcal_organizer'><?php _e('Event Organizer Name','eventon')?></label></p>
 									<!-- organizer contact -->
 									<p><input type='text' id='evcal_org_contact' name='evcal_org_contact' value="<?php echo $this->termmeta($termMeta,'evcal_org_contact');?>" style='width:100%' placeholder='<?php _e('eg. noone[at] thismail.com','eventon');?>'/><label for='evcal_org_contact'><?php _e('(Optional) Organizer Contact Information','eventon')?></label></p>
 
@@ -451,7 +486,20 @@ class evo_event_metaboxes{
 									<p><input type='text' id='evcal_org_address' name='evcal_org_address' value="<?php echo $this->termmeta($termMeta,'evcal_org_address');?>" style='width:100%' placeholder='<?php _e('eg. 123 Everywhere St., Neverland AB','eventon');?>'/><label for='evcal_org_address'><?php _e('(Optional) Organizer Address','eventon')?></label></p>
 
 									<!-- organizer link -->
-									<p><input type='text' id='evcal_org_exlink' name='evcal_org_exlink' value="<?php echo $this->termmeta($termMeta,'evcal_org_exlink');?>" style='width:100%' placeholder='<?php _e('eg. http://www.mysite.com/user','eventon');?>'/><label for='evcal_org_exlink'><?php _e('Link to the organizers page','eventon')?></label></p>
+									<p><input type='text' id='evcal_org_exlink' name='evcal_org_exlink' value="<?php echo $this->termmeta($termMeta,'evcal_org_exlink');?>" style='width:100%' placeholder='<?php _e('eg. http://www.mysite.com/user','eventon');?>'/>
+
+										<span class='yesno_row evo'>
+											<?php 	
+											$_evocal_org_exlink_target = (!empty($ev_vals["_evocal_org_exlink_target"]))? $ev_vals["_evocal_org_exlink_target"][0]: null;
+											echo $ajde->wp_admin->html_yesnobtn(array(
+												'id'=>'_evocal_org_exlink_target', 
+												'var'=>$_evocal_org_exlink_target,
+												'input'=>true,
+												'label'=>__('Open organizer link in new window','eventon')
+											));?>											
+										</span>
+
+									<label for='evcal_org_exlink'><?php _e('Link to the organizers page','eventon')?></label></p>
 									
 									<!-- image -->
 									<?php 
@@ -478,6 +526,10 @@ class evo_event_metaboxes{
 				                    		<label><?php _e('Event Organizer Image','eventon');?> (<?php _e('Recommended Resolution 80x80px','eventon');?>)</label>
 				                    	</p>
 				                    </div>
+
+				                    </div> <!-- evoselectfield_saved_data-->
+
+				                    </div><!--.evcal_location_data_section-->
 									
 									<!-- yea no field - hide organizer field from eventcard -->
 									<p class='yesno_row evo'>
@@ -498,16 +550,18 @@ class evo_event_metaboxes{
 							?>
 							<div class='evcal_data_block_style1'>
 								<p class='edb_icon evcal_edb_map'></p>
-								<div class='evcal_db_data'>			
+								<div class='evcal_db_data'>
+									<div class='evcal_location_data_section'>	
 									<p>
 									<?php
 
 										// location terms for event post
-											$evo_location_tax_id = $termMeta= '';
+											$evo_location_tax_id = $termMeta= $evoLocSlug = '';
 
 											$location_terms = wp_get_post_terms($p_id, 'event_location');
 											if ( $location_terms && ! is_wp_error( $location_terms ) ){
 												$evo_location_tax_id =  $location_terms[0]->term_id;
+												$evoLocSlug = $location_terms[0]->slug;
 												$termMeta = get_option( "taxonomy_$evo_location_tax_id");
 											}
 
@@ -517,7 +571,7 @@ class evo_event_metaboxes{
 											if(count($terms)>0){
 
 												echo "<select id='evcal_location_field' name='evcal_location_name_select' class='evo_select_field'>
-													<option value=''>".__('Select a saved location','eventon')."</option>";
+													<option value='-'>".__('Select a saved location','eventon')."</option>";
 											    foreach ( $terms as $term ) {
 
 											    	$loc_img_src = $loc_img_id='';
@@ -531,19 +585,31 @@ class evo_event_metaboxes{
 														wp_get_attachment_image_src($loc_img_id,'medium'): false;
 														$loc_img_src = ($img_src)? $img_src[0]: '';
 
-											       	echo "<option value='". $term->name ."' data-tid='{$t_id}' data-address='".( $this->termmeta($term_meta,'location_address'))  ."' data-lat='". ( $this->termmeta($term_meta,'location_lat') ) ."' data-lon='". ( $this->termmeta($term_meta,'location_lon') ) ."' {$__selected} data-loc_img_id='".$loc_img_id."' data-loc_img_src='{$loc_img_src}' data-link='". ( $this->termmeta($term_meta,'evcal_location_link') ) ."'>" . $term->name . "</option>";
+														$locationName = str_replace('"', "'",  $term->name);
+
+											       	echo "<option value='". $locationName ."' data-tid='{$t_id}' data-address='".( $this->termmeta($term_meta,'location_address'))  ."' data-lat='". ( $this->termmeta($term_meta,'location_lat') ) ."' data-lon='". ( $this->termmeta($term_meta,'location_lon') ) ."' {$__selected} data-loc_img_id='".$loc_img_id."' data-loc_img_src='{$loc_img_src}' data-link='". ( $this->termmeta($term_meta,'evcal_location_link') ) ."'>" . $term->name . "</option>";
 											    }
-											    echo "</select> <label for='evcal_location_field'>".__('Choose already saved location or type new one below','eventon')."</label>";
+											    echo "</select>";
+
+											    echo "<span class='evoselectfield_data_view evo_btn' style='display:".($evo_location_tax_id?'':'none')."'>".__('Edit Location','eventon')."</span>";
+
+											    echo "<label for='evcal_location_field'>".__('Choose already saved location or type new one below','eventon')."</label>";
 											}										
 									?>
 									<input id='evo_location_tax' type='hidden' name='evo_location_tax_id' value='<?php echo $evo_location_tax_id;?>'/>
-									<input type='text' id='evcal_location_name' name='evcal_location_name' value="<?php echo (!empty($location_terms[0])? $location_terms[0]->name:''); ?>" style='width:100%' placeholder='<?php _e('eg. Irving City Park','eventon');?>'/><label for='evcal_location_name'><?php _e('Event Location Name','eventon')?></label></p>
+									<input type='hidden' name='evo_location_tax_id_old' value='<?php echo $evo_location_tax_id;?>'/>
+									<input id='evo_location_slug' type='hidden' name='evo_location_tax_slug' value='<?php echo $evoLocSlug;?>'/>
+									</p>
+
+									<div class='evoselectfield_saved_data' style='display:<?php echo $evo_location_tax_id?'none':'';?>'>
+									<p><input type='text' id='evcal_location_name' name='evcal_location_name' value="<?php echo (!empty($location_terms[0])? $location_terms[0]->name:''); ?>" style='width:100%' placeholder='<?php _e('eg. Irving City Park','eventon');?>'/><label for='evcal_location_name'><?php _e('Event Location Name','eventon')?></label></p>
+
 									<p><input type='text' id='evcal_location' name='evcal_location' value="<?php echo $this->termmeta($termMeta,'location_address'); ?>" style='width:100%' placeholder='<?php _e('eg. 12 Rue de Rivoli, Paris','eventon');?>'/><label for='evcal_location'><?php _e('Event Location Address','eventon')?></label></p>
 												
 									<!-- location lat lon -->
 									<p><input type='text' id='evcal_lat' class='evcal_latlon' name='evcal_lat' value='<?php echo $this->termmeta($termMeta,'location_lat'); ?>' placeholder='<?php _e('Latitude','eventon');?>' title='<?php _e('Latitude','eventon');?>'/>
 									<input type='text' id='evcal_lon' class='evcal_latlon' name='evcal_lon' value='<?php echo $this->termmeta($termMeta,'location_lon');?>' placeholder='<?php _e('Longitude','eventon')?>' title='<?php _e('Longitude','eventon')?>'/></p>
-									<p><i><?php _e('NOTE: If Latlon provided, Latlon will be used for generating google maps while location address will be shown as text address. <br/>Location address field is <b>REQUIRED</b> for this to work.','eventon')?> <a style='color:#B3DDEC' href='http://itouchmap.com/latlong.html' target='_blank'><?php _e('Find LanLat for address','eventon');?></a></i></p>
+									<p><i><?php _e('<b>NOTE:</b> LatLong will be auto generated for address provided for faster google map drawing. If location marker is not correct feel free to edit the LatLong values to correct location marker coordinates above. <br/>Location address field is <b>REQUIRED</b> for this to work.','eventon')?> <br/><a style='color:#B3DDEC' href='http://itouchmap.com/latlong.html' target='_blank'><?php _e('Find LanLat for address','eventon');?></a></i></p>
 
 									<!-- Location link -->
 									<p><input type='text' id='evcal_location_link' name='evcal_location_link' value="<?php echo $this->termmeta($termMeta,'evcal_location_link'); ?>" style='width:100%' placeholder='<?php _e('eg. http://www.locationlink.com','eventon');?>'/><label for='evcal_location_link'><?php _e('Event Location Link','eventon')?></label></p>
@@ -574,7 +640,9 @@ class evo_event_metaboxes{
 					                    		<label><?php _e('Event Location Image','eventon');?></label>
 					                    	</p>
 					                    </div>
-									
+									</div><!--evoselectfield_saved_data-->
+									</div><!--.evcal_location_data_section-->
+
 									<!-- HIDE google map option -->
 										<p class='yesno_row evo'>
 											<?php 	
@@ -746,6 +814,21 @@ class evo_event_metaboxes{
 									</p>
 
 									<?php 
+										// month long event
+										$_evo_month_long = (!empty($ev_vals["_evo_month_long"]) )? $ev_vals["_evo_month_long"][0]:null;
+										$_event_month = (!empty($ev_vals["_event_month"]) )? $ev_vals["_event_month"][0]:null;
+										
+									?>
+									<p class='yesno_row evo ' id='_evo_month_long' >
+										<?php 	echo $ajde->wp_admin->html_yesnobtn(array('id'=>'_evo_month_long', 'var'=>$_evo_month_long));?>
+										
+										<input type='hidden' name='_evo_month_long' value="<?php echo ($_evo_month_long=='yes')?'yes':'no';?>"/>					
+										<label for='_evo_month_long'><?php _e('Show this event for the entire start event Month','eventon')?><?php $ajde->wp_admin->tooltips( __('This will show this event for the entire month that the event start date is set to.','eventon'),'',true);?></label>
+									</p>
+									<input id='evo_event_month' type='hidden' name='_event_month' value="<?php echo $_event_month;?>"/><p style='clear:both'></p>
+									
+
+									<?php 
 										// Year long event
 										$evo_year_long = (!empty($ev_vals["evo_year_long"]) )? $ev_vals["evo_year_long"][0]:null;
 										$event_year = (!empty($ev_vals["event_year"]) )? $ev_vals["event_year"][0]:null;
@@ -755,9 +838,10 @@ class evo_event_metaboxes{
 										<?php 	echo $ajde->wp_admin->html_yesnobtn(array('id'=>'evo_year_long', 'var'=>$evo_year_long));?>
 										
 										<input type='hidden' name='evo_year_long' value="<?php echo ($evo_year_long=='yes')?'yes':'no';?>"/>					
-										<label for='evo_year_long'><?php _e('Show this event for the entire year','eventon')?><?php $ajde->wp_admin->tooltips( __('This will show this event on every month of the year. The year will be based off the start date you choose above','eventon'),'',true);?></label>
+										<label for='evo_year_long'><?php _e('Show this event for the entire start event Year','eventon')?><?php $ajde->wp_admin->tooltips( __('This will show this event on every month of the year. The year will be based off the start date you choose above. If year long is set, month long will be overridden.','eventon'),'',true);?></label>
 									</p>
 									<input id='evo_event_year' type='hidden' name='event_year' value="<?php echo $event_year;?>"/><p style='clear:both'></p>
+
 								</div>
 								<div style='clear:both'></div>			
 								<?php 
@@ -935,7 +1019,18 @@ class evo_event_metaboxes{
 
 									$onw = (!empty($ev_vals["_evcal_ec_f".$x."_onw"]) )? $ev_vals["_evcal_ec_f".$x."_onw"][0]:null ;
 								?>
-								<input type='checkbox' name='_evcal_ec_f<?php echo $x;?>_onw' value='yes' <?php echo (!empty($onw) && $onw=='yes')? 'checked="checked"':null?>/> <?php _e('Open in New window','eventon'); ?>
+
+								<span class='yesno_row evo'>
+									<?php 	
+									$openInNewWindow = (!empty($ev_vals['_evcal_ec_f'.$x . '_onw']))? $ev_vals['_evcal_ec_f'.$x . '_onw'][0]: null;
+
+									echo $ajde->wp_admin->html_yesnobtn(array(
+										'id'=>'_evcal_ec_f'.$x . '_onw',
+										'var'=>$openInNewWindow,
+										'input'=>true,
+										'label'=>__('Open in New window','eventon')
+									));?>											
+								</span>
 								<?php
 							
 							// text	
@@ -950,9 +1045,20 @@ class evo_event_metaboxes{
 				}
 
 				?>
+					
 				</div>
 			</div>
 		<?php	endforeach;	?>
+
+
+				<div class='evomb_section' id='<?php echo $mBOX['id'];?>'>			
+					<div class='evomb_header'>
+						<span class="evomb_icon evII"><i class="fa fa-plug"></i></span>
+						<p>Additional Functionality</p>
+					</div>
+					<p style='padding:15px 25px; margin:0' class="evomb_body_additional">Looking for additional functionality including event tickets, frontend event submissions, RSVP to events, photo gallery and more? Check out <a href='http://www.myeventon.com/addons/' target='_blank'>eventON addons</a>.</p>
+				</div>					
+
 			<div class='evMB_end'></div>
 		</div>
 	<?php }
@@ -1045,17 +1151,18 @@ class evo_event_metaboxes{
 				$fields_ar =apply_filters('eventon_event_metafields', array(
 					'evcal_allday','evcal_event_color','evcal_event_color_n',
 					'evo_location_tax_id','evcal_location','evcal_location_name','evcal_location_link','evo_location_tax','evo_loc_img','evo_org_img','evcal_name_over_img',
-					'evcal_organizer','evo_organizer_tax_id','evcal_org_contact','evcal_org_address','evcal_org_img','evcal_org_exlink',
+					'evcal_organizer','evo_organizer_tax_id','evcal_org_contact','evcal_org_address','evcal_org_img','evcal_org_exlink','_evocal_org_exlink_target',
 					'evcal_exlink','evcal_lmlink','evcal_subtitle',
 					'evcal_gmap_gen','evcal_mu_id','evcal_paypal_item_price','evcal_paypal_text','evcal_paypal_email',
 					'evcal_repeat','evcal_rep_freq','evcal_rep_gap','evcal_rep_num',
 					'evp_repeat_rb','evo_repeat_wom','evo_rep_WK',
 					'evcal_lmlink_target','_evcal_exlink_target','_evcal_exlink_option',
-					'evo_hide_endtime','evo_span_hidden_end','evo_year_long','event_year',
+					'evo_hide_endtime','evo_span_hidden_end','evo_year_long','event_year','_evo_month_long','_event_month',
 					'evo_evcrd_field_org','evo_event_timezone',
 
 					'evo_exclude_ev',
 					'_featured',
+					'_completed',
 					'_cancel','_cancel_reason',
 					'_onlyloggedin',
 					
@@ -1160,6 +1267,15 @@ class evo_event_metaboxes{
 					$year = date('Y', $proper_time['unix_start']);
 					update_post_meta( $post_id, 'event_year', $year);
 				}
+
+			// save event month if not set
+				if( (empty($_POST['_event_month']) && !empty($proper_time['unix_start'])) || 
+					(!empty($_POST['_event_month']) &&
+						$_POST['_event_month']=='yes')
+				){
+					$month = date('n', $proper_time['unix_start']);
+					update_post_meta( $post_id, '_event_month', $month);
+				}
 					
 			//set event color code to 1 for none select colors
 				if ( !isset( $_POST['evcal_event_color_n'] ) )
@@ -1172,19 +1288,37 @@ class evo_event_metaboxes{
 			
 			// LOCATION as taxonomy
 				// if location name is choosen from the list
+				$debug = 1;
 				if(isset($_POST['evcal_location_name_select'], $_POST['evcal_location_name']) && $_POST['evcal_location_name_select'] == $_POST['evcal_location_name']){
 					
 					// 
 					if(!empty($_POST['evo_location_tax_id'])){
 						$term_name = esc_attr($_POST['evcal_location_name']);
-						$term_meta = array();
-						$term_meta['location_lon'] = (isset($_POST['evcal_lon']))?$_POST['evcal_lon']:null;
-						$term_meta['location_lat'] = (isset($_POST['evcal_lat']))?$_POST['evcal_lat']:null;
+						$term_slug = esc_attr($_POST['evo_location_tax_slug']);
+						$termID = array((int)($_POST['evo_location_tax_id']));
+						
+						$term_meta = $latlon = array();
+
+						// generate latLon
+						if(isset($_POST['evcal_location']))
+							$latlon = eventon_get_latlon_from_address($_POST['evcal_location']);
+							
+						// longitude
+						$term_meta['location_lon'] = (!empty($_POST['evcal_lon']))?$_POST['evcal_lon']:
+							(!empty($latlon['lng'])? floatval($latlon['lng']): null);
+
+						// latitude
+						$term_meta['location_lat'] = (!empty($_POST['evcal_lat']))?$_POST['evcal_lat']:
+							(!empty($latlon['lat'])? floatval($latlon['lat']): null);
+
 						$term_meta['evcal_location_link'] = (isset($_POST['evcal_location_link']))?$_POST['evcal_location_link']:null;
 						$term_meta['location_address'] = (isset($_POST['evcal_location']))?$_POST['evcal_location']:null;
+
 						$term_meta['evo_loc_img'] = (isset($_POST['evo_loc_img']))?$_POST['evo_loc_img']:null;
 						update_option("taxonomy_".$_POST['evo_location_tax_id'], $term_meta);
-						wp_set_post_terms( $post_id, array($term_name), 'event_location');	
+						
+						wp_set_object_terms( $post_id, $termID, 'event_location');	
+						$debug = 2;						
 					}
 					
 				}elseif(isset($_POST['evcal_location_name'])){
@@ -1197,16 +1331,33 @@ class evo_event_metaboxes{
 					$new_term_ = wp_insert_term( $term_name, 'event_location', array('slug'=>$term_slug) );
 
 					if(!is_wp_error($new_term_)){
-						$term_meta = array();
-						$term_meta['location_lon'] = (isset($_POST['evcal_lon']))? $_POST['evcal_lon']:null;
-						$term_meta['location_lat'] = (isset($_POST['evcal_lat']))?$_POST['evcal_lat']:null;
+						$term_meta = $latlon = array();
+
+						// generate latLon
+						if(isset($_POST['evcal_location']))
+							$latlon = eventon_get_latlon_from_address($_POST['evcal_location']);
+
+						// latitude and longitude
+						$term_meta['location_lon'] = (!empty($_POST['evcal_lon']))? $_POST['evcal_lon']:
+							(!empty($latlon['lng'])? floatval($latlon['lng']): null);
+						$term_meta['location_lat'] = (!empty($_POST['evcal_lat']))? $_POST['evcal_lat']:
+							(!empty($latlon['lat'])? floatval($latlon['lat']): null);
+
 						$term_meta['evcal_location_link'] = (isset($_POST['evcal_location_link']))?$_POST['evcal_location_link']:null;
 						$term_meta['location_address'] = (isset($_POST['evcal_location']))?$_POST['evcal_location']:null;
 						$term_meta['evo_loc_img'] = (isset($_POST['evo_loc_img']))?$_POST['evo_loc_img']:null;
 						update_option("taxonomy_".$new_term_['term_id'], $term_meta);
-						wp_set_post_terms( $post_id, array($term_name), 'event_location');					
+						wp_set_post_terms( $post_id, array($term_name), 'event_location');
+						$debug = 3;
 					}						
 				}
+				// if location is intended removed
+					if(empty($_POST['evcal_location_name']) && isset($_POST['evcal_location_name_select']) && $_POST['evcal_location_name_select']=='-'){
+						// delete all location taxonomies attached to this event
+						wp_delete_object_term_relationships($post_id,'event_location');
+						$debug = 4;
+					}
+					//update_post_meta(521, 'aaa',$debug);
 
 			// ORGANIZER as taxonomy
 				// Selected value from list - update other values
@@ -1246,6 +1397,12 @@ class evo_event_metaboxes{
 						wp_set_post_terms( $post_id, array($term_name), 'event_organizer');
 					}				
 				}
+
+				// if organizer is intended removed
+					if(empty($_POST['evcal_organizer']) && isset($_POST['evcal_organizer_name_select']) && $_POST['evcal_organizer_name_select']=='-'){
+						// delete all organizer taxonomies attached to this event
+						wp_delete_object_term_relationships($post_id,'event_organizer');
+					}
 			
 			// (---) hook for addons
 			do_action('eventon_save_meta', $fields_ar, $post_id);

@@ -161,7 +161,7 @@ function eventon_custom_event_columns( $column , $post_id) {
 
 	//if ( empty( $ajde_events ) || $ajde_events->id != $post->ID )
 		//$ajde_events = get_product( $post );
-	$pmv = get_post_custom($post_id);
+	$pmv = get_post_custom($post->ID);
 
 	switch ($column) {
 		case has_filter("evo_column_type_{$column}"):
@@ -291,33 +291,44 @@ function eventon_custom_event_columns( $column , $post_id) {
 		break;
 		case "event_location":
 			
-			$evcal_location =get_post_meta($post->ID, 'evcal_location', true);
-			$evcal_location_name =get_post_meta($post->ID, 'evcal_location_name', true);
-			
-			echo ( (!empty($evcal_location_name))? stripslashes($evcal_location_name).'<br/>':null);
-			echo ( (!empty($evcal_location))? $evcal_location:'--' );
+			if ( ! $terms = get_the_terms( $post->ID, $column ) ) {
+				echo '<span class="na">&ndash;</span>';
+			} else {
+				foreach ( $terms as $term ) {
+					$termlist[] = '<a href="' . admin_url( 'edit.php?' . $column . '=' . $term->slug . '&post_type=ajde_events' ) . ' ">' . $term->name . '</a>';
+				}
+
+				echo implode( ', ', $termlist );
+			}
 				
 		break;	
 
 		case "event_start_date":
 			
-			$unix =get_post_meta($post->ID, 'evcal_srow', true);
-			if(!empty($unix)){				
-				$_START = eventon_get_editevent_kaalaya($unix);
-
-				echo $_START[0].' - '.$_START[1].':'.$_START[2]. (!empty($_START[3])? $_START[3]:'');
-			}else{	echo "--";	}			
+			if(evo_check_yn($pmv, 'evo_year_long')){
+				echo date('Y', $pmv['evcal_srow'][0]);
+			}elseif(evo_check_yn($pmv, '_evo_month_long')){
+				echo date_i18n('F, Y', $pmv['evcal_srow'][0]);
+			}else{
+				if(!empty($pmv['evcal_srow'])){				
+					$_START = eventon_get_editevent_kaalaya($pmv['evcal_srow'][0]);
+					echo $_START[0].' - '.$_START[1].':'.$_START[2]. (!empty($_START[3])? $_START[3]:'');
+				}else{	echo "--";	}	
+			}					
 				
 		break;		
 		
 		case "event_end_date":	
-			$unix =get_post_meta($post->ID, 'evcal_erow', true);
-			if(!empty($unix)){				
-				$_END = eventon_get_editevent_kaalaya($unix);
-				
-				echo $_END[0].' - '.$_END[1].':'.$_END[2]. (!empty($_END[3])? $_END[3]:'');
+			
+			if(evo_check_yn($pmv, 'evo_year_long')){
+				echo date('Y', $pmv['evcal_srow'][0]);
+			}elseif(evo_check_yn($pmv, '_evo_month_long')){
+				echo date_i18n('F, Y', $pmv['evcal_srow'][0]);
 			}else{
-				echo "--";
+				if(!empty($pmv['evcal_erow'])){				
+					$_END = eventon_get_editevent_kaalaya($pmv['evcal_erow'][0]);					
+					echo $_END[0].' - '.$_END[1].':'.$_END[2]. (!empty($_END[3])? $_END[3]:'');
+				}else{	echo "--";	}
 			}		
 		break;
 		

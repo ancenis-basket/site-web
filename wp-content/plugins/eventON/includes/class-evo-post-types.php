@@ -53,7 +53,7 @@ class EVO_post_types{
 				'show_ui' => true,
 				'query_var' => true,
 				'capabilities'	=> $__capabilities,
-				'rewrite' => array( 'slug' => 'event-location' ) 
+				'rewrite' => apply_filters('evotax_slug_loc', array( 'slug' => 'event-location' ) )
 			)) 
 		);
 		register_taxonomy( 'event_organizer', 
@@ -64,7 +64,7 @@ class EVO_post_types{
 				'show_ui' => true,
 				'query_var' => true,
 				'capabilities'			=> $__capabilities,
-				'rewrite' => array( 'slug' => 'event-organizer' ) 
+				'rewrite' => apply_filters('evotax_slug_org', array( 'slug' => 'event-organizer' ) )
 			)) 
 		);
 

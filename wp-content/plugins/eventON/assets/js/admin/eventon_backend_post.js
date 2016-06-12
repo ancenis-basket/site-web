@@ -34,7 +34,8 @@ jQuery(document).ready(function($){
 		$('#evcal_location_field').on('change',function(){
 			var option = $('option:selected', this);
 
-			if($(this).val()!=''){
+			// if a legit value selected
+			if($(this).val()!='' && $(this).val()!= '-'){
 				$('#evcal_location_name').val( $(this).val());
 				$('#evcal_location').val( option.data('address')  );
 				$('#evcal_lat').val( option.data('lat')  );
@@ -49,6 +50,13 @@ jQuery(document).ready(function($){
 					$('.evo_metafield_image .evo_loc_image_src img').fadeOut();
 				}
 			}
+
+			// if select saved field selected
+				if($(this).val()=='-'){
+					$(this).closest('.evcal_location_data_section').find('input[type=text]').attr('value','').val('');
+					$('.evo_metafield_image .evo_loc_image_src img').fadeOut();
+					$('#evo_location_tax').val('');
+				}
 		});
 
 	// organizer picker
@@ -60,6 +68,7 @@ jQuery(document).ready(function($){
 				$('#evcal_org_contact').val( option.data('contact')  );
 				$('#evo_org_img_id').val( option.data('img')  );	
 				$('#evo_organizer_tax_id').val( option.data('tid')  );
+				$('#evcal_org_address').val( option.data('address')  );
 
 				if(option.data('imgsrc')){
 					$('.evo_metafield_image .evo_org_image_src img').attr('src', option.data('imgsrc') ).fadeIn();	
@@ -67,6 +76,12 @@ jQuery(document).ready(function($){
 					$('.evo_metafield_image .evo_org_image_src img').fadeOut();
 				}
 			}
+			// if select saved field selected
+				if($(this).val()=='-'){
+					$(this).closest('.evcal_location_data_section').find('input[type=text]').attr('value','').val('');
+					$('.evo_metafield_image .evo_org_image_src img').fadeOut();
+					$('#evo_organizer_tax_id').val('');
+				}
 		});
 
 	//makeInputSelect("evcal_location_field");
@@ -367,6 +382,11 @@ jQuery(document).ready(function($){
 			onClose: function( selectedDate ) {
 	        	$( "#evo_dp_from" ).datepicker( "option", "maxDate", selectedDate );
 	      	}
+		});
+
+	// location already entered info edit button
+		$('body').on('click','.evoselectfield_data_view', function(){
+			$(this).parent().parent().find('.evoselectfield_saved_data').slideToggle();
 		});
 	
 	// eventbrite
