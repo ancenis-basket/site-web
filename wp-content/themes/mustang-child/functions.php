@@ -106,4 +106,100 @@ function pab_load_class_name( $classname ) {
 		return $classname ;
 	}
 }
+//==========================================
+//Pour ajouter des infos sur les événements du calendrier
+
+// hook into event top correct place
+add_filter('eventon_eventtop_one', 'eventon_insert', 10, 3);
+function eventon_insert($array, $evvals, $passval){
+	$array['custom'] = array('eventid'=>$passval['eventid'], 'evvals'=>$evvals);
+	return $array;
+}
+
+// include in index as part of event top array
+add_filter('evo_eventtop_adds', 'eventon_top_adds', 10, 1);
+function eventon_top_adds($array){
+	$array[] = 'custom';
+	return $array;
+}
+
+// throw html content for the switch statement for this index
+add_filter('eventon_eventtop_custom', 'eventon_top_content', 10, 2);
+function eventon_top_content($object, $helpers){
+
+	$event_id = $object->eventid;
+
+	// $event_pmv = $object->evvals; // event post meta values
+	//======pab addition for arbitres table et bar=======
+	//arbitres
+	
+	$OT.='<span data-eventid="'.$event_id.'" class="custom_code">';
+	
+	$org = (!empty($object->evvals['arbitres']))? $object->evvals['arbitres'][0]:'';
+	//$org = (!empty($object->evvals['evcal_organizer']))? $object->evvals['evcal_organizer'][0]:'';
+	//echo $org;
+	if( !empty($org)){
+		//$OT.="<em class='evcal_oganizer'><i>"."Arbitres : </i> ";
+		$OT.="<i>"."Arbitres : </i> ";
+		$datas = unserialize($org);
+		foreach($datas as $arb){
+			$OT.=get_the_title($arb).", ";
+		}
+		
+	}
+	$OT.="</span>";
+	//table
+	$OT.='<span data-eventid="'.$event_id.'" class="custom_code">';
+	
+	$org = (!empty($object->evvals['table']))? $object->evvals['table'][0]:'';
+	if($object->fields_ && in_array('organizer',$object->fields) && !empty($org)){
+		$OT.="<em class='evcal_oganizer'><i>"."Table de marque : </i> ";
+		$datas = unserialize($org);
+		foreach($datas as $otm){
+			$OT.=get_the_title($otm).", ";
+		}
+		$OT.="</em>";
+	}
+	$OT.="</span>";
+	//bar
+	$OT.='<span data-eventid="'.$event_id.'" class="custom_code">';
+	
+	$org = (!empty($object->evvals['bar']))? $object->evvals['bar'][0]:'';
+	if($object->fields_ && in_array('organizer',$object->fields) && !empty($org)){
+		$OT.="<em class='evcal_oganizer'><i>"."Bar : </i> ";
+		$datas = unserialize($org);
+		foreach($datas as $bar){
+			$OT.=get_the_title($bar).", ";
+		}
+		$OT.="</em>";
+	}
+	$OT.="</span>";
+	
+	
+	
+	
+	
+	
+	// your HTML code goes in here.
+	// $output = '<span data-eventid="'.$event_id.'" class="custom_code">Click to see more</span>';
+	$output = $OT;
+	return $output;
+}
+
+// styles for the new addition
+add_action('wp_head', 'eventon_additional_styles');
+function eventon_additional_styles(){
+	echo "<style type='text/css'>
+	body .eventon_list_event .evcal_desc .custom_code{
+		background-color:#7DC1DF;
+		padding:3px 8px;
+		border-radius:5px;
+		display:inline-block;
+		font-size:12px;
+		text-transform:uppercase;
+		color:#fff;
+	}
+	</style>";
+}
+
 ?>
