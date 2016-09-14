@@ -518,11 +518,11 @@
 		     url('../font/basic-icons/fontello.svg#fontello') format('svg');
 		 **/
 		
-		src: url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.eot');
-		src: url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.eot?#iefix') format('embedded-opentype'),
-		     url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.woff') format('woff'),
-		     url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.ttf') format('truetype'),
-		     url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.svg#fontello') format('svg');
+		src: url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.eot');
+		src: url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.eot?#iefix') format('embedded-opentype'),
+		     url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.woff') format('woff'),
+		     url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.ttf') format('truetype'),
+		     url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.svg#fontello') format('svg');
 		
 		font-weight: normal;
 		font-style: normal;
@@ -782,7 +782,7 @@
 			background-image: url('../img/lines.png');
 			 **/
 			
-			background-image: url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/img/lines.png');
+			background-image: url('//localhost/pab44/wp-content/themes/mustang/assets/img/lines.png');
 			
 			background-repeat: repeat;
 			background-position: 0 -16px;
@@ -1649,7 +1649,7 @@
 			background: url('../img/gradient-bottom.png' );
 			 **/
 			
-			background: url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/img/gradient-bottom.png');
+			background: url('//localhost/pab44/wp-content/themes/mustang/assets/img/gradient-bottom.png');
 			
 			background-repeat: repeat-x;
 			background-position: 0 100%;
@@ -4170,7 +4170,7 @@
 					background-image: url('../img/shadow-bottom.png');
 					 **/
 					
-					background-image: url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/img/shadow-bottom.png');
+					background-image: url('//localhost/pab44/wp-content/themes/mustang/assets/img/shadow-bottom.png');
 					
 					background-repeat: no-repeat;
 					background-position: 50% 0;
@@ -4674,32 +4674,11 @@
 
 		html,
 		body {
-			border-color: #1e73be;
+			border-color: #ededed;
 		}
 
 
 	/* Typography */
-
-		body {
-			font-family: "Open Sans", Helvetica, Arial, Verdana, sans-serif;
-			font-size: 14px;
-		}
-
-		h1,
-		h2,
-		h3,
-		h4,
-		h5,
-		h6,
-		.h1,
-		.h2,
-		.h3,
-		.h4,
-		.h5,
-		.h6,
-		[class*="heading-style-"] {
-			font-family: "Comfortaa", Helvetica, Arial, Verdana, sans-serif;
-		}
 
 		h1,
 		.h1,
@@ -4733,7 +4712,7 @@
 		}
 
 
-	/* Using Mustang theme by WebMan - Oliver Juhas (http://www.webmandesign.eu), version 1.5.4. CSS generated on 2016/04/05 06:59, UTC. */
+	/* Using Mustang Child Theme theme by WebMan - Oliver Juhas (http://www.webmandesign.eu), version 1.5.4. CSS generated on 2016/09/12 05:14, UTC. */
 
 
 
