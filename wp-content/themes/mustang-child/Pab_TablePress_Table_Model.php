@@ -136,7 +136,7 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 					$terms = $terms->get_error_code();
 				}
 				$data .= "[\"";
-				$data.="<a href='#'>".get_the_title($post_object->ID)."</a>";
+				$data.="<a href='".$post_object->ID."'>".get_the_title($post_object->ID)."</a>";
 				$data.="\",\"".$departments ;
 				//$data.="\",\"".get_field("taille", $post_object->ID);
 				//$data.="\",\"".get_field('anniversaire', $post_object->ID);

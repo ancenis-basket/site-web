@@ -92,9 +92,43 @@ register_taxonomy(
   'hierarchical' => true
   )
 );
+register_taxonomy ( 'poules', 'equipe', array (
+		'label' => 'Poules',
+		'labels' => array (
+				'name' => 'Poules',
+				'singular_name' => 'poule',
+				'all_items' => 'Toutes les poules',
+				'edit_item' => 'Éditer la poule',
+				'view_item' => 'Voir la poule',
+				'update_item' => 'Mettre à jour la poule',
+				'add_new_item' => 'Ajouter une poule',
+				'new_item_name' => 'Nouvelle poule',
+				'search_items' => 'Rechercher parmi les poules',
+				'popular_items' => 'poules les plus utilisées' 
+		),
+		'hierarchical' => true 
+) );
+register_taxonomy ( 'saisons', 'equipe', array (
+		'label' => 'Saisons',
+		'labels' => array (
+				'name' => 'Saisons',
+				'singular_name' => 'saison',
+				'all_items' => 'Toutes les saisons',
+				'edit_item' => 'Éditer la saison',
+				'view_item' => 'Voir la saison',
+				'update_item' => 'Mettre à jour la saison',
+				'add_new_item' => 'Ajouter une saison',
+				'new_item_name' => 'Nouvelle saison',
+				'search_items' => 'Rechercher parmi les saisons',
+				'popular_items' => 'saisons les plus utilisées'
+		),
+		'hierarchical' => true
+) );
 register_taxonomy_for_object_type( 'catégorie', 'equipe' );
 register_taxonomy_for_object_type( 'type de catégorie', 'equipe' );
 register_taxonomy_for_object_type( 'championnat', 'equipe' );
+register_taxonomy_for_object_type( 'poule', 'equipe' );
+register_taxonomy_for_object_type( 'saison', 'equipe' );
 
 define( 'PAB_ABSPATH', plugin_dir_path( __FILE__ ) );
 add_filter( 'tablepress_load_class_name', 'pab_load_class_name');
@@ -108,7 +142,6 @@ function pab_load_class_name( $classname ) {
 }
 //==========================================
 //Pour ajouter des infos sur les événements du calendrier
-
 // hook into event top correct place
 add_filter('eventon_eventtop_one', 'eventon_insert', 10, 3);
 function eventon_insert($array, $evvals, $passval){
@@ -132,74 +165,109 @@ function eventon_top_content($object, $helpers){
 	// $event_pmv = $object->evvals; // event post meta values
 	//======pab addition for arbitres table et bar=======
 	//arbitres
-	
-	$OT.='<span data-eventid="'.$event_id.'" class="custom_code">';
-	
 	$org = (!empty($object->evvals['arbitres']))? $object->evvals['arbitres'][0]:'';
-	//$org = (!empty($object->evvals['evcal_organizer']))? $object->evvals['evcal_organizer'][0]:'';
-	//echo $org;
 	if( !empty($org)){
-		//$OT.="<em class='evcal_oganizer'><i>"."Arbitres : </i> ";
+		$OT.='<span style="margin-top:1px"><span data-eventid="'.$event_id.'" class="custom_code">';
 		$OT.="<i>"."Arbitres : </i> ";
 		$datas = unserialize($org);
 		foreach($datas as $arb){
 			$OT.=get_the_title($arb).", ";
 		}
-		
+		$OT.="</span></span>";
 	}
-	$OT.="</span>";
-	//table
-	$OT.='<span data-eventid="'.$event_id.'" class="custom_code">';
 	
+	//table
 	$org = (!empty($object->evvals['table']))? $object->evvals['table'][0]:'';
-	if($object->fields_ && in_array('organizer',$object->fields) && !empty($org)){
-		$OT.="<em class='evcal_oganizer'><i>"."Table de marque : </i> ";
+	if(!empty($org)){
+		$OT.='<span style="margin-top:1px"><span data-eventid="'.$event_id.'" class="custom_code">';
+		$OT.="<i>"."Table de marque : </i> ";
 		$datas = unserialize($org);
 		foreach($datas as $otm){
 			$OT.=get_the_title($otm).", ";
 		}
-		$OT.="</em>";
+		$OT.="</span></span>";
 	}
-	$OT.="</span>";
-	//bar
-	$OT.='<span data-eventid="'.$event_id.'" class="custom_code">';
 	
+	//bar
 	$org = (!empty($object->evvals['bar']))? $object->evvals['bar'][0]:'';
-	if($object->fields_ && in_array('organizer',$object->fields) && !empty($org)){
-		$OT.="<em class='evcal_oganizer'><i>"."Bar : </i> ";
+	if(!empty($org)){
+		$OT.='<span style="margin-top:1px"><span data-eventid="'.$event_id.'" class="custom_code">';
+		$OT.="<i>"."Bar : </i> ";
 		$datas = unserialize($org);
 		foreach($datas as $bar){
 			$OT.=get_the_title($bar).", ";
 		}
-		$OT.="</em>";
+		$OT.="</span></span>";
 	}
-	$OT.="</span>";
 	
 	
-	
-	
-	
-	
-	// your HTML code goes in here.
-	// $output = '<span data-eventid="'.$event_id.'" class="custom_code">Click to see more</span>';
+	//responsable
+	$org = (!empty($object->evvals['responsable']))? $object->evvals['responsable'][0]:'';
+	if(!empty($org)){
+		$OT.='<span style="margin-top:1px"><span data-eventid="'.$event_id.'" class="custom_code">';
+		$OT.="<i>"."Responsable : </i> ";
+		$datas = unserialize($org);
+		foreach($datas as $bar){
+			$OT.=get_the_title($bar).", ";
+		}
+		$OT.="</span></span>";
+	}
 	$output = $OT;
 	return $output;
 }
-
-// styles for the new addition
-add_action('wp_head', 'eventon_additional_styles');
-function eventon_additional_styles(){
+	
+	// styles for the new addition
+add_action ( 'wp_head', 'eventon_additional_styles' );
+function eventon_additional_styles() {
 	echo "<style type='text/css'>
-	body .eventon_list_event .evcal_desc .custom_code{
-		background-color:#7DC1DF;
-		padding:3px 8px;
-		border-radius:5px;
-		display:inline-block;
-		font-size:12px;
-		text-transform:uppercase;
-		color:#fff;
-	}
-	</style>";
+				body .eventon_list_event .evcal_desc .custom_code{
+					background-color:rgba(186, 191, 201, 0.52);
+					padding:1px 5px;
+					border-radius:5px;
+					display:inline-block;
+					font-size:12px;
+					text-transform:lowercase;
+					color:#F00011;
+				}
+		</style>";
 }
 
+//===========================================================
+//designation ajax !
+//add_filter('eventon_wp_query_args', 'eventon_designation_discriminer', 10, 3);
+function eventon_designation_discriminer($wp_arguments, $filters, $ecv){
+	$wp_arguments['meta_query'] = array(
+			array(
+					'key' => 'responsable',
+					'value' => '941',
+					'compare' => 'LIKE'
+			));
+	return $wp_arguments;
+}
+function add_js_scripts() {
+	wp_enqueue_script( 'script', get_template_directory_uri().'/js/script.js', array('jquery'), '1.0', true );
+
+	// pass Ajax Url to script.js
+	wp_localize_script('script', 'ajaxurl', admin_url( 'admin-ajax.php' ) );
+}
+add_action('wp_enqueue_scripts', 'add_js_scripts');
+
+
+
+add_action( 'wp_ajax_mon_action', 'mon_action' );
+add_action( 'wp_ajax_nopriv_mon_action', 'mon_action' );
+
+function mon_action() {
+
+$args = array(
+	    'post_type' => 'post',
+	    'posts_per_page' => 10
+	);
+
+	$ajax_query = new WP_Query($args);
+
+	var_dump($ajax_query);
+
+	die();//fonction de sécurité très importante!
+}
 ?>
