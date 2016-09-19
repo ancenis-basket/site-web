@@ -103,17 +103,21 @@
 	}
 /* yes no button */
 	.ajde_yn_btn {
-	  background-color: #ABDF72;
-	  height: 22px;
-	  width: 68px;
-	  overflow: hidden;
-	  display: inline-block;
-	  border: 1px solid #aaa;
-	  border-bottom: 3px solid #aaa;
-	  cursor: pointer;
-	  border-radius: 4px;
+	  	background-color: #ABDF72;
+	  	height: 22px;
+	  	width: 68px;
+	  	overflow: hidden;
+	 	display: inline-block;
+	  	border: 1px solid #aaa;
+	  	cursor: pointer;
+	  	border-radius: 13px;
+	  	-webkit-transition: all .5s ease;
+		-moz-transition: all .5s ease;
+		-ms-transition: all .5s ease;
+		-o-transition: all .5s ease;
+		transition: all .5s ease;
 	}
-	.ajde_yn_btn:hover{border-bottom-width: 2px;margin-top: 1px;}
+	.ajde_yn_btn:hover{margin-top: 1px;}
 	.ajde_yn_btn:hover .catchHandle{background-color: #fff;}
 	.ajde_yn_btn.NO{background-color: #fff;
 		border-color: #d9d7d7;
@@ -123,48 +127,51 @@
 	.ajde_yn_btn .btn_inner:before,.ajde_yn_btn .btn_inner:after{
 		top: 0;
 		position: absolute;		
-		padding: 4px 8px;
+		padding: 4px 8px 4px;
 		line-height: 100%;
 	}
 	.ajde_yn_btn .btn_inner:before{
 		left: 0;
 		content:"NO";
 		color: #A0A0A0;
+		padding-left: 12px;
 	}
 	.ajde_yn_btn .btn_inner:after{
 		right: 0;
 		color: #fff;
 		content:"YES";
-		padding-right: 8px;
+		padding-right: 10px;
 	}
 	.ajde_yn_btn .btn_inner{
 		position: relative;
-		padding-left: 42px;
+		padding-left: 46px;
 		padding-right: 42px;
 		padding-top: 0;
 		height: 22px;
-		width: 26px;
+		width: 22px;
 		display: block;
-		margin-left: -43px;
+		margin-left: -46px;		
 	}	
 		.ajde_yn_btn.NO .btn_inner{margin-left: 0px;}
 	.catchHandle, .yesno_row .catchHandle{
-		border-left: 1px solid #d9d7d7;
-		border-right: 1px solid #AEAEAE;
-		background-color: #f0efef;
-		height: 22px;
-		padding-top: 4px;
-		width: 26px;
+		border: 1px solid #F9D29F;
+		background-color: #fff;
+		height: 22px;width: 22px;
+		padding-top: 4px;		
 		display: block;
 		padding-left: 0;
+		border-radius: 12px;
+   		box-sizing: border-box;
 	}
 	.catchHandle:before, .yesno_row .catchHandle:before{
 		content:"";
-		border-left: 2px solid #d9d7d7;
-		border-right: 2px solid #d9d7d7;
 		height: 13px;
-		width: 4px;
+		width: 3px;
 		display: block;
+		margin-left: 8px;
+	}
+	.ajde_yn_btn.NO .catchHandle, .yesno_row .ajde_yn_btn.NO .catchHandle{border-color:#D9D7D7; background-color: #F9F9F9}
+	.ajde_yn_btn.NO .catchHandle:before, .yesno_row .ajde_yn_btn.NO .catchHandle:before{
 		margin-left: 8px;
 	}
 	.ajde_yn_btn .btn_inner, .catchHandle {
@@ -175,7 +182,6 @@
 		transition: all .2s ease;
 	}
 	.evomb_body .ajde_yn_btn{border-color:#666666;}
-	.evomb_body .catchHandle{border-color:#9B9B9B;}
 	.yesno_row span.field_name, .yesno_row label{	padding-left: 80px; line-height: 1.8;}
 	.yesno_row .ajde_yn_btn {
 	  	position: absolute;
@@ -356,7 +362,8 @@
 		padding-top: 5px;
 	}
 	.ajde_icons em{display: none;}
-	.ajde_icons.fa em{		
+	.ajde_icons.fa em{
+		cursor: pointer;	
 		content: "X";
   		position: absolute;
   		left: 45px;
@@ -365,7 +372,7 @@
   		top: 0;
   		display: block;
   		color: #C7C7C7;
-  		z-index: -1;
+  		/*z-index: -1;*/
   		background-color: #E0E0E0;
   		border-radius: 0 5px 5px 0;
   		font-family: 'open sans','arial';

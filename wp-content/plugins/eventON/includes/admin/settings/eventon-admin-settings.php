@@ -18,18 +18,11 @@ global $eventon_settings;
 
 if ( ! function_exists( 'eventon_settings' ) ) {
 	
-	/**
-	 * Settings page.
-	 *
-	 * Handles the display of the main EventON settings page in admin.
-	 *
-	 * @access public
-	 * @return void
-	 */
+	// Settings page
 	function eventon_settings() {
 		global $eventon, $ajde;
 		
-		do_action('eventon_settings_start');
+		do_action('eventon_settings_start'); 
 				
 		// Settings Tabs array
 		$evcal_tabs = apply_filters('eventon_settings_tabs',array(
@@ -37,7 +30,7 @@ if ( ! function_exists( 'eventon_settings' ) ) {
 			'evcal_2'=>__('Language', 'eventon'),
 			'evcal_3'=>__('Styles', 'eventon'),
 			'evcal_4'=>__('Licenses', 'eventon'),
-			'evcal_5'=>__('Troubleshoot', 'eventon'),
+			'evcal_5'=>__('Support', 'eventon'),
 		));		
 		
 		// Get current tab/section
@@ -122,8 +115,8 @@ if ( ! function_exists( 'eventon_settings' ) ) {
 			$evcal_opt[$current_tab_number] = get_option('evcal_options_'.$focus_tab);			
 		
 		// activation notification
-			if(!$eventon->evo_updater->is_activated('eventon')){
-				echo '<div class="update-nag">'.__('Your eventON license is not saved. eventON should still work fine. <a href="'.get_admin_url().'admin.php?page=eventon&tab=evcal_4">Enter License Now</a>','eventon').'</div>';
+			if(!$eventon->evo_updater->kriyathmakada()){
+				echo '<div class="update-nag">'.__('EventON is not activated, it must be activated to use! <a href="'.get_admin_url().'admin.php?page=eventon&tab=evcal_4">Enter License Now</a>','eventon').'</div>';
 			}
 
 		// OTHER options
@@ -160,8 +153,7 @@ switch ($focus_tab):
 		<form method="post" action=""><?php settings_fields('evcal_field_group'); 
 			wp_nonce_field( AJDE_EVCAL_BASENAME, 'evcal_noncename' );
 		?>
-		<div id="evcal_1" class=" evcal_admin_meta evcal_focus">		
-			
+		<div id="evcal_1" class=" evcal_admin_meta evcal_focus">
 			<div class="evo_inside">
 				<?php
 					
@@ -174,12 +166,43 @@ switch ($focus_tab):
 				?>
 			</div>	
 		</div>
-		<div class='evo_diag'>
+		<div class='evo_diag'>			
+			
+	
+			<!-- save settings -->
 			<input type="submit" class="evo_admin_btn btn_prime" value="<?php _e('Save Changes') ?>" /> <a id='resetColor' style='display:none' class='evo_admin_btn btn_secondary'><?php _e('Reset to default colors','eventon')?></a><br/><br/>
 			<a target='_blank' href='http://www.myeventon.com/support/'><img src='<?php echo AJDE_EVCAL_URL;?>/assets/images/myeventon_resources.png'/></a>
-		</div>
-		
+		</div>		
 		</form>
+
+		<div class="evo_lang_export">
+			<?php
+				$nonce = wp_create_nonce('evo_export_settings');
+				// url to export settings
+				$exportURL = add_query_arg(array(
+				    'action' => 'eventon_export_settings',
+				    'nonce'=>$nonce
+				), admin_url('admin-ajax.php'));
+
+			?>
+			<h3><?php _e('Import/Export General EventON Settings','eventon');?></h3>
+			<p><i><?php _e('NOTE: Make sure to save changes after importing. This will import/export the general settings saved for eventon.','eventon');?></i></p>
+
+			<div class='import_box' id="import_box" style='display:none'>
+				<span id="close">X</span>
+				<form id="evo_settings_import_form" action="" method="POST" data-link='<?php echo AJDE_EVCAL_PATH;?> '>
+					<input type="file" id="file-select" name="settings[]" multiple accept=".json" />
+					<button type="submit" id="upload_settings_button"><?php _e('Upload','eventon');?></button>
+				</form>
+				<p class="msg" style='display:none'><?php _e('File Uploading','eventon');?></p>
+			</div>
+			<p>
+				<a id='evo_settings_import' class='evo_admin_btn btn_triad'><?php _e('Import','eventon');?></a> 
+				<a href='<?php echo $exportURL;?>' class='evo_admin_btn btn_triad'><?php _e('Export','eventon');?></a>
+			</p>
+		</div>
+
+		
 	
 <?php  
 	break;

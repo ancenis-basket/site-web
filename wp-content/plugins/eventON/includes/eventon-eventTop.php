@@ -50,7 +50,7 @@ function eventon_get_eventtop_print($array, $evOPT, $evOPT2){
 				// above title inserts
 				$OT.= "<span class='evo_above_title'>";
 					$OT .= apply_filters("eventon_eventtop_abovetitle", '', $object);
-
+					
 					if($object->cancel)
 						$OT.= "<span class='evo_event_headers canceled' title='".(!empty($object->cancel_reason)? $object->cancel_reason: null)."'>".( eventon_get_custom_language( $evOPT2,'evcal_evcard_evcancel', 'Event Cancelled')  )."</span>";
 				$OT.="</span>";
@@ -118,7 +118,25 @@ function eventon_get_eventtop_print($array, $evOPT, $evOPT2){
 						$def = $evOPT['evcal_ec_f'.$x.'a1']; // default custom meta field name
 						$i18n_nam = eventon_get_custom_language( $evOPT2,'evcal_cmd_'.$x, $def);
 
-						$OT.= ( ($x==1)? "<b class='clear'></b>":null )."<em class='evcal_cmd'><i>".$i18n_nam.':</i> '.$object->evvals['_evcal_ec_f'.$x.'a1_cus'][0]."</em> ";
+						// custom fiels icon
+							$icon_string = '';
+							if(!empty($evOPT['evcal__fai_00c'. $x]) && !empty($evOPT['evo_eventtop_customfield_icons']) && $evOPT['evo_eventtop_customfield_icons']=='yes'){
+								$icon_string ='<i class="fa '. $evOPT['evcal__fai_00c'. $x] .'"></i>'; 
+							}
+
+						$OT.= ( ($x==1)? "<b class='clear'></b>":null );
+
+						// type button 
+							if(!empty($evOPT['evcal_ec_f'.$x.'a2']) && $evOPT['evcal_ec_f'.$x.'a2']=='button'){
+								$href = !empty($object->evvals['_evcal_ec_f'.$x.'a1_cusL'])? 
+									$object->evvals['_evcal_ec_f'.$x.'a1_cusL'][0]:'';
+								$target = !empty($object->evvals['_evcal_ec_f'.$x.'_onw'])? 
+									$object->evvals['_evcal_ec_f'.$x.'_onw'][0]:'no';
+
+								$OT.= "<em class='evcal_cmd evocmd_button' data-href='". ($href). "' data-target='". ($target). "'>" . $icon_string .$object->evvals['_evcal_ec_f'.$x.'a1_cus'][0]."</em> ";
+							}else{
+								$OT.= "<em class='evcal_cmd'>". $icon_string ."<i>".$i18n_nam.':</i> '.$object->evvals['_evcal_ec_f'.$x.'a1_cus'][0]."</em> ";
+							}
 					}
 				}
 			break;

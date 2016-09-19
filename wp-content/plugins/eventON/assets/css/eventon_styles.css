@@ -5,7 +5,9 @@
  */
 /*
 /*-- transition --*/
-#evcal_list .eventon_list_event .desc_trig, .evcal_evdata_img, .event_description .evcal_close, .evcal_btn, .evo_sort_btn, .calendar_header  .evcal_arrows, .desc_trig {
+#evcal_list .eventon_list_event .desc_trig, .evcal_evdata_img, .event_description .evcal_close, .evcal_btn, .evo_sort_btn, .calendar_header  .evcal_arrows, .desc_trig,
+.ajde_evcal_calendar.boxy .eventon_list_event.hasbgimg::after,
+.evcal_desc .evcal_desc3 em.evocmd_button {
 	-webkit-transition: all .2s ease;
 	-moz-transition: all .2s ease;
 	-ms-transition: all .2s ease;
@@ -28,7 +30,7 @@
 	.fleft{float:left}
 
 /*-- calendar general styles --*/
-	.ajde_evcal_calendar {width:100%; text-align: left; white-space:normal;}
+	.ajde_evcal_calendar {width:100%; text-align: left; white-space:normal; position: relative;}
 	.ajde_evcal_calendar img, .evo_location_map img{ max-width:none; box-shadow:none!important}
 	.ajde_evcal_calendar .gmnoprint img {max-width: none !important;}
 
@@ -64,6 +66,18 @@
 	}
 	.ajde_evcal_calendar .eventon_list_event  .desc_trig_outter, .eventon_events_list .desc_trig_outter, .desc_trig_outter a.evcal_list_a{margin: 0;}
 	
+	/* general Fonts */
+	body .ajde_evcal_calendar h4.evo_h4, .evo_content_in h4.evo_h4{
+		color: #656565;
+		padding: 0px;
+	    font-size: 14px;
+	    font-style: normal;
+	    font-family: oswald, 'arial narrow';
+	    margin: 0;
+	    text-transform: uppercase;
+	    font-weight: normal;
+	}
+	
 /** eventON Button **/
 	.ajde_evcal_calendar .eventon_list_event .event_description .evcal_btn, .evo_pop_body .evcal_btn{	
 		font:bold 14px arial;
@@ -98,6 +112,14 @@
 		-moz-box-sizing: border-box;
 		box-sizing: border-box;
 	}
+	.ajde_evcal_calendar .evo_layout_changer{
+		position: absolute;
+		right: 0; z-index: 3;
+	}
+	.ajde_evcal_calendar .evo_layout_changer i{margin-left: 5px; opacity: 0.3;cursor: pointer;}
+	.ajde_evcal_calendar .evo_layout_changer i:hover{opacity: 0.5;}
+	.ajde_evcal_calendar .evo_layout_changer i.on{opacity: 0.7;}
+
 	.ajde_evcal_calendar.ul .calendar_header{min-height:0; margin: 0;}
 
 	.ajde_evcal_calendar #evcal_prev{ margin-left: 15px;}
@@ -224,58 +246,61 @@
 		font-size: 12px;
 		text-transform: uppercase;
 		display: inline-block;
-		padding: 1px 4px;
+		padding: 3px 10px;
 		border-radius: 4px;
 		cursor: pointer;
-		font-style: italic;
 		margin-right: 4px;
 	}
+	.evo_cal_above span.evo-search{min-height:24px;}
 	.evo_cal_above span:hover{opacity: 1;}	
 	.evo_j_container{
 		padding-top: 0px; padding-bottom: 8px; margin: 0;
 	}
-	.ajde_evcal_calendar .calendar_header .evo_j_dates p.legend{
+	.ajde_evcal_calendar .calendar_header .evo_j_dates{margin-bottom:5px;}
+	.ajde_evcal_calendar .calendar_header .evo_j_dates .legend{
 		text-transform: uppercase;
 		color: #6e6e6e;
 		font-size: 12px;
-		padding:0px; padding-left: 0;
-		background-color: transparent;
-	}
-	.ajde_evcal_calendar .calendar_header .evo_j_dates p{
+		padding:0px; 
+		background-color: #f5f5f5;
+		border-radius: 5px;
+		display: table;
+		overflow: hidden;
 		font-size: 12px;
 		font-family: 'open sans';
 		color: #5d5d5d;
-		padding: 7px 12px;
 		line-height: 100%;
-		height: auto;			
-		color: #fff;
-		
+		height: auto;	
 	}
-	.ajde_evcal_calendar .calendar_header .evo_j_dates p a:hover{
-		background-color: #c3c3c3;
-	}.ajde_evcal_calendar .calendar_header .evo_j_dates p a.current{
-		background-color: #CFCFCF;
-	}.ajde_evcal_calendar .calendar_header .evo_j_dates p a.set{
-		background-color: #888888;
+	.ajde_evcal_calendar .calendar_header .evo_j_dates .evo_jumper_months{
+		position: absolute;
 	}
-	.ajde_evcal_calendar .calendar_header .evo_j_dates p a{
-		background-color: #ECECEC;
-		padding:4px;
-		border-radius: 4px;	
-		display: inline-block;
+	.ajde_evcal_calendar .calendar_header .evo_j_dates .legend a:hover{
+		background-color: #e6e6e6;
+	}.ajde_evcal_calendar .calendar_header .evo_j_dates .legend a.current{
+		background-color: #CFCFCF;color:#fff;
+	}.ajde_evcal_calendar .calendar_header .evo_j_dates .legend a.set{
+		background-color: #f79191;
+		color:#fff;
+	}
+	.ajde_evcal_calendar .calendar_header .evo_j_dates .legend a{
+		padding:8px 10px;
+		display: table-cell;
 		cursor: pointer;
-		color: #fff;
+		color: #a0a09f;
 		min-width: 19px;
-		margin-bottom: 2px;
-		margin-right: 3px;
-		font-size: 12px; text-align: center;
+		font-size: 14px; line-height: 18px;font-family: oswald, 'arial narrow';
+		text-align: center;
 	}
-	.ajde_evcal_calendar .calendar_header .evo_j_dates.evo_j_years p a{width: auto;}
+	.ajde_evcal_calendar .calendar_header .evo_j_dates.evo_j_years .legend a{width: auto;}
+	.ajde_evcal_calendar .calendar_header .evo_j_months{
+		height:34px; overflow: hidden; position: relative;
+	}
 	
 	/* widget */
-		#evcal_widget .ajde_evcal_calendar .calendar_header .evo_j_dates p{
+		#evcal_widget .ajde_evcal_calendar .calendar_header .evo_j_dates .legend{
 			font-size: 10px;}
-		#evcal_widget #evcal_head .evo_j_dates p a{
+		#evcal_widget #evcal_head .evo_j_dates .legend a{
 			padding:4px;
 			font-size:9px;
 			min-width: 15px
@@ -289,8 +314,8 @@
 	.eventon_sorting_section{
 		margin:5px 0;
 		padding:8px 0 7px;
-		border-top:1px dashed #F0F0F0;
-		border-bottom:1px dashed #F0F0F0;
+		border-top:1px solid #F0F0F0;
+		border-bottom:1px solid #F0F0F0;
 	}
 	.eventon_sort_line p, .eventon_filter_line p{
 		font-family:'open sans';
@@ -314,6 +339,7 @@
 		color:#fff;
 		font-style: italic;
 	}
+	.eventon_filter_line .filtering_set_val i.fa{margin-right: 5px;}
 	.eventon_filter_line .filtering_set_val:hover{background-color: #a5a5a5;}
 	.eventon_filter_line .eventon_sf_field p{padding:1px 0;}
 	
@@ -334,22 +360,26 @@
 	    box-shadow:  0px 0px  3px #d9d9d9;
 	    border-radius:4px;
 	    overflow: none;
+	    min-width: 150px
 	}
 	.eventon_filter_dropdown p{
 		border-bottom:1px solid #d9d9d9;
 		padding:5px;
-		line-height:100%;
+		line-height:130%;
 		margin:0;
 		cursor:pointer;
 		display:block;
 		border-left:2px solid transparent;
 		color: #929292;
+		position: relative;
 	}
 	.eventon_filter_dropdown p:hover{
 		background-color:#f7f7f7;
 		color:#606060;
 		border-left-color:#C7C7C7;
 	}
+	.eventon_filter_dropdown p.has_icon{padding-left: 30px;}
+	.eventon_filter_dropdown p i.fa{display: block; position: absolute; left: 5px;	}
 
 	.ajde_evcal_calendar .evo_sort_btn{
 		height:15px; width:auto;
@@ -359,6 +389,22 @@
 		text-transform:uppercase;
 		cursor:pointer;
 		border-bottom:none;
+	}
+
+	.eventon_filter_line.selecttype .eventon_filter .eventon_sf_field p{display: none;}
+	.eventon_filter_line.selecttype .eventon_filter .eventon_filter_selection{margin: 0;}
+	.eventon_filter_line.selecttype .eventon_filter{margin-right: 5px;}
+	.eventon_sorting_section p.evo_filter_submit{
+		margin: 0;
+		color: #ffffff;
+    	background-color: #237dbd;
+    	padding: 1px 8px;
+   		border-radius: 5px;
+   		cursor: pointer;
+    	display: block; float: left;
+    	font-size: 11px;
+    	text-transform: uppercase;
+
 	}
 
 
@@ -439,10 +485,9 @@
 		}
 
 /*-- event loading --*/
-	#eventon_loadbar{height: 2px;width: 0%;}
-	#eventon_loadbar_section{border-bottom: 1px solid #e5e5e5;height:2px; width:100%; margin-top: 6px;}
-
-
+	#eventon_loadbar{height:5px; width: 0%; border-radius: 10px; margin:10px 0; background-color:#f5b87a;display: none; }
+	#eventon_loadbar_section{height:auto; width:100%; margin-top: 6px;}
+	
 /*-- event list -- single event line --*/
 	#evcal_list .eventon_list_event a.sin_val.hasFtIMG .evcal_desc, .sin_val.hasFtIMG .evcal_desc{
 		padding-left:100px;
@@ -456,7 +501,13 @@
 	}
 
 /*-- event list --*/
-	#evcal_list{border-right:1px solid #e5e5e5;border-bottom:1px solid #e5e5e5}
+	#evcal_list{
+		border-right:1px solid #e5e5e5;
+		border-bottom:1px solid #e5e5e5;
+		border-top:1px solid #e5e5e5;
+		border-radius: 5px;
+		overflow: hidden;
+	}
 	.ajde_evcal_calendar .eventon_events_list .eventon_list_event{
 		margin-left:0; margin-bottom:0;
 		padding:0px; overflow:hidden; position:relative;
@@ -490,9 +541,22 @@
 	}
 	.eventon_events_list .eventon_list_event .evcal_list_a.featured_event{
 		background-color: #F9ECE4;
-	}.eventon_events_list .eventon_list_event .evcal_list_a.featured_event:hover{
-		background-color: #FAE4D7;
 	}
+		/*.eventon_events_list .eventon_list_event .evcal_list_a.featured_event span.evcal_event_title:before{
+			content:"\f005";
+			display: inline-block;
+		    font-family: 'evo_FontAwesome';
+		    font-style: normal;
+		    font-weight: normal;
+		    line-height: 1;
+		    -webkit-font-smoothing: antialiased;
+		    -moz-osx-font-smoothing: grayscale;
+		    width: 12px;
+		    padding-right: 8px; color:#ffc33b;
+		}*/
+		.eventon_events_list .eventon_list_event .evcal_list_a.featured_event:hover{
+			background-color: #FAE4D7;
+		}
 	.eventon_events_list .eventon_list_event .evcal_list_a.completed-event .evcal_event_title{text-decoration: line-through;}
 
 	.eventon_events_list a{text-decoration:none}
@@ -642,15 +706,16 @@
 	.evcal_desc .evcal_desc3 em.evcal_cmd{float: none;}
 	.evcal_desc .evcal_desc3{min-height:14px;}
 	.evcal_desc .evcal_desc3 em{
-		font-size: 10px;
+		font-size: 11px;
 		line-height: 110%;
 		color: #797979;
 		float:left; display:block;
 		padding-right:6px;
 	}
-	.evcal_desc .evcal_desc3 em i{
-		color:#c8c8c8
-	}
+	.evcal_desc .evcal_desc3 em i{color:#c8c8c8	}
+	.evcal_desc .evcal_desc3 span.evcal_event_types em i.fa{margin-right: 6px;}
+	.evcal_desc .evcal_cmd i.fa{margin-right: 5px;}
+
 	.eventon_events_list .eventon_list_event .evcal_desc span.evcal_event_subtitle, .evo_pop_body .evcal_desc span.evcal_event_subtitle{
 		color: #6B6B6B;
 		text-transform: uppercase;
@@ -691,6 +756,16 @@
 	.eventon_events_list .eventon_list_event .evcal_desc em.evcal_alldayevent_text{
 		text-transform: capitalize;
 	}
+	/* eventtop button custom field */
+		.evcal_desc .evcal_desc3 em.evocmd_button, #evcal_list .evcal_desc .evcal_desc3 em.evocmd_button{
+			padding:4px 6px;
+			border-radius: 5px;
+			background-color:#237dbd;
+			color:#fff;
+			cursor: pointer;
+			display: inline-block; 
+		}
+		.evcal_desc .evcal_desc3 em.evocmd_button:hover{opacity: 0.5;}
 
 	/* date and location fields on event top */
 		.eventon_events_list .eventon_list_event .evcal_desc .evcal_location, 
@@ -904,19 +979,15 @@
 		margin:0
 	}
 	.evorow.tb, .evorow .tb{
-		display:table;
-		width:100%;
+		display:table; width:100%;
 	}
 	.evorow.tb .evcal_col50, .evorow .tb .evcal_col50{
-		display:table-cell;
-		float:none
+		display:table-cell;	float:none
 	}
 	.evorow.tb .tbrow, .evorow .tb .tbrow{
 		display:table-row;
 	}	
-	.evorow.lastrow{
-		padding-right:55px
-	}
+	.evorow.lastrow{	padding-right:55px	}
 
 /* diffrent row colors */
 	.dark1{	background-color:#e1e1e1;}
@@ -956,7 +1027,6 @@
 	.evortl .evcal_evdata_row .evcal_evdata_cell,
 	.evortl #evcal_list .eventon_list_event p.no_events
 	{text-align: right;}
-
 	
 	.evortl .eventon_events_list .eventon_list_event .evcal_desc, .evortl.eventon_events_list .eventon_list_event .evcal_desc{
 		padding-right: 80px; padding-left: 15px;
@@ -1073,8 +1143,7 @@
 	.evcal_evdata_img.evo_imgCursor:hover{cursor: url(../images/zoom.png), auto;}
 	.evo_metarow_directimg img{
 		width: 100%; height: auto;
-	}
-	
+	}	
 	@media (max-width:680px){
 		.evo_metarow_fimg.evcal_evdata_img{height: 125px;}
 	}
@@ -1143,6 +1212,11 @@
 	#evcal_list .eventon_list_event .event_description p, #evcal_list .evcal_list_a .event_description li, 
 	.evo_pop_body .evcal_evdata_row .evcal_evdata_cell p{
 		font-size:13px; color:#656565;		
+	}	
+	.evo_repeat_series_dates span{display: inline-block;
+		margin-right: 5px; border-radius: 5px;
+		background-color: #dedede; padding: 3px 10px; font-style: normal;
+		margin-top: 5px;
 	}
 	#evcal_list .eventon_list_event .event_description .evcal_desc_top{background-color:#e4e4e4;}
 	#evcal_list .eventon_list_event .event_description ul{
@@ -1187,6 +1261,42 @@
 		font-weight: normal;
 		border-bottom: 1px solid #e5e5e5;
 	}
+	.ajde_evcal_calendar.ul .evcal_month_line p{border-bottom: none;}
+/* tabbed view */
+	.evo_tab_view ul.evo_tabs{
+		list-style: none;
+		margin: 0; padding: 0;
+	}
+	.evo_tab_view ul.evo_tabs:after{content:""; clear:both; display:block;}
+	.evo_tab_view ul.evo_tabs li{
+		float: left;
+		display: block;
+		text-transform: uppercase;
+		padding: 3px 8px;
+		border:1px solid #DEDEDE;
+		margin-bottom: -1px;
+		color: #C3C3C3;
+		cursor: pointer;		
+	}
+	.evo_tab_view ul.evo_tabs li:first-child{margin-left: 5px;}
+	.evo_tab_view ul.evo_tabs li.selected{
+		background-color: #F3F3F3;color: #A0A0A0;
+	}
+	.evo_tab_view ul.evo_tabs li:hover{background-color:#F3F3F3 }
+	.evo_tab_container{
+		padding: 5px 15px 15px;
+		border:1px solid #DEDEDE;
+		border-radius: 5px;
+		position: relative;
+	}
+	.evo_tab_container .evo_tab_section{
+		position: relative;
+		width: 100%;		
+	}
+	.evo_tab_container .evo_tab_section.hidden{opacity:0; height: 0}
+	.evo_tab_container .evo_tab_section.visible{opacity: 1;}
+	.evo_tab_section .evo_month_title{clear: both;}
+	/*.evo_cal_above_content:after{content:""; clear:both;}*/
 
 /*-- widget --*/
 	.evo_widget .eventon_events_list .eventon_list_event .evcal_desc span.evo_above_title span, .evo_widget .evo_pop_body .evcal_desc span.evo_above_title span{padding: 1px 5px; font-size: 10px;}
@@ -1433,7 +1543,6 @@
 	    top: 0;
 	    margin-top: -30px;
 	}
-	.ajde_evcal_calendar.boxy .eventon_list_event:hover {opacity: 0.7}
 	.ajde_evcal_calendar.boxy .eventon_list_event .evcal_list_a {
 		text-align: left;
 		padding: 20px 0 15px;		
@@ -1494,10 +1603,11 @@
 			display:none;
 		}		
 
+		.ajde_evcal_calendar.boxy .eventon_list_event:hover{ opacity: 0.5;}
+		.ajde_evcal_calendar.boxy .eventon_list_event.hasbgimg:hover{ opacity: 1;}
+
 	/* with image */
-		.ajde_evcal_calendar.boxy #evcal_list .eventon_list_event .desc_trig.hasFtIMG .evcal_cblock{
-			left: 0;
-		}
+		.ajde_evcal_calendar.boxy #evcal_list .eventon_list_event .desc_trig.hasFtIMG .evcal_cblock{left: 0;}
 		.ajde_evcal_calendar.boxy #evcal_list .eventon_list_event .desc_trig.hasFtIMG .evcal_desc{
 			padding-left: 15px;
 		}
@@ -1536,8 +1646,9 @@
 			position: absolute;
 			z-index: 3;
 			top: 0;left: 0;bottom: 0;right: 0;
-			opacity: 0.7;
+			opacity: 0.2;
 		}
+		.ajde_evcal_calendar.boxy .eventon_list_event.hasbgimg:hover::after{opacity: 0.7;}
 	
 	.ajde_evcal_calendar.boxy .eventon_events_list .eventon_list_event .evcal_cblock{
 		position: relative;
@@ -1737,6 +1848,10 @@
 		  	position: absolute;
 		  	padding: 0;
 		}
+
+/* for JQuery Mobile */
+	.ui-loading .ui-loader { display: none; }
+	.ui-loader { display: none; position: absolute; opacity: .85; z-index: 100; left: 50%; width: 200px; margin-left: -130px; margin-top: -35px; padding: 10px 30px; }
 
 /*-- Responsive --*/
 @media (max-width: 480px){

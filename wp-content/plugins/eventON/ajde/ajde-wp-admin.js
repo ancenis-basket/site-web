@@ -13,6 +13,8 @@ jQuery(document).ready(function($){
 			$(this).append('<em>' +tipContent +'</em>').addClass(classes[1]);
 		});
 
+	
+
 	// lightbox hide
 		$('body').on('click',' .ajde_close_pop_trig',function(){
 			var obj = $(this).parent();
@@ -161,34 +163,34 @@ jQuery(document).ready(function($){
 		$('.ajde_fa_icons_selector').remove();
 		$('body').append(FA);
 
-		$('.ajde_icons').html('<em>X</em>');
+		$('.ajde_icons').html('<em class="ajde_icon_close">X</em>');
 
 		var fa_icon_selection = '';
 		$('body').on('click','.ajde_icons', function(){
 			var poss = $(this).offset();
-			//console.log(poss);
+			// /console.log(poss);
 			$('.ajde_fa_icons_selector').css({'top':(poss.top-220)+'px', 'left':(poss.left-68)}).fadeIn('fast');
 
 			fa_icon_selection = $(this);
 		});
 
 		// remove icon
-			$('body').on('click','.ajde_icons em', function(){
+			$('body').on('click','i.ajde_icons em', function(){
 				$(this).parent().attr({'class':'ajde_icons default'});
 				$(this).parent().siblings('input').val('');
 			});
 
 		//selection of new font icon
-		$('.ajde_fa_icons_selector').on('click','li', function(){
+			$('.ajde_fa_icons_selector').on('click','li', function(){
 
-			var icon = $(this).find('i').data('name');
-			//console.log(icon);
+				var icon = $(this).find('i').data('name');
+				//console.log(icon);
 
-			fa_icon_selection.attr({'class':'ajde_icons default fa '+icon});
-			fa_icon_selection.siblings('input').val(icon);
+				fa_icon_selection.attr({'class':'ajde_icons default fa '+icon});
+				fa_icon_selection.siblings('input').val(icon);
 
-			$('.ajde_fa_icons_selector').fadeOut('fast');
-		});
+				$('.ajde_fa_icons_selector').fadeOut('fast');
+			});
 		// close with click outside popup box when pop is shown
 		$(document).mouseup(function (e){
 			var container=$('.ajde_fa_icons_selector');

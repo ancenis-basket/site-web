@@ -5,7 +5,7 @@
  * @author 		AJDE
  * @category 	Admin
  * @package 	eventon/Admin
- * @version     2.3.20
+ * @version     2.4.4
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -21,24 +21,25 @@ class evo_admin {
 		add_action('admin_menu', array($this,'eventon_admin_menu'), 5);
 		add_action( 'admin_head', array($this,'eventon_admin_menu_highlight'), 5);
 		add_action('admin_init', array($this,'eventon_admin_init'));
-		//add_action( 'admin_enqueue_scripts', array($this,'eventon_admin_scripts') );
-		//add_action( 'admin_enqueue_scripts', array($this,'eventon_all_backend_files') );
+		
 		add_action('admin_action_duplicate_event', array($this,'eventon_duplicate_event_action'));
 		add_filter("plugin_action_links_".AJDE_EVCAL_BASENAME, array($this,'eventon_plugin_links') );
 
 		add_action('media_buttons_context',  array($this,'eventon_shortcode_button'));
 		add_filter( 'tiny_mce_version', array($this,'eventon_refresh_mce') ); 
+
+		//add_action( 'admin_enqueue_scripts', array($this,'eventon_admin_scripts') );
+		//add_action( 'admin_enqueue_scripts', array($this,'eventon_all_backend_files') );
 	}
 
 // admin init
 	function eventon_admin_init() {
 		global $pagenow, $typenow, $wpdb, $post;	
-		
+				
 		if ( $typenow == 'post' && ! empty( $_GET['post'] ) ) {
 			$typenow = $post->post_type;
-		} elseif ( empty( $typenow ) && ! empty( $_GET['post'] ) ) {
-	        $post = get_post( $_GET['post'] );
-	        $typenow = $post->post_type;
+		} elseif ( empty( $typenow ) && isset($_GET['post'] ) ) {
+	       	$typenow = get_post_type( $_GET['post'] );
 	    }
 		
 		if ( $typenow == '' || $typenow == "ajde_events" ) {		
@@ -56,11 +57,17 @@ class evo_admin {
 			}
 
 			// taxonomy only page
-			if($pagenow =='edit-tags.php'){
+			if($pagenow =='edit-tags.php' || $pagenow == 'term.php'){
 				$this->eventon_load_colorpicker();
 				wp_enqueue_script('taxonomy',AJDE_EVCAL_URL.'/assets/js/admin/taxonomy.js' ,array('jquery'),'1.0', true);
 			}
-		}		
+		}
+
+		// Includes for admin
+			if(defined('DOING_AJAX')){
+				include_once( 'class-admin-ajax.php' );
+			}
+			
 
 		// evneton settings only 
 			if($pagenow =='admin.php' && isset($_GET['page']) && ($_GET['page']=='eventon' || $_GET['page']=='action_user')){
@@ -76,7 +83,9 @@ class evo_admin {
 			if(empty($_eventon_create_pages) || $_eventon_create_pages!= 1){
 				evo_install::create_pages();
 			}
-	}	
+		
+			
+	}
 	
 // admin menus
 	function eventon_admin_menu() {
@@ -106,7 +115,7 @@ class evo_admin {
 		add_submenu_page( 'eventon', 'Language', 'Language', 'manage_eventon', 'admin.php?page=eventon&tab=evcal_2', '' );
 		add_submenu_page( 'eventon', 'Styles', 'Styles', 'manage_eventon', 'admin.php?page=eventon&tab=evcal_3', '' );
 		add_submenu_page( 'eventon', 'Addons & Licenses', 'Addons & Licenses', 'manage_eventon', 'admin.php?page=eventon&tab=evcal_4', '' );
-		add_submenu_page( 'eventon', 'Troubleshoot', 'Troubleshoot', 'manage_eventon', 'admin.php?page=eventon&tab=evcal_5', '' );
+		add_submenu_page( 'eventon', 'Support', 'Support', 'manage_eventon', 'admin.php?page=eventon&tab=evcal_5', '' );
 	}
 	/** Include and display the settings page. */
 		function eventon_settings_page() {
@@ -179,7 +188,17 @@ class evo_admin {
 		function wp_admin_scripts_styles(){
 			global $eventon, $pagenow, $wp_version;
 
+			if($pagenow == 'term.php')
+				wp_enqueue_media();
 			wp_enqueue_script('evo_wp_admin',AJDE_EVCAL_URL.'/assets/js/admin/wp_admin.js',array('jquery'),$eventon->version,true);
+			wp_localize_script( 
+				'evo_wp_admin', 
+				'evo_admin_ajax_handle', 
+				array( 
+					'ajaxurl' => admin_url( 'admin-ajax.php' ), 
+					'postnonce' => wp_create_nonce( 'eventon_admin_nonce' )
+				)
+			);
 
 			if( (!empty($pagenow) && $pagenow=='admin.php')
 			 && (isset($_GET['page']) && ($_GET['page']=='eventon'|| $_GET['page']=='action_user'|| $_GET['page']=='evo-sync') ) 
@@ -225,6 +244,10 @@ class evo_admin {
 
 		}
 
+// eventon kriyathmakada kiya test kara beleema
+	function kriyathmakada(){
+		require_once('class-evo-product.php');
+	}
 
 // shortcode generator
 	function eventon_shortcode_button($context) {	
@@ -319,6 +342,7 @@ class evo_admin {
 		}
 	// duplicate events action
 		function eventon_duplicate_event_action() {
+			
 			include_once( AJDE_EVCAL_PATH.'/includes/admin/post_types/duplicate_event.php');
 			eventon_duplicate_event();
 		}

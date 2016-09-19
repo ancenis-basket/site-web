@@ -20,11 +20,11 @@ class evo_cal_shell {
 
 	// Load calendar required files
 		public function load_evo_files(){
-			global $eventon; 
+			global $eventon;
 			$eventon->load_default_evo_scripts();
 			$this->load_google_maps_api();
 		}
-	
+
 
 	// Event types and other functions
 		public function get_event_types(){
@@ -67,19 +67,21 @@ class evo_cal_shell {
 	 * @return array array of all processed variables with values
 	 */
 		public function get_supported_shortcode_atts(){
-			$args = array(			
+			$args = array(
 				'cal_id'=>'',
 				'event_count'=>0,
-				'month_incre'=>0,			
+				'month_incre'=>0,
 				'number_of_events'=>5,
 				'focus_start_date_range'=>'',
 				'focus_end_date_range'=>'',
 				'sort_by'=>'sort_date',		// sort_rand
+					'exp_so'=>'no',		// expand sort options by default
 				'filters'=>'',
+				'filter_type'=>'',	// dropdown or select
 				'fixed_month'=>0,
-				'fixed_year'=>0,				
+				'fixed_year'=>0,
 					'hide_past'=>'no',
-					'hide_past_by'=>'ee',	// ss | ee 		
+					'hide_past_by'=>'ee',	// ss | ee
 				'show_et_ft_img'=>'no',
 				'event_order'=>'ASC',
 				'ft_event_priority'=>'no',
@@ -87,13 +89,14 @@ class evo_cal_shell {
 				'hide_mult_occur'=>'no',
 				'show_repeats'=>'no', // show repeating events while hide multiple occurance
 				'show_upcoming'=>0,
-				'show_limit'=>'no',		// show only event count but add view more 
+				'show_limit'=>'no',		// show only event count but add view more
 				'show_limit_redir'=>'',		// url to redirect show more button
 					'tiles'=>'no',		// tile box style cal
 					'tile_height'=>0,		// tile height
 					'tile_bg'=>0,		// tile background
 					'tile_count'=>2,		// tile count in a row
 					'tile_style'=>0,		// tile style
+					'layout_changer'=>'no',	// show option to change layout between tile and rows	
 
 				'lang'=>'L1',
 				'pec'=>'',				// past event cut-off
@@ -102,21 +105,21 @@ class evo_cal_shell {
 				'ux_val'=>'0', 			// user interaction to override default user interaction values
 				'etc_override'=>'no',	// even type color override the event colors
 				'jumper'=>'no'	,		// month jumper
-					'jumper_offset'=>'0', 	// jjumper start year offset
+					'jumper_offset'=>'0', 	// jumper start year offset
+					'exp_jumper'=>'no', 	// expand jumper
 				'accord'=>'no',			// accordion
-				'only_ft'=> 'no',		// only featured events
-				'exp_so'=>'no',		// expand sort options by default
+				'only_ft'=> 'no',		// only featured events				
 				'hide_so'=>'no',	// hide sort options
 				'wpml_l1'=>'',		// WPML lanuage L1 = en
 				'wpml_l2'=>'',		// WPML lanuage L2 = nl
 				'wpml_l3'=>'',		// WPML lanuage L3 = es
 				's'=>'',		// keywords to search
-				'hide_arrows'=>'no',	// hide calendar arrows	
-				//'only_logged_user'=>'no'	// only visible for loggedin user
+				'hide_arrows'=>'no',	// hide calendar arrows
+				'members_only'=>'no'	// only visible for loggedin user
 			);
 
 			// each event type category
-			foreach($this->get_event_types() as $ety=>$ett){		
+			foreach($this->get_event_types() as $ety=>$ett){
 				$args[$ett] ='all';
 			}
 
@@ -124,21 +127,21 @@ class evo_cal_shell {
 			foreach($this->get_extra_tax() as $tax){
 				$args[$tax] ='all';
 			}
-			
+
 			return apply_filters('eventon_shortcode_defaults', $args);
 		}
 
 	/**
 	 * Shortcode arguments as attributed in HTML for the cal header
-	 * @return string 
+	 * @return string
 	 */
 		function shortcode_args_for_cal(){
-			
+
 			$arg = $this->cal->shortcode_args;
 			$_cd='';
 			//print_r($arg);
-			
-			$cdata = apply_filters('eventon_calhead_shortcode_args', array(				
+
+			$cdata = apply_filters('eventon_calhead_shortcode_args', array(
 				'hide_past'=>$arg['hide_past'],
 				'show_et_ft_img'=>$arg['show_et_ft_img'],
 				'event_order'=>$arg['event_order'],
@@ -155,7 +158,7 @@ class evo_cal_shell {
 					'tile_count'=>$arg['tile_count'],
 					'tile_style'=>$arg['tile_style'],
 				's'=>((!empty($arg['s']))? $arg['s']:''),
-				//'only_logged_user' => $arg['only_logged_user']
+				'members_only' => $arg['members_only']
 			), $arg);
 
 			foreach ($cdata as $f=>$v){
@@ -163,40 +166,40 @@ class evo_cal_shell {
 			}
 
 			return "<div class='cal_arguments' style='display:none' {$_cd}></div>";
-			
+
 		}
 
 
 	/**
-	 * load google maps scrips 
-	 * @return  
+	 * load google maps scrips
+	 * @return
 	 */
 		function load_google_maps_api(){
 			// google maps loading conditional statement
 			if( !empty($this->cal->evopt1['evcal_cal_gmap_api']) && ($this->cal->evopt1['evcal_cal_gmap_api']=='yes') 	){
-				if(!empty($this->cal->evopt1['evcal_gmap_disable_section']) && $this->cal->evopt1['evcal_gmap_disable_section']=='complete'){					
-					
+				if(!empty($this->cal->evopt1['evcal_gmap_disable_section']) && $this->cal->evopt1['evcal_gmap_disable_section']=='complete'){
+
 					$this->cal->google_maps_load = false;
-					
+
 					wp_enqueue_script( 'eventon_init_gmaps_blank');
 					wp_enqueue_script( 'eventon_gmaps_blank');
-				}else{					
-					
+				}else{
+
 					//update_option('evcal_gmap_load',true);
-					$this->cal->google_maps_load = true;					
+					$this->cal->google_maps_load = true;
 					wp_enqueue_script( 'eventon_init_gmaps_blank');
 					wp_enqueue_script('eventon_gmaps');
 				}
-				
-			}else {				
-				
+
+			}else {
+
 				//update_option('evcal_gmap_load',true);
 				$this->cal->google_maps_load = true;
 
 				wp_enqueue_script( 'evcal_gmaps');
 				wp_enqueue_script( 'eventon_gmaps');
 				wp_enqueue_script('eventon_init_gmaps');
-				
+
 				// load map files only to frontend
 				if ( !is_admin() ){
 					wp_enqueue_script( 'evcal_gmaps');
@@ -213,9 +216,9 @@ class evo_cal_shell {
 		public function get_starting_monthYear(){
 			$args = $this->cal->shortcode_args;
 			extract($args);
-			
-			
-			// *** GET STARTING month and year 
+
+
+			// *** GET STARTING month and year
 			if($fixed_month!=0 && $fixed_year!=0){
 				$focused_month_num = $fixed_month;
 				$focused_year = $fixed_year;
@@ -224,24 +227,24 @@ class evo_cal_shell {
 				$this_month_num = date('n', current_time('timestamp'));
 				$this_year_num = date('Y', current_time('timestamp'));
 
-				
+
 				if($month_incre !=0){
 
 					$mi_int = (int)$month_incre;
 
 					$new_month_num = $this_month_num +$mi_int;
-					
+
 					//month
-					$focused_month_num = ($new_month_num>12)? 
+					$focused_month_num = ($new_month_num>12)?
 						$new_month_num-12:
 						( ($new_month_num<1)?$new_month_num+12:$new_month_num );
-					
-					// year		
-					$focused_year = ($new_month_num>12)? 
+
+					// year
+					$focused_year = ($new_month_num>12)?
 						$this_year_num+1:
 						( ($new_month_num<1)?$this_year_num-1:$this_year_num );
 
-					
+
 				}else{
 					$focused_month_num = $this_month_num;
 					$focused_year = $this_year_num;
@@ -265,7 +268,7 @@ class evo_cal_shell {
 
 			//echo $ecv['sort_by'];
 
-			if(is_array($events_array)){			
+			if(is_array($events_array)){
 				switch($ecv['sort_by']){
 					case has_action("eventon_event_sorting_{$ecv['sort_by']}"):
 						do_action("eventon_event_sorting_{$ecv['sort_by']}", $events_array);
@@ -273,29 +276,29 @@ class evo_cal_shell {
 					case 'sort_date':
 						usort($events_array, 'cmp_esort_enddate' );
 						usort($events_array, 'cmp_esort_startdate' );
-						
+
 					break;case 'sort_title':
 						usort($events_array, 'cmp_esort_title' );
 					break; case 'sort_color':
 						usort($events_array, 'cmp_esort_color' );
-					break;	
+					break;
 					case 'sort_rand':
 						shuffle($events_array);
-					break;					
+					break;
 				}
 			}
-			
+
 
 			// ALT: reverse events order within the events array list
-			$events_array = ($ecv['event_order']=='DESC')? 
+			$events_array = ($ecv['event_order']=='DESC')?
 				array_reverse($events_array) : $events_array;
 
 			return $events_array;
 		}
-	
+
 	/**
 	 * reusable variables within the calendar
-	 * @return  
+	 * @return
 	 */
 		public function reused(){
 			$lang = (!empty($this->cal->shortcode_args['lang']))? $this->cal->shortcode_args['lang']: 'L1';
@@ -305,11 +308,11 @@ class evo_cal_shell {
 			$ett_i18n_names = evo_get_localized_ettNames( $lang, $this->cal->evopt1, $this->cal->evopt2);
 
 			for($x = 1; $x< $this->cal->event_types ; $x++){
-				$ab = ($x==1)? '':$x;			
-				
+				$ab = ($x==1)? '':$x;
+
 				$this->cal->lang_array['et'.$ab] = $ett_i18n_names[$x];
 			}
-			 		
+
 			$this->cal->lang_array['no_event'] = $this->cal->lang('evcal_lang_noeve','No Events',$lang);
 			$this->cal->lang_array['evcal_lang_yrrnd'] = $this->cal->lang('evcal_lang_yrrnd','Year Around Event',$lang);
 			$this->cal->lang_array['evcal_lang_mntlng'] = $this->cal->lang('evcal_lang_mntlng','Month Long Event',$lang);
@@ -325,7 +328,7 @@ class evo_cal_shell {
 	 * update or change shortcode argument values after its processed on globally
 	 * @param  string $field   shortcode field
 	 * @param  string $new_val value of the field
-	 * @return           
+	 * @return
 	 */
 		public function update_shortcode_args($field, $new_val){
 			$sca = $this->cal->shortcode_args;

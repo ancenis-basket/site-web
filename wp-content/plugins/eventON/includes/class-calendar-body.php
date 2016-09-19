@@ -3,7 +3,7 @@
  * Calendar body parts class
  *
  * @class  		evo_cal_body
- * @version		2.3.12
+ * @version		2.4.6
  * @package		EventON/Classes
  * @category	Class
  * @author 		AJDE
@@ -31,18 +31,20 @@ class evo_cal_body{
 			if($jumper=='yes'){
 				$focused_year = (int)$focused_year;
 
-				$jumper_content.= "<div class='evo_j_container' style='display:none' data-m='{$focused_month_num}' data-y='{$focused_year}'>
+				$jumper_content.= "<div class='evo_j_container' style='display:".($exp_jumper=='yes'?'block':'none')."' data-m='{$focused_month_num}' data-y='{$focused_year}' data-expj='{$exp_jumper}'>
 						<div class='evo_j_months evo_j_dates' data-val='m'>
-							<p class='legend'>".eventon_get_custom_language($this->cal->evopt2, 'evcal_lang_jumpmonthsM','Month').": ";
+							<div class='legend evo_jumper_months'>";
 
 					// months list
 					$lang = (!empty($args['lang']))? $args['lang']: 'L1';
 					$__months = eventon_get_oneL_months($this->cal->evopt2[$lang]);	
+					$fullMonther = evo_get_long_month_names($this->cal->evopt2[$lang]);	
 								
 					$count = 1;
-					foreach($__months as $m){
+					foreach($fullMonther as $m){
 						$_current = ($focused_month_num == $count)? 'class="current set"':null;
-						$jumper_content.= "<a data-val='{$count}' {$_current} title='". eventon_return_timely_names_('month_num_to_name',$count,'full',$lang)."' >{$m}</a>";
+						$monthNAME = eventon_return_timely_names_('month_num_to_name', $count ,'full',$lang);
+						$jumper_content.= "<a data-val='{$count}' {$_current} title='". $monthNAME.	"' >{$monthNAME}</a>";
 						$count ++;
 					}
 
@@ -57,10 +59,10 @@ class evo_cal_body{
 						}
 
 
-						$jumper_content.= "</p><div class='clear'></div></div>
+						$jumper_content.= "</div><div class='clear'></div></div>
 						
 						<div class='evo_j_years evo_j_dates' data-val='y'>
-							<p class='legend'>".eventon_get_custom_language($this->cal->evopt2, 'evcal_lang_jumpmonthsY','Year').": ".$__a."</p><div class='clear'></div>
+							<p class='legend'>".$__a."</p><div class='clear'></div>
 						</div>
 					</div>";
 			}// end jump months
@@ -211,6 +213,7 @@ class evo_cal_body{
 				'sortbar'=>true,
 				'_html_sort_section'=>true,
 				'date_header'=>true,
+				'external'=>false,
 			);
 
 			// $arguments contain focused month num and focused year values
@@ -272,7 +275,6 @@ class evo_cal_body{
 							$__ux_val = '0';
 						}
 					}
-
 				
 				$cdata = apply_filters('eventon_cal_jqdata', array(
 					'cyear'=>$focused_year,
@@ -283,6 +285,7 @@ class evo_cal_body{
 					'mapscroll'=> ((!empty($this->cal->evopt1['evcal_gmap_scroll']) && $this->cal->evopt1['evcal_gmap_scroll']=='yes')?'false':'true'),
 					'mapformat'=> ((!empty($this->cal->evopt1['evcal_gmap_format']))?$this->cal->evopt1['evcal_gmap_format']:'roadmap'),
 					'mapzoom'=>((!empty($this->cal->evopt1['evcal_gmap_zoomlevel']))?$this->cal->evopt1['evcal_gmap_zoomlevel']:'12'),
+					'mapiconurl'=> ( !empty($this->cal->evopt1['evo_gmap_iconurl'])? $this->cal->evopt1['evo_gmap_iconurl']:''),
 					'ev_cnt'=>$args['event_count'], // event count
 					'show_limit'=>$args['show_limit'],
 					'tiles'=>$args['tiles'],
@@ -302,47 +305,54 @@ class evo_cal_body{
 			$content='';
 
 			// random cal id
-				$cal_id = (empty($cal_id))? rand(10,40): $cal_id;
+				$cal_id = (empty($cal_id))? rand(100,900): $cal_id;
 
 			// Calendar SHELL
-			$content .= "<div id='evcal_calendar_".$cal_id."' class='".( implode(' ', $__cal_classes))."' >
-				<div class='evo-data' {$_cd} ></div>";
-
-					$sort_class = ($this->cal->evcal_hide_sort=='yes')?'evcal_nosort':null;
-			
-			// HTML 
-				$content.="<div id='evcal_head' class='calendar_header ".$sort_class."' >";
-
-			// if the calendar arrows and headers are to show 
-				if($date_header){
-					$hide_arrows = (!empty($this->cal->evopt1['evcal_arrow_hide']) && $this->cal->evopt1['evcal_arrow_hide']=='yes' || (!empty($args['hide_arrows']) && $args['hide_arrows']=='yes') )?true:false;					
-					
-					$content .= $this->cal_above_header($arg_y);				
-
-
-					$content.="<p id='evcal_cur' class='evo_month_title'> ".$cal_header_title."</p>";	
-					// arrows
-					if(!$hide_arrows) $content .= $this->cal_parts_arrows($args);
-
-				}else if(!empty($header_title)){
-					$content.="<p>". $header_title ."</p>";
-				}
+			$content .= "<div id='evcal_calendar_".$cal_id."' class='".( implode(' ', $__cal_classes))."' >";
 				
-			// (---) Hook for addon
-				if(has_action('eventon_calendar_header_content')){
-					ob_start();
-					do_action('eventon_calendar_header_content', $content, $args);
-					$content.= ob_get_clean();
-				}
-			
-			// Shortcode arguments
-				$content.= $this->cal->shell->shortcode_args_for_cal();
-				$content.="<div class='clear'></div></div>";
-			
+				if(!$external){
+
+					// layout changer
+					$content .= $this->cal_parts_layout_changer($args);
+
+					$content .= "<div class='evo-data' {$_cd} ></div>";
+
+						$sort_class = ($this->cal->evcal_hide_sort=='yes')?'evcal_nosort':null;
+				
+					// HTML 
+						$content.="<div id='evcal_head' class='calendar_header ".$sort_class."' >";
+
+					// if the calendar arrows and headers are to show 
+						if($date_header){
+							$hide_arrows = (!empty($this->cal->evopt1['evcal_arrow_hide']) && $this->cal->evopt1['evcal_arrow_hide']=='yes' || (!empty($args['hide_arrows']) && $args['hide_arrows']=='yes') )?true:false;					
 							
-			// SORT BAR
-				$sortbar =($hide_so=='yes')? false:true;
-				$content.= ($_html_sort_section)? $this->cal->eventon_get_cal_sortbar($args, $sortbar):null;
+							$content .= $this->cal_above_header($arg_y);				
+
+
+							$content.="<p id='evcal_cur' class='evo_month_title'> ".$cal_header_title."</p>";	
+							// arrows
+							if(!$hide_arrows) $content .= $this->cal_parts_arrows($args);
+
+						}else if(!empty($header_title)){
+							$content.="<p>". $header_title ."</p>";
+						}
+						
+					// (---) Hook for addon
+						if(has_action('eventon_calendar_header_content')){
+							ob_start();
+							do_action('eventon_calendar_header_content', $content, $args);
+							$content.= ob_get_clean();
+						}
+					
+					// Shortcode arguments
+						$content.= $this->cal->shell->shortcode_args_for_cal();
+						$content.="<div class='clear'></div></div>";
+					
+									
+					// SORT BAR
+						$sortbar =($hide_so=='yes')? false:$sortbar;
+						$content.= ($_html_sort_section)? $this->cal->eventon_get_cal_sortbar($args, $sortbar):null;
+				}
 		
 			// RTL 
 				$rtl = ($this->rtl)? 'evortl':null;
@@ -357,6 +367,12 @@ class evo_cal_body{
 				return "<p class='evo_arrows". ((!empty($opt['evo_arrow_right']) && $opt['evo_arrow_right']=='yes')? ' right':'') ."'><span id='evcal_prev' class='evcal_arrows evcal_btn_prev' ><i class='fa fa-angle-left'></i></span><span id='evcal_next' class='evcal_arrows evcal_btn_next' ><i class='fa fa-angle-right'></i></span></p>";
 			}
 
+			// layout changing buttons
+				function cal_parts_layout_changer($args){
+					if($args['layout_changer']=='yes')
+						return "<p class='evo_layout_changer'><i data-type='row' class='fa fa-reorder'></i><i data-type='tile' class='fa fa-th-large'></i></p>";
+				}
+
 	// Independant components of the calendar body
 		public function calendar_shell_header($arg){
 
@@ -370,7 +386,8 @@ class evo_cal_body{
 				'year'=>2014,
 				'date_range_start'=>0,
 				'date_range_end'=>0,
-				'send_unix'=>false
+				'send_unix'=>false,
+				'external'=>false,
 			);
 
 			$args = array_merge($defaults, $arg);
@@ -389,7 +406,8 @@ class evo_cal_body{
 					'range_start'=>$date_range_start, 
 					'range_end'=>$date_range_end , 
 					'send_unix'=>$args['send_unix'],
-					'header_title'=>$args['title']
+					'header_title'=>$args['title'],
+					'external'=>$args['external'],
 				)
 			);
 

@@ -3,7 +3,7 @@
  * evo_frontend class for front and backend.
  *
  * @class 		evo_frontend
- * @version		2.3.12
+ * @version		2.4.2
  * @package		EventON/Classes
  * @category	Class
  * @author 		AJDE
@@ -33,7 +33,7 @@ class evo_frontend {
 		}
 
 		// schedule deleting past events
-			add_action('evo_trash_past_events', array($this, 'evo_perform_trash_past_events'));			
+			add_action('evo_trash_past_events', array($this, 'evo_perform_trash_past_events'));	
 	}
 
 	// styles and scripts
@@ -43,10 +43,11 @@ class evo_frontend {
 			$evo_opt= $this->evo_options;			
 			
 			// Google gmap API script -- loadded from class-calendar_generator.php	
-			wp_register_script('evo_mobile',AJDE_EVCAL_URL.'/assets/js/jquery.mobile.min.js', array('jquery'), $eventon->version, true ); // 2.2.17
-			wp_register_script('evcal_easing', AJDE_EVCAL_URL. '/assets/js/jquery.easing.1.3.js', array('jquery'),'1.0',true );//2.2.24
-			wp_register_script('evcal_functions', AJDE_EVCAL_URL. '/assets/js/eventon_functions.js', array('jquery'), $eventon->version ,true );// 2.2.22
-			wp_register_script('evcal_ajax_handle', AJDE_EVCAL_URL. '/assets/js/eventon_script.js', array('jquery'), $eventon->version ,true );
+			wp_register_script('evo_mobile',$eventon->assets_path.'js/jquery.mobile.min.js', array('jquery'), $eventon->version, true ); // 2.2.17
+			wp_register_script('evcal_easing', $eventon->assets_path. 'js/jquery.easing.1.3.js', array('jquery'),'1.0',true );//2.2.24
+			wp_register_script('evo_mouse', $eventon->assets_path. 'js/jquery.mousewheel.min.js', array('jquery'),$eventon->version,true );//2.2.24
+			wp_register_script('evcal_functions', $eventon->assets_path. 'js/eventon_functions.js', array('jquery'), $eventon->version ,true );// 2.2.22
+			wp_register_script('evcal_ajax_handle', $eventon->assets_path. 'js/eventon_script.js', array('jquery'), $eventon->version ,true );
 			wp_localize_script( 
 				'evcal_ajax_handle', 
 				'the_ajax_script', 
@@ -57,24 +58,25 @@ class evo_frontend {
 			);
 
 			// google maps	
-			wp_register_script('eventon_gmaps', AJDE_EVCAL_URL. '/assets/js/maps/eventon_gen_maps.js', array('jquery'), $eventon->version ,true );	
-			wp_register_script('eventon_gmaps_blank', AJDE_EVCAL_URL. '/assets/js/maps/eventon_gen_maps_none.js', array('jquery'), $eventon->version ,true );	
-			wp_register_script('eventon_init_gmaps', AJDE_EVCAL_URL. '/assets/js/maps/eventon_init_gmap.js', array('jquery'),'1.0',true );
-			wp_register_script( 'eventon_init_gmaps_blank', AJDE_EVCAL_URL. '/assets/js/maps/eventon_init_gmap_blank.js', array('jquery'), $eventon->version ,true ); // load a blank initiate gmap javascript
+			wp_register_script('eventon_gmaps', $eventon->assets_path. 'js/maps/eventon_gen_maps.js', array('jquery'), $eventon->version ,true );	
+			wp_register_script('eventon_gmaps_blank', $eventon->assets_path. 'js/maps/eventon_gen_maps_none.js', array('jquery'), $eventon->version ,true );	
+			wp_register_script('eventon_init_gmaps', $eventon->assets_path. 'js/maps/eventon_init_gmap.js', array('jquery'),'1.0',true );
+			wp_register_script( 'eventon_init_gmaps_blank', $eventon->assets_path. 'js/maps/eventon_init_gmap_blank.js', array('jquery'), $eventon->version ,true ); // load a blank initiate gmap javascript
 
-			wp_register_script( 'evcal_gmaps', apply_filters('eventon_google_map_url', 'https://maps.googleapis.com/maps/api/js'), array('jquery'),'1.0',true);
+			$apikey = !empty($evo_opt['evo_gmap_api_key'])? '?key='.$evo_opt['evo_gmap_api_key'] :'';
+			wp_register_script( 'evcal_gmaps', apply_filters('eventon_google_map_url', 'https://maps.googleapis.com/maps/api/js'.$apikey), array('jquery'),'1.0',true);
 
 			// STYLES
-			wp_register_style('evo_font_icons',AJDE_EVCAL_URL.'/assets/fonts/font-awesome.css','','4.6.2');		
+			wp_register_style('evo_font_icons',$eventon->assets_path.'fonts/font-awesome.css','','4.6.2');		
 			
 			// Defaults styles and dynamic styles
-			wp_register_style('evcal_cal_default',AJDE_EVCAL_URL.'/assets/css/eventon_styles.css', array(), $eventon->version);	
+			wp_register_style('evcal_cal_default',$eventon->assets_path.'css/eventon_styles.css', array(), $eventon->version);	
 			//wp_register_style('evo_dynamic_css', admin_url('admin-ajax.php').'?action=evo_dynamic_css');
 
 
 			global $is_IE;
 			if ( $is_IE ) {
-				wp_register_style( 'ieStyle', AJDE_EVCAL_URL.'/assets/css/ie.css', array(), '1.0' );
+				wp_register_style( 'ieStyle', $eventon->assets_path.'css/ie.css', array(), '1.0' );
 				wp_enqueue_style( 'ieStyle' );
 			}
 
@@ -86,6 +88,7 @@ class evo_frontend {
 			$this->register_evo_dynamic_styles();
 		}
 		public function register_evo_dynamic_styles(){
+			global $eventon;
 			$opt= $this->evo_options;
 			if(!empty($opt['evcal_css_head']) && $opt['evcal_css_head'] =='no' || empty($opt['evcal_css_head'])){
 				if(is_multisite()) {
@@ -93,7 +96,7 @@ class evo_frontend {
 					wp_register_style('eventon_dynamic_styles', $uploads['baseurl'] . '/eventon_dynamic_styles.css', 'style');
 				} else {
 					wp_register_style('eventon_dynamic_styles', 
-						AJDE_EVCAL_URL. '/assets/css/eventon_dynamic_styles.css', 'style');
+						$eventon->assets_path. 'css/eventon_dynamic_styles.css', 'style');
 				}
 			}
 		}
@@ -114,6 +117,7 @@ class evo_frontend {
 			//wp_enqueue_script('add_to_cal');
 			wp_enqueue_script('evcal_functions');
 			wp_enqueue_script('evo_mobile');
+			wp_enqueue_script('evo_mouse');
 			wp_enqueue_script('evcal_ajax_handle');			
 			
 			do_action('eventon_enqueue_scripts');
@@ -136,6 +140,17 @@ class evo_frontend {
 		}
 		public function evo_styles(){
 			add_action('wp_head', array($this, 'load_default_evo_scripts'));
+		}
+
+	// check if members only
+		function is_member_only($shortcode_args){
+			 return ( 
+			 	($shortcode_args['members_only']=='yes' && is_user_logged_in()) ||
+			 	$shortcode_args['members_only']=='no' || empty($shortcode_args['members_only'])
+			 )? true: false;
+		}
+		function nonMemberCalendar(){
+			return __('You must login first to see calendar','eventon');
 		}
 
 	// language
@@ -255,6 +270,20 @@ class evo_frontend {
 		// Get email body parts
 		// to pull full email templates
 			public function get_email_body($part, $def_location, $args='', $paths=''){
+				global $eventon;
+
+				ob_start();
+
+				$file_location = EVO()->template_locator(
+					$part.'.php', 
+					$def_location,
+					'templates/email/'
+				);
+				include($file_location);
+
+				return ob_get_clean();
+				
+				/*
 				$file_name = $part.'.php';
 				global $eventon;
 
@@ -279,6 +308,7 @@ class evo_frontend {
 					include($template);
 
 				return ob_get_clean();
+				*/
 			}
 	// front-end website
 		/** Output generator to aid debugging. */

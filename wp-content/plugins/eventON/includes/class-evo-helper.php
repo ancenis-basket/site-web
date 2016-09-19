@@ -186,6 +186,29 @@ class evo_helper{
 			return '<span id="'.$args['id'].'" class="ajde_yn_btn '.($no? 'NO':null).''.(($args['abs']=='yes')? ' absolute':null).'" '.$_attr.' data-afterstatement="'.$args['afterstatement'].'"><span class="btn_inner" style=""><em class="no">'.$text_NO.'</em><span class="catchHandle"></span><em class="yes">'.$text_YES.'</em></span></span>'.$input.$label;
 		}
 
-		
+	// tool tips
+		function tooltips($content, $position='', $handleClass=false, $echo = false){
+			// tool tip position
+				if(!empty($position)){
+					$L = ' L';
+					
+					if($position=='UL')
+						$L = ' UL';
+					if($position=='U')
+						$L = ' U';
+				}else{
+					$L = null;
+				}
+
+			$output = "<span class='ajdeToolTip{$L} fa ". ($handleClass? 'handle':'')."' data-handle='{$handleClass}'><em>{$content}</em></span>";
+
+			if(!$echo)
+				return $output;			
+			
+			echo $output;
+		}
+		function echo_tooltips($content, $position=''){
+			$this->tooltips($content, $position='',true);
+		}	
 
 }

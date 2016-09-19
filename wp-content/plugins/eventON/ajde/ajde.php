@@ -1,7 +1,7 @@
 <?php
 /**
  * AJDE Plugin Settings Library
- * @version 	1.5.6
+ * @version 	1.5.9
  * @updated 	2016
  */
 
@@ -9,7 +9,7 @@ if(isset($GLOBALS['ajde'])) return;
 
 class ajde{
 
-	public $version = '1.5.6';
+	public $version = '1.5.9';
 
 	public function __construct(){
 

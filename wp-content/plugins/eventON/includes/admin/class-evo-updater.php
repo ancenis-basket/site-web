@@ -5,7 +5,7 @@
  * @author 		AJDE - Ashan Jay
  * @category 	Admin
  * @package 	EventON/Classes
- * @version     2.4
+ * @version     2.4.2
  */
  
 class evo_updater{
@@ -37,7 +37,7 @@ class evo_updater{
 	       	$this->slug = $args['slug'];
 
 	       	// only for eventon
-	       	if(!in_array($this->slug, array('eventon', 'eventon-action-user') )) return;
+	       	//if(!in_array($this->slug, array('eventon') )) return;
 
 	       	// plugin file path
 	       		$this->pluginPath = substr(AJDE_EVCAL_FILE, 0, -19);
@@ -136,7 +136,7 @@ class evo_updater{
 			            $latest_result = unserialize(($request['body']));
 			        }
 
-			        if($latest_result != null){ 
+			        if($latest_result != null && !empty($latest_result->products[$this->slug]) ){ 
 			        	$this->myeventonAPIResults = (object)$latest_result->products[$this->slug]; 
 			        }
 
@@ -345,7 +345,7 @@ class evo_updater{
 				$api_key = 'vzfrb2suklzlq3r339k5t0r3ktemw7zi';
 				$api_username ='ashanjay';
 
-				$url = 'http://marketplace.envato.com/api/edge/'.$api_username.'/'.$api_key.'/verify-purchase:'.$args['key'].'.json';
+				$url = '//marketplace.envato.com/api/edge/'.$api_username.'/'.$api_key.'/verify-purchase:'.$args['key'].'.json';
 				return $url;
 			}else{
 				// for addons
@@ -366,10 +366,30 @@ class evo_updater{
 				}
 			}	
 		}
+
+		// return API url
+		public function get_api_url($args){
+			$url = '';
+			if($args['slug']=='eventon'){
+				$api_key = 'vzfrb2suklzlq3r339k5t0r3ktemw7zi';
+				$api_username ='ashanjay';
+				$url = '//marketplace.envato.com/api/edge/'.$api_username.'/'.$api_key.'/verify-purchase:'.$args['key'].'.json';
+				
+			}else{
+				$instance = !empty($args['instance'])?$args['instance']:1;
+				
+				$url='http://www.myeventon.com/woocommerce/?wc-api=software-api&request=activation&email='.$args['email'].'&licence_key='.$args['key'].'&product_id='.$args['product_id'].'&instance='.$instance;
+			}
+			return $url;
+		}
 			
-	// Check whether a product is activated
-		public function is_activated(){
-			return $this->product->is_activated();
+	// eventon kriyathmakada kiyala check kireema
+		public function kriyathmakada(){return $this->product->kriyathmakada();}
+		public function akriyamath_niwedanaya(){
+			return __('EventON license need activated for this to work!', 'eventon');
+		}
+		public function eventon_kriyathmaka_karanna(){
+			$this->product->update_field('eventon', 'status', 'active');
 		}
 
 	// error code decipher
@@ -388,7 +408,7 @@ class evo_updater{
 				'09'=>'wp_remote_post() method did not work to verify licenses, trying a backup method now..',
 
 
-				'10'=>'License key is not in valid format, please try again.',
+				'10'=>'License key is not valid, please try again.',
 				'11'=>'Could not verify. Server might be busy, please try again LATER!',
 				'12'=>'Activated successfully and synced w/ eventon server!',
 				'13'=>'Remote validation did not work, but we have activated your copy within your site!',

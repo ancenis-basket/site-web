@@ -24,9 +24,9 @@ function eventon_admin_help_tab_content() {
 
 	ob_start();
 ?>
-<p><b>Support for EventON Calendar Plugin.</b></p>
-<p>We do provide support for issues directly related to eventON calendar via our <a href='http://support.ashanjay.com/forum/eventon/' target='_blank' class='evo_admin_btn btn_triad'>support forum</a> We are a small team so please allow us time to get back to forum issues.</p>
-<p>Before writing on support forum please check the troubleshooter guide that can very well help you solve your issue by trying our common solutions.</p>
+<p><b>Support for EventON Calendar</b></p>
+<p>We provide support for issues directly related to eventON calendar via our <a href='http://helpdesk.ashanjay.com' target='_blank' class='evo_admin_btn btn_triad'>HelpDesk</a> EventON valid purchase code is required to access helpdesk if eventON came bundled with your theme.</p>
+<p>Before creating a ticket, please check the troubleshooter guide that can very well help you solve your issue by trying our common solutions.</p>
 <p>Please check out our <a href='http://www.myeventon.com/documentation/check-eventon-working/' class='evo_admin_btn btn_triad' target='_blank' >troubleshooter guide to eventon</a></p>
 <?php
 	$support = ob_get_clean();
@@ -48,11 +48,11 @@ function eventon_admin_help_tab_content() {
 
 	$screen->set_help_sidebar(
 		'<p><strong>' . __( 'For more information:', 'eventon' ) . '</strong></p>' .
-		'<p><a href="http://www.myeventon.com/" target="_blank">' . __( 'EventON', 'eventon' ) . '</a></p>' .
-		'<p><a href="http://www.myeventon.com/faq/" target="_blank">' . __( 'FAQ Section', 'eventon' ) . '</a></p>' .
+		'<p><a href="http://www.myeventon.com/" target="_blank">' . __( 'EventON', 'eventon' ) . '</a></p>' .		
 		'<p><a href="http://www.myeventon.com/changelog/" target="_blank">' . __( 'Changelog', 'eventon' ) . '</a></p>'.
 		'<p><a href="http://www.myeventon.com/documentation/" target="_blank">' . __( 'Documentation', 'eventon' ) . '</a></p>'.
-		'<p><a href="http://www.myeventon.com/addons/" target="_blank">' . __( 'Addons', 'eventon' ) . '</a></p>'
+		'<p><a href="http://www.myeventon.com/addons/" target="_blank">' . __( 'Addons', 'eventon' ) . '</a></p>'.
+		'<p><a href="http://helpdesk.ashanjay.com" target="_blank">' . __( 'Helpdesk', 'eventon' ) . '</a></p>'
 	);
 }
 ?>

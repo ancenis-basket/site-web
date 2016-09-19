@@ -167,7 +167,6 @@ class ajde_wp_admin{
 					</ul>
 				</div>
 			</div>
-
 			<?php return ob_get_clean();
 		}
 

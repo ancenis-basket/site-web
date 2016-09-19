@@ -92,6 +92,20 @@
 			return options.data_arg;
 		}
 
+	// eventon loading functions
+	// v 2.4.5
+		$.fn.evo_loader_animation = function(opt){
+			var defaults = {
+				direction:'start'
+			}
+			var OPT = $.extend({}, defaults, opt);
+
+			if(OPT.direction == 'start'){
+				$(this).find('#eventon_loadbar').slideDown().css({width:'0%'}).animate({width:'100%'})
+			}else{
+				$(this).find('#eventon_loadbar').css({width:'100%'}).delay(400).slideUp();
+			}
+		}
 
 		
 

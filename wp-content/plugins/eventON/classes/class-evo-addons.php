@@ -92,6 +92,7 @@ class evo_addon{
 
 			// only for admin
 			if(is_admin() && !empty($pagenow) && in_array($pagenow, $__needed_pages) ){
+				
 				if($pagenow == 'admin.php' && isset($_GET['tab']) && $_GET['tab']=='evcal_4' 
 					|| $pagenow!='admin.php'){
 					
@@ -105,8 +106,10 @@ class evo_addon{
 							'slug'=>$this->addon_data['slug'],
 							'plugin_slug'=>$this->addon_data['plugin_slug'],
 							'name'=>$this->addon_data['name'],
-							'guide_file'=>( file_exists($this->addon_data['plugin_path'].'/guide.php') )? 
-								$this->addon_data['plugin_url'].'/guide.php':null,
+							'guide_file'=> !empty($this->addon_data['guide_file'])?
+								$this->addon_data['guide_file']:
+								(( file_exists($this->addon_data['plugin_path'].'/guide.php') )? 
+								$this->addon_data['plugin_url'].'/guide.php':null),
 						)
 					);	
 				}
@@ -121,7 +124,7 @@ class evo_addon{
 	// return the current page names that should be used to check updates
 		function get_check_pages(){
 			return array('update-core.php',
-				'admin-ajax.php', 'plugin-install.php');
+				'admin-ajax.php', 'plugin-install.php','admin.php');
 		}
 	
 }

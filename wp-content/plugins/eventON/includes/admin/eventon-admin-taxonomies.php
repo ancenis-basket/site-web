@@ -75,7 +75,14 @@ class eventon_taxonomies{
 				}
 			}
 		}
+
+		// Columms
 		function event_type_edit_columns($defaults){
+
+			unset( $defaults['description']);
+
+		    $defaults['cb'] = "<input type=\"checkbox\" />";
+		    $defaults["name"] = __( 'Name', 'eventon' );
 		    $defaults['event_type_id'] = __('ID');
 		    return $defaults;
 		} 
@@ -83,9 +90,14 @@ class eventon_taxonomies{
 			if($column_name == 'event_type_id'){
 				$t_id = (int)$id;
 				$term_meta = get_option( "evo_et_taxonomy_$t_id" );
-				$term_color = ($term_meta['et_color'])? '<span class="evoterm_color" style="background-color:#'.$term_meta['et_color'].'"></span>':false;
+				$term_color = (!empty($term_meta['et_color']))? 
+					'<span class="evoterm_color" style="background-color:#'.$term_meta['et_color'].'"></span>':false;
 
-				echo $t_id.$term_color;
+				$term_icon = (!empty($term_meta['et_icon']))? 
+					'<span class="evoterm_icon"><i class="fa '.$term_meta['et_icon'].'"></i></span>':false;
+				?>
+				<span class="term_id"><?php echo $t_id?></span><?php echo $term_color . $term_icon;?><span class='clear'></span>
+				<?php
 			}
 		}
 
@@ -99,23 +111,47 @@ class eventon_taxonomies{
 				<input type="hidden" name="term_meta[et_color]" id="term_meta[et_color]" value="">
 				<p class="description"><?php _e( 'Pick a color','eventon' ); ?></p>
 			</div>
-			
-		<?php
+			<?php 
+
+			global $ajde;
+			echo $ajde->wp_admin->icons();
+			?>
+			<div class="form-field " id='evo_evnet_type_icon'>				
+				<p class='icon faicon'>
+					<i class="ajde_icons default fa fa-circle-thin"></i> 
+					<input type="hidden" name="term_meta[et_icon]" id="term_meta[et_icon]" value=""></p>				
+				<p class="description"><?php _e( 'Select an Icon','eventon' ); ?></p>
+			</div>
+			<?php
 		}
 	// Edit term page
 		function evo_tax_edit_new_meta_field_et1($term) {		 
 			// put the term ID into a variable
-			$t_id = $term->term_id;
-		 
-			// retrieve the existing value(s) for this meta field. This returns an array
-			$term_meta = get_option( "evo_et_taxonomy_$t_id" ); ?>
+				$t_id = $term->term_id;
+			 
+				// retrieve the existing value(s) for this meta field. This returns an array
+				$term_meta = get_option( "evo_et_taxonomy_$t_id" ); 
+				global $ajde;
+				echo $ajde->wp_admin->icons();
+			?>
 			<tr class="form-field">
 			<th scope="row" valign="top"><label for="term_meta[et_color]"><?php _e( 'Color', 'eventon' ); ?></label></th>
 				<td id='evo_et1_color'>
-					<?php $__this_value = esc_attr( $term_meta['et_color'] ) ? esc_attr( $term_meta['et_color'] ) : ''; ?>
+					<?php $__this_value = !empty( $term_meta['et_color'] ) ? esc_attr( $term_meta['et_color'] ) : ''; ?>
 					<p class='evo_et1_color_circle' hex='<?php echo $__this_value;?>' style='background-color:#<?php echo $__this_value;?>'></p>
 					<input type="hidden" name="term_meta[et_color]" id="term_meta[et_color]" value="<?php echo $__this_value;?>">
 					<p class="description"><?php _e( 'Pick a color','eventon' ); ?></p>
+				</td>
+			</tr>
+			<tr class="form-field">
+			<th scope="row" valign="top"><label for="term_meta[et_icon]"><?php _e( 'Icon', 'eventon' ); ?></label></th>
+				<td id='evo_et1_color'>
+					<?php $__this_value = ( !empty($term_meta['et_icon']) ) ? esc_attr( $term_meta['et_icon'] ) : ''; ?>
+					<p class='icon faicon' >
+						<i class="ajde_icons default fa <?php echo $__this_value;?>"></i> 
+						<input type="hidden" name="term_meta[et_icon]" id="term_meta[et_icon]" value="<?php echo $__this_value;?>">
+					</p>
+					<p class="description"><?php _e( 'Select an Icon','eventon' ); ?></p>
 				</td>
 			</tr>
 		<?php
@@ -220,6 +256,9 @@ class eventon_taxonomies{
 					<input type="text" name="term_meta[location_lon]" id="term_meta[location_lon]" value="">
 					<p class="description"><?php _e( '(Optional) longitude for address','eventon' ); ?></p>
 				</div>
+				<div>
+					<p><?php _e('NOTE: LatLong will be auto generated for address provided for faster google map drawing. If location marker is not correct feel free to edit the LatLong values to correct location marker coordinates above. Location address field is REQUIRED for this to work. <a href="http://itouchmap.com/latlong.html" target="_blank">Find LanLat for address</a>','eventon');?></p>
+				</div>
 				<div class="form-field">
 					<label for="term_meta[evcal_location_link]"><?php _e( 'Location Link', 'eventon' ); ?></label>
 					<input type="text" name="term_meta[evcal_location_link]" id="term_meta[evcal_location_link]" value="">
@@ -265,9 +304,12 @@ class eventon_taxonomies{
 					<td>
 						<input type="text" name="term_meta[location_lon]" id="term_meta[location_lon]" value="<?php echo !empty($term_meta['location_lon']) ? esc_attr( $term_meta['location_lon'] ) : ''; ?>">
 						<p class="description"><?php _e( '(Optional) longitude for address','eventon' ); ?></p>
+
+						<div style='padding-top:20px'>
+							<p><?php _e('<b>NOTE:</b> LatLong will be auto generated for address provided for faster google map drawing. If location marker is not correct feel free to edit the LatLong values to correct location marker coordinates above. Location address field is REQUIRED for this to work. <a href="http://itouchmap.com/latlong.html" target="_blank">Find LanLat for address</a>','eventon');?></p>
+						</div>
 					</td>
 				</tr>
-
 				<tr class="form-field">
 					<th scope="row" valign="top"><label for="term_meta[evcal_location_link]"><?php _e( 'Location Link', 'eventon' ); ?></label></th>
 					<td>
@@ -296,11 +338,7 @@ class eventon_taxonomies{
 						<p class="description"><?php _e( '(Optional) Location Image','eventon' ); ?></p>
 					</td>
 				</tr>
-				<tr>
-					<th colspan="2">
-						<a target='_blank' href="http://itouchmap.com/latlong.html"><?php _e('Find LanLat for address','eventon');?></a>
-					</th>
-				</tr>
+				
 			<?php
 			}
 				
@@ -432,6 +470,20 @@ class eventon_taxonomies{
 				$term_meta = get_option( "taxonomy_$t_id" );
 				$cat_keys = array_keys( $_POST['term_meta'] );
 				foreach ( $cat_keys as $key ) {
+
+					// location lat long override
+						if($key == 'location_address')
+							$latlon = eventon_get_latlon_from_address($_POST['term_meta']['location_address']);
+						// longitude
+						$term_meta['location_lon'] = (!empty($_POST['term_meta']['location_lon']))?
+							$_POST['term_meta']['location_lon']:
+							(!empty($latlon['lng'])? floatval($latlon['lng']): null);
+
+						// latitude
+						$term_meta['location_lat'] = (!empty($_POST['term_meta']['location_lat']))?
+							$_POST['term_meta']['location_lat']:
+							(!empty($latlon['lat'])? floatval($latlon['lat']): null);
+
 					if ( isset ( $_POST['term_meta'][$key] ) ) {
 						$term_meta[$key] = $_POST['term_meta'][$key];
 					}

@@ -199,7 +199,7 @@ class evo_settings_lang{
 					),array(
 						'label'=>'Jump Months: Year','name'=>'evcal_lang_jumpmonthsY',
 					),array(
-						'label'=>'Sort Options','name'=>'evcal_lang_sopt',
+						'label'=>'Filter Events','name'=>'evcal_lang_sopt',
 					)
 					,array(
 						'label'=>'Sort By','name'=>'evcal_lang_sort',
@@ -229,7 +229,9 @@ class evo_settings_lang{
 						'label'=>'Click here to get directions',
 						'name'=>'evcalL_getdir_title',
 						'legend'=>'Get directions section'
-					),array('label'=>'Time','name'=>'evcal_lang_time',),
+					),
+					array('label'=>'Time','name'=>'evcal_lang_time'),
+					array('label'=>'Future Event Times in this Repeating Event Series','name'=>'evcal_lang_repeats'),
 					array('label'=>'Color','name'=>'evcal_lang_scolor',),
 					array('label'=>'At (event location)','name'=>'evcal_lang_at',),
 					array('label'=>'Event Details','name'=>'evcal_evcard_details',),

@@ -49,6 +49,9 @@ jQuery(document).ready(function($){
 				}else{
 					$('.evo_metafield_image .evo_loc_image_src img').fadeOut();
 				}
+			}else{
+				// if select a saved location picked open empty fields
+				$(this).closest('.evcal_location_data_section').find('.evoselectfield_saved_data').slideToggle();
 			}
 
 			// if select saved field selected
@@ -58,6 +61,10 @@ jQuery(document).ready(function($){
 					$('#evo_location_tax').val('');
 				}
 		});
+		// location already entered info edit button
+			$('body').on('click','.evoselectfield_data_view', function(){
+				$(this).parent().parent().find('.evoselectfield_saved_data').slideToggle();
+			});
 
 	// organizer picker
 		$('#evcal_organizer_field').on('change',function(){
@@ -69,6 +76,7 @@ jQuery(document).ready(function($){
 				$('#evo_org_img_id').val( option.data('img')  );	
 				$('#evo_organizer_tax_id').val( option.data('tid')  );
 				$('#evcal_org_address').val( option.data('address')  );
+				$('#evcal_org_exlink').val( option.data('exlink')  );
 
 				if(option.data('imgsrc')){
 					$('.evo_metafield_image .evo_org_image_src img').attr('src', option.data('imgsrc') ).fadeIn();	
@@ -384,11 +392,6 @@ jQuery(document).ready(function($){
 	      	}
 		});
 
-	// location already entered info edit button
-		$('body').on('click','.evoselectfield_data_view', function(){
-			$(this).parent().parent().find('.evoselectfield_saved_data').slideToggle();
-		});
-	
 	// eventbrite
 		$('#evcal_eventb_btn').click(function(){
 			$('#evcal_eventb_data').slideToggle();

@@ -1,7 +1,8 @@
 /**
  * Javascript code that is associated with the front end of the calendar
- * version: 2.3.21
+ * version: 2.4.5
  */
+
 jQuery(document).ready(function($){
 	
 	init();
@@ -210,6 +211,82 @@ jQuery(document).ready(function($){
 				});
 			}
 	
+	// Click on event top items
+		$('body').on('click','.evocmd_button', function(event){
+			event.preventDefault();
+			event.stopPropagation();
+
+			href = $(this).data('href');			
+			if( $(this).data('target')=='yes'){
+				window.open(href,'_blank');
+			}else{
+				window.location = href;
+			}
+
+		});
+
+	// Jumper scrolling		
+		if($('body').find('.evo_jumper_months').length>0){
+			$('.evo_jumper_months').mousewheel(function(e, delta) {
+				//$(this).scrollLeft -= (delta * 40);
+				OBJ = $(this);
+				
+				var cur_mleft = parseInt(OBJ.css('marginLeft')),
+					width = parseInt(OBJ.css('width') ),
+					Pwid = OBJ.parent().width();
+				maxMLEFT = (width-Pwid)*(-1);
+				
+				if( cur_mleft<=0){
+					
+					var new_marl = (cur_mleft+ (delta * 140));					
+					if(new_marl>0){ new_marl=0;}
+					
+					// moving to left
+					if(delta == -1 && ( (new_marl*(-1))< (width -200)) ){
+						new_marl = ( new_marl <maxMLEFT)? maxMLEFT: new_marl;
+						OBJ.stop().animate({'margin-left': new_marl });
+					
+					}else if(delta == 1){
+						OBJ.stop().animate({'margin-left': new_marl });
+					}
+				}
+				e.preventDefault();
+			});
+			// touch function
+				$('.evo_jumper_months').on('swipeleft',function(event){				
+					swiping('swipeleft', $(this));
+					event.preventDefault();
+				});
+				$('.evo_jumper_months').on('swiperight',function(event){				
+					swiping('swiperight', $(this));
+					event.preventDefault();
+				});
+
+				function swiping(direction, OBJ){
+					var leftNow = parseInt(OBJ.css('marginLeft'));
+					var Pwid = OBJ.parent().width();
+					var width = parseInt(OBJ.css('width') );
+					maxMLEFT = (width-Pwid)*(-1);
+					swipeMove = 300;
+					
+					if(direction =='swipeleft'){
+						var newLEFT = ( leftNow - swipeMove );	
+						// /console.log(newLEFT);
+
+						if( newLEFT*(-1) < (width) ){
+							newLEFT = ( newLEFT <maxMLEFT)? maxMLEFT: newLEFT;
+							OBJ.stop().animate({'margin-left': newLEFT });
+						}
+					}else{
+						var newLEFT = ( leftNow + swipeMove );	
+						// /console.log(newLEFT);
+
+						newLEFT = ( newLEFT >0 )? 0: newLEFT;
+						OBJ.stop().animate({'margin-left': newLEFT });
+					}					
+				}
+		}
+
 	// GO TO TODAY
 	// @since 2.3
 		$('body').on('click','.evo-gototoday-btn', function(){
@@ -247,9 +324,9 @@ jQuery(document).ready(function($){
 
 		// select a new time from jumper
 		$('.evo_j_dates').on('click','a',function(){
-			var val = $(this).attr('data-val');
-			var type = $(this).parent().parent().attr('data-val');
-			var container = $(this).closest('.evo_j_container');
+			var val = $(this).attr('data-val'),
+				type = $(this).parent().parent().attr('data-val'),
+				container = $(this).closest('.evo_j_container');
 
 			if(type=='m'){
 				container.attr({'data-m':val});
@@ -272,7 +349,9 @@ jQuery(document).ready(function($){
 
 				ajax_post_content(evo_data.attr('data-sort_by'),calid,'none','jumper');
 
-				container.delay(2000).slideUp();
+				// hide month jumper if not set to leave expanded
+				if(container.data('expj')=='no')
+					container.delay(2000).slideUp();
 			}
 		});
 
@@ -338,7 +417,50 @@ jQuery(document).ready(function($){
 
 			//console.log(currentShowing);
 		});
-			
+	
+	// Tab view switcher
+		$('body').find('.evo_tab_container').each(function(){
+			$(this).find('.evo_tab_section').each(function(){
+				if(!$(this).hasClass('visible')){
+					$(this).addClass('hidden');
+				}
+			});
+		});
+		$('body').on('click','ul.evo_tabs li',function(){
+			tab = $(this).data('tab');
+			tabsection = $(this).closest('.evo_tab_view').find('.evo_tab_container');
+			tabsection.find('.evo_tab_section').addClass('hidden').removeClass('visible');
+			tabsection.find('.'+tab).addClass('visible').removeClass('hidden');
+
+			$(this).parent().find('li').removeClass('selected');
+			$(this).addClass('selected');
+		});
+	// layout view changer
+		if($('body').find('.evo_layout_changer').length>0){
+			$('body').find('.evo_layout_changer').each(function(item){
+				if($(this).parent().hasClass('boxy')){
+					$(this).find('.fa-th-large').addClass('on');
+				}else{
+					$(this).find('.fa-reorder').addClass('on');
+				}
+			});
+
+			$('.evo_layout_changer').on('click','i',function(){
+
+				TYPE = $(this).data('type');
+				$(this).parent().find('i').removeClass('on');
+				$(this).addClass('on');
+
+				console.log(TYPE);
+				
+				if(TYPE=='row'){
+					$(this).closest('.ajde_evcal_calendar').removeClass('boxy');
+				}else{
+					$(this).closest('.ajde_evcal_calendar').addClass('boxy');
+				}				
+			});
+		}
+
 	//===============================
 	// SORT BAR SECTION
 	// ==============================	
@@ -357,7 +479,7 @@ jQuery(document).ready(function($){
 				if(filterSelect.is(':visible') == true) filterSelect.fadeToggle();
 		});
 		
-			// update calendar based on the sorting selection
+		// update calendar based on the sorting selection
 			$('.evo_srt_options').on('click','p',function(){
 
 				var evodata = $(this).closest('.eventon_sorting_section').siblings('.evo-data');
@@ -387,35 +509,49 @@ jQuery(document).ready(function($){
 			});		
 		
 		// filtering section
-		$('.filtering_set_val').click(function(){
+			$('.filtering_set_val').click(function(){
+				// close sorting
+					sortSelect = $(this).closest('.eventon_sorting_section').find('.evo_srt_options');
+					if(sortSelect.is(':visible') == true) sortSelect.fadeToggle();
 
-			// close sorting
-				sortSelect = $(this).closest('.eventon_sorting_section').find('.evo_srt_options');
-				if(sortSelect.is(':visible') == true) sortSelect.fadeToggle();
+				var obj = $(this);
+				var current_Drop = obj.siblings('.eventon_filter_dropdown');
+				var current_drop_pare = obj.closest('.eventon_filter');
 
-			var obj = $(this);
-			var current_Drop = obj.siblings('.eventon_filter_dropdown');
-			var current_drop_pare = obj.closest('.eventon_filter');
+				current_drop_pare.siblings('.eventon_filter').find('.eventon_filter_dropdown').each(function(){
+					if($(this).is(':visible')== true ){
+						$(this).hide();
+					}				
+				});
 
-			current_drop_pare.siblings('.eventon_filter').find('.eventon_filter_dropdown').each(function(){
-				if($(this).is(':visible')== true ){
-					$(this).hide();
-				}				
-			});
-
-			if(current_Drop.is(':visible')== true){
-				obj.siblings('.eventon_filter_dropdown').fadeOut('fast');		
-			}else{
-				obj.siblings('.eventon_filter_dropdown').fadeIn('fast');
-			}			
-		});	
+				if(current_Drop.is(':visible')== true){
+					obj.siblings('.eventon_filter_dropdown').fadeOut('fast');		
+				}else{
+					obj.siblings('.eventon_filter_dropdown').fadeIn('fast');
+				}			
+			});	
 		
-			// selection on filter dropdown list
+		// selection on filter dropdown list
 			$('.eventon_filter_dropdown').on('click','p',function(){
-				var new_filter_val = $(this).attr('data-filter_val');
+				var new_filter_val = $(this).attr('data-filter_val'),
+					filter_section = $(this).closest('.eventon_filter_line');
 				var filter = $(this).closest('.eventon_filter');
 				var filter_current_set_val = filter.attr('data-filter_val');
+
+				// for filter values with checkboxes
+				if(filter_section.hasClass('selecttype')){				
+
+					val = '';
+					filter.find('input').each(function(){
+						val = ($(this).is(':checked'))? val+$(this).attr('data-filter_val')+',': val;
+					});
+					val = val==''? 'all':val;
+					filter.attr('data-filter_val',val);
+				}
+				if(filter_section.hasClass('selecttype')) return;
 				
+
+				// For non checkbox select options
 				if(filter_current_set_val == new_filter_val){
 					$(this).parent().fadeOut();
 				}else{
@@ -432,7 +568,8 @@ jQuery(document).ready(function($){
 					
 					ajax_post_content(sort_by,cal_id,'none','filering');
 					
-					// reset the new values				
+					// reset the new values		
+					//console.log(new_filter_val);		
 					var new_filter_name = $(this).html();
 					$(this).parent().find('p').removeClass('evf_hide');
 					$(this).addClass('evf_hide');
@@ -440,22 +577,50 @@ jQuery(document).ready(function($){
 					$(this).parent().siblings('.filtering_set_val').html(new_filter_name);
 				}
 			});
-		
-			// fadeout dropdown menus
-			/*
-			$(document).mouseup(function (e){
-				var item=$('.eventon_filter_dropdown');
-				var container=$('.eventon_filter_selection');
+			
+			// apply filters via button to the calendar
+				$('.eventon_filter_dropdown').on('change','input',function(event){
+					FILTER = $(this).closest('.eventon_filter');
+
+					val = '';
+					FILTER.find('input').each(function(){
+						val = ($(this).is(':checked'))? val+$(this).attr('data-filter_val')+',': val;
+					});
+					val = val==''? 'all':val;
+					FILTER.attr('data-filter_val',val);
+				});
+			// apply filters
+				$('body').on('click','.evo_filter_submit',function(){
+					// fadeout any open filter dropdowns
+						$(this).closest('.eventon_filter_line').find('.eventon_filter_dropdown').fadeOut();
+						
+					// set new filtering changes				
+					var evodata = $(this).closest('.eventon_sorting_section').siblings('.evo-data');
+					var cmonth = parseInt( evodata.attr('data-cmonth'));
+					var cyear = parseInt( evodata.attr('data-cyear'));	
+					var sort_by = evodata.attr('data-sort_by');
+					var cal_id = evodata.parent().attr('id');
+					evodata.attr({'data-filters_on':'true'});				
+					
+					ajax_post_content(sort_by,cal_id,'none','filering');
+				});
 				
-				if (!container.is(e.target) // if the target of the click isn't the container...
-					&& e.pageX < ($(window).width() - 30)
-				&& container.has(e.target).length === 0) // ... nor a descendant of the container
-				{
-					item.fadeOut('fast');
-				}
-				
-			});
-*/
+			
+				// fadeout dropdown menus
+				/*
+				$(document).mouseup(function (e){
+					var item=$('.eventon_filter_dropdown');
+					var container=$('.eventon_filter_selection');
+					
+					if (!container.is(e.target) // if the target of the click isn't the container...
+						&& e.pageX < ($(window).width() - 30)
+					&& container.has(e.target).length === 0) // ... nor a descendant of the container
+					{
+						item.fadeOut('fast');
+					}
+					
+					});
+				*/
 		
 	// MONTH SWITCHING
 		// previous month
@@ -518,7 +683,7 @@ jQuery(document).ready(function($){
 					beforeSend: function(){
 						ev_cal.addClass('evo_loading');
 						ev_cal.find('.eventon_events_list').slideUp('fast');
-						ev_cal.find('#eventon_loadbar').show().css({width:'0%'}).animate({width:'100%'});						
+						ev_cal.evo_loader_animation();					
 					},
 					type: 'POST',
 					url:the_ajax_script.ajaxurl,
@@ -532,15 +697,31 @@ jQuery(document).ready(function($){
 						
 						evodata.attr({'data-cmonth':data.month,'data-cyear':data.year});
 						change_jumper_set_values(cal_id);
+
+						// jump month update
+							if(ev_cal.find('.evo_j_container').length>0){
+								JUMPER = ev_cal.find('.evo_j_container');
+								JUMPERmo = JUMPER.find('.evo_jumper_months');								
+								JUMPERmo.find('a').removeClass('set');
+								JUMPERmo.find('a[data-val="'+data.month+'"]').addClass('set');
+
+								JUMPERyr = JUMPER.find('.evo_j_years');
+								JUMPERyr.find('a').removeClass('set');
+								JUMPERyr.find('a[data-val="'+data.year+'"]').addClass('set');
+							}
+
+						$('body').trigger('evo_main_ajax_success', [ev_cal, evodata, ajaxtype, data.eventList]);
 															
-					},complete:function(){
-						ev_cal.find('#eventon_loadbar').css({width:'100%'}).fadeOut();
+					},complete:function(data){
+						ev_cal.evo_loader_animation({direction:'end'});
+
 						ev_cal.find('.eventon_events_list').delay(300).slideDown('slow');
 						ev_cal.evoGenmaps({'delay':400});
 						init_run_gmap_openevc(600);
 						fullheight_img_reset(cal_id);
 
-						$('body').trigger('evo_main_ajax_complete', [ev_cal, evodata]);
+						// pluggable
+						$('body').trigger('evo_main_ajax_complete', [ev_cal, evodata, ajaxtype, data.eventList ]);
 						ev_cal.removeClass('evo_loading');
 					}
 				});
@@ -684,7 +865,7 @@ jQuery(document).ready(function($){
 			window.open(href);
 		});
 
-	// event location card page
+	// event location archive card page
 		$('body').find('.evo_location_map').each(function(){
 			THIS = $(this);
 			MAPID = THIS.attr('id');
@@ -716,6 +897,7 @@ jQuery(document).ready(function($){
 			$('body').on('click','.ajde_yn_btn ', function(){
 				var obj = $(this);
 				var afterstatement = obj.attr('afterstatement');
+					afterstatement = (afterstatement === undefined)? obj.attr('data-afterstatement'): afterstatement;
 				// yes
 				if(obj.hasClass('NO')){
 					obj.removeClass('NO');
@@ -724,7 +906,7 @@ jQuery(document).ready(function($){
 					// afterstatment
 					if(afterstatement!=''){
 						var type = (obj.attr('as_type')=='class')? '.':'#';
-						$(type+ obj.attr('afterstatement')).slideDown('fast');
+						$(type+ afterstatement).addClass('tt').slideDown('fast');						
 					}
 
 				}else{//no
@@ -733,9 +915,10 @@ jQuery(document).ready(function($){
 					
 					if(afterstatement!=''){
 						var type = (obj.attr('as_type')=='class')? '.':'#';
-						$(type+obj.attr('afterstatement')).slideUp('fast');
+						$(type+ afterstatement ).slideUp('fast');
 					}
 				}
 			});
+
 
 });

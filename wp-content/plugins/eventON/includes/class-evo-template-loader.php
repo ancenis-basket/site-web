@@ -9,30 +9,10 @@
  * @author 		AJDE
  */
 class EVO_Template_Loader {
-	/**
-	 * Constructor
-	 */
 	public function __construct() {
 		add_filter( 'template_include', array( $this, 'template_loader' ) , 99);
 	}
 
-
-		/**
-	 * Load a template.
-	 *
-	 * Handles template usage so that we can use our own templates instead of the themes.
-	 *
-	 * Templates are in the 'templates' folder. eventon looks for theme
-	 * overrides in /theme/eventon/ by default
-	 *
-	 * For beginners, it also looks for a eventon.php template first. If the user adds
-	 * this to the theme (containing a eventon() inside) this will be used for all
-	 * eventon templates.
-	 *
-	 * @access public
-	 * @param mixed $template
-	 * @return string
-	 */
 	public function template_loader( $template ) {
 		global $eventon_sin_event, $eventon;
 		

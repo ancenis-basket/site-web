@@ -10,6 +10,10 @@
  */
 
 class evo_cal_help {
+
+	public function __construct(){
+		// /$this->options = get_option('evcal_options_evcal_1');
+	}
 	
 	// return classes array as a string
 		function get_eventinclasses($atts){
@@ -121,4 +125,39 @@ class evo_cal_help {
 				( !empty($_GET['ri'])?$_GET['ri']: 0) );
 		}
 
+	// get event type #1 font awesome icon
+		function get_tax_icon($tax, $term_id, $opt){
+
+			if(!empty($opt['evcal_hide_filter_icons']) && $opt['evcal_hide_filter_icons']=='yes') return false;
+
+			$icon_str = false;
+			if($tax == 'event_type'){
+				$term_meta = get_option( "evo_et_taxonomy_$term_id" ); 
+				if( !empty($term_meta['et_icon']) )
+					$icon_str = '<i class="fa '. $term_meta['et_icon']  .'"></i>';
+			}
+			return $icon_str;
+		}
+
+	// get all event default values
+		function get_calendar_defaults(){
+			global $eventon;
+			$options = $eventon->evo_generator->evopt1;
+
+			$defaults = array();
+			// default event image
+				if(!empty($options['evcal_default_event_image_set']) && $options['evcal_default_event_image_set']=='yes' && !empty($options['evcal_default_event_image']) ){
+					$defaults['image'] = $options['evcal_default_event_image'];
+				}
+
+			// default event color
+				$defaults['color'] = (!empty($options['evcal_hexcode']))? '#'.$options['evcal_hexcode']:'#206177';
+			// event top fields
+				$defaults['eventtop_fields'] = (!empty($options['evcal_top_fields']))? $options['evcal_top_fields']:null;
+
+			// check if single events addon active
+				$defaults['single_addon']  = (in_array( 'eventon-single-event/eventon-single-event.php', get_option( 'active_plugins' ) ) )? true:false;
+
+			return $defaults;
+		}
 }

@@ -170,33 +170,30 @@
 				)			
 			),
 		array(
-			'item'=>'.ajde_evcal_calendar .calendar_header .evo_j_dates p a',
+			'item'=>'.ajde_evcal_calendar .calendar_header .evo_j_dates .legend a',
+			'css'=>'color:#$', 'var'=>'evcal__jm003','default'=>'a0a09f'					
+		),
+		array(
+			'item'=>'.ajde_evcal_calendar .calendar_header .evo_j_dates .legend',
+			'css'=>'background-color:#$', 'var'=>'evcal__jm004',	'default'=>'f5f5f5'
+		)
+		,array(
+			'item'=>'.ajde_evcal_calendar .calendar_header .evo_j_dates .legend a:hover',
 			'multicss'=>array(
-				array('css'=>'color:#$', 'var'=>'evcal__jm003','default'=>'ffffff'),
-				array('css'=>'background-color:#$', 'var'=>'evcal__jm004',	'default'=>'ECECEC')
+				array('css'=>'color:#$', 'var'=>'evcal__jm003H','default'=>'a0a09f'),
+				array('css'=>'background-color:#$', 'var'=>'evcal__jm004H',	'default'=>'e6e6e6')
 			)			
 		),array(
-			'item'=>'.ajde_evcal_calendar .calendar_header .evo_j_dates p a:hover',
-			'multicss'=>array(
-				array('css'=>'color:#$', 'var'=>'evcal__jm003H','default'=>'ffffff'),
-				array('css'=>'background-color:#$', 'var'=>'evcal__jm004H',	'default'=>'c3c3c3')
-			)			
-		),array(
-			'item'=>'.ajde_evcal_calendar .calendar_header .evo_j_dates p a.current',
+			'item'=>'.ajde_evcal_calendar .calendar_header .evo_j_dates .legend a.current',
 			'multicss'=>array(
 				array('css'=>'color:#$', 'var'=>'evcal__jm006','default'=>'ffffff'),
 				array('css'=>'background-color:#$', 'var'=>'evcal__jm007',	'default'=>'CFCFCF')
 			)			
 		),array(
-			'item'=>'.ajde_evcal_calendar .calendar_header .evo_j_dates p a.set',
+			'item'=>'.ajde_evcal_calendar .calendar_header .evo_j_dates .legend a.set',
 			'multicss'=>array(
 				array('css'=>'color:#$', 'var'=>'evcal__jm008','default'=>'ffffff'),
-				array('css'=>'background-color:#$', 'var'=>'evcal__jm009',	'default'=>'888888')
-			)			
-		),array(
-			'item'=>'.ajde_evcal_calendar .calendar_header .evo_j_dates p.legend',
-			'multicss'=>array(
-				array('css'=>'color:#$', 'var'=>'evcal__jm005','default'=>'6e6e6e'),
+				array('css'=>'background-color:#$', 'var'=>'evcal__jm009',	'default'=>'f79191')
 			)			
 		),array(
 			'item'=>'.ajde_evcal_calendar .calendar_header .evcal_arrows',
@@ -237,6 +234,14 @@
 			'multicss'=>array(
 				array('css'=>'color:#$', 'var'=>'evcal__cancel_event_2','default'=>'ffffff'),
 				array('replace'=>'background:repeating-linear-gradient(45deg,#$0,#$0 10px,#$1 10px,#$1 20px)', 'var'=>array('evcal__cancel_event_3', 'evcal__cancel_event_4'),'default'=>array('FDF2F2','FAFAFA')),			
+			)			
+		),
+		/* event top */
+		array(
+			'item'=>'.evcal_desc .evcal_desc3 em.evocmd_button, #evcal_list .evcal_desc .evcal_desc3 em.evocmd_button',
+			'multicss'=>array(
+				array('css'=>'color:#$', 'var'=>'evoeventtop_cmd_btnA','default'=>'ffffff'),
+				array('css'=>'background-color:#$', 'var'=>'evoeventtop_cmd_btn','default'=>'237dbd'),			
 			)			
 		)
 	));
@@ -307,14 +312,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00{$_grad_he
 			}";
 		}
 		
-
 		// featured event styles
 		if(!empty($opt['evo_fte_override']) && $opt['evo_fte_override']=='yes'){
 			echo "#evcal_list .eventon_list_event .evcal_list_a.featured_event{border-left-color:#".eventon_styles('ca594a','evcal__ftec', $opt)."!important;}";
 		}
-
-
-
 
 	// (---) Hook for addons
 	if(has_action('eventon_inline_styles')){
@@ -322,5 +323,3 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00{$_grad_he
 	}
 	
 	echo get_option('evcal_styles');
-
-	

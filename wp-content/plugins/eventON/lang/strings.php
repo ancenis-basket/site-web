@@ -7,7 +7,7 @@
  * @author 		EventON
  * @category 	lang
  * @package 	EventON/lang
- * @version     0.1
+ * @version     2.4
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -34,3 +34,10 @@ __( 'thursday', 'eventon' );
 __( 'friday', 'eventon' );
 __( 'saturday', 'eventon' );
 __( 'sunday', 'eventon' );
+
+// taxonomies
+__( 'event type', 'eventon' ); 
+__( 'event type 2', 'eventon' ); 
+__( 'event type 3', 'eventon' ); 
+__( 'event type 4', 'eventon' ); 
+__( 'event type 5', 'eventon' ); 

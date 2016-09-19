@@ -1,5 +1,5 @@
 <?php
-	// EventON Settings tab - Troubleshoot
+	// EventON Settings tab - Troubleshoot/support
 	// version: 0.4
 ?>
 <div id="evcal_5" class="postbox evcal_admin_meta">	
@@ -20,6 +20,7 @@
 								'Some data fields (like RSVP box, Event Tickets etc.) are not showing in the eventcard, why is this?'=>'Once you activate these new data field boxes make sure to go to <b>myeventon> settings> eventCard</b> and under Re-arrange the order of eventCard event data boxes – make sure the new box is showing up and placed correct. Then click Save Changes',
 								'How do I show more fields on event top?'=>'Go to  <b>myEventon> Settings> EventTop</b>  and select other fields you want to show on eventtop.',
 								'Add to calendar time is incorrect'=>'Go to  <b>Settings > General> Timezone</b> and make sure the timezone set is correct timezone for your location. Add to calendar ICS and google calendar will adjust time based on this timezone value set.',
+								'How to get the tile view'=>'Inside the eventon shortcode add tiles variable so it would look like this <code>[add_eventon tiles="yes"]</code>',
 
 						),
 						'Common Issues'=>array(
@@ -69,8 +70,6 @@
 						<a href="http://www.myeventon.com/support/video-tutorials/" class='evo_admin_btn btn_prime' target="_blank">Rest of Video Tutorials</a>
 					</p>
 				</div>
-			
-			<p style='padding-top:30px'><span style='padding-bottom:20px; display:block;font-style:italic'>If you are unable to find answers to your question/issue from the left side list or in our documentation, please try our virtual troubleshooter that will guide you through some of the common issues and solutions.</span><a class='evo_admin_btn btn_secondary' href='http://www.myeventon.com/virtual-troubleshooter/' target='_blank'>Try our Virtual Troubleshooter</a></p>
 		</div>
 		<div class="clear"></div>
 
@@ -80,14 +79,14 @@
 				<p>Read our <a href='http://www.myeventon.com/documentation/check-eventon-working/' target='_blank'>troubleshooting guide</a> and identify your issue and apply common solutions to solve the issues before contacting us.</p>
 			</div>
 
-			<a class='evo_support_box special' href='http://support.ashanjay.com/forum/eventon/' target='_blank'>
-				<h3>Official Support Forum</h3>
-				<p>This is our official support forum. Please feel free to search for already asked questions and ask your support questions for our help.</p>
-			</a>
+			<div class='evo_support_box special' >
+				<h2>Official Support Helpdesk<br/><a style='margin-top:8px; display:inline-block' class='btn' href='http://helpdesk.ashanjay.com' target='_blank'>EventON HelpDesk</a></h2>
+				<p>This is our official support system. Please feel free to search for already asked questions and ask your support questions for our help. EventON <b>Purchase code</b> is required to access helpdesk.</p>
+			</div>
 
 			<a class='evo_support_box ' href='http://codecanyon.net/item/eventon-wordpress-event-calendar-plugin/1211017/comments' target='_blank'>
 				<h3>Codecanyon Message Board</h3>
-				<p>If you are having trouble registering for support forum you can write your support questions on codecanyon message board for eventon.</p>
+				<p>If you are having trouble registering for helpdesk you can write your support questions on codecanyon message board for eventon.</p>
 			</a>
 			
 

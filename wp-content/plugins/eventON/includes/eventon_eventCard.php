@@ -104,7 +104,7 @@ function eventon_eventcard_print($array, $evOPT, $evoOPT2){
 							</div><div class='evcal_col50'>
 								<div class='evcal_evdata_row evo_location'>
 									<span class='evcal_evdata_icons'><i class='fa ".get_eventON_icon('evcal__fai_003', 'fa-map-marker',$evOPT )."'></i></span>
-									<div class='evcal_evdata_cell'>							
+									<div class='evcal_evdata_cell' data-loc_tax_id='{$object->locTaxID}'>							
 										<h3 class='evo_h3'>".($locationLink? $locationLink:'').eventon_get_custom_language($evoOPT2, 'evcal_lang_location','Location').($locationLink?'</a>':'')."</h3>". ( (!empty($object->location_name))? "<p class='evo_location_name'>".stripslashes($object->location_name)."</p>":null ) ."<p>". ( !empty($object->address)? stripslashes($object->address): null)."</p>
 									</div>
 								</div>
@@ -125,6 +125,20 @@ function eventon_eventcard_print($array, $evOPT, $evoOPT2){
 					}
 					
 				break;
+
+			// REPEAT SERIES
+				case 'repeats':
+					$OT.="<div class='evo_metarow_repeats evorow evcal_evdata_row bordb evcal_evrow_sm ".$end_row_class."'>
+							<span class='evcal_evdata_icons'><i class='fa ".get_eventON_icon('evcal__fai_repeats', 'fa-repeat',$evOPT )."'></i></span>
+							<div class='evcal_evdata_cell'>							
+								<h3 class='evo_h3'>".eventon_get_custom_language($evoOPT2, 'evcal_lang_repeats','Future Event Times in this Repeating Event Series')."</h3>
+								<p class='evo_repeat_series_dates'>";
+						foreach($object->future_intervals as $interval){
+							$OT.="<span>". date($object->date_format.' '.$object->time_format, $interval[0])."</span>";
+						}
+					$OT.="</p></div>".$end."</div>";
+				break;
+
 			// Location Image
 				case 'locImg':
 					$img_src = wp_get_attachment_image_src($object->id,'full');
@@ -157,7 +171,9 @@ function eventon_eventcard_print($array, $evOPT, $evoOPT2){
 					if(!empty($evOPT['evo_ftimg_height_sty']) && $evOPT['evo_ftimg_height_sty']=='direct'){
 						$OT .= "<div class='evo_metarow_directimg'><img src='{$object->img[0]}'/></div>";
 					}else{
-						$OT.= "<div class='evo_metarow_fimg evorow evcal_evdata_img ".$end_row_class.$__hoverclass.$__zoom_cursor.$__noclickclass."' data-imgheight='".$object->img[2]."' data-imgwidth='".$object->img[1]."'  style='background-image: url(".$object->img[0].")' data-imgstyle='".$object->ftimg_sty."' data-minheight='".$object->min_height."' data-status=''>".$end."</div>";
+						$height = !empty($object->img[2])? $object->img[2]:'';
+						$width = !empty($object->img[1])? $object->img[1]:'';
+						$OT.= "<div class='evo_metarow_fimg evorow evcal_evdata_img ".$end_row_class.$__hoverclass.$__zoom_cursor.$__noclickclass."' data-imgheight='".$height."' data-imgwidth='".$width."'  style='background-image: url(".$object->img[0].")' data-imgstyle='".$object->ftimg_sty."' data-minheight='".$object->min_height."' data-status=''>".$end."</div>";
 					}
 					
 				break;
@@ -187,7 +203,10 @@ function eventon_eventcard_print($array, $evOPT, $evoOPT2){
 									"<p class='evo_data_val evo_card_organizer_image'><img src='{$img_src[0]}'/></p>":null)."
 								<div class='evo_card_organizer'><p class='evo_data_val evo_card_organizer_name'>
 									".$orgNAME.(!empty($ORGMeta['evcal_org_contact'])? 
-									"<span class='evo_card_organizer_contact'>{$ORGMeta['evcal_org_contact']}</span>":null)."</p></div>								
+									"<span class='evo_card_organizer_contact'>{$ORGMeta['evcal_org_contact']}</span>":null)."
+									".(!empty($ORGMeta['evcal_org_address'])? 
+									"<span class='evo_card_organizer_address'>{$ORGMeta['evcal_org_address']}</span>":null)."
+									</p></div>								
 							</div>
 						".$end."</div>";
 					

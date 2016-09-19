@@ -27,13 +27,9 @@ class EVO_post_types{
 		self::$evOpt = get_option('evcal_options_evcal_1');
 	}
 
-	/**
-	 * Register eventon taxonomies.
-	 */
+	// Register eventon taxonomies.
 	public static function register_taxonomies() {
-		/**
-		 * Taxonomies
-		 **/
+		// Taxonomies
 		do_action( 'eventon_register_taxonomy' );		
 		
 		$evOpt = self::$evOpt;
@@ -114,11 +110,34 @@ class EVO_post_types{
 		$evOpt = self::$evOpt;
 		$event_slug = (!empty($evOpt['evo_event_slug']))? $evOpt['evo_event_slug']: 'events';
 		
-		$labels = eventon_get_proper_labels( __('Event','eventon'),__('Events','eventon'));
 		register_post_type('ajde_events', 
 			apply_filters( 'eventon_register_post_type_ajde_events',
 				array(
-					'labels' => $labels,
+					'labels' => array(
+							'name'                  => __( 'Events', 'eventon' ),
+							'singular_name'         => __( 'Event', 'eventon' ),
+							'menu_name'             => _x( 'Events', 'Admin menu name', 'eventon' ),
+							'add_new'               => __( 'Add Event', 'eventon' ),
+							'add_new_item'          => __( 'Add New Event', 'eventon' ),
+							'edit'                  => __( 'Edit', 'eventon' ),
+							'edit_item'             => __( 'Edit Event', 'eventon' ),
+							'new_item'              => __( 'New Event', 'eventon' ),
+							'view'                  => __( 'View Event', 'eventon' ),
+							'view_item'             => __( 'View Event', 'eventon' ),
+							'search_items'          => __( 'Search Events', 'eventon' ),
+							'not_found'             => __( 'No Events found', 'eventon' ),
+							'not_found_in_trash'    => __( 'No Events found in trash', 'eventon' ),
+							'parent'                => __( 'Parent Event', 'eventon' ),
+							'featured_image'        => __( 'Event Image', 'eventon' ),
+							'set_featured_image'    => __( 'Set event image', 'eventon' ),
+							'remove_featured_image' => __( 'Remove event image', 'eventon' ),
+							'use_featured_image'    => __( 'Use as event image', 'eventon' ),
+							'insert_into_item'      => __( 'Insert into event', 'eventon' ),
+							'uploaded_to_this_item' => __( 'Uploaded to this event', 'eventon' ),
+							'filter_items_list'     => __( 'Filter Events', 'eventon' ),
+							'items_list_navigation' => __( 'Events navigation', 'eventon' ),
+							'items_list'            => __( 'Events list', 'eventon' ),
+						),
 					'description' 			=> __( 'This is where you can add new events to your calendar.', 'eventon' ),
 					'public' 				=> true,
 					'show_ui' 				=> true,
@@ -133,7 +152,8 @@ class EVO_post_types{
 					//'supports' 			=> array('title','editor','thumbnail','page-attributes'),
 					'menu_position' 		=> 15, 
 					'has_archive' 			=> true,
-					'taxonomies'			=> array('post_tag')
+					'taxonomies'			=> array('post_tag'),
+					'exclude_from_search'	=> apply_filters('evo_cpt_search_visibility',true)
 				)
 			)
 		);

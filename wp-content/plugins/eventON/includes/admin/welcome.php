@@ -302,12 +302,16 @@ class EVO_Welcome_Page {
 
 					<img src="<?php echo AJDE_EVCAL_URL . '/assets/images/welcome/welcome_2.png'; ?>" class="evo-welcome-screenshots"/>
 
-					<h4><?php _e( 'Basic month calendar','eventon' );?></h4>
+					<h4><?php _e( 'Basic Month Calendar','eventon' );?></h4>
 					<p><?php _e( 'The <code>[add_eventon]</code> shortcode will display the basic calendar for the current month. EventON Calendar is responsive and mobile ready.', 'eventon' );?></p>
 
 					<h4><?php _e( 'Show List of Events', 'eventon' );?></h4>
 					<p><?php _e( 'You can show a list of months by using the event list shortcode as below:', 'eventon' );?></p>
 					<p><code>[add_eventon_list number_of_months="3"]</code></p>
+
+					<h4><?php _e( 'Tiles Calendar Design', 'eventon' );?></h4>
+					<p><?php _e( 'You can convert the list calendar to event tiles layout using shortcode below:', 'eventon' );?></p>
+					<p><code>[add_eventon tiles="yes"]</code></p>
 
 					<h4><?php _e( 'Additional Calendar Variations', 'eventon' ); ?></h4>
 					<p><?php printf( __( 'You can create other calendar variations using the shortcode variables present via <a href="%s">shortcode generator</a>. A general guide to some of the shortcode variables can be found in <a href="%s">here.</a> You can also find our <a href="%s">extensive online documentation library</a> for additional help.', 'eventon' ), 'http://www.myeventon.com/documentation/shortcode-generator/', 'http://www.myeventon.com/documentation/shortcode-guide/', 'http://www.myeventon.com/documentation/' ); ?></p>

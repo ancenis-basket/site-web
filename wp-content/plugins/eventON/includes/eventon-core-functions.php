@@ -7,7 +7,7 @@
  * @author 		AJDE
  * @category 	Core
  * @package 	EventON/Functions
- * @version     2.3.19
+ * @version     2.4.6
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -79,7 +79,6 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 // CHECEK if the date is future date	
 	function eventon_is_future_event($current_time, $start_unix, $end_unix, $evcal_cal_hide_past, $hide_past_by=''){
-
 		
 		// hide past by
 		$hide_past_by = (!empty($hide_past_by))? $hide_past_by: false;
@@ -192,7 +191,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	}
 
 // RETURN: formatted event time in multiple formats
-	function eventon_get_formatted_time($row_unix){
+	function eventon_get_formatted_time($row_unix, $lang=''){
 		/*
 				D = Mon - Sun
 			1	j = 1-31
@@ -451,6 +450,25 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 		foreach($__months as $month){
 			$output[] = (!empty($lang_options['evo_lang_1Lm_'.$count]))? $lang_options['evo_lang_1Lm_'.$count]: $month;
+			$count++;
+		}
+		return $output;
+	}
+// get single letter month names
+// added: v2.4.5
+	function evo_get_long_month_names($lang_options){
+		if(!empty($lang_options)) {$lang_options = $lang_options;}
+		else{
+			$opt = get_option('evcal_options_evcal_2');
+			$lang_options = $opt['L1'];
+		}
+
+		$__months = array('january','february','march','april','may','june','july','august','september','october','november','december');
+		$count = 1;
+		$output = array();
+
+		foreach($__months as $month){
+			$output[] = (!empty($lang_options['evo_lang_'.$count]))? $lang_options['evo_lang_'.$count]: $month;
 			$count++;
 		}
 		return $output;
@@ -982,7 +1000,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		$evopt = (!empty($evopt))? $evopt: get_option('evcal_options_evcal_1');
 
 		$count=2;
-		for($x=3; $x<6; $x++ ){
+		for($x=3; $x<= apply_filters('evo_event_type_count',5); $x++ ){
 			if(!empty($evopt['evcal_ett_'.$x]) && $evopt['evcal_ett_'.$x]=='yes'){
 				$count = $x;
 			}else{
@@ -1154,7 +1172,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			if(strpos($value, 'NOT-')!== false){
 				$op = explode('-', $value);
 				$filter_op='NOT';
-				$vals = $op[1];
+				$vals = str_replace('NOT-', '', $value);
+				//$vals = $op[1];
 			}else{
 				$vals= $value;
 				$filter_op = 'IN';
@@ -1525,22 +1544,26 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 				$repeat_multiplier = ((int)$repeat_gap) * $x;
 
-				// for day of week monthly repears
+				// for day of week monthly repeats
 				if($repeat_type == 'monthly' && $month_repeat_by=='dow' && !empty($days) && is_array($days) ){
 
 					// $wom = week of month
-					$Names = array( 0=>"Sun", 1=>"Mon", 2=>"Tue", 3=>"Wed", 4=>"Thu", 5=>"Fri", 6=>"Sat" );
-
+						$Names = array( 0=>"Sun", 1=>"Mon", 2=>"Tue", 3=>"Wed", 4=>"Thu", 5=>"Fri", 6=>"Sat" );
 
 					// find time dif from 12am to selected time
-					$dif_S = $unix_S - strtotime( date("Y-m-j", $unix_S) );
-					$dif_E = $unix_E - strtotime( date("Y-m-j", $unix_E) );
-					$dif_s_e = $unix_E - $unix_S;
+						$dif_S = $unix_S - strtotime( date("Y-m-j", $unix_S) );
+						$dif_E = $unix_E - strtotime( date("Y-m-j", $unix_E) );
+						$dif_s_e = $unix_E - $unix_S;
 
 					// start time
-					$ThisMonthTS = strtotime( date("Y-m-01", strtotime('+'.$repeat_multiplier.' '.$term, $unix_S) ) );
-					$NextMonthTS = strtotime( date("Y-m-01", strtotime('+'.($repeat_multiplier+1).' '.$term, $unix_S) ) ); 
-					
+						if($repeat_multiplier == 0){
+							$ThisMonthTS = strtotime( date("Y-m-01", $unix_S)  );							
+						}else{
+							$ThisMonthTS = strtotime( 'first day of +' .($repeat_multiplier).' '.$term, $unix_S);
+						}
+						
+						$NextMonthTS = strtotime( 'first day of +' .($repeat_multiplier+1).' '.$term, $unix_S);
+						
 					// for each day				
 					foreach($days as $day){
 						// add initial event time values to repeat intervals
@@ -1630,7 +1653,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	// Generate location latLon from address
 		function eventon_get_latlon_from_address($address){
 			
-			$lat = $lon = '3';
+			$lat = $lon = '';
 
 		    //$request_url = "//maps.googleapis.com/maps/api/geocode/xml?address=".$address."&sensor=true";
 			//$xml = simplexml_load_file($request_url) or die("url not loading");
@@ -1676,6 +1699,19 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			$options = $eventon->frontend->evo_options;
 			return (!empty($options['evcal_cal_hide']) && $options['evcal_cal_hide']=='yes')? true: false;
 		}
+
+
+	// get URL
+		// get url with variables added
+			function EVO_get_url($baseurl, $args){
+				$str = '';
+				foreach($args as $f=>$v){ $str .= $f.'='.$v. '&'; }
+				if(strpos($baseurl, '?')!== false){
+					return $baseurl.'&'.$str;
+				}else{
+					return $baseurl.'?'.$str;
+				}
+			}
 
 	// Returns a proper form of labeling for custom post type
 	/** Function that returns an array containing the IDs of the products that are on sale. */

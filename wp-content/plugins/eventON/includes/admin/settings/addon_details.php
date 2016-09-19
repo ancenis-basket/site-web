@@ -131,6 +131,24 @@ if(!is_admin()) return;
 			'link'=>'http://www.myeventon.com/addons/event-slider',
 			'download'=>'http://www.myeventon.com/addons/event-slider',
 			'desc'=>'Interactive slider of events'
+		),'eventon-api'=>array(
+			'id'=>'EVOAP',
+			'name'=>'Event API',
+			'link'=>'http://www.myeventon.com/addons/event-api',
+			'download'=>'http://www.myeventon.com/addons/event-api',
+			'desc'=>'API to access all the calendar events from external sites'
+		),'eventon-lists-items'=>array(
+			'id'=>'EVOLI',
+			'name'=>'Event Lists & Items',
+			'link'=>'http://www.myeventon.com/addons/event-lists-items',
+			'download'=>'http://www.myeventon.com/addons/event-lists-items',
+			'desc'=>'Create custom eventON category lists and item boxes'
+		),'eventon-ics-importer'=>array(
+			'id'=>'EVOICS',
+			'name'=>'iCS Importer',
+			'link'=>'http://www.myeventon.com/addons/ics-importer',
+			'download'=>'http://www.myeventon.com/addons/ics-importer',
+			'desc'=>'Import events using ICS file'
 		)
 	);
 ?>

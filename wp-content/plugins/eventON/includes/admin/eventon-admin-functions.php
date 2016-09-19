@@ -144,84 +144,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				}else{	
 					save_evoOPT('1', 'wp_remote_get','didnt_work');
 					return false;	}
-
-			}
-			
-		}
-
-	// license activation debug report
-		function evo_debug_report(){
-
-			$admin_url = admin_url();
-			echo "<p><a class='evo_admin_btn btn_prime' href='".$admin_url."admin.php?page=eventon&tab=evcal_4&action=debug'>Run debug report</a></p>";
-			// run debug
-			if(isset($_GET['action']) && $_GET['action']=='debug'):
-				
-			
-
-			$msg_ = "<br/><br/>EventON will resolve to backup method to activate eventON license locally.<br/><br/>This mean, eventON addons can not be activate from your site until wp_remote_post() access is resolved. BUT once eventON is activated you should be able to use addons to their full functionality. <br/><br/>Learn <a target='_blank' href='http://www.myeventon.com/documentation/can-download-addon-updates/'>How to download addon updates</a>";
-
-			$msg1 = "<br/>cURL looks to be installed in your server. Please contact your webhost and check to make sure they do not have any remote access restrictions.".$msg_;
-			$msg2 = "<br/>cURL is not enabled in your server. Please contact your webhost and make sure curl is enabled in php.ini".$msg_;
-			$msg3 = "wp_remote_post() works fine on your site. You should be able to activate eventON products.";
-			$msg4 = "wp_remote_post() did NOT work on your site but wp_remote_get() works fine on your site. You should be able to activate eventON products.";
-
-
-
-			ob_start();
-			?>
-			<p style='display:block; padding:0 5px 10px; font-style:italic'><b>DEBUG REPORT:</b> <br/>
-			<?php 
-
-				$code_process = 00;
-				
-				// check if wp_remote_already checked and status saved
-				$wprem = get_evoOPT('1','wp_remote_post');
-				$wpremG = get_evoOPT('1','wp_remote_get');
-				
-				// check if post works still
-				$wp_remote_test = evo_wp_remote_test('post');
-				if($wp_remote_test){ // post worked
-					$code_process.= ' 1';
-					$backupmethod = false;
-					echo $msg3;
-				}else{// try wp_remote_get
-					$code_process.= ' 2';
-					$backupmethod = true;						
-				}
-
-				// post not working backup methods
-				if($backupmethod==true){
-					if($wpremG=='worked'){ // get worked
-						$code_process.= ' 3';
-						echo $msg4;
-					}else{ // GET didnt work Or empty
-						$wp_remote_testG = evo_wp_remote_test('get'); // re-test get
-						if($wp_remote_testG){// get work now
-							$code_process.= ' 4';
-							echo $msg4;
-						}else{// get doesnt work still -- resolve to curl
-							$curl = evo_curl_installed();
-							echo "wp_remote_post() or wp_remote_get() methods did NOT work on your site.";
-							if($curl){// curl check
-								$code_process.= ' 5';
-								echo $msg1;
-							}else{// no luck buddy
-								$code_process.= ' 6';
-								echo $msg2;
-							}
-						}
-					}
-				}
-
-				//echo $code_process;
-
-			?></p>
-
-			<?php 
-			endif;
-
-			return ob_get_clean();
+			}			
 		}
 
 // HEX code to RGB
@@ -269,7 +192,6 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	        'comment_status' 	=> 'closed'
 	    );
 	    $page_id = wp_insert_post( $page_data );
-
 	    update_option( $option, $page_id );
 	}
 

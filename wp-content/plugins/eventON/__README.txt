@@ -4,8 +4,8 @@ Plugin Name: EventON
 Author URI: http://ashanjay.com/
 Tags: calendar, event calendar, event posts
 Requires at least: 4.0
-Tested up to: 4.5.1
-Stable tag: 2.3.22
+Tested up to: 4.6
+Stable tag: 2.4.5
 
 Event calendar plugin for wordpress that utilizes WP's custom post type.  
 
@@ -19,6 +19,75 @@ Event calendar plugin for wordpress that utilizes WP's custom post type. This pl
 1. Activate the plugin through the 'Plugins' menu in WordPress
 
 == Changelog ==
+= 2.4.6 (2016-9-5) =
+FIXED: Mousewheel missing script error
+FIXED: last of month repeat not saving correct date
+FIXED: Single events page event card translation not working
+FIXED: Jump Months names not translating with eventon system
+UPDATED: Jump month update when arrow change month
+UPDATED: Previous saved locations transition to location taxonomy method
+UPDATED: Organizer link not filling in backend
+
+= 2.4.5 (2016-8-25) =
+ADDED: shortcode option to show jump months expanded on load
+ADDED: mousewheel scrolling and swiping for months in jump months
+FIXED: Yes/no button script update
+FIXED: multiple checkbox filter not working correct
+FIXED: Duplicate event lead to blank page
+UPDATED: calendar loading UI and function accessibility
+UPDATED: UI for jump months
+
+= 2.4.4 (2016-8-17) =
+ADDED: Select multiple checkboxes for filters as option via shortcode
+ADDED: Option to hide filter dropdown item icons
+ADDED: Ability to show other future repeating instances of event times on eventcard
+FIXED: Featured image select not working for other posts
+FIXED: Edit location term page to auto generate latLng if not set
+FIXED: htmlentities function to be used when exporting events
+FIXED: Missing organizer address field in eventcard
+FIXED: Contactform 7 duplicate form causing conflict
+UPDATED: internationalization for shortcode strings
+UPDATED: Styles for h4 on popup event window
+UPDATED: Event lists code to support similar footer pluggable filters as main calendar
+UPDATED: Widget construct function to be compatible with newer PHP
+UPDATED: Filter priority for event types in calendar
+UPDATED: Main calendar AJAX to pass processed events list on results
+UPDATED: Exporting events to use htmlentities() for data values
+
+= 2.4.3 (2016-7-10) =
+ADDED: Support to include google maps API key
+FIXED: location image not working on location edit page
+FIXED: Eventtop custom fields that are buttons to look like buttons
+FIXED: Multiple NOT filter values not working
+
+= 2.4.2 (2016-6-28) =
+FIXED: Organizer data not showing in eventcard for some
+FIXED: Error on frontend eventon email template function
+FIXED: license activation on https website not working
+
+= 2.4.1 (2016-6-21) = 
+FIXED: error on certain admin level pages
+FIXED: Addon activation issue
+UPDATED: PO language file
+UPDATED: minor updates to events generation code
+
+= 2.4 (2016-6-20) =
+ADDED: pluggable hook for maximum event type taxonomy count
+ADDED: Ability to download ICS file of all events from backend
+ADDED: Ability to export and import general settings for eventON
+ADDED: Organizer archive page to have map using organizer address
+ADDED: Event type #1 icons support
+ADDED: default featured image for events
+ADDED: Custom meta data icons to be visible on eventtop
+ADDED: New template file location function for addons
+ADDED: Dynamic event types into shortcode generator
+ADDED: Template locator that will be used in addons for customizing templates
+ADDED: Tiles shortcode options into shortcode generator for list version
+FIXED: https loading assets correctly
+FIXED: event type color picker not working on event type edit page
+UPDATED: Cleaner looking yes no buttons
+UPDATED: Separated admin ajax functions from frontend
+
 = 2.3.23 (2016-5-18) =
 ADDED: Option to set organizer link to open in new window
 ADDED: Year long and month long events to show applicable year/month

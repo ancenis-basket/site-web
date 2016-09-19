@@ -57,7 +57,6 @@ class evo_install {
 		wp_schedule_event( time(), 'daily', 'evo_trash_past_events' );
 	}
 
-
 	// Update EVO
 		public static function update(){
 			$current_evo_version = get_option('eventon_plugin_version');
@@ -74,7 +73,7 @@ class evo_install {
 	// update eventon version to current
 		private static function update_evo_version($version=null){
 			delete_option( 'eventon_plugin_version' );
-			add_option( 'eventon_plugin_version', is_null( $version ) ? WC()->version : $version );
+			add_option( 'eventon_plugin_version', is_null( $version ) ? EVO()->version : $version );
 		}
 
 	// create pages that the plugin relies on 

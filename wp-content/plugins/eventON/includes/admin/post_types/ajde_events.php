@@ -5,7 +5,7 @@
  * @author 		AJDE
  * @category 	Admin
  * @package 	eventON/Admin/ajde_events
- * @version     2.3.14
+ * @version     2.4.4
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -414,160 +414,147 @@ add_action('manage_ajde_events_posts_custom_column', 'eventon_custom_event_colum
 
 	add_filter( 'request', 'eventon_custom_event_orderby' );
 
+//  Duplicate a event link on events list
+	function eventon_duplicate_event_link_row($actions, $post) {
 
-/**
- * Duplicate a event link on events list
- */
-function eventon_duplicate_event_link_row($actions, $post) {
+		if ( function_exists( 'duplicate_post_plugin_activation' ) ) return $actions;
+		
+		if ( $post->post_type != 'ajde_events' )	return $actions;
 
-	if ( function_exists( 'duplicate_post_plugin_activation' ) )
+		$post_type = get_post_type_object( $post->post_type );
+
+		if ( current_user_can( $post_type->cap->edit_post, $post->ID ) ){
+
+			$actions['duplicate'] = '<a href="' . wp_nonce_url( admin_url( 'admin.php?action=duplicate_event&amp;post=' . $post->ID ), 'eventon-duplicate-event_' . $post->ID ) . '" title="' . __( 'Make a duplicate from this event', 'eventon' )
+			. '" rel="permalink">' .  __( 'Duplicate', 'eventon' ) . '</a>';
+		}
+
 		return $actions;
-	
-	if ( $post->post_type != 'ajde_events' )
-		return $actions;
-
-	$post_type = get_post_type_object( $post->post_type );
-	if ( current_user_can( $post_type->cap->edit_post, $post->ID ) ){
-
-		$actions['duplicate'] = '<a href="' . wp_nonce_url( admin_url( 'admin.php?action=duplicate_event&amp;post=' . $post->ID ), 'eventon-duplicate-event_' . $post->ID ) . '" title="' . __( 'Make a duplicate from this event', 'eventon' )
-		. '" rel="permalink">' .  __( 'Duplicate', 'eventon' ) . '</a>';
 	}
+	add_filter( 'post_row_actions', 'eventon_duplicate_event_link_row',10,2 );
 
-	return $actions;
-}
+//  Duplicate a product link on edit screen
+	function eventon_duplicate_event_post_button() {
+		global $post;
 
-add_filter( 'post_row_actions', 'eventon_duplicate_event_link_row',10,2 );
+		if ( function_exists( 'duplicate_post_plugin_activation' ) ) return;
+		
+		if ( ! is_object( $post ) ) return;
 
-/**
- *  Duplicate a product link on edit screen
- *
- * @access public
- * @return void
- */
-function eventon_duplicate_event_post_button() {
-	global $post;
+		if ( $post->post_type != 'ajde_events' ) return;
 
-	if ( function_exists( 'duplicate_post_plugin_activation' ) ) return;
-	
-	if ( ! is_object( $post ) ) return;
+		if ( isset( $_GET['post'] ) ) {
+			$notifyUrl = wp_nonce_url( admin_url( "admin.php?action=duplicate_event&post=" . absint( $_GET['post'] ) ), 'eventon-duplicate-event_' . $_GET['post'] );
+			?>
+			<div class="misc-pub-section" >
+				<div id="duplicate-action"><a class="submitduplicate duplication button" href="<?php echo esc_url( $notifyUrl ); ?>"><?php _e( 'Duplicate this event', 'eventon' ); ?></a></div>
+				
+			</div>
+			<?php
+		}
+	}
+	add_action( 'post_submitbox_misc_actions', 'eventon_duplicate_event_post_button' );
 
-	if ( $post->post_type != 'ajde_events' ) return;
 
-	if ( isset( $_GET['post'] ) ) {
-		$notifyUrl = wp_nonce_url( admin_url( "admin.php?action=duplicate_event&post=" . absint( $_GET['post'] ) ), 'eventon-duplicate-event_' . $_GET['post'] );
+// Custom quick edit - form
+	function eventon_admin_event_quick_edit( $column_name, $post_type ) {
+		if ($column_name != 'event_start_date' || $post_type != 'ajde_events') return;
+
+			$evcal_date_format = eventon_get_time_format('24');
 		?>
-		<div class="misc-pub-section" >
-			<div id="duplicate-action"><a class="submitduplicate duplication button" href="<?php echo esc_url( $notifyUrl ); ?>"><?php _e( 'Duplicate this event', 'eventon' ); ?></a></div>
-			
-		</div>
+	    <fieldset class="inline-edit-col-left">
+			<div id="eventon-fields" class="inline-edit-col">
+
+				<h4><?php _e( 'Event Data', 'eventon' ); ?></h4>
+
+				
+				<div class="event_fields">
+					<input type='hidden' name='_evo_date_format' value=''/>
+					<input type='hidden' name='_evo_time_format' value=''/>
+					<label>
+					    <span class="title"><?php _e( 'Start Date', 'eventon' ); ?></span>
+					    <span class="input-text-wrap">
+							<input type="text" name="evcal_start_date" class="text" placeholder="<?php _e( 'Event Start Date', 'eventon' ); ?>" value="">
+						</span>
+					</label>	
+					<label>
+					    <span class="title"><?php _e( 'Start Time', 'eventon' ); ?></span>
+					    <span class="input-text-wrap">
+							<span class='input_time'>
+								<input type="text" name="evcal_start_time_hour" class="text" placeholder="<?php _e( 'Event Start Hour', 'eventon' ); ?>" value="">
+								<em>Hr</em>
+							</span>
+							<span class='input_time'>
+								<input type="text" name="evcal_start_time_min" class="text" placeholder="<?php _e( 'Event Start Minutes', 'eventon' ); ?>" value="">
+								<em>Min</em>
+							</span>
+							<?php if($evcal_date_format=='12h'):?>
+							<span class='input_time'>
+								<input type="text" name="evcal_st_ampm" class="text" placeholder="<?php _e( 'Event Start AM/PM', 'eventon' ); ?>" value="">
+								<em>AM/PM</em>
+							</span>
+							<?php endif;?>
+						</span>
+					</label>
+					
+					<?php // end time date?>
+					<label>
+					    <span class="title"><?php _e( 'End Date', 'eventon' ); ?></span>
+					    <span class="input-text-wrap">
+							<input type="text" name="evcal_end_date" class="text" placeholder="<?php _e( 'Event End Date', 'eventon' ); ?>" value="">
+						</span>
+					</label>	
+					<label>
+					    <span class="title"><?php _e( 'End Time', 'eventon' ); ?></span>
+					    <span class="input-text-wrap">
+							<span class='input_time'>
+								<input type="text" name="evcal_end_time_hour" class="text" placeholder="<?php _e( 'Event End Hour', 'eventon' ); ?>" value="">
+								<em>Hr</em>
+							</span>
+							<span class='input_time'>
+								<input type="text" name="evcal_end_time_min" class="text" placeholder="<?php _e( 'Event End Minutes', 'eventon' ); ?>" value="">
+								<em>Min</em>
+							</span>
+							<?php if($evcal_date_format=='12h'):?>
+							<span class='input_time'>
+								<input type="text" name="evcal_et_ampm" class="text" placeholder="<?php _e( 'Event End AM/PM', 'eventon' ); ?>" value="">
+								<em>AM/PM</em>
+							</span>
+							<?php endif;?>
+						</span>
+					</label>
+
+					<label>
+					    <span class="title"><?php _e( 'Location', 'eventon' ); ?></span>
+					    <span class="input-text-wrap">
+							<input type="text" name="evcal_location" class="text" placeholder="<?php _e( 'Event Location Address', 'eventon' ); ?>" value="">
+						</span>
+					</label>
+					<label>
+					    <span class="title"><?php _e( 'Organizer', 'eventon' ); ?></span>
+					    <span class="input-text-wrap">
+							<input type="text" name="evcal_organizer" class="text" placeholder="<?php _e( 'Event Organizer', 'eventon' ); ?>" value="">
+						</span>
+					</label>
+					<label>
+					    <span class="title"><?php _e( 'Subtitle', 'eventon' ); ?></span>
+					    <span class="input-text-wrap">
+							<input type="text" name="evcal_subtitle" class="text" placeholder="<?php _e( 'Event Sub Title', 'eventon' ); ?>" value="">
+						</span>
+					</label>
+					<label class="alignleft featured">
+						<input type="checkbox" name="_featured" value="1">
+						<span class="checkbox-title"><?php _e( 'Featured', 'eventon' ); ?></span>
+					</label>
+				</div>
+
+				<input type="hidden" name="eventon_quick_edit_nonce" value="<?php echo wp_create_nonce( 'eventon_quick_edit_nonce' ); ?>" />
+
+			</div>
+		</fieldset>
 		<?php
 	}
-}
-
-add_action( 'post_submitbox_misc_actions', 'eventon_duplicate_event_post_button' );
-
-
-/**
- * Custom quick edit - form
- */
-function eventon_admin_event_quick_edit( $column_name, $post_type ) {
-	if ($column_name != 'event_start_date' || $post_type != 'ajde_events') return;
-
-		$evcal_date_format = eventon_get_time_format('24');
-	?>
-    <fieldset class="inline-edit-col-left">
-		<div id="eventon-fields" class="inline-edit-col">
-
-			<h4><?php _e( 'Event Data', 'eventon' ); ?></h4>
-
-			
-			<div class="event_fields">
-				<input type='hidden' name='_evo_date_format' value=''/>
-				<input type='hidden' name='_evo_time_format' value=''/>
-				<label>
-				    <span class="title"><?php _e( 'Start Date', 'eventon' ); ?></span>
-				    <span class="input-text-wrap">
-						<input type="text" name="evcal_start_date" class="text" placeholder="<?php _e( 'Event Start Date', 'eventon' ); ?>" value="">
-					</span>
-				</label>	
-				<label>
-				    <span class="title"><?php _e( 'Start Time', 'eventon' ); ?></span>
-				    <span class="input-text-wrap">
-						<span class='input_time'>
-							<input type="text" name="evcal_start_time_hour" class="text" placeholder="<?php _e( 'Event Start Hour', 'eventon' ); ?>" value="">
-							<em>Hr</em>
-						</span>
-						<span class='input_time'>
-							<input type="text" name="evcal_start_time_min" class="text" placeholder="<?php _e( 'Event Start Minutes', 'eventon' ); ?>" value="">
-							<em>Min</em>
-						</span>
-						<?php if($evcal_date_format=='12h'):?>
-						<span class='input_time'>
-							<input type="text" name="evcal_st_ampm" class="text" placeholder="<?php _e( 'Event Start AM/PM', 'eventon' ); ?>" value="">
-							<em>AM/PM</em>
-						</span>
-						<?php endif;?>
-					</span>
-				</label>
-				
-				<?php // end time date?>
-				<label>
-				    <span class="title"><?php _e( 'End Date', 'eventon' ); ?></span>
-				    <span class="input-text-wrap">
-						<input type="text" name="evcal_end_date" class="text" placeholder="<?php _e( 'Event End Date', 'eventon' ); ?>" value="">
-					</span>
-				</label>	
-				<label>
-				    <span class="title"><?php _e( 'End Time', 'eventon' ); ?></span>
-				    <span class="input-text-wrap">
-						<span class='input_time'>
-							<input type="text" name="evcal_end_time_hour" class="text" placeholder="<?php _e( 'Event End Hour', 'eventon' ); ?>" value="">
-							<em>Hr</em>
-						</span>
-						<span class='input_time'>
-							<input type="text" name="evcal_end_time_min" class="text" placeholder="<?php _e( 'Event End Minutes', 'eventon' ); ?>" value="">
-							<em>Min</em>
-						</span>
-						<?php if($evcal_date_format=='12h'):?>
-						<span class='input_time'>
-							<input type="text" name="evcal_et_ampm" class="text" placeholder="<?php _e( 'Event End AM/PM', 'eventon' ); ?>" value="">
-							<em>AM/PM</em>
-						</span>
-						<?php endif;?>
-					</span>
-				</label>
-
-				<label>
-				    <span class="title"><?php _e( 'Location', 'eventon' ); ?></span>
-				    <span class="input-text-wrap">
-						<input type="text" name="evcal_location" class="text" placeholder="<?php _e( 'Event Location Address', 'eventon' ); ?>" value="">
-					</span>
-				</label>
-				<label>
-				    <span class="title"><?php _e( 'Organizer', 'eventon' ); ?></span>
-				    <span class="input-text-wrap">
-						<input type="text" name="evcal_organizer" class="text" placeholder="<?php _e( 'Event Organizer', 'eventon' ); ?>" value="">
-					</span>
-				</label>
-				<label>
-				    <span class="title"><?php _e( 'Subtitle', 'eventon' ); ?></span>
-				    <span class="input-text-wrap">
-						<input type="text" name="evcal_subtitle" class="text" placeholder="<?php _e( 'Event Sub Title', 'eventon' ); ?>" value="">
-					</span>
-				</label>
-				<label class="alignleft featured">
-					<input type="checkbox" name="_featured" value="1">
-					<span class="checkbox-title"><?php _e( 'Featured', 'eventon' ); ?></span>
-				</label>
-			</div>
-
-			<input type="hidden" name="eventon_quick_edit_nonce" value="<?php echo wp_create_nonce( 'eventon_quick_edit_nonce' ); ?>" />
-
-		</div>
-	</fieldset>
-	<?php
-}
-add_action( 'quick_edit_custom_box',  'eventon_admin_event_quick_edit', 10, 2 );
+	add_action( 'quick_edit_custom_box',  'eventon_admin_event_quick_edit', 10, 2 );
 
 /** Custom quick edit - script */
 	function eventon_admin_events_quick_edit_scripts( $hook ) {
@@ -577,7 +564,6 @@ add_action( 'quick_edit_custom_box',  'eventon_admin_event_quick_edit', 10, 2 );
 	    	wp_enqueue_script( 'eventon_quick-edit', AJDE_EVCAL_URL. '/assets/js/admin/quick-edit.js', array('jquery') );
 	}
 	add_action( 'admin_enqueue_scripts', 'eventon_admin_events_quick_edit_scripts', 10 );
-
 
 /** Custom quick edit - save */
 	function eventon_admin_event_quick_edit_save( $post_id, $post ) {
@@ -644,10 +630,5 @@ add_action( 'quick_edit_custom_box',  'eventon_admin_event_quick_edit', 10, 2 );
 			//wp_update_post($newpostdata);
 		}
 	}
-
 	add_action( 'save_post', 'eventon_admin_event_quick_edit_save', 10, 2 );
-
-
-
-
 ?>

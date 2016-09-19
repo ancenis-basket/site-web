@@ -1,5 +1,9 @@
 AJDE Library Changelog
 ----------------------------
+v 1.5.9 (2016-5-20)
+UPDATED: Font awesome 4.6.2
+UPDATED: backender settings to support alt yesno buttons
+
 v 1.5.8 (2016-4-19)
 FIXED: dropdown fiels options have type radio
 

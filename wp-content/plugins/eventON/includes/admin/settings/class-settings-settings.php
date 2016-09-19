@@ -59,6 +59,7 @@ class evo_settings_settings{
 					//array('id'=>'evo_wpml','type'=>'yesno','name'=>'Activate WPML compatibility', 'legend'=>'This will activate WPML compatibility features.'),
 
 					array('id'=>'evcal_header_format','type'=>'text','name'=>__('Calendar Header month/year format. <i>(<b>Allowed values:</b> m = month name, Y = 4 digit year, y = 2 digit year)</i>','eventon') , 'default'=>'m, Y'),
+										
 					array('id'=>'evcal_additional','type'=>'subheader','name'=>__('Additional EventON Settings' ,'eventon')),
 
 					array('id'=>'evcal_export','type'=>'customcode','code'=>$this->export()),
@@ -80,6 +81,7 @@ class evo_settings_settings{
 					),
 					array('id'=>'evcal_cal_gmap_api','type'=>'end_afterstatement'),
 					
+					array('id'=>'evo_gmap_api_key','type'=>'text','name'=>__('Google maps API Key (Not required)','eventon').' <a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank">How to get API Key</a>','legend'=>'Not required with Gmap API V3, but typing a google maps API key will append the key and will enable monitoring map loading activity from google.','afterstatement'=>'evcal_cal_gmap_api'),
 					array('id'=>'evcal_gmap_scroll','type'=>'yesno','name'=>__('Disable scrollwheel zooming on Google Maps','eventon'),'legend'=>'This will stop google maps zooming when mousewheel scrolled.'),
 					
 					array('id'=>'evcal_gmap_format', 'type'=>'dropdown','name'=>__('Google maps display type:','eventon'),
@@ -116,6 +118,7 @@ class evo_settings_settings{
 							'retro'=>'Retro',
 							'shift'=>'Shift Worker',
 						)),
+					array('id'=>'evo_gmap_iconurl','type'=>'text','name'=>__('Custom map marker icon complete http url','eventon'),'legend'=>'Type a complete http:// url for a PNG image that can be used instead of the default red google map markers.','default'=>'eg. http://www.site.com/image.png'),
 			)),
 
 			array(
@@ -147,7 +150,8 @@ class evo_settings_settings{
 				'tab_name'=>__('Sorting and Filtering','eventon'),
 				'icon'=>'filter',
 				'fields'=>array(
-					array('id'=>'evcal_hide_sort','type'=>'yesno','name'=>__('Hide Sort Bar on Calendar','eventon')),
+					array('id'=>'evcal_hide_sort','type'=>'yesno','name'=>__('Hide Sort/Filter Bar on Calendar','eventon')),
+					array('id'=>'evcal_hide_filter_icons','type'=>'yesno','name'=>__('Hide Filter Dropdown Selection Item Icons','eventon')),
 					array('id'=>'evcal_sort_options', 'type'=>'checkboxes','name'=>__('Event sorting options to show on Calendar <i>(Note: Event Date is default sorting method.)</i>','eventon'),
 						'options'=>array(
 							'title'=>__('Event Main Title','eventon'),
@@ -180,6 +184,7 @@ class evo_settings_settings{
 					
 					array('id'=>'evcal__fai_001','type'=>'icon','name'=>__('Event Details Icon','eventon'),'default'=>'fa-align-justify'),
 					array('id'=>'evcal__fai_002','type'=>'icon','name'=>__('Event Time Icon','eventon'),'default'=>'fa-clock-o'),
+					array('id'=>'evcal__fai_repeats','type'=>'icon','name'=>__('Event Repeat Icon','eventon'),'default'=>'fa-repeat'),
 					array('id'=>'evcal__fai_003','type'=>'icon','name'=>__('Event Location Icon','eventon'),'default'=>'fa-map-marker'),
 					array('id'=>'evcal__fai_004','type'=>'icon','name'=>__('Event Organizer Icon','eventon'),'default'=>'fa-headphones'),
 					array('id'=>'evcal__fai_005','type'=>'icon','name'=>__('Event Capacity Icon','eventon'),'default'=>'fa-tachometer'),
@@ -200,6 +205,8 @@ class evo_settings_settings{
 							'options'=> apply_filters('eventon_eventop_fields', $this->eventtop_settings()),
 					),
 					array('id'=>'evo_widget_eventtop','type'=>'yesno','name'=>__('Display all these fields in widget as well','eventon'),'legend'=>__('By default only few of the data is shown in eventtop in order to make that calendar look nice on a widget where space is limited.','eventon')),
+					
+					array('id'=>'evo_eventtop_customfield_icons','type'=>'yesno','name'=>__('Show event custom meta data icons on eventtop','eventon'),'legend'=>__('This will show event custom meta data icons next to custom data fields on eventtop, if those custom data fields are set to show on eventtop above and if they have data and icons set.','eventon')),
 
 					array('id'=>'evcal_eventtop','type'=>'note','name'=>__('NOTE: Lot of these fields are NOT available in Tile layout. Reason: we dont want to potentially break the tile layout and over-crowd the clean design aspect of tile boxes.','eventon')),
 
@@ -229,6 +236,10 @@ class evo_settings_settings{
 
 						array('id'=>'evo_ftimgheight','type'=>'text','name'=>__('Minimal height for featured image (value in pixels)','eventon'), 'default'=>'eg. 400'),
 						array('id'=>'evo_ftim_mag','type'=>'yesno','name'=>__('Show magnifying glass over featured image','eventon'),'legend'=>'This will convert the mouse cursor to a magnifying glass when hover over featured image. <br/><br/><img src="'.AJDE_EVCAL_URL.'/assets/images/admin/cursor_mag.jpg"/><br/>This is not available for Direct Image style'),
+						array('id'=>'evcal_default_event_image_set','type'=>'yesno','name'=>__('Set default event image for events that doesnt have images','eventon'),'legend'=>__('Add a URL for the default event image URL that will be used on events that dont have featured images set.','eventon'),'afterstatement'=>'evcal_default_event_image_set'),
+							array('id'=>'evcal_default_event_image_set','type'=>'begin_afterstatement'),
+							array('id'=>'evcal_default_event_image','type'=>'text','name'=>__('Default event image URL','eventon') , 'default'=>'http://www.google.com/image.jpg'),
+							array('id'=>'evcal_default_event_image_set','type'=>'end_afterstatement'),
 
 					array('id'=>'evcal_sh001','type'=>'subheader','name'=>__('Location Image','eventon')),
 					array('id'=>'evo_locimgheight','type'=>'text','name'=>__('Set event location image height (value in pixels)','eventon'), 'default'=>'eg. 400'),
@@ -256,8 +267,8 @@ class evo_settings_settings{
 						'fields_array'=>$this->rearrange_code(),
 						'order_var'=> 'evoCard_order',
 						'selected_var'=> 'evoCard_hide',
-						'title'=>__('Re-arrange the order of eventCard event data boxes','eventon'),
-						'notes'=>__('Fields selected below will show in eventcard','eventon')
+						'title'=>__('Order of EventCard Data Boxes','eventon'),
+						'notes'=>__('Fields selected below will show in eventcard, and can be moved around to your desired order.','eventon')
 					),
 
 				)
@@ -342,19 +353,30 @@ class evo_settings_settings{
 			)
 		);	
 	}
+
+	// HTML code for export events in csv and ics format
 		function export(){
 			global $ajde;
 
 			$nonce = wp_create_nonce('eventon_download_events');
+			
+			// CSV format
 			$exportURL = add_query_arg(array(
 			    'action' => 'eventon_export_events',
 			    'nonce'=>$nonce
 			), admin_url('admin-ajax.php'));
 
-			ob_start(); ?>
-			<p><a href="<?php admin_url();?>options-permalink.php" class="evo_admin_btn btn_secondary">Reset Permalinks</a></p>
+			// ICS format
+			$exportICS_URL = add_query_arg(array(
+			    'action' => 'eventon_export_events_ics',
+			    'nonce'=>$nonce
+			), admin_url('admin-ajax.php'));
 
-			<p><a class='evo_admin_btn btn_triad' href="<?php echo $exportURL;?>"><?php _e('Download All Events (CSV)','eventon');?></a> <?php echo $ajde->wp_admin->echo_tooltips(__('Download all eventON calendar events as CSV file.','eventon'));?></p>
+			ob_start(); ?>
+			<p><a href="<?php admin_url();?>options-permalink.php" class="evo_admin_btn btn_secondary"><?php _e('Reset Permalinks','eventon');?></a></p>
+			
+			<p><?php _e('Download all eventON events.','eventon');?></p>
+			<p><a class='evo_admin_btn btn_triad' href="<?php echo $exportURL;?>"><?php _e('CSV Format','eventon');?></a>  <a class='evo_admin_btn btn_triad' href="<?php echo $exportICS_URL;?>"><?php _e('ICS format','eventon');?></a></p>
 			<?php 
 			return  ob_get_clean();
 		}
@@ -365,7 +387,6 @@ class evo_settings_settings{
 			$num = evo_calculate_cmd_count($this->evcal_opt[1]);
 			$_add_tax_count = evo_get_ett_count($this->evcal_opt[1]);
 			$_tax_names_array = evo_get_ettNames($this->evcal_opt[1]);
-
 			
 			$arr = array(
 				'time'=>__('Event Time (to and from)','eventon'),
@@ -398,12 +419,15 @@ class evo_settings_settings{
 			$event_type_names = evo_get_ettNames($this->evcal_opt[1]);
 			// event types category names		
 			$ett_verify = evo_get_ett_count($this->evcal_opt[1] );
-			$event_type_options['event_location'] = 'Event Location';
-			$event_type_options['event_organizer'] = 'Event Organizer';
+			
 			for($x=1; $x< ($ett_verify+1); $x++){
 				$ab = ($x==1)? '':'_'.$x;
 				$event_type_options['event_type'.$ab] = $event_type_names[$x];
 			}
+
+			$event_type_options['event_location'] = 'Event Location';
+			$event_type_options['event_organizer'] = 'Event Organizer';
+			
 			return $event_type_options;
 		}
 
@@ -413,6 +437,7 @@ class evo_settings_settings{
 				'ftimage'=>array('ftimage',__('Featured Image','eventon')),
 				'eventdetails'=>array('eventdetails',__('Event Details','eventon')),
 				'timelocation'=>array('timelocation',__('Time and Location','eventon')),
+				'repeats'=>array('repeats',__('Event Repeats Info','eventon')),
 				'organizer'=>array('organizer',__('Event Organizer','eventon')),
 				'locImg'=>array('locImg',__('Location Image','eventon')),
 				'gmap'=>array('gmap',__('Google Maps','eventon')),
@@ -614,7 +639,7 @@ class evo_settings_settings{
 						array('id'=>'evcal__sot', 'name'=>'Default State', 'type'=>'color', 'default'=>'B8B8B8'),
 						array('id'=>'evcal__sotH', 'name'=>'Hover State', 'type'=>'color', 'default'=>'d8d8d8'),
 					)
-				),array('id'=>'fs_calhead','type'=>'fontation','name'=>__('Jump Months Button','eventon'),
+				),array('id'=>'fs_calhead','type'=>'fontation','name'=>__('Jump Months Trigger Button','eventon'),
 					'variations'=>array(
 						array('id'=>'evcal__jm001', 'name'=>'Text Color', 'type'=>'color', 'default'=>'ffffff'),
 						array('id'=>'evcal__jm002', 'name'=>'Background Color', 'type'=>'color', 'default'=>'ADADAD'),
@@ -623,10 +648,10 @@ class evo_settings_settings{
 					)
 				),array('id'=>'fs_calhead','type'=>'fontation','name'=>__('Jumper - Month/Year Buttons','eventon'),
 					'variations'=>array(
-						array('id'=>'evcal__jm003', 'name'=>'Text Color', 'type'=>'color', 'default'=>'ffffff'),
-						array('id'=>'evcal__jm004', 'name'=>'Background Color', 'type'=>'color', 'default'=>'ECECEC'),
-						array('id'=>'evcal__jm003H', 'name'=>'Text Color (Hover)', 'type'=>'color', 'default'=>'ffffff'),
-						array('id'=>'evcal__jm004H', 'name'=>'Background Color (Hover)', 'type'=>'color', 'default'=>'c3c3c3'),							
+						array('id'=>'evcal__jm003', 'name'=>'Text Color', 'type'=>'color', 'default'=>'a0a09f'),
+						array('id'=>'evcal__jm004', 'name'=>'Background Color', 'type'=>'color', 'default'=>'f5f5f5'),
+						array('id'=>'evcal__jm003H', 'name'=>'Text Color (Hover)', 'type'=>'color', 'default'=>'a0a09f'),
+						array('id'=>'evcal__jm004H', 'name'=>'Background Color (Hover)', 'type'=>'color', 'default'=>'e6e6e6'),							
 					)
 				),array('id'=>'fs_calhead','type'=>'fontation','name'=>__('Jumper - Month/Year Buttons: Current','eventon'),
 					'variations'=>array(
@@ -636,13 +661,9 @@ class evo_settings_settings{
 				),array('id'=>'fs_calhead','type'=>'fontation','name'=>__('Jumper - Month/Year Buttons: Active','eventon'),
 					'variations'=>array(
 						array('id'=>'evcal__jm008', 'name'=>'Text Color', 'type'=>'color', 'default'=>'ffffff'),
-						array('id'=>'evcal__jm009', 'name'=>'Background Color', 'type'=>'color', 'default'=>'888888'),
+						array('id'=>'evcal__jm009', 'name'=>'Background Color', 'type'=>'color', 'default'=>'f79191'),
 					)
-				),array('id'=>'fs_calhead','type'=>'fontation','name'=>__('Jumper - Month/Year Label Text','eventon'),
-					'variations'=>array(
-						array('id'=>'evcal__jm005', 'name'=>'Text Color', 'type'=>'color', 'default'=>'6e6e6e'),
-					)
-				),array('id'=>'fs_calhead','type'=>'fontation','name'=>__('This month Button','eventon'),
+				),array('id'=>'fs_calhead','type'=>'fontation','name'=>__('Current month Button','eventon'),
 					'variations'=>array(
 						array('id'=>'evcal__thm001', 'name'=>'Text Color', 'type'=>'color', 'default'=>'ffffff'),
 						array('id'=>'evcal__thm002', 'name'=>'Background Color', 'type'=>'color', 'default'=>'ADADAD'),
@@ -691,6 +712,12 @@ class evo_settings_settings{
 							array('id'=>'evcal__cancel_event_2', 'name'=>'Font Color', 'type'=>'color', 'default'=>'ffffff'),
 							array('id'=>'evcal__cancel_event_3', 'name'=>'Background Strips Color 1', 'type'=>'color', 'default'=>'FDF2F2'),
 							array('id'=>'evcal__cancel_event_4', 'name'=>'Background Strips Color 2', 'type'=>'color', 'default'=>'FAFAFA'),
+						)
+					),
+					array('id'=>'fs_eventtop_cmd','type'=>'fontation','name'=>__('Custom Field Buttons','eventon'),
+						'variations'=>array(
+							array('id'=>'evoeventtop_cmd_btn', 'name'=>'Background-color', 'type'=>'color', 'default'=>'237dbd'),
+							array('id'=>'evoeventtop_cmd_btnA', 'name'=>'Text Color', 'type'=>'color', 'default'=>'ffffff'),
 						)
 					),
 				array('id'=>'evcal_fcx','type'=>'hiddensection_close',),

@@ -39,6 +39,7 @@
 		text-decoration: none;
 	}
 	.eventon_mb .actions a.button_evo:hover, a.button_evo:hover{	background-color:#919191;}	
+	.evomb_body p.yesno_row{display: block;}
 
 /** EVENT COLOR **/
 	.evcal_color_box{
@@ -541,7 +542,6 @@
 	}	
 	#evo_mb label{
 		font-style:italic;
-		font-size:12px;
 		margin-bottom: 10px;
 		display: block;
 		cursor: default;

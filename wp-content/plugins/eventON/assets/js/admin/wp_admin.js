@@ -144,6 +144,66 @@ jQuery(document).ready(function($){
 			obj.css({'background-image':'url('+styleVAL+')','display':'block','height':'150px','margin-top':'10px'});
 			obj.parent().css({'opacity':'1'});
 		});
+	// Export settings
+		$('body').on('click','#evo_settings_import',function(event){
+			event.preventDefault();
+			OBJ = $(this);
+
+			OBJ.parent().siblings('.import_box').fadeIn();
+
+			var form = document.getElementById('evo_settings_import_form');
+			var fileSelect = document.getElementById('file-select');
+			var box = $('#import_box');
+			msg = box.find('.msg');
+			msg.hide();
+
+			$('#evo_settings_import_form').submit(function(event) {
+			  	event.preventDefault();
+			  	// Update button text.
+			  	msg.html('Processing.').slideDown();
+
+			  	var data = null;
+			  	var files = fileSelect.files;
+			  	var file = fileSelect.files[0];
+
+			  	//console.log(file);
+			  	if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+			      	alert('The File APIs are not fully supported in this browser.');
+			      	return;
+			    }
+
+			  	if( file.name.indexOf('.json') == -1 ){
+			  		msg.html('Only accept JSON file format.');
+			  	}else{
+			  		var reader = new FileReader();
+				  	reader.readAsText(file);
+		            reader.onload = function(event) {
+		                var jsonData = event.target.result ;
+
+		                // console.log(jsonData);
+		                // console.log( $.parseJSON( jsonData) );
+		             
+		                $.ajax({
+							beforeSend: function(){	},
+							type: 'POST',
+							url:evo_admin_ajax_handle.ajaxurl,
+							data: {	
+								action:'eventon_import_settings',
+								nonce: evo_admin_ajax_handle.postnonce,
+								jsondata: $.parseJSON( jsonData)
+							},
+							dataType:'json',
+							success:function(data){
+								msg.html(data.msg);
+							},complete:function(){	}
+						});
+		            };
+		            reader.onerror = function() {
+		            	msg.html('Unable to read file.');
+		            };
+			  	}
+			});
+		});
 
 // LANGUAGE SETTINGS
 	// language tab
@@ -166,7 +226,6 @@ jQuery(document).ready(function($){
 			$(this).next('.evo_settings_togbox').toggle();
 			$(this).toggleClass('open');
 		});
-
 	// export language
 		$('body').on('click','#evo_lang_export', function(){
 			string = {};

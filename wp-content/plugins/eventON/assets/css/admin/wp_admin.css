@@ -9,7 +9,7 @@
 	body.post-type-ajde_events .ajde_yn_btn,
 	.eventon_shortcode .ajde_yn_btn
 	{	
-		background-color: #F9CA8D;	}
+		background-color: #F9D29F;	}
 	.evcal_admin_meta .ajde_yn_btn.NO, .evo .ajde_yn_btn.NO, .evors .ajde_yn_btn.NO, 
 	body.post-type-evo-subscriber .ajde_yn_btn.NO,
 	body.post-type-ajde_events .ajde_yn_btn.NO,
@@ -29,7 +29,8 @@
  	.yesno_leg_line span.ajde_yn_btn {position: absolute;}
  	.evomb_body .ajdeToolTip:before{color: #CECECE}
  	.evomb_body .ajdeToolTip{opacity: 0.9;}
- 	.yesno_row {display: inline-block;}
+ 	.ajde_icons.fa em{z-index: 1;}
+ 	/*.yesno_row {display: inline-block;}*/
 
 /* transitions */
 	.ajde_popup_text .eventon_shortcode_btn, table.evo_metatable tr{
@@ -169,12 +170,15 @@
 		border-radius:50%;cursor: pointer;
 	}
 	#evo_et1_color .evo_et1_color_circle:hover{border-color:#BBB;}
-	.evoterm_color{
-		display: inline-block;
+	.event_type_id span{
+		display: block; float: left;
+		line-height: 130%
+	}.evoterm_color{		
 		width: 20px;height: 20px;
 		border-radius: 50%;
 		margin-left: 10px;
 	}
+	.event_type_id span.evoterm_icon{margin-left: 10px;margin-top: 2px;}
 	.evo_metafield_image .image_src{display: block;}
 	.evo_metafield_image .image_src img{width: 100%; height: auto;}
 
@@ -183,7 +187,7 @@
 
 	/* event organizer tax */
 		body.taxonomy-event_organizer table.wp-list-table th.column-id, body.taxonomy-event_location table.wp-list-table th.column-id{
-			width: 20px;
+			width: 40px;
 		}
 /*-- widget --*/	.eventon_widget_settings p.evo_widget_textarea textarea{
 		width: 100%;
@@ -480,8 +484,9 @@
 		border-radius: 8px
 	}
 	.evo_addons_page .addon.activated{background-color: #B6D6E6;}
+	.evo_addons_page .addon.main.activated{background-color: #B6D6E6;}
 	.evo_addons_page .addon.justactivate{background-color: #B2DCEC;}
-	.evo_addons_page .addon.activated.hasupdate{background-color: #E0AEA2;}
+	.evo_addons_page .addon.activated.hasupdate{background-color: #b1eca6;}
 	.evo_addons_page .addon:hover{opacity: 0.8;}
 	.evo_addons_page .addon.donthaveit{
 		background-color: #e7e7e7;
@@ -494,6 +499,8 @@
 	.evo_addons_page .addon.main h2{
 		font-weight: 600;
 	}
+	.evo_addons_page .addon.main .links a{color:#fff;}
+	.evo_addons_page .addon.main .links a:hover{text-decoration: none;}
 	.evo_addons_page .version{font-size: 20px;margin: 0;padding: 0;}
 	.evo_addons_page .version span{ opacity: 0.4;}
 	.evo_addons_page .action{padding-top: 10px;}
