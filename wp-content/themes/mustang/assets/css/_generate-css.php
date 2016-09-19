@@ -9,7 +9,7 @@
  * @uses        Custom CSS Styles Generator
  *
  * @since    1.0
- * @version  1.5
+ * @version  1.6
  */
 
 
@@ -77,7 +77,7 @@
 				}
 
 			//WooCommerce plugin
-				if ( class_exists( 'Woocommerce' ) ) {
+				if ( class_exists( 'WooCommerce' ) ) {
 					$wm_theme_css_files[600] = 'plugins-woocommerce';
 					$wm_theme_css_files[610] = 'responsive-plugins-woocommerce';
 				}

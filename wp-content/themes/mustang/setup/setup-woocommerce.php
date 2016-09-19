@@ -7,7 +7,7 @@
  * @copyright   2014 WebMan - Oliver Juhas
  *
  * @since    1.0
- * @version  1.4.7
+ * @version  1.6
  *
  * CONTENT:
  * - 1) Declare support
@@ -52,8 +52,6 @@
 			remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10 );
 			remove_action( 'woocommerce_after_shop_loop_item_title',  'woocommerce_template_loop_rating',            5  );
 			remove_action( 'woocommerce_after_shop_loop_item',        'woocommerce_template_loop_add_to_cart',       10 );
-		//Reposition single product elements
-			remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 50 );
 		//Cart elements reposition
 			remove_action( 'woocommerce_cart_collaterals', 'woocommerce_cross_sell_display' );
 
@@ -70,6 +68,9 @@
 			add_action( 'woocommerce_before_shop_loop_item', 'woocommerce_template_loop_product_thumbnail', 30 );
 			// add_action( 'woocommerce_before_shop_loop_item', 'wm_wc_additional_thumbnail',                  40 );
 			add_action( 'woocommerce_before_shop_loop_item', 'wm_wc_thumbnail_wrapper_close',               60 );
+		// Product link
+			add_action( 'woocommerce_before_shop_loop_item_title', 'wm_wc_product_link_open' );
+			add_action( 'woocommerce_after_shop_loop_item_title', 'wm_wc_product_link_close', 100 );
 		//Shop loop product image container
 			add_action( 'woocommerce_loop_add_to_cart_link', 'wm_wc_buy_button_class', 10 );
 			add_action( 'wmhook_wm_wc_thumbnail_wrapper_close', 'wm_wc_buy_wrapper_open',                10 );
@@ -80,14 +81,9 @@
 			add_action( 'woocommerce_after_shop_loop_item_title', 'wm_wc_price_wrapper_open',         5  );
 			add_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_rating', 20 );
 			add_action( 'woocommerce_after_shop_loop_item_title', 'wm_wc_price_wrapper_close',        30 );
-		//Reposition single product elements
-			add_action( 'woocommerce_after_single_product_summary', 'woocommerce_template_single_sharing', 5 );
 		//Cart
 			add_action( 'woocommerce_before_cart', 'wm_wc_cart_subtitle',            10 );
 			add_action( 'woocommerce_after_cart',  'woocommerce_cross_sell_display', 10 );
-		//Sharing
-			add_action( 'woocommerce_before_single_product',        'wm_wc_remove_jetpack_sharing', 10 );
-			add_action( 'woocommerce_after_single_product_summary', 'wm_wc_jetpack_sharing',        12 );
 		//Floating cart
 			add_action( 'wmhook_footer_before', 'wm_wc_floating_cart', 90 );
 
@@ -195,26 +191,35 @@
 	/**
 	 * Products columns
 	 *
+	 * @version  1.6
+	 *
 	 * @param  absint $columns
 	 */
 	if ( ! function_exists( 'wm_wc_products_columns' ) ) {
 		function wm_wc_products_columns( $columns = 4 ) {
-			//Helper variables
+
+			// Helper variables
+
 				$columns = 4;
 
 				$wc_page_id = ( is_shop() ) ? ( wc_get_page_id( 'shop' ) ) : ( null );
 				$atts       = apply_filters( 'wmhook_wm_wc_wrapper_sidebar_atts', array(
 						'page_id' => $wc_page_id,
 					), $wc_page_id );
-				$sidebar    = wm_sidebar_setup( false, $atts );
+				$sidebar    = (array) wm_sidebar_setup( false, $atts );
 
-			//Preparing output
-				if ( $sidebar['output'] ) {
+
+			// Processing
+
+				if ( isset( $sidebar['output'] ) && trim( $sidebar['output'] ) ) {
 					$columns = 3;
 				}
 
-			//Output
-				return apply_filters( 'wmhook_wm_wc_products_columns_output', $columns, $sidebar );
+
+			// Output
+
+				return absint( apply_filters( 'wmhook_wm_wc_products_columns_output', $columns, $sidebar ) );
+
 		}
 	} // /wm_wc_products_columns
 
@@ -290,6 +295,42 @@
 				echo '</div>';
 			}
 		} // /wm_wc_thumbnail_wrapper_close
+
+
+
+	/**
+	 * Product link open
+	 *
+	 * @since    1.6
+	 * @version  1.6
+	 */
+	if ( ! function_exists( 'wm_wc_product_link_open' ) ) {
+		function wm_wc_product_link_open() {
+
+			// Output
+
+				echo '<a href="' . esc_url( get_permalink() ) . '">';
+
+		}
+	} // /wm_wc_product_link_open
+
+
+
+		/**
+		 * Product link close
+		 *
+		 * @since    1.6
+		 * @version  1.6
+		 */
+		if ( ! function_exists( 'wm_wc_product_link_close' ) ) {
+			function wm_wc_product_link_close() {
+
+				// Output
+
+					echo '</a>';
+
+			}
+		} // /wm_wc_product_link_close
 
 
 
@@ -373,7 +414,7 @@
 		 */
 		if ( ! function_exists( 'wm_wc_buy_wrapper_close' ) ) {
 			function wm_wc_buy_wrapper_close() {
-				echo apply_filters( 'wmhook_wm_wc_buy_wrapper_close_open_output', '<a href="' . get_permalink() . '" class="details-button">' . __( 'Product details &raquo;', 'wm_domain' ) . '</a></div></div></div>' );
+				echo apply_filters( 'wmhook_wm_wc_buy_wrapper_close_open_output', '<a href="' . get_permalink() . '" class="details-button">' . __( 'Product details &raquo;', 'mustang' ) . '</a></div></div></div>' );
 			}
 		} // /wm_wc_buy_wrapper_close
 
@@ -450,7 +491,7 @@
 				}
 
 			//Output
-				echo apply_filters( 'wmhook_wm_wc_cart_subtitle_output', '<h2>' . sprintf( __( 'Number of items in cart: %s', 'wm_domain' ), WC()->cart->get_cart_contents_count() ) . '</h2>' );
+				echo apply_filters( 'wmhook_wm_wc_cart_subtitle_output', '<h2>' . sprintf( __( 'Number of items in cart: %s', 'mustang' ), WC()->cart->get_cart_contents_count() ) . '</h2>' );
 		}
 	} // /wm_wc_cart_subtitle
 
@@ -464,7 +505,7 @@
 	if ( ! function_exists( 'wm_wc_shortcode_posts_post_types' ) ) {
 		function wm_wc_shortcode_posts_post_types( $post_types ) {
 			//Preparing output
-				$post_types['product'] = __( 'Products', 'wm_domain' );
+				$post_types['product'] = __( 'Products', 'mustang' );
 
 			//Output
 				return $post_types;
@@ -526,7 +567,7 @@
 
 			//Preparing output
 				$output[10] = "\r\n\r\n" . '<div id="floating-cart" class="floating-cart">';
-				$output[20] = '<a href="' . get_permalink( wc_get_page_id( 'cart' ) ) . '" id="floating-cart-switch" class="floating-cart-switch"><span class="screen-reader-text">' . __( 'Show cart', 'wm_domain' ) . '</span></a>';
+				$output[20] = '<a href="' . get_permalink( wc_get_page_id( 'cart' ) ) . '" id="floating-cart-switch" class="floating-cart-switch"><span class="screen-reader-text">' . __( 'Show cart', 'mustang' ) . '</span></a>';
 				$output[30] = '<div id="floating-cart-content" class="floating-cart-content woocommerce-page">'; //.woocommerce-page is here to inherit WC styles when not on WC page
 				$output[40] = $widget_area;
 				$output[50] = '</div>';

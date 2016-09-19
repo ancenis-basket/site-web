@@ -5,7 +5,7 @@
  * Styles are sorted in order in which they are included into main stylesheet file.
  *
  * @since    1.0
- * @version  1.5
+ * @version  1.6
  *
  * @link  http://codex.wordpress.org/Right_to_Left_Language_Support
  */
@@ -833,7 +833,8 @@
 			h4 .wm-icon,
 			h5 .wm-icon,
 			h6 .wm-icon,
-			.wm-button i,
+			.wm-button [class^="icon-"],
+			.wm-button [class*=" icon-"],
 			.wm-progress-caption .wm-icon {
 				margin-right: 0;
 				margin-left: .28em;

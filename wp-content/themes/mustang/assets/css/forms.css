@@ -2,7 +2,7 @@
  * Form styles
  *
  * @since    1.0
- * @version  1.5
+ * @version  1.6
  */
 
 
@@ -426,7 +426,10 @@
 					}
 
 			/* Submit */
-				.comment-form .form-submit {margin-top: 0}
+				.comment-form .form-submit {
+					clear: both;
+					margin-top: 0;
+				}
 
 			/* Comment form when replying */
 				.comment-list .comment-respond .note {display: none}

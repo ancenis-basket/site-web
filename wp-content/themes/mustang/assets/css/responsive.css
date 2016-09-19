@@ -2,7 +2,7 @@
  * Responsive styles
  *
  * @since    1.0
- * @version  1.5
+ * @version  1.6
  */
 
 	/**
@@ -117,7 +117,12 @@
 
 				.responsive-design.admin-bar .header-wrapper.is-sticky {top: 0}
 
-				.responsive-design .header-wrapper {position: relative !important}
+				.responsive-design .header-wrapper {
+					position: relative !important;
+					-webkit-animation: none !important;
+					        animation: none !important;
+				}
+
 				.responsive-design.one-page-layout .header-wrapper {
 					position: fixed !important;
 					width: 100%;
@@ -164,7 +169,7 @@
 				/* Navigation */
 					#nav-main {
 						position: fixed;
-						width: 75%;
+						width: 90%;
 						min-width: 280px;
 						max-width: 400px;
 						height: 100%;
@@ -179,7 +184,7 @@
 						.admin-bar #nav-main,
 						.admin-bar #nav-main a.mobile-nav {padding-top: 32px}
 
-					#nav-main > .menu {padding-left: 32px}
+					#nav-main > .menu {padding-left: 48px}
 
 						/* Submenu expander */
 
@@ -299,14 +304,18 @@
 							float: none;
 							position: absolute;
 							display: block;
-							width: 32px;
+							width: 48px;
 							height: 100%;
 							left: 0;
 							top: 0;
 							padding: .62em 0;
 							font-size: 2em;
 						}
-							#nav-main .mobile-nav:before {margin-left: -.28em}
+							#nav-main .mobile-nav:before {
+								position: relative;
+								top: 4%;
+								margin-left: -.28em;
+							}
 
 					/* Special navigation */
 						#navigation-special li {
@@ -423,7 +432,9 @@
 					 */
 
 						/* Make the default layout small size */
-							.responsive-design .wm-content-module .wm-iconbox-module .title h3 {font-size: 1.38em}
+							.responsive-design .wm-content-module .wm-iconbox-module .title h2,
+							.responsive-design .wm-content-module .wm-iconbox-module .title h3,
+							.responsive-design .wm-content-module .wm-iconbox-module .title h4 {font-size: 1.38em}
 							.responsive-design .wm-iconbox-module .wm-content-module-element {padding-left: 68px}
 							.responsive-design .wm-iconbox-module .wm-content-module-element.image,
 							.responsive-design .text-center .wm-iconbox-module .wm-content-module-element {padding-left: 0}
@@ -434,6 +445,7 @@
 								font-size: 24px;
 							}
 							.responsive-design .no-icon-background .wm-iconbox-module .wm-content-module-element {padding-left: 58px}
+							.responsive-design .text-center .wm-iconbox-module .wm-content-module-element,
 							.responsive-design .no-icon-background .wm-iconbox-module .image {padding-left: 0}
 							.responsive-design .no-icon-background .wm-iconbox-module .font-icon {
 								width: 40px;

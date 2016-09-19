@@ -5,7 +5,7 @@
  * @copyright  2014 WebMan - Oliver Juhas
  *
  * @since    1.0
- * @version  1.5
+ * @version  1.6
  *
  * CONTENT:
  * - 10) Basics
@@ -134,8 +134,8 @@ jQuery( function() {
 
 			var $logo = jQuery( '.logo img' );
 
-			if ( wmIsHighDPI() && $logo.data( 'highdpi' ) ) {
-				$logo.attr( 'src', $logo.data( 'highdpi' ) );
+			if ( wmIsHighDPI() && $logo.data( 'hidpi' ) ) {
+				$logo.attr( 'src', $logo.data( 'hidpi' ) );
 			}
 
 
@@ -297,33 +297,52 @@ jQuery( function() {
 
 				//Clicking the navigation
 					jQuery( 'body' ).on( 'click', 'a[href^="#"]', function( e ) {
-							var $this         = jQuery( this ),
-							    $anchor       = $this.not( '.mobile-nav' ).attr( 'href' ),
-							    $scrollObject = jQuery( 'html, body' ),
-							    wmScrollSpeed = ( 1024 >= document.body.clientWidth ) ? ( 0 ) : ( 600 );
 
-							if (
-									'#' !== $this.attr( 'href' )
-									&& ! $this.data( 'tab' )
-									&& ! $this.data( 'filter' )
-									&& ! $this.hasClass( 'no-scroll-link' )
-								) {
-								e.preventDefault();
+							// Requirements check
+
+								// Do nothing when editing page with Beaver Builder
+
+									if ( jQuery( 'html' ).hasClass( 'fl-builder-edit' ) ) {
+										e.preventDefault();
+										return;
+									}
+
+
+							// Helper variables
+
+								var $this         = jQuery( this ),
+								    $anchor       = $this.not( '.mobile-nav' ).attr( 'href' ),
+								    $scrollObject = jQuery( 'html, body' ),
+								    wmScrollSpeed = ( 1024 >= document.body.clientWidth ) ? ( 0 ) : ( 600 );
+
+
+							// Processing
 
 								if (
-										$this.hasClass( 'inner' )
-										&& ! jQuery( e.target ).is( '.expander' )
-										&& jQuery( 'body' ).hasClass( 'responsive-design' )
+										'#' !== $this.attr( 'href' )
+										&& ! $this.data( 'tab' )
+										&& ! $this.data( 'filter' )
+										&& ! $this.hasClass( 'no-scroll-link' )
 									) {
-									wmToggleMobileNavigation();
+
+									e.preventDefault();
+
+									if (
+											$this.hasClass( 'inner' )
+											&& ! jQuery( e.target ).is( '.expander' )
+											&& jQuery( 'body' ).hasClass( 'responsive-design' )
+										) {
+										wmToggleMobileNavigation();
+									}
+
+									if ( $anchor && '#' !== $anchor ) {
+										$scrollObject.stop().animate( {
+												scrollTop : jQuery( $anchor ).offset().top - wmHeaderHeight + 2 + 'px'
+											}, wmScrollSpeed );
+									}
+
 								}
 
-								if ( $anchor && '#' !== $anchor ) {
-									$scrollObject.stop().animate( {
-											scrollTop : jQuery( $anchor ).offset().top - wmHeaderHeight + 2 + 'px'
-										}, wmScrollSpeed );
-								}
-							}
 						} );
 
 			if ( jQuery( 'body' ).hasClass( 'page' ) ) {
@@ -412,7 +431,6 @@ jQuery( function() {
 							if ( 1024 > document.body.clientWidth ) {
 								wmNotHover = true;
 							}
-							console.log( wmNotHover );
 
 							if ( wmNotHover ) {
 

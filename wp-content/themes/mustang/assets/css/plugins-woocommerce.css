@@ -2,7 +2,7 @@
  * WooCommerce overrides
  *
  * @since    1.0
- * @version  1.5
+ * @version  1.6
  */
 
 
@@ -1256,4 +1256,74 @@
 
 
 
+/**
+ * WC 2.6
+ */
 
+	.woocommerce .title {
+		margin-top: 1.62em;
+	}
+
+		.woocommerce .title h3 {
+			font-weight: 700;
+		}
+
+	.woocommerce legend {
+		margin-bottom: 1.62em;
+	}
+
+	.woocommerce-MyAccount-navigation ul > li {
+		padding: 0;
+		margin: 0;
+		list-style: none;
+	}
+
+		.woocommerce-MyAccount-navigation li + li {
+			margin-top: -1px;
+		}
+
+		.woocommerce-MyAccount-navigation a {
+			display: block;
+			padding: .62em 1.62em;
+			font-weight: 700;
+			border-width: 1px;
+			border-style: solid;
+		}
+
+	@media only screen and (max-width: 768px) {
+
+		.woocommerce-page table.shop_table td.product-remove {
+			width: auto;
+		}
+
+		.woocommerce table.shop_table_responsive .coupon input,
+		.woocommerce-page table.shop_table_responsive .coupon input {
+			float: none !important;
+			width: 100% !important;
+			margin: .38em 0 !important;
+		}
+
+		.woocommerce table.shop_table_responsive tr .product-thumbnail:before,
+		.woocommerce-page table.shop_table_responsive tr .product-thumbnail:before {
+			display: none;
+		}
+
+		.woocommerce table.shop_table_responsive .shipping td:before,
+		.woocommerce-page table.shop_table_responsive .shipping td:before {
+			float: none;
+			display: block;
+		}
+
+		.woocommerce-page .cart-collaterals .woocommerce-shipping-calculator {
+			float: none;
+			width: 100%;
+			margin-top: 1.62em;
+		}
+
+	}
+
+	#add_payment_method #payment div.payment_box:before,
+	.woocommerce-cart #payment div.payment_box:before,
+	.woocommerce-checkout #payment div.payment_box:before {
+		display: none;
+	}

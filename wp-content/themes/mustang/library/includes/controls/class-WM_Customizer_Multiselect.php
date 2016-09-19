@@ -27,7 +27,7 @@ class WM_Customizer_Multiselect extends WP_Customize_Control {
 				echo '<option value="' . $value . '" ' . selected( $this->value(), $value, false ) . '>' . $name . '</option>';
 			}
 			echo '</select>';
-			echo '<em>' . __( 'Press CTRL key for multiple selection.', 'wm_domain' ) . '</em>';
+			echo '<em>' . __( 'Press CTRL key for multiple selection.', 'mustang' ) . '</em>';
 			echo '</label>';
 		}
 	}

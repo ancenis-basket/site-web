@@ -7,7 +7,7 @@
  * @copyright   2014 WebMan - Oliver Juhas
  *
  * @since    1.0
- * @version  1.5
+ * @version  1.6
  */
 
 
@@ -18,7 +18,7 @@
  * Output custom skin styles
  *
  * @since    1.0
- * @version  1.5
+ * @version  1.6
  *
  * @param  boolean $visual_editor If true, will output only styles for WordPress Visual Editor.
  */
@@ -65,7 +65,7 @@ if ( ! function_exists( 'wm_custom_styles' ) ) {
 									'iconbox-text-shadow'    => '{p}.wm-iconbox-module.wm-content-module-item:hover .image i:before',
 								),
 							'woocommerce' => array(
-									'buttons'              => '.woocommerce a.button, .woocommerce button.button, .woocommerce input.button, .woocommerce-page a.button, .woocommerce-page button.button, .woocommerce-page input.button, .woocommerce-page #respond input#submit, .woocommerce-page a.button.alt, .woocommerce-page button.button.alt, .woocommerce-page input.button.alt, .woocommerce-page #respond input#submit.alt',
+									'buttons'              => '.woocommerce a.button, .woocommerce button.button, .woocommerce input.button, .woocommerce-page a.button, .woocommerce-page button.button, .woocommerce-page input.button, .woocommerce-page #respond input#submit, .woocommerce-page a.button.alt, .woocommerce-page button.button.alt, .woocommerce-page input.button.alt, .woocommerce-page #respond input#submit.alt, .woocommerce-MyAccount-navigation .is-active a',
 									'buttons-hover-active' => '.woocommerce a.button:hover, .woocommerce button.button:hover, .woocommerce input.button:hover, .woocommerce-page a.button:hover, .woocommerce-page button.button:hover, .woocommerce-page input.button:hover, .woocommerce-page #respond input#submit:hover, .woocommerce-page a.button.alt:hover, .woocommerce-page button.button.alt:hover, .woocommerce-page input.button.alt:hover, .woocommerce-page #respond input#submit.alt:hover, .woocommerce a.button:active, .woocommerce button.button:active, .woocommerce input.button:active, .woocommerce-page a.button:active, .woocommerce-page button.button:active, .woocommerce-page input.button:active, .woocommerce-page #respond input#submit:active, .woocommerce-page a.button.alt:active, .woocommerce-page button.button.alt:active, .woocommerce-page input.button.alt:active, .woocommerce-page #respond input#submit.alt:active',
 								),
 						),
@@ -113,6 +113,12 @@ if ( ! function_exists( 'wm_custom_styles' ) ) {
 							'selector' => '.boxed .website-container, .boxed .wrap, .wrap.boxed, .boxed.post-meta-layout .wrap, .wrap-inner',
 							'styles'   => array(
 								'width' => wm_option( $helper['prefix'] . 'website-width', '', 'px' ),
+							)
+						),
+						'layout-' . 15 => array(
+							'selector' => '.fl-builder .fl-row-fixed-width',
+							'styles'   => array(
+								'max-width' => absint( wm_option( $helper['prefix'] . 'website-width' ) - 2 * 60 ) . 'px',
 							)
 						),
 						'layout-' . 20 => array(
@@ -276,7 +282,7 @@ if ( ! function_exists( 'wm_custom_styles' ) ) {
 									),
 
 								'colors-shortcodes-' . 40 => array(
-									'condition' => class_exists( 'Woocommerce' ),
+									'condition' => class_exists( 'WooCommerce' ),
 									'selector'  => $helper['elements']['woocommerce']['buttons'],
 									'styles'    => array(
 										'text-shadow'      => ( $helper['treshold'] > wma_color_brightness( wm_option( $helper['prefix'] . $helper['button_color'] . '-color' ) ) ) ? ( '0 -1px 0 rgba(0,0,0, .6)' ) : ( '0 1px 0 rgba(255,255,255, .6)' ),
@@ -286,7 +292,7 @@ if ( ! function_exists( 'wm_custom_styles' ) ) {
 									)
 								),
 									'colors-shortcodes-' . 50 => array(
-										'condition' => class_exists( 'Woocommerce' ),
+										'condition' => class_exists( 'WooCommerce' ),
 										'selector'  => $helper['elements']['woocommerce']['buttons-hover-active'],
 										'styles'    => array(
 											'background'   => wma_alter_color_brightness( wm_option( $helper['prefix'] . $helper['button_color'] . '-color' ), $helper['multiplier'] * $helper['brighter_color'] ),
@@ -430,7 +436,7 @@ if ( ! function_exists( 'wm_custom_styles' ) ) {
 									),
 
 								'colors-red-' . 40 => array(
-									'condition' => ( class_exists( 'Woocommerce' ) || class_exists( 'bbPress' ) ),
+									'condition' => ( class_exists( 'WooCommerce' ) || class_exists( 'bbPress' ) ),
 									'selector'  => '.woocommerce-page .woocommerce-error, div.bbp-template-notice.error, div.bbp-template-notice.warning',
 									'styles'    => array(
 										'border-color' => wm_option( $helper['prefix'] . 'red-color', 'color' ),
@@ -963,7 +969,7 @@ if ( ! function_exists( 'wm_custom_styles' ) ) {
 										),
 
 								'colors-accent-' . 70 => array(
-									'condition' => ( class_exists( 'Woocommerce' ) && trim( wm_option( $helper['prefix'] . 'content-accent-color' ) ) ),
+									'condition' => ( class_exists( 'WooCommerce' ) && trim( wm_option( $helper['prefix'] . 'content-accent-color' ) ) ),
 									'selector'  => $helper['elements']['woocommerce']['buttons'],
 									'styles'    => array(
 										'text-shadow'  => ( $helper['treshold'] > wma_color_brightness( wm_option( $helper['prefix'] . 'content-accent-color' ) ) ) ? ( '0 -1px 0 rgba(0,0,0, .6)' ) : ( '0 1px 0 rgba(255,255,255, .6)' ),
@@ -973,7 +979,7 @@ if ( ! function_exists( 'wm_custom_styles' ) ) {
 									)
 								),
 									'colors-accent-' . 80 => array(
-										'condition' => ( class_exists( 'Woocommerce' ) && trim( wm_option( $helper['prefix'] . 'content-accent-color' ) ) ),
+										'condition' => ( class_exists( 'WooCommerce' ) && trim( wm_option( $helper['prefix'] . 'content-accent-color' ) ) ),
 										'selector'  => $helper['elements']['woocommerce']['buttons-hover-active'],
 										'styles'    => array(
 											'background'   => wma_alter_color_brightness( wm_option( $helper['prefix'] . 'content-accent-color' ), $helper['multiplier'] * $helper['brighter_color'] ),

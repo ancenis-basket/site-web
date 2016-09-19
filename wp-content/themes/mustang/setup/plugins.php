@@ -7,12 +7,11 @@
  * @copyright   2014 WebMan - Oliver Juhas
  *
  * @since    1.0
- * @version  1.5.4
+ * @version  1.6
  *
  * CONTENT:
  * - 10) Actions and filters
- * - 20) Funcions
- * - 30) Admin notification
+ * - 20) Functions
  */
 
 
@@ -35,7 +34,7 @@
 
 
 /**
- * 20) Funcions
+ * 20) Functions
  */
 
 	/**
@@ -52,64 +51,38 @@
 			 */
 			$plugins = apply_filters( 'wmhook_wm_register_required_plugins', array(
 
-					/**
-					 * Packed with the theme
-					 */
+					// Recommended
 
-						//Recommended
-							'ms' => array(
-								'name'         => 'Master Slider',
-								'slug'         => 'masterslider',
-								'source'       => WM_SETUP . 'plugins/masterslider.zip',
-								'required'     => false,
-								'version'      => '2.20.4',
-							),
-							'ls' => array(
-								'name'         => 'LayerSlider',
-								'slug'         => 'LayerSlider',
-								'source'       => WM_SETUP . 'plugins/layersliderwp.zip',
-								'required'     => false,
-								'version'      => '5.6.2',
-							),
-							'vc' => array(
-								'name'         => 'Visual Composer',
-								'slug'         => 'js_composer',
-								'source'       => WM_SETUP . 'plugins/js_composer.zip',
-								'required'     => false,
-								'version'      => '4.7.4',
-							),
+						'webman-amplifier' => array(
+							'name'     => esc_html__( 'WebMan Amplifier (adding theme features)', 'mustang' ),
+							'slug'     => 'webman-amplifier',
+							'required' => false,
+						),
 
-					/**
-					 * WordPress Repository plugins
-					 */
+						'beaver-builder' => array(
+							'name'        => esc_html__( 'Beaver Builder (easy page builder)', 'mustang' ),
+							'slug'        => 'beaver-builder-lite-version',
+							'required'    => false,
+							'is_callable' => 'FLBuilder::init',
+						),
 
-						//Required
+						'woocommerce' => array(
+							'name'     => esc_html__( 'WooCommerce (eCommerce functionality)', 'mustang' ),
+							'slug'     => 'woocommerce',
+							'required' => false,
+						),
 
-							'wma' => array(
-								'name'             => 'WebMan Amplifier',
-								'slug'             => 'webman-amplifier',
-								'required'         => true,
-								'version'          => '1.2.5',
-								'force_activation' => true,
-							),
+						'bbpress' => array(
+							'name'     => esc_html__( 'bbPress (forum software)', 'mustang' ),
+							'slug'     => 'bbpress',
+							'required' => false,
+						),
 
-						//Recommended
-
-							'ws' => array(
-								'name'     => 'WooSidebars',
-								'slug'     => 'woosidebars',
-								'required' => false,
-							),
-							'bnxt' => array(
-								'name'     => 'Breadcrumb NavXT',
-								'slug'     => 'breadcrumb-navxt',
-								'required' => false,
-							),
-							'cei' => array(
-								'name'     => 'Customizer Export/Import',
-								'slug'     => 'customizer-export-import',
-								'required' => false,
-							),
+						'one-click-demo-import' => array(
+							'name'     => esc_html__( 'One Click Demo Import (for installing theme demo content)', 'mustang' ),
+							'slug'     => 'one-click-demo-import',
+							'required' => false,
+						),
 
 				) );
 
@@ -129,44 +102,3 @@
 
 		}
 	} // /wm_register_required_plugins
-
-
-
-
-
-/**
- * 30) Admin notification
- */
-
-	/**
-	 * Admin notification about premium plugins
-	 */
-	if ( ! function_exists( 'wm_premium_plugins_admin_notification' ) ) {
-		function wm_premium_plugins_admin_notification() {
-
-			// Admin notice
-
-				set_transient(
-						'wm-admin-notice',
-						array(
-							'<big>
-							<strong>This is an important security update! Please <a href="http://www.webmandesign.eu/manual/mustang/#plugins-license" target="_blank">update your premium plugins included with the theme manually via FTP</a>.</strong><br><br>
-							<strong style="text-decoration: underline;">Also, please note that this is the last theme udpate containing the premium plugins for free!</strong>
-							</big><br>
-							Due to <strong>recent XSS security vulnerabilities in Visual Composer plugin</strong> I decided not to include the premium plugins with the theme any more, <strong>starting with the next theme version 1.5.5</strong>.<br>
-							Instead, please <a href="http://www.webmandesign.eu/manual/mustang/#plugins-license" target="_blank">purchase the liceses for the plugins you use separatelly to keep them up to date</a> and your website secure for all the time.<br>
-							I appologize if this has caused inconvenience to you, but website security is the most priority to me and should be for everyone.<br><br>
-							Thank you for understanding!<br><br>
-							Oliver from WebMan Design<br><br>
-							<small><em>This message will disappear automatically after 3 displays.</em></small>', // text
-							'error', // class
-							'switch_themes', // capability
-							3 // number of displays
-						),
-						60 * 60 * 24
-					);
-
-		}
-	} // /wm_premium_plugins_admin_notification
-
-	add_action( 'wmhook_theme_upgrade', 'wm_premium_plugins_admin_notification' );

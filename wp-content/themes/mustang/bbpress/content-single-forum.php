@@ -49,7 +49,7 @@
 				$new_post_form = wma_minify_html( ob_get_clean() );
 
 				if ( bbp_current_user_can_access_create_topic_form() ) {
-					$new_post_form = do_shortcode( '[wm_accordion behaviour="toggle" class="bbp-new-post-toggle"][wm_item title="' . __( 'Create a new topic', 'wm_domain' ) . '"]' . $new_post_form . '[/wm_item][/wm_accordion]' );
+					$new_post_form = do_shortcode( '[wm_accordion behaviour="toggle" class="bbp-new-post-toggle"][wm_item title="' . __( 'Create a new topic', 'mustang' ) . '"]' . $new_post_form . '[/wm_item][/wm_accordion]' );
 				}
 
 				echo apply_filters( 'wmhook_bbpress_new_topic_form', $new_post_form );

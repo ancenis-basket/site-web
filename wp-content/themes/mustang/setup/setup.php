@@ -7,7 +7,7 @@
  * @copyright   2014 WebMan - Oliver Juhas
  *
  * @since    1.0
- * @version  1.5.2
+ * @version  1.6
  *
  * CONTENT:
  * - 1) Required files
@@ -196,36 +196,36 @@
 				//Background CSS settings
 					$output['bg-css'] = array(
 							'position' => array(
-									'0 0'       => '<span class="position-option">' . __( 'Left, top', 'wm_domain' ) . '</span>',
-									'50% 0'     => '<span class="position-option">' . __( 'Center horizontally, top', 'wm_domain' ) . '</span>',
-									'100% 0'    => '<span class="position-option">' . __( 'Right, top', 'wm_domain' ) . '</span>',
-									'0 50%'     => '<span class="position-option">' . __( 'Left, center vertically', 'wm_domain' ) . '</span>',
-									'50% 50%'   => '<span class="position-option">' . __( 'Center', 'wm_domain' ) . '</span>',
-									'100% 50%'  => '<span class="position-option">' . __( 'Right, center vertically', 'wm_domain' ) . '</span>',
-									'0 100%'    => '<span class="position-option">' . __( 'Left, bottom', 'wm_domain' ) . '</span>',
-									'50% 100%'  => '<span class="position-option">' . __( 'Center horizontally, bottom', 'wm_domain' ) . '</span>',
-									'100% 100%' => '<span class="position-option">' . __( 'Right, bottom', 'wm_domain' ) . '</span>',
+									'0 0'       => '<span class="position-option">' . __( 'Left, top', 'mustang' ) . '</span>',
+									'50% 0'     => '<span class="position-option">' . __( 'Center horizontally, top', 'mustang' ) . '</span>',
+									'100% 0'    => '<span class="position-option">' . __( 'Right, top', 'mustang' ) . '</span>',
+									'0 50%'     => '<span class="position-option">' . __( 'Left, center vertically', 'mustang' ) . '</span>',
+									'50% 50%'   => '<span class="position-option">' . __( 'Center', 'mustang' ) . '</span>',
+									'100% 50%'  => '<span class="position-option">' . __( 'Right, center vertically', 'mustang' ) . '</span>',
+									'0 100%'    => '<span class="position-option">' . __( 'Left, bottom', 'mustang' ) . '</span>',
+									'50% 100%'  => '<span class="position-option">' . __( 'Center horizontally, bottom', 'mustang' ) . '</span>',
+									'100% 100%' => '<span class="position-option">' . __( 'Right, bottom', 'mustang' ) . '</span>',
 								),
 							'repeat'   => array(
-									'no-repeat' => __( 'Do not repeat', 'wm_domain' ),
-									'repeat-x'  => __( 'Repeat horizontally', 'wm_domain' ),
-									'repeat-y'  => __( 'Repeat vertically', 'wm_domain' ),
-									'repeat'    => __( 'Repeat (tile)', 'wm_domain' ),
+									'no-repeat' => __( 'Do not repeat', 'mustang' ),
+									'repeat-x'  => __( 'Repeat horizontally', 'mustang' ),
+									'repeat-y'  => __( 'Repeat vertically', 'mustang' ),
+									'repeat'    => __( 'Repeat (tile)', 'mustang' ),
 								),
 							'scroll'   => array(
-									'scroll' => __( 'Move on scrolling', 'wm_domain' ),
-									'fixed'  => __( 'Fixed position', 'wm_domain' ),
+									'scroll' => __( 'Move on scrolling', 'mustang' ),
+									'fixed'  => __( 'Fixed position', 'mustang' ),
 								),
 							'size'     => array(
-									''        => __( 'Default', 'wm_domain' ),
-									'cover'   => __( 'Cover', 'wm_domain' ),
-									'contain' => __( 'Contain', 'wm_domain' ),
+									''        => __( 'Default', 'mustang' ),
+									'cover'   => __( 'Cover', 'mustang' ),
+									'contain' => __( 'Contain', 'mustang' ),
 								),
 						);
 
 				//Google Fonts
 					$output['google-fonts'] = array(
-							' '                         => __( ' - do not use Google Font', 'wm_domain' ),
+							' '                         => __( ' - do not use Google Font', 'mustang' ),
 							'Abril Fatface'             => 'Abril Fatface',
 							'Arvo'                      => 'Arvo',
 							'Comfortaa:400,300'         => 'Comfortaa',
@@ -277,90 +277,85 @@
 
 				//Image ratio
 					$output['image-ratio'] = array(
-							'ratio-11'    => __( 'Square', 'wm_domain' ),
+							'ratio-11'    => __( 'Square', 'mustang' ),
 							//Landscapes
-								'ratio-43'  => __( 'Landscape 4 to 3', 'wm_domain' ),
-								'ratio-32'  => __( 'Landscape 3 to 2', 'wm_domain' ),
-								'ratio-169' => __( 'Landscape 16 to 9', 'wm_domain' ),
-								'ratio-21'  => __( 'Landscape 2 to 1', 'wm_domain' ),
-								'ratio-31'  => __( 'Landscape 3 to 1', 'wm_domain' ),
+								'ratio-43'  => __( 'Landscape 4 to 3', 'mustang' ),
+								'ratio-32'  => __( 'Landscape 3 to 2', 'mustang' ),
+								'ratio-169' => __( 'Landscape 16 to 9', 'mustang' ),
+								'ratio-21'  => __( 'Landscape 2 to 1', 'mustang' ),
+								'ratio-31'  => __( 'Landscape 3 to 1', 'mustang' ),
 							//Portraits
-								'ratio-34'  => __( 'Portrait 3 to 4', 'wm_domain' ),
-								'ratio-23'  => __( 'Portrait 2 to 3', 'wm_domain' ),
+								'ratio-34'  => __( 'Portrait 3 to 4', 'mustang' ),
+								'ratio-23'  => __( 'Portrait 2 to 3', 'mustang' ),
 						);
-
-				//Image size
-					if ( function_exists( 'wma_get_image_sizes' ) ) {
-						$output['image-size'] = wma_get_image_sizes();
-					}
 
 				//Layouts
 					$output['layouts'] = array(
 							'sidebars' => array(
-									''         => __( 'Default', 'wm_domain' ),
-									'right'    => __( 'Right sidebar', 'wm_domain' ),
-									'left'     => __( 'Left sidebar', 'wm_domain' ),
-									'none'     => __( 'No sidebar', 'wm_domain' ),
-									'sections' => __( 'Fullwidth sections', 'wm_domain' ),
+									''         => __( 'Default', 'mustang' ),
+									'right'    => __( 'Right sidebar', 'mustang' ),
+									'left'     => __( 'Left sidebar', 'mustang' ),
+									'none'     => __( 'No sidebar', 'mustang' ),
+									'sections' => __( 'Fullwidth sections', 'mustang' ),
 								),
 							'website'  => array(
-									''          => __( 'Default', 'wm_domain' ),
-									'fullwidth' => __( 'Fullwidth', 'wm_domain' ),
-									'boxed'     => __( 'Boxed', 'wm_domain' ),
+									''          => __( 'Default', 'mustang' ),
+									'fullwidth' => __( 'Fullwidth', 'mustang' ),
+									'boxed'     => __( 'Boxed', 'mustang' ),
 								),
 						);
 
 				//Widget areas
 					$output['widget-areas'] = array(
 							'general'              => array(
-								'name'          => __( 'General Sidebar', 'wm_domain' ),
+								'name'          => __( 'General Sidebar', 'mustang' ),
 								'id'            => 'general',
-								'description'   => __( 'The default general sidebar.', 'wm_domain' ),
+								'description'   => __( 'The default general sidebar.', 'mustang' ),
 								'before_widget' => '<div class="widget %1$s %2$s">',
 								'after_widget'  => '</div>',
 								'before_title'  => '<h3 class="widget-heading">',
 								'after_title'   => '</h3>'
 							),
 							'topbar'          => array(
-								'name'          => __( 'Topbar Widgets', 'wm_domain' ),
+								'name'          => __( 'Topbar Widgets', 'mustang' ),
 								'id'            => 'topbar',
-								'description'   => __( 'Widget area displayed as topbar of the website.', 'wm_domain' ),
+								'description'   => __( 'Widget area displayed as topbar of the website.', 'mustang' ),
 								'before_widget' => '<div class="widget %1$s %2$s">',
 								'after_widget'  => '</div>',
 								'before_title'  => '<p class="widget-heading">',
 								'after_title'   => '</p>'
 							),
 							'topbar-extra'    => array(
-								'name'          => __( 'Topbar Extra Widgets', 'wm_domain' ),
+								'name'          => __( 'Topbar Extra Widgets', 'mustang' ),
 								'id'            => 'topbar-extra',
-								'description'   => __( 'Widget area displayed as extra topbar. It rolls out from top of the website when a button is clicked.', 'wm_domain' ),
+								'description'   => __( 'Widget area displayed as extra topbar. It rolls out from top of the website when a button is clicked.', 'mustang' ),
 								'before_widget' => '<div class="widget %1$s %2$s">',
 								'after_widget'  => '</div>',
 								'before_title'  => '<h4 class="widget-heading">',
 								'after_title'   => '</h4>'
 							),
 							'main-heading-widgets' => array(
-								'name'          => __( 'Main Heading Widgets', 'wm_domain' ),
+								'name'          => __( 'Main Heading Widgets', 'mustang' ),
 								'id'            => 'main-heading-widgets',
-								'description'   => __( 'Widget area displayed in the Main Heading section.', 'wm_domain' ),
+								'description'   => __( 'Widget area displayed in the Main Heading section.', 'mustang' ),
 								'before_widget' => '<div class="widget %1$s %2$s">',
 								'after_widget'  => '</div>',
 								'before_title'  => '<p class="widget-heading">',
 								'after_title'   => '</p>'
 							),
 							'footer-widgets'       => array(
-								'name'          => __( 'Footer Widgets', 'wm_domain' ),
+								'name'          => __( 'Footer Widgets', 'mustang' ),
 								'id'            => 'footer-widgets',
-								'description'   => __( 'Masonry footer layout. Set up the columns number in theme admin panel.', 'wm_domain' ),
+								'description'   => __( 'Masonry footer layout. Set up the columns number in theme admin panel.', 'mustang' ),
 								'before_widget' => '<div class="widget %1$s %2$s">',
 								'after_widget'  => '</div>',
 								'before_title'  => '<h3 class="widget-heading">',
 								'after_title'   => '</h3>'
 							),
 							'footer-credits'       => array(
-								'name'          => __( 'Credits Widgets', 'wm_domain' ),
+								'name'          => __( 'Credits Widgets', 'mustang' ),
 								'id'            => 'credits',
-								'description'   => __( 'Credits or copyright area in the footer. Takes up to 3 widgets. When you insert 1 widget, it will be displayed fullwidth. When 2 widgets are in the area, first is displayed on left, the second on right. In case of 3 widgets in the area, first is displayed fullwidth, second and third below, on the left and on the right.', 'wm_domain' ),
+								'description'   => __( 'Credits or copyright area in the footer. Takes up to 3 widgets. When you insert 1 widget, it will be displayed fullwidth. When 2 widgets are in the area, first is displayed on left, the second on right. In case of 3 widgets in the area, first is displayed fullwidth, second and third below, on the left and on the right.', 'mustang' ),
 								'before_widget' => '<div class="widget %1$s %2$s">',
 								'after_widget'  => '</div>',
 								'before_title'  => '<h4 class="widget-heading">',
@@ -370,9 +365,9 @@
 
 					if ( class_exists( 'WooCommerce' ) ) {
 						$output['widget-areas']['floating-cart'] = array(
-								'name'          => __( 'Floating cart', 'wm_domain' ),
+								'name'          => __( 'Floating cart', 'mustang' ),
 								'id'            => 'floating-cart',
-								'description'   => __( 'Widget area displayed as floating shoping cart.', 'wm_domain' ),
+								'description'   => __( 'Widget area displayed as floating shoping cart.', 'mustang' ),
 								'before_widget' => '<div class="widget %1$s %2$s">',
 								'after_widget'  => '</div>',
 								'before_title'  => '<h4 class="widget-heading">',
@@ -445,7 +440,7 @@
 	 * Theme installation
 	 *
 	 * @since    1.0
-	 * @version  1.5.1
+	 * @version  1.6
 	 */
 	if ( ! function_exists( 'wm_install' ) ) {
 		function wm_install() {
@@ -503,13 +498,24 @@
 			 */
 
 				//wp-content/languages/theme-name/it_IT.mo
-					load_theme_textdomain( 'wm_domain', trailingslashit( WP_LANG_DIR ) . 'themes/' . WM_THEME_SHORTNAME );
+					load_theme_textdomain( 'mustang', trailingslashit( WP_LANG_DIR ) . 'themes/' . WM_THEME_SHORTNAME );
 
 				//wp-content/themes/child-theme-name/languages/it_IT.mo
-					load_theme_textdomain( 'wm_domain', get_stylesheet_directory() . '/languages' );
+					load_theme_textdomain( 'mustang', get_stylesheet_directory() . '/languages' );
 
 				//wp-content/themes/theme-name/languages/it_IT.mo
-					load_theme_textdomain( 'wm_domain', get_template_directory() . '/languages' );
+					load_theme_textdomain( 'mustang', get_template_directory() . '/languages' );
+
+			// Declare support for child theme stylesheet automatic enqueuing
+
+				add_theme_support( 'child-theme-stylesheet' );
+
+			// Title tag
+
+				/**
+				 * @link  https://codex.wordpress.org/Function_Reference/add_theme_support#Title_Tag
+				 */
+				add_theme_support( 'title-tag' );
 
 			//Visual editor styles
 				add_editor_style( $visual_editor_css );
@@ -539,7 +545,7 @@
 			//Custom menus
 				add_theme_support( 'menus' );
 				register_nav_menus( apply_filters( 'wmhook_wm_install_menus', array(
-						'main' => __( 'Main navigation', 'wm_domain' ),
+						'main' => __( 'Main navigation', 'mustang' ),
 					) ) );
 
 			//Custom WP Adminbar styles
@@ -566,6 +572,7 @@
 
 				//Add image sizes (x, y, crop)
 					add_image_size( 'full-hd', 1920, 9999, false );
+					add_image_size( 'admin-thumbnail', 100, 100, true );
 					add_image_size( 'content-width', $content_width * $coeficient, 9999, false );
 					add_image_size( 'mobile', $mobile_width * $coeficient, 9999, false );
 					foreach ( $create_images as $ratio ) {
@@ -959,7 +966,7 @@
 
 				//WooCommerce support
 					$wc_shop = false;
-					if ( class_exists( 'Woocommerce' ) && is_shop() ) {
+					if ( class_exists( 'WooCommerce' ) && is_shop() ) {
 						$post_id = wc_get_page_id( 'shop' );
 						$wc_shop = true;
 					}
@@ -1047,7 +1054,7 @@
 					}
 
 				//WooCommerce support
-					if ( class_exists( 'Woocommerce' ) ) {
+					if ( class_exists( 'WooCommerce' ) ) {
 						if ( is_woocommerce() ) {
 							$body_classes[110] = 'shop-columns-' . wm_wc_products_columns();
 						}
@@ -1321,7 +1328,7 @@
 							$output .= apply_filters( 'wmhook_section_inner_wrappers', '' );
 							$output .= $widgets;
 							$output .= apply_filters( 'wmhook_section_inner_wrappers_close', '' );
-							$output .= '<a href="#topbar-extra" class="topbar-extra-switch no-scroll-link">' . apply_filters( 'wmhook_wm_section_topbar_extra_switch', '<span class="screen-reader-text">' . __( 'Open extra topbar', 'wm_domain' ) . '</span>' ) . '</a>';
+							$output .= '<a href="#topbar-extra" class="topbar-extra-switch no-scroll-link">' . apply_filters( 'wmhook_wm_section_topbar_extra_switch', '<span class="screen-reader-text">' . __( 'Open extra topbar', 'mustang' ) . '</span>' ) . '</a>';
 						$output .= "\r\n" . '</section>' . "\r\n";
 					}
 
@@ -1374,7 +1381,7 @@
 		if ( ! function_exists( 'wm_header_search_form' ) ) {
 			function wm_header_search_form() {
 				//Preparing output
-					$output = '<div id="search-container" class="menu-search-form">' . get_search_form( false ) . '<a href="#search-container" class="form-close search-form-close-switch no-scroll-link"><span class="screen-reader-text">' . __( 'Close search form', 'wm_domain' ) . '</span></a></div>';
+					$output = '<div id="search-container" class="menu-search-form">' . get_search_form( false ) . '<a href="#search-container" class="form-close search-form-close-switch no-scroll-link"><span class="screen-reader-text">' . __( 'Close search form', 'mustang' ) . '</span></a></div>';
 
 				//Output
 					echo apply_filters( 'wmhook_wm_header_search_form_output', $output );
@@ -1411,7 +1418,7 @@
 				$output .= wm_accessibility_skip_link( 'to_content' );
 				$output .= wp_nav_menu( $args );
 				$output .= '</nav>';
-				$output .= '<a href="#nav-main" id="mobile-nav" class="mobile-nav"><span class="screen-reader-text">' . __( 'Menu', 'wm_domain' ) . '</span></a>';
+				$output .= '<a href="#nav-main" id="mobile-nav" class="mobile-nav"><span class="screen-reader-text">' . __( 'Menu', 'mustang' ) . '</span></a>';
 
 			//Output
 				echo apply_filters( 'wmhook_wm_section_navigation_output', $output );
@@ -1449,12 +1456,12 @@
 
 				//Preparing output
 						//WooCommerce support
-							if ( class_exists( 'Woocommerce' ) ) {
-								$output[10] = apply_filters( 'wmhook_wm_navigation_special_cart', '<li id="menu-cart" class="menu-cart"><a href="' . get_permalink( wc_get_page_id( 'cart' ) ) . '"><span class="screen-reader-text">' . __( 'Show cart', 'wm_domain' ) . '</span></a></li>', $custom_nav );
+							if ( class_exists( 'WooCommerce' ) ) {
+								$output[10] = apply_filters( 'wmhook_wm_navigation_special_cart', '<li id="menu-cart" class="menu-cart"><a href="' . get_permalink( wc_get_page_id( 'cart' ) ) . '"><span class="screen-reader-text">' . __( 'Show cart', 'mustang' ) . '</span></a></li>', $custom_nav );
 							}
 
 						//Search button
-							$output[20] = apply_filters( 'wmhook_wm_navigation_special_search', '<li id="menu-search" class="menu-search"><a href="#search-container" class="menu-search-switch no-scroll-link"><span class="screen-reader-text">' . __( 'Search', 'wm_domain' ) . '</span></a></li>', $custom_nav );
+							$output[20] = apply_filters( 'wmhook_wm_navigation_special_search', '<li id="menu-search" class="menu-search"><a href="#search-container" class="menu-search-switch no-scroll-link"><span class="screen-reader-text">' . __( 'Search', 'mustang' ) . '</span></a></li>', $custom_nav );
 
 						//Allow filtering the output array
 							$output = implode( '', (array) apply_filters( 'wmhook_wm_navigation_special_output_array', $output, $custom_nav ) );
@@ -1653,7 +1660,7 @@
 
 				//WooCommerce support
 					$wc_shop = false;
-					if ( class_exists( 'Woocommerce' ) && is_shop() ) {
+					if ( class_exists( 'WooCommerce' ) && is_shop() ) {
 						$page_id = wc_get_page_id( 'shop' );
 						$wc_shop = true;
 					}
@@ -1808,7 +1815,7 @@
 
 				//WooCommerce support
 					$wc_shop = false;
-					if ( class_exists( 'Woocommerce' ) ) {
+					if ( class_exists( 'WooCommerce' ) ) {
 						if ( is_woocommerce() || is_cart() || is_checkout() ) {
 							$wc_shop = true;
 						}
@@ -1853,24 +1860,24 @@
 			//Preparing output
 				//Archives
 					if ( is_day() ) {
-						$args['title'] = sprintf( __( 'Daily Archives: <strong>%s</strong>', 'wm_domain' ), get_the_date() );
+						$args['title'] = sprintf( __( 'Daily Archives: <strong>%s</strong>', 'mustang' ), get_the_date() );
 					} elseif ( is_month() ) {
-						$args['title'] = sprintf( __( 'Monthly Archives: <strong>%s</strong>', 'wm_domain' ), get_the_date( _x( 'F Y', 'monthly archives date format', 'wm_domain' ) ) );
+						$args['title'] = sprintf( __( 'Monthly Archives: <strong>%s</strong>', 'mustang' ), get_the_date( _x( 'F Y', 'monthly archives date format', 'mustang' ) ) );
 					} elseif ( is_year() ) {
-						$args['title'] = sprintf( __( 'Yearly Archives: <strong>%s</strong>', 'wm_domain' ), get_the_date( _x( 'Y', 'yearly archives date format', 'wm_domain' ) ) );
+						$args['title'] = sprintf( __( 'Yearly Archives: <strong>%s</strong>', 'mustang' ), get_the_date( _x( 'Y', 'yearly archives date format', 'mustang' ) ) );
 					} elseif ( is_category() ) {
-						$args['title'] = sprintf( __( 'Category Archives: <strong>%s</strong>', 'wm_domain' ), single_cat_title( '', false ) );
+						$args['title'] = sprintf( __( 'Category Archives: <strong>%s</strong>', 'mustang' ), single_cat_title( '', false ) );
 					} elseif ( is_tag() ) {
-						$args['title'] = sprintf( __( 'Tag Archives: <strong>%s</strong>', 'wm_domain' ), single_tag_title( '', false ) );
+						$args['title'] = sprintf( __( 'Tag Archives: <strong>%s</strong>', 'mustang' ), single_tag_title( '', false ) );
 					} elseif ( is_search() ) {
-						$args['title'] = sprintf( __( 'Search Results for: <strong>%s</strong>', 'wm_domain' ), get_search_query() );
+						$args['title'] = sprintf( __( 'Search Results for: <strong>%s</strong>', 'mustang' ), get_search_query() );
 					} elseif ( is_author() ) {
 						$author = get_userdata( get_query_var( 'author' ) );
-						$args['title'] = sprintf( __( '<strong>%s</strong> archives', 'wm_domain' ), $author->display_name );
+						$args['title'] = sprintf( __( '<strong>%s</strong> archives', 'mustang' ), $author->display_name );
 					} elseif ( is_tax() ) {
 						$args['title'] = single_term_title( '', false );
 					} elseif ( is_archive() ) {
-						$args['title'] = __( 'Archives', 'wm_domain' );
+						$args['title'] = __( 'Archives', 'mustang' );
 					}
 
 					if ( is_category() || is_tag() || is_tax() ) {
@@ -1901,19 +1908,19 @@
 
 				//404 page
 					if ( is_404() ) {
-						$args['title']  = __( 'Error 404', 'wm_domain' );
+						$args['title']  = __( 'Error 404', 'mustang' );
 					}
 
 				//bbPress support
 					if ( class_exists( 'bbPress' ) ) {
 						if ( bbp_is_forum_archive() ) {
-							$args['title'] = sprintf( __( '%s forums', 'wm_domain' ), get_bloginfo( 'name' ) );
+							$args['title'] = sprintf( __( '%s forums', 'mustang' ), get_bloginfo( 'name' ) );
 						}
 						if ( bbp_is_single_forum() && ! bbp_is_forum_category() ) {
-							$args['title'] = sprintf( __( 'Forum: %s', 'wm_domain' ), $args['title'] );
+							$args['title'] = sprintf( __( 'Forum: %s', 'mustang' ), $args['title'] );
 						}
 						if ( bbp_is_single_topic() ) {
-							$args['title'] = sprintf( __( 'Topic: %s', 'wm_domain' ), $args['title'] );
+							$args['title'] = sprintf( __( 'Topic: %s', 'mustang' ), $args['title'] );
 						}
 					}
 
@@ -1921,7 +1928,7 @@
 					if ( $wc_shop && ! is_tax() ) {
 						$args['title'] = ( 2 > $paginated ) ? ( get_the_title( $page_id ) ) : ( '<a href="' . get_permalink( $page_id ) . '">' . get_the_title( $page_id ) . '</a>' );
 						if ( is_search() ) {
-							$args['title'] .= sprintf( __( ' / Results for: <strong>%s</strong>', 'wm_domain' ), get_search_query() );
+							$args['title'] .= sprintf( __( ' / Results for: <strong>%s</strong>', 'mustang' ), get_search_query() );
 						}
 					}
 
@@ -2118,7 +2125,7 @@
 				$post_id = null;
 
 				//WooCommerce support
-					if ( class_exists( 'Woocommerce' ) && is_shop() ) {
+					if ( class_exists( 'WooCommerce' ) && is_shop() ) {
 						$post_id = wc_get_page_id( 'shop' );
 					}
 
@@ -2174,7 +2181,7 @@
 					}
 
 				//Top of page button
-					$output[30] = '<a href="#top" class="top-of-page" title="' . __( 'Back to top of the page', 'wm_domain' ) . '"></a>';
+					$output[30] = '<a href="#top" class="top-of-page" title="' . __( 'Back to top of the page', 'mustang' ) . '"></a>';
 
 			//Output
 				$output = apply_filters( 'wmhook_wm_section_footer_output', $output );
@@ -2197,7 +2204,7 @@
 					$post_id = null;
 
 					//WooCommerce support
-						if ( class_exists( 'Woocommerce' ) && is_shop() ) {
+						if ( class_exists( 'WooCommerce' ) && is_shop() ) {
 							$post_id = wc_get_page_id( 'shop' );
 						}
 
@@ -2229,7 +2236,7 @@
 					$post_id = null;
 
 					//WooCommerce support
-						if ( class_exists( 'Woocommerce' ) && is_shop() ) {
+						if ( class_exists( 'WooCommerce' ) && is_shop() ) {
 							$post_id = wc_get_page_id( 'shop' );
 						}
 
@@ -2363,7 +2370,7 @@
 				$classes .= ' vc-remove-licence-notice';
 				$classes .= ' bbp-hide-content-container';
 
-				if ( class_exists( 'Woocommerce' ) ) {
+				if ( class_exists( 'WooCommerce' ) ) {
 					$classes .= ' wc-remove-frontend_css_secondary';
 					$classes .= ' wc-remove-frontend_css_content_bg';
 				}
@@ -2438,8 +2445,8 @@
 	if ( ! function_exists( 'wm_media_uploader_image_sizes' ) ) {
 		function wm_media_uploader_image_sizes( $sizes ) {
 			//Modify sizes array
-				$sizes['content-width'] = __( 'Content width', 'wm_domain' );
-				$sizes['mobile']        = __( 'Mobile width', 'wm_domain' );
+				$sizes['content-width'] = __( 'Content width', 'mustang' );
+				$sizes['mobile']        = __( 'Mobile width', 'mustang' );
 
 			//Output
 				return apply_filters( 'wmhook_wm_media_uploader_image_sizes_output', $sizes );
@@ -2451,15 +2458,13 @@
 	/**
 	 * Schema.org function wrapper
 	 *
+	 * @version  1.6
+	 *
 	 * @param  string $element
 	 * @param  boolean $output_meta_tag
 	 */
 	if ( ! function_exists( 'wm_schema_org' ) ) {
 		function wm_schema_org( $element = '', $output_meta_tag = false ) {
-			if ( function_exists( 'wma_schema_org' ) ) {
-				return wma_schema_org( $element, $output_meta_tag );
-			}
-
 			return;
 		}
 	} // /wm_schema_org
@@ -2488,10 +2493,10 @@
 
 			//Preparing output
 				if ( $posts[0] ) {
-					$output .= '<a href="' . get_permalink( $posts[0]->ID ) . '" title="' . sprintf( __( 'Previous item: %s', 'wm_domain' ), esc_attr( strip_tags( get_the_title( $posts[0]->ID ) ) ) ) . '" class="prev"><span class="screen-reader-text">' . trim( get_the_title( $posts[0]->ID ) ) . '</span></a>';
+					$output .= '<a href="' . get_permalink( $posts[0]->ID ) . '" title="' . sprintf( __( 'Previous item: %s', 'mustang' ), esc_attr( strip_tags( get_the_title( $posts[0]->ID ) ) ) ) . '" class="prev"><span class="screen-reader-text">' . trim( get_the_title( $posts[0]->ID ) ) . '</span></a>';
 				}
 				if ( $posts[1] ) {
-					$output .= '<a href="' . get_permalink( $posts[1]->ID ) . '" title="' . sprintf( __( 'Next item: %s', 'wm_domain' ), esc_attr( strip_tags( get_the_title( $posts[1]->ID ) ) ) ) . '" class="next"><span class="screen-reader-text">' . trim( get_the_title( $posts[1]->ID ) ) . '</span></a>';
+					$output .= '<a href="' . get_permalink( $posts[1]->ID ) . '" title="' . sprintf( __( 'Next item: %s', 'mustang' ), esc_attr( strip_tags( get_the_title( $posts[1]->ID ) ) ) ) . '" class="next"><span class="screen-reader-text">' . trim( get_the_title( $posts[1]->ID ) ) . '</span></a>';
 				}
 
 				if ( $output ) {
@@ -2560,7 +2565,7 @@
 				if (
 						(
 							( is_home() || is_singular() )
-							|| ( class_exists( 'Woocommerce' ) && is_shop() ) //WooCommerce support
+							|| ( class_exists( 'WooCommerce' ) && is_shop() ) //WooCommerce support
 						)
 						&& function_exists( 'wma_meta_option' )
 						&& wma_meta_option( 'sidebar', $atts['page_id'] )
@@ -2938,15 +2943,22 @@
 			/**
 			 * JetPack infinite scroll button text
 			 *
+			 * @version  1.6
+			 *
 			 * @param  array $js_settings
 			 */
 			if ( ! function_exists( 'wm_jp_infinit_scroll_button_text' ) ) {
 				function wm_jp_infinit_scroll_button_text( $js_settings ) {
-					//Preparing output
-						$js_settings['text'] = '<i class="iconwm-plus-circle" title="' . __( 'Load more...', 'wm_domain' ) . '"></i>';
 
-					//Output
+					// Processing
+
+						$js_settings['text'] = '<span class="iconwm-plus-circle" title="' . __( 'Load more...', 'mustang' ) . '"></span>';
+
+
+					// Output
+
 						return $js_settings;
+
 				}
 			} // /wm_jp_infinit_scroll_button_text
 
@@ -2985,13 +2997,13 @@
 
 							} elseif ( function_exists( 'lip_love_it_link' ) ) {
 
-								$meta_output = lip_love_it_link( null, __( 'Like it!', 'wm_domain' ), __( 'Liked already!', 'wm_domain' ), false );
+								$meta_output = lip_love_it_link( null, __( 'Like it!', 'mustang' ), __( 'Liked already!', 'mustang' ), false );
 
 							}
 
 						} elseif ( 'views' === $meta ) {
 
-							$title       = __( 'Views count', 'wm_domain' );
+							$title       = __( 'Views count', 'mustang' );
 							$meta_output = bawpvc_views_sc( array() );
 
 						}
@@ -3025,8 +3037,32 @@
 				register_activation_hook(   'woocommerce/woocommerce.php', 'wm_generate_all_css' );
 				register_deactivation_hook( 'woocommerce/woocommerce.php', 'wm_generate_all_css' );
 
-			if ( class_exists( 'Woocommerce' ) ) {
+			if ( class_exists( 'WooCommerce' ) ) {
 				locate_template( WM_SETUP_DIR . 'setup-woocommerce.php', true );
 			}
 
-?>
+
+
+		/**
+		 * Beaver Builder integration
+		 *
+		 * @since    1.6
+		 * @version  1.6
+		 */
+
+			if ( class_exists( 'FLBuilder' ) ) {
+				locate_template( WM_SETUP_DIR . 'setup-beaver-builder.php', true );
+			}
+
+
+
+		/**
+		 * One Click Demo Import
+		 *
+		 * @since    1.6
+		 * @version  1.6
+		 */
+
+			if ( class_exists( 'PT_One_Click_Demo_Import' ) && is_admin() ) {
+				locate_template( WM_SETUP_DIR . 'setup-one-click-demo-import.php', true );
+			}

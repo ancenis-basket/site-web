@@ -247,7 +247,7 @@
 							$output[310] = '<span class="bbp-reply-post-date">' . bbp_get_reply_post_date( $post_id ) . '</span>';
 							if ( bbp_is_single_user_replies() ) {
 								$output[320] = '<span class="bbp-header">';
-									$output[330] = __( 'in reply to: ', 'wm_domain' );
+									$output[330] = __( 'in reply to: ', 'mustang' );
 									$output[340] = '<a class="bbp-topic-permalink" href="' . bbp_get_topic_permalink( bbp_get_reply_topic_id( $post_id ) ) . '">';
 										$output[350] = bbp_get_topic_title( bbp_get_reply_topic_id( $post_id ) );
 									$output[360] = '</a>'; // /.bbp-topic-permalink
@@ -367,7 +367,7 @@
 		 */
 		if ( ! function_exists( 'wm_bbp_topics_heading' ) ) {
 			function wm_bbp_topics_heading() {
-				echo '<h2 class="bbp-topics-list-heading">' . sprintf( __( '<strong>Topics</strong> in "%s":', 'wm_domain' ), bbp_get_forum_title() ) . '</h2>';
+				echo '<h2 class="bbp-topics-list-heading">' . sprintf( __( '<strong>Topics</strong> in "%s":', 'mustang' ), bbp_get_forum_title() ) . '</h2>';
 			}
 		} // /wm_bbp_topics_heading
 
@@ -382,7 +382,7 @@
 					return;
 				}
 
-				echo '<h2 class="bbp-forums-list-heading">' . sprintf( __( '<strong>Forums</strong> in "%s":', 'wm_domain' ), bbp_get_forum_title() ) . '</h2>';
+				echo '<h2 class="bbp-forums-list-heading">' . sprintf( __( '<strong>Forums</strong> in "%s":', 'mustang' ), bbp_get_forum_title() ) . '</h2>';
 			}
 		} // /wm_bbp_subforums_heading
 
@@ -483,7 +483,7 @@
 
 							if ( $single_forum ) {
 								echo '</div><div class="wm-column width-1-3 last">';
-								echo apply_filters( 'wmhook_wm_bbp_search_form_new_post_link', '<a href="#new-post" class="wm-button">' . __( 'Create a new topic', 'wm_domain' ) . '</a>' );
+								echo apply_filters( 'wmhook_wm_bbp_search_form_new_post_link', '<a href="#new-post" class="wm-button">' . __( 'Create a new topic', 'mustang' ) . '</a>' );
 								echo '</div></div>';
 							}
 
@@ -551,13 +551,13 @@
 					$meta_output = $output = $title = '';
 
 					if ( 'forum-update' === $meta ) {
-						$title       = __( 'Last update', 'wm_domain' );
+						$title       = __( 'Last update', 'mustang' );
 						$meta_output = bbp_get_forum_freshness_link( $args['post_id'] );
 					} elseif ( 'forum-topics' === $meta ) {
-						$title       = __( 'Topics count', 'wm_domain' );
+						$title       = __( 'Topics count', 'mustang' );
 						$meta_output = bbp_get_forum_topic_count( $args['post_id'] );
 					} elseif ( 'forum-replies' === $meta ) {
-						$title       = __( 'Replies count', 'wm_domain' );
+						$title       = __( 'Replies count', 'mustang' );
 						$meta_output = bbp_get_forum_reply_count( $args['post_id'] );
 					}
 

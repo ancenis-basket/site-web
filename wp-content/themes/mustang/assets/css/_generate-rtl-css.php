@@ -10,7 +10,7 @@
  * @uses        require() instead of require_once() due to previous inclusion of files when building global CSS stylesheet
  *
  * @since    1.0
- * @version  1.5
+ * @version  1.6
  */
 
 
@@ -43,7 +43,7 @@
 				}
 
 			//WooCommerce plugin
-				if ( ! class_exists( 'Woocommerce' ) ) {
+				if ( ! class_exists( 'WooCommerce' ) ) {
 					unset( $wm_theme_css_files[200] );
 				}
 
