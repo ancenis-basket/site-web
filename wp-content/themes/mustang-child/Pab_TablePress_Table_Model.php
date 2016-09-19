@@ -99,11 +99,12 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 		if( $post_objects ){
    			foreach( $post_objects as $post_object){
 				
-				$data .= "[\"";
+   				$dateAnniv = DateTime::createFromFormat('YMj',"".get_field('date_anniversaire', $post_object->ID));
+   				$data .= "[\"";
 				$data.=get_the_title($post_object->ID);
 				$data.="\",\"".get_field('numerolicence', $post_object->ID);
 				$data.="\",\"".get_field("taille", $post_object->ID);
-				$data.="\",\"".get_field('anniversaire', $post_object->ID);
+				$data.="\",\"".get_field('date_anniversaire', $post_object->ID).$dateAnniv;
 				$data .= "\"]";      
     		}
 		}
