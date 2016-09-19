@@ -165,7 +165,7 @@ if( ! class_exists('MS_Aq_Resize') ) {
                             $resized_rel_path = str_replace( $upload_dir, '', $resized_file['path'] );
                             $img_url = $upload_url . $resized_rel_path;
                         } else {
-                            throw new Ms_Aq_Exception('Unable to save resized image file: ' . $editor->get_error_message());
+                            throw new Ms_Aq_Exception('Unable to save resized image file: ' . $resized_file->get_error_message() );
                         }
 
                     }
