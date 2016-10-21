@@ -94,17 +94,22 @@ class Pab_TablePress_Table_Model extends TablePress_Table_Model {
 	protected function _getDatasForEquipe(){
 		$post_objects = get_field('joueurs');
 		$data .= "[";
-		$data .= "[\"Nom Prenom\", \"Numero de licence\", \"Taille\", \"Anniversaire\"]";
+		$data .= "[\"\", \"Nom Prenom\", \"Numero de licence\", \"Taille\", \"Anniversaire\"]";
 
 		if( $post_objects ){
    			foreach( $post_objects as $post_object){
 				
-   				$dateAnniv = DateTime::createFromFormat('YMj',"".get_field('date_anniversaire', $post_object->ID));
+   				$dateAnniv = new DateTime(get_field('date_anniversaire', $post_object->ID));
    				$data .= "[\"";
-				$data.=get_the_title($post_object->ID);
+				$data .= "<img src='".get_the_post_thumbnail_url($post_object->ID, array(10,10))."' width='25' height='25'/>";			
+   				$data.="\",\"".get_the_title($post_object->ID);
 				$data.="\",\"".get_field('numerolicence', $post_object->ID);
 				$data.="\",\"".get_field("taille", $post_object->ID);
-				$data.="\",\"".get_field('date_anniversaire', $post_object->ID).$dateAnniv;
+				if (get_field('date_anniversaire', $post_object->ID)) {
+					$data.="\",\"".date_i18n('d/m/Y', strtotime(get_field('date_anniversaire', $post_object->ID)));
+				} else {
+					$data.="\",\"".'';
+				}
 				$data .= "\"]";      
     		}
 		}
