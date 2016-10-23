@@ -27,14 +27,18 @@ if ( ! function_exists( 'wpmem_registration' ) ):
  * Handles registering new users and updating existing users.
  *
  * @since 2.2.1
+ * @since 2.7.2 Added pre/post process actions.
+ * @since 2.8.2 Added validation and data filters.
+ * @since 2.9.3 Added validation for multisite.
+ * @since 3.0.0 Moved from wp-members-register.php to /inc/register.php.
  *
- * @param  string $toggle toggles the function between 'register' and 'update'.
+ * @param  string $tag           Identifies 'register' or 'update'.
  * @global int    $user_ID
  * @global string $wpmem_themsg
  * @global array  $userdata
  * @return string $wpmem_themsg|success|editsuccess
  */
-function wpmem_registration( $toggle ) {
+function wpmem_registration( $tag ) {
 
 	// Get the globals.
 	global $user_ID, $wpmem, $wpmem_themsg, $userdata; 
@@ -48,13 +52,16 @@ function wpmem_registration( $toggle ) {
 	}
 
 	// Is this a registration or a user profile update?
-	if ( $toggle == 'register' ) { 
+	if ( $tag == 'register' ) { 
 		$fields['username'] = ( isset( $_POST['user_login'] ) ) ? sanitize_user( $_POST['user_login'] ) : '';
 	}
 	
 	// Add the user email to the $fields array for _data hooks.
-	$fields['user_email'] = ( isset( $_POST['user_email'] ) ) ? $_POST['user_email'] : '';
+	$fields['user_email'] = ( isset( $_POST['user_email'] ) ) ? sanitize_email( $_POST['user_email'] ) : '';
 
+	/** This filter defined in inc/class-wp-members-forms.php */
+	$wpmem_fields = apply_filters( 'wpmem_register_fields_arr', $wpmem->fields, $tag );
+	
 	// Build the $fields array from $_POST data.
 	$wpmem_fields = $wpmem->fields; // get_option( 'wpmembers_fields' );
 	foreach ( $wpmem_fields as $meta ) {
@@ -63,11 +70,13 @@ function wpmem_registration( $toggle ) {
 				if ( isset( $_POST[ $meta[2] ] ) ) {
 					switch ( $meta[3] ) {
 					case 'checkbox':
-						$fields[ $meta[2] ] = $_POST[ $meta[2] ];
+						$fields[ $meta[2] ] = sanitize_text_field( $_POST[ $meta[2] ] );
 						break;
 					case 'multiselect':
 					case 'multicheckbox':
-						$fields[ $meta[2] ] = ( isset( $_POST[ $meta[2] ] ) ) ? implode( '|', $_POST[ $meta[2] ] ) : '';
+						$delimiter = ( isset( $meta[8] ) ) ? $meta[8] : '|';
+						$fields[ $meta[2] ] = ( isset( $_POST[ $meta[2] ] ) ) ? implode( $delimiter, $_POST[ $meta[2] ] ) : '';
+						$fields[ $meta[2] ] = sanitize_text_field( $fields[ $meta[2] ] );
 						break;
 					case 'textarea':
 						$fields[ $meta[2] ] = $_POST[ $meta[2] ];
@@ -105,13 +114,16 @@ function wpmem_registration( $toggle ) {
 
 	foreach ( $wpmem_fields_rev as $meta ) {
 		$pass_arr = array( 'password', 'confirm_password', 'password_confirm' );
-		$pass_chk = ( $toggle == 'update' && in_array( $meta[2], $pass_arr ) ) ? true : false;
+		$pass_chk = ( $tag == 'update' && in_array( $meta[2], $pass_arr ) ) ? true : false;
 		// Validation if the field is required.
 		if ( $meta[5] == 'y' && $pass_chk == false ) {
 			if ( 'file' == $meta[3] || 'image' == $meta[3] ) {
-				// If the required field is a file type.
-				if ( empty( $_FILES[ $meta[2] ]['name'] ) ) {
-					$wpmem_themsg = sprintf( $wpmem->get_text( 'reg_empty_field' ), __( $meta[1], 'wp-members' ) );
+				// If this is a new registration.
+				if ( 'register' == $tag ) {
+					// If the required field is a file type.
+					if ( empty( $_FILES[ $meta[2] ]['name'] ) ) {
+						$wpmem_themsg = sprintf( $wpmem->get_text( 'reg_empty_field' ), __( $meta[1], 'wp-members' ) );
+					}
 				}
 			} else {
 				// If the required field is any other field type.
@@ -122,7 +134,7 @@ function wpmem_registration( $toggle ) {
 		}
 	}
 
-	switch ( $toggle ) {
+	switch ( $tag ) {
 
 	case "register":
 		
@@ -240,7 +252,7 @@ function wpmem_registration( $toggle ) {
 			$privatekey = $wpmem_captcha['recaptcha']['private'];
 			
 			// Validate the captcha.
-			$response = file_get_contents( "https://www.google.com/recaptcha/api/siteverify?secret=" . $privatekey . "&response=" . $captcha . "&remoteip=" . $_SERVER['REMOTE_ADDR'] );
+			$response = wp_remote_fopen( "https://www.google.com/recaptcha/api/siteverify?secret=" . $privatekey . "&response=" . $captcha . "&remoteip=" . $_SERVER['REMOTE_ADDR'] );
 			
 			// Decode the json response.
 			$response = json_decode( $response, true );
@@ -248,6 +260,12 @@ function wpmem_registration( $toggle ) {
 			// If captcha validation was unsuccessful.
 			if ( $response['success'] == false ) {
 				$wpmem_themsg = $wpmem->get_text( 'reg_invalid_captcha' );
+				if ( WP_DEBUG && isset( $response['error-codes'] ) ) {
+					$wpmem_themsg.= '<br /><br />';
+					foreach( $response['error-codes'] as $code ) {
+						$wpmem_themsg.= "Error code: " . $code . "<br />";
+					}
+				}
 				return "empty"; exit();
 			}
 		}
@@ -276,7 +294,7 @@ function wpmem_registration( $toggle ) {
 		 * @since 2.8.2
 		 *
 		 * @param array  $fields An array of the registration field data.
-		 * @param string $toggle A switch to indicate the action (new|edit).
+		 * @param string $tag    A switch to indicate the action (new|edit).
 		 */
 		$fields = apply_filters( 'wpmem_register_data', $fields, 'new' ); 
 
@@ -345,7 +363,9 @@ function wpmem_registration( $toggle ) {
 
 		// Set user expiration, if used.
 		if ( $wpmem->use_exp == 1 && $wpmem->mod_reg != 1 ) {
-			wpmem_set_exp( $fields['ID'] );
+			if ( function_exists( 'wpmem_set_exp' ) ) {
+				wpmem_set_exp( $fields['ID'] );
+			}
 		}
 		
 		// Handle file uploads, if any.
@@ -387,7 +407,9 @@ function wpmem_registration( $toggle ) {
 		}
 		
 		if ( isset( $_POST['redirect_to'] ) ) {
-			wp_redirect( $_POST['redirect_to'] );
+			$nonce_url = wp_nonce_url( $_POST['redirect_to'], 'register_redirect', 'nonce' );
+			$url = add_query_arg( 'reg', 'success', $nonce_url );
+			wp_redirect( $url );
 			exit();
 		}
 

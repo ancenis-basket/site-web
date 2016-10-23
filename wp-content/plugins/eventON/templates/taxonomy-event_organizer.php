@@ -20,7 +20,8 @@
 
 	do_action('eventon_before_main_content');
 
-	$term_meta = get_option( "taxonomy_".$term->term_id );
+	//$term_meta = get_option( "taxonomy_".$term->term_id );
+	$term_meta = evo_get_term_meta( 'event_organizer',$term->term_id );
 
 	// organizer image
 		$img_url = false;

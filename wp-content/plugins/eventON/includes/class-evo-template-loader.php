@@ -27,7 +27,7 @@ class EVO_Template_Loader {
 			0=>TEMPLATEPATH.'/',
 			1=>TEMPLATEPATH.'/'.$eventon->template_url,
 			2=>$childThemePath.'/',
-			3=>$childThemePath.'/'.$eventon->template_url
+			3=>$childThemePath.'/'.$eventon->template_url,
 		));
 		
 		$evOpt = evo_get_options('1');
@@ -35,6 +35,8 @@ class EVO_Template_Loader {
 		
 		// single and archive events page
 		if( is_single() && get_post_type() == 'ajde_events' ) {
+			include_once('class-single-event.php');
+			$paths[] 	= AJDE_EVCAL_PATH . '/templates/';
 			$file 	= 'single-ajde_events.php';
 
 		// if this page is event archive page
@@ -65,9 +67,10 @@ class EVO_Template_Loader {
 		// FILE Exist
 		if ( $file ) {			
 			// each path
-			foreach($paths as $path){				
-				if(file_exists($path.$file) ){	
-					$template = $path.$file;	
+			foreach($paths as $path){
+				//echo $path.$file.'<br/>';
+				if(file_exists($path.$file) ){						
+					$template = $path.$file;
 					break;
 				}
 			}		
@@ -77,7 +80,7 @@ class EVO_Template_Loader {
 			}
 		}
 		
-		// print_r($template);
+		//print_r($template);
 		
 		return $template;
 	}

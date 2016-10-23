@@ -2,8 +2,8 @@
 /**
  * AJDE wp-admin all the other required parts for wp-admin
  *
- * @version 0.4
- * @updated 2015-10
+ * @version 2.4.7
+ * @updated 2016-10
  */
 
 if(class_exists('ajde_wp_admin')) return;
@@ -23,17 +23,29 @@ class ajde_wp_admin{
 				'type'=>'normal',
 				'hidden_content'=>'',
 				'width'=>'',
+				'outside_click'=>true,
+				'preloading'=>false, // preloading will replace content with loading text
 			);
 			$args = (!empty($arg) && is_array($arg) && count($arg)>0) ? 
 				array_merge($defaults, $arg) : $defaults;
 
-						
-			$_padding_class = (!empty($args['type']) && $args['type']=='padded')? ' padd':null;
+			$ajdeCLASSES = array();
+
+			// ajde_popup classes
+				if(!empty($args['type']) && $args['type']=='padded')	$ajdeCLASSES[] = 'padd';
+				if(!$args['outside_click']) $ajdeCLASSES[] = 'nooutside';
+				
+				$ajdeCLASSES[] = $args['class'];				
+
+				$ajdeCLASSES = implode(' ', $ajdeCLASSES);
 
 			//print_r($args);
 			$content='';
 			$content .= 
-			"<div class='ajde_popup {$args['class']}{$_padding_class}' {$args['attr']} style='display:none; ". ( (!empty($args['width']))? 'width:'.$args['width'].'px;':null )."'>				
+				"<div id='ajde_popup_outter' class='ajde_admin_lightbox {$ajdeCLASSES}'>
+				<div class='evo_content_in'>
+				<div class='evo_content_inin'>
+				<div class='ajde_popup {$ajdeCLASSES}' {$args['attr']} style='". ( (!empty($args['width']))? 'width:'.$args['width'].'px;':null )."'>	
 					<div class='ajde_header'>
 						<a class='ajde_backbtn' style='display:none'><i class='fa fa-angle-left'></i></a>
 						<p id='ajde_title'>{$args['title']}</p>
@@ -41,21 +53,26 @@ class ajde_wp_admin{
 						<a class='ajde_close_pop_btn'>X</a>
 					</div>							
 					<div id='ajde_loading'></div>";
+				// preloading
+					$innner = ($args['preloading'])? '<p class="loading">Loading</p>':$args['content'];
 
-				$content .= (!empty($args['max_height']))? "<div class='ajde_lightbox_outter maxbox' style='max-height:{$args['max_height']}px'>":null;
-				$content .= "<div class='ajde_popup_text'>{$args['content']}</div>";
+				$content .= (!empty($args['max_height']))? "<div class='ajde_lightbox_outter maxbox' >":null;
+				$content .= "<div class='ajde_popup_text'>{$innner}</div>";
 				$content .= (!empty($args['max_height']))? "</div>":null;
-				$content .= "	<p class='message'></p>
+				$content .= "<p class='message'></p>
 					
+				</div>
+				</div>
+				</div>
 				</div>";
 			
 			$this->content .= $content;
 			add_action('admin_footer', array($this, 'actual_output_popup'));
 		}
-		function actual_output_popup($content){			
-			echo "<div id='ajde_popup_outter'>";
+		function actual_output_popup($content){
+			echo "<div class='ajde_admin_lightboxes'>";		
 			echo $this->content;
-			echo "</div><div id='ajde_popup_bg'></div>";
+			echo "</div>";
 		}
 
 	// YES NO Button

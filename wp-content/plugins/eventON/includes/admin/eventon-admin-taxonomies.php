@@ -62,13 +62,13 @@ class eventon_taxonomies{
 			}
 		}
 		function event_type_description() {
-			echo wpautop( __( 'Event categories for events can be managed here. To change the order of categories on the front-end you can drag and drop to sort them. To see more categories listed click the "screen options" link at the top of the page.', 'eventon' ) );
+			echo wpautop( __( 'Event Type Categories can be edited, deleted and updated in this page. <br/>More Information: <a href="http://www.myeventon.com/documentation/how-to-use-event-types-to-do-more/" target="_blank">Learn how to use event types to do more with eventON</a>', 'eventon' ) );
 		}
 
 	// event types
 		function eventon_add_tax(){
 			$options = get_option('evcal_options_evcal_1');
-			for($x=3; $x<6; $x++){
+			for($x=3; $x <= evo_max_ett_count(); $x++){
 				if(!empty($options['evcal_ett_'.$x]) && $options['evcal_ett_'.$x]=='yes'){
 					add_filter( "manage_edit-event_type_{$x}_columns", array($this,'event_type_edit_columns'),5 );
 					add_filter( "manage_event_type_{$x}_custom_column", array($this,'event_type_custom_columns'),5,3 );
@@ -172,7 +172,7 @@ class eventon_taxonomies{
 			}
 		}  
 		
-	//	TAXONOMY - event location
+	// TAXONOMY - event location
 		// remove some columns		
 			function eventon_evLocation_theme_columns($theme_columns) {
 			    $new_columns = array(
@@ -192,10 +192,9 @@ class eventon_taxonomies{
 
 		// Add event location address field 
 			function eventon_manage_evLocation_columns($out, $column_name, $term_id) {
-			    //$theme = get_term($term_id, 'event_location');
+			    $term_meta = evo_get_term_meta( 'event_location',$term_id );
 			    switch ($column_name) {
 			        case 'event_location_details': 
-			        	$term_meta = get_option( "taxonomy_$term_id" );
 			        	$term = get_term_by('id', $term_id, 'event_location'); 
 			        	$imgID = !empty($term_meta['evo_loc_img'])? $term_meta['evo_loc_img']:false;
 
@@ -221,11 +220,9 @@ class eventon_taxonomies{
 			        	</p>";
 			        break;
 			        case 'event_location': 
-			        	$term_meta = get_option( "taxonomy_$term_id" );
 			        	$out = "<p>".esc_attr( $term_meta['location_address'] ) ? esc_attr( $term_meta['location_address'] ) : ''."</p>";
 			        break;
 			        case 'ev_lonlat': 
-			        	$term_meta = get_option( "taxonomy_$term_id" );
 			        	$lon = (!empty($term_meta['location_lon']))? esc_attr( $term_meta['location_lon'] ) : '-';
 			        	$lat = (!empty($term_meta['location_lat']))? esc_attr( $term_meta['location_lat'] ) : '-';			        	
 			        	$out = "<p>{$lon} / {$lat}</p>";
@@ -284,7 +281,12 @@ class eventon_taxonomies{
 				$t_id = $term->term_id;
 			 
 				// retrieve the existing value(s) for this meta field. This returns an array
-				$term_meta = get_option( "taxonomy_$t_id" ); ?>
+				
+				$term_meta = evo_get_term_meta('event_location',$t_id);
+				//$term_meta = get_option( "taxonomy_$t_id" ); 
+
+				?>
+				
 				<tr class="form-field">
 					<th scope="row" valign="top"><label for="term_meta[location_address]"><?php _e( 'Location Address', 'eventon' ); ?></label></th>
 					<td>
@@ -359,10 +361,9 @@ class eventon_taxonomies{
 			}
 		// Add event organizer columns
 			function eventon_manage_evorganizer_columns($out, $column_name, $term_id) {
-			    //$theme = get_term($term_id, 'event_location');
+			  	$term_meta = evo_get_term_meta( 'event_organizer', $term_id );
 			    switch ($column_name) {
 			        case 'contact': 
-			        	$term_meta = get_option( "taxonomy_$term_id" );
 			        	$address = !empty($term_meta['evcal_org_address'])? esc_attr( $term_meta['evcal_org_address'] ): false;
 			        	$contact = !empty($term_meta['evcal_org_contact'])? stripslashes(esc_attr( $term_meta['evcal_org_contact'] )): false;
 			        	$out = "<p>".$contact.$address."</p>";
@@ -412,31 +413,53 @@ class eventon_taxonomies{
 			<?php
 			}
 		// Edit term
-			function eventon_taxonomy_edit_meta_field_org($term) {
-		 
+			function eventon_taxonomy_edit_meta_field_org($term) {	
+
+				global $ajde;	 
 				// put the term ID into a variable
 				$t_id = $term->term_id;
 			 
 				// retrieve the existing value(s) for this meta field. This returns an array
-				$term_meta = get_option( "taxonomy_$t_id" ); ?>
+				$term_meta = evo_get_term_meta( 'event_organizer', $t_id );
+				// $opt = get_option( "evo_tax_meta");
+				// print_r($opt);
+				
+				foreach(array(
+					'evcal_org_contact'=> array(
+						'name'=>__( 'Contact Information', 'eventon' ),
+						'desc'=>__( 'Enter Organizer Contact Information','eventon' )
+					),'evcal_org_address'=> array(
+						'name'=>__( 'Address', 'eventon' ),
+						'desc'=>__( 'Enter Organizer Address','eventon' )
+					),
+				) as $key=>$val){
+					$value = !empty( $term_meta[$key])? esc_attr($term_meta[$key]): '';
+			?>
 				<tr class="form-field">
-				<th scope="row" valign="top"><label for="term_meta[evcal_org_contact]"><?php _e( 'Contact Information', 'eventon' ); ?></label></th>
+					<th scope="row" valign="top"><label for="term_meta[<?php echo $key;?>]"><?php echo $val['name'];?></label></th>
 					<td>
-						<input type="text" name="term_meta[evcal_org_contact]" id="term_meta[evcal_org_contact]" value="<?php echo !empty( $term_meta['evcal_org_contact'] ) ? esc_attr( $term_meta['evcal_org_contact'] ) : ''; ?>">
-						<p class="description"><?php _e( 'Enter Organizer Contact Information','eventon' ); ?></p>
+						<input type="text" name="term_meta[<?php echo $key;?>]" id="term_meta[<?php echo $key;?>]" value="<?php echo $value; ?>"/>
+						<p class="description"><?php echo $val['desc'];?></p>
 					</td>
 				</tr>
-				<tr class="form-field">
-				<th scope="row" valign="top"><label for="term_meta[evcal_org_address]"><?php _e( 'Address', 'eventon' ); ?></label></th>
-					<td>
-						<input type="text" name="term_meta[evcal_org_address]" id="term_meta[evcal_org_address]" value="<?php echo !empty( $term_meta['evcal_org_address'] ) ? esc_attr( $term_meta['evcal_org_address'] ) : ''; ?>">
-						<p class="description"><?php _e( 'Enter Organizer Address','eventon' ); ?></p>
-					</td>
-				</tr>
+			<?php
+				}
+			?>
 				<tr class="form-field">
 				<th scope="row" valign="top"><label for="term_meta[evcal_org_exlink]"><?php _e( 'Link to the organizers page', 'eventon' ); ?></label></th>
 					<td>
 						<input type="text" name="term_meta[evcal_org_exlink]" id="term_meta[evcal_org_exlink]" value="<?php echo !empty($term_meta['evcal_org_exlink'])  ? esc_attr( $term_meta['evcal_org_exlink'] ) : ''; ?>">
+						<p><span class='yesno_row evo'>
+							<?php 	
+							$_evocal_org_exlink_target = $this->termmeta($term_meta,'_evocal_org_exlink_target');
+							echo $ajde->wp_admin->html_yesnobtn(array(
+								'id'=>'term_meta[_evocal_org_exlink_target]', 
+								'var'=>$_evocal_org_exlink_target,
+								'input'=>true,
+								'label'=>__('Open organizer link in new window','eventon')
+							));?>											
+						</span></p>
+
 						<p class="description"><?php _e( 'Use this field to link organizer to other user profile pages','eventon' ); ?></p>
 					</td>
 				</tr>
@@ -467,11 +490,19 @@ class eventon_taxonomies{
 		function evo_save_taxonomy_custom_meta( $term_id ) {
 			if ( isset( $_POST['term_meta'] ) ) {
 				$t_id = $term_id;
-				$term_meta = get_option( "taxonomy_$t_id" );
+
+				$taxonomy = $_REQUEST['taxonomy'];
+				
+				//$term_meta = get_option( "taxonomy_$t_id" );
+				$term_meta = array();
+
 				$cat_keys = array_keys( $_POST['term_meta'] );
 				foreach ( $cat_keys as $key ) {
 
-					// location lat long override
+					if( in_array($key, array('location_lon','location_lat')) ) continue;
+
+					if($key=='location_address'){
+						// location lat long override
 						if($key == 'location_address')
 							$latlon = eventon_get_latlon_from_address($_POST['term_meta']['location_address']);
 						// longitude
@@ -482,16 +513,24 @@ class eventon_taxonomies{
 						// latitude
 						$term_meta['location_lat'] = (!empty($_POST['term_meta']['location_lat']))?
 							$_POST['term_meta']['location_lat']:
-							(!empty($latlon['lat'])? floatval($latlon['lat']): null);
-
-					if ( isset ( $_POST['term_meta'][$key] ) ) {
-						$term_meta[$key] = $_POST['term_meta'][$key];
+							(!empty($latlon['lat'])? floatval($latlon['lat']): null);						
 					}
+
+					$term_meta[$key] = (isset($_POST['term_meta'][$key]))?
+						$_POST['term_meta'][$key]:null;
 				}
 				// Save the option array.
-				update_option( "taxonomy_$t_id", $term_meta );
+				// /update_option( "taxonomy_$t_id", $term_meta );
+				evo_save_term_metas($taxonomy, $t_id, $term_meta);
 			}
 		}  
+
+	// Supporting functions
+		function termmeta($term_meta, $var){
+			return !empty( $term_meta[$var] ) ? 
+				stripslashes(str_replace('"', "'", (esc_attr( $term_meta[$var] )) )) : 
+				null;
+		}
 }
 new eventon_taxonomies();
 	

@@ -146,8 +146,8 @@ function wpmem_posts_admin_notices() {
 
 	global $pagenow, $post_type;
 	if ( $pagenow == 'edit.php' && isset( $_REQUEST['a'] ) ) {
-		$action = ( $_REQUEST['a'] == 'block' ) ? 'blocked' : 'unblocked';
-		echo '<div class="updated"><p>' . $_REQUEST['n'] . ' ' . $post_type . ' ' . $action . '</p></div>';
+		$msg = ( $_REQUEST['a'] == 'block' ) ? sprintf( __( '%s blocked', 'wp-members' ), $post_type ) : sprintf( __( '%s unblocked', 'wp-members' ), $post_type );
+		echo '<div class="updated"><p>' . $_REQUEST['n'] . ' ' . $msg . '</p></div>';
 	}
 }
 
@@ -223,7 +223,7 @@ function wpmem_block_meta() {
 	$admin_url = get_admin_url(); ?>
 	
 	<p>
-		<?php echo $notice_text . '&nbsp;&nbsp;<a href="' . $admin_url . '/options-general.php?page=wpmem-settings">' . __( 'Edit', 'wp-members' ) . '</a>'; ?>
+		<?php echo $notice_text . '&nbsp;&nbsp;<a href="' . add_query_arg( 'page', 'wpmem-settings', get_admin_url() . 'options-general.php' ) . '">' . __( 'Edit', 'wp-members' ) . '</a>'; ?>
 	</p>
 	<p>
 		<input type="checkbox" id="wpmem_block" name="wpmem_block" value="<?php echo $block; ?>" <?php checked( get_post_meta( $post->ID, $meta, true ), $block ); ?> />

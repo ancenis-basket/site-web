@@ -215,9 +215,9 @@ function vc_gitem_template_attribute_post_image_background_image_css( $value, $d
 		$src = wp_get_attachment_image_src( $attachment_id, 'large' );
 	}
 	if ( ! empty( $src ) ) {
-		$output = 'background-image: url(' . $src[0] . ') !important;';
+		$output = 'background-image: url(\'' . $src[0] . '\') !important;';
 	} else {
-		$output = 'background-image: url(' . vc_asset_url( 'vc/vc_gitem_image.png' ) . ') !important;';
+		$output = 'background-image: url(\'' . vc_asset_url( 'vc/vc_gitem_image.png' ) . '\') !important;';
 	}
 
 	return apply_filters( 'vc_gitem_template_attribute_post_image_background_image_css_value', $output );

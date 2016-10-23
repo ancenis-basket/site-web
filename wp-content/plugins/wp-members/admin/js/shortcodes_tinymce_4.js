@@ -107,6 +107,12 @@
 									editor.insertContent('[wpmem_logged_in][wpmem_form user_edit][/wpmem_logged_in]');
 								}
 							},
+							{
+								text: "Forgot Username",
+								onclick: function(){
+									editor.insertContent('[wpmem_logged_out][wpmem_form forgot_username][/wpmem_logged_out]');
+								}
+							},
 						]
 					},
 					{
@@ -127,7 +133,7 @@
 						]
 					},
 					{
-						text: 'Logout Link',
+						text: 'Login / Logout Links',
 						menu: [
 							{
 								text: "basic logout link",
@@ -141,6 +147,12 @@
 									editor.insertContent('[wpmem_logout]This the link text[/wpmem_logout]');
 								}
 							},
+							{
+								text: "log in / log out link",
+								onclick: function(){
+									editor.insertContent('[wpmem_loginout]');
+								}
+							},
 						]
 					},
 					{
@@ -152,7 +164,7 @@
 					{
 						text: 'User Count',
 						onclick: function(){
-							editor.insertContent('[wpmem_show_count label="Active Users: " meta=active value=1]');
+							editor.insertContent('[wpmem_show_count label="Active Users: " key=active value=1]');
 						}
 					},
 				]

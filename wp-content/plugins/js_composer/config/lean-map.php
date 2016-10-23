@@ -91,6 +91,10 @@ if ( is_admin() ) {
 		Vc_Shortcodes_Manager::getInstance(),
 		'buildShortcodesAssets',
 	), 1 );
+	add_action( 'vc-render-templates-preview-template', array(
+		Vc_Shortcodes_Manager::getInstance(),
+		'buildShortcodesAssets',
+	), 1 );
 } elseif ( vc_is_page_editable() ) {
 	add_action( 'wp_head', array(
 		Vc_Shortcodes_Manager::getInstance(),

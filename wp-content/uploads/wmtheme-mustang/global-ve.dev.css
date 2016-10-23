@@ -518,11 +518,11 @@
 		     url('../font/basic-icons/fontello.svg#fontello') format('svg');
 		 **/
 		
-		src: url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.eot');
-		src: url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.eot?#iefix') format('embedded-opentype'),
-		     url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.woff') format('woff'),
-		     url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.ttf') format('truetype'),
-		     url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.svg#fontello') format('svg');
+		src: url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.eot');
+		src: url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.eot?#iefix') format('embedded-opentype'),
+		     url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.woff') format('woff'),
+		     url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.ttf') format('truetype'),
+		     url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.svg#fontello') format('svg');
 		
 		font-weight: normal;
 		font-style: normal;
@@ -782,7 +782,7 @@
 			background-image: url('../img/lines.png');
 			 **/
 			
-			background-image: url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/img/lines.png');
+			background-image: url('//localhost/pab44/wp-content/themes/mustang/assets/img/lines.png');
 			
 			background-repeat: repeat;
 			background-position: 0 -16px;
@@ -1144,7 +1144,7 @@
  * @link  http://typeplate.com
  * @link  http://www.pearsonified.com/typography/
  *
- * @version  1.1.1
+ * @version  1.6
  */
 
 
@@ -1195,6 +1195,10 @@
 			margin: 0;
 		}
 			* + p {margin-top: 1.62em}
+
+			.screen-reader-text + p {
+				margin-top: 0;
+			}
 
 
 
@@ -1256,7 +1260,6 @@
 		.wm-progress-caption,
 		.wm-testimonials .source,
 		.wm-posts .content,
-		.wm-posts-wm_projects.wm-posts-layout-simple .title h3,
 		.white-transparent, .black-transparent,
 		.post-table-of-contents {font-size: .9em}
 
@@ -1264,6 +1267,9 @@
 		blockquote blockquote,
 		.logo.type-img, h1.logo.type-img,
 		.wm-accordion .wm-item-title,
+		.wm-posts-wm_projects.wm-posts-layout-simple .title h2,
+		.wm-posts-wm_projects.wm-posts-layout-simple .title h3,
+		.wm-posts-wm_projects.wm-posts-layout-simple .title h4,
 		.wm-testimonials blockquote {font-size: 1em}
 
 		h4, h5, h6,
@@ -1279,7 +1285,13 @@
 		.wm-posts-wm_staff .contacts,
 		.comments-title {font-size: 1.28em}
 
-		.wm-content-module.small-icons .wm-iconbox-module .title h3 {font-size: 1.38em}
+		.wm-content-module.small-icons .wm-iconbox-module .title h2,
+		.wm-content-module.small-icons .wm-iconbox-module .title h3,
+		.wm-content-module.small-icons .wm-iconbox-module .title h4 {font-size: 1.38em}
+
+		.wm-posts .title h2,
+		.wm-posts .title h3,
+		.wm-posts .title h4 {font-size: 1.38em}
 
 		h2,
 		.h2, .heading-style-2,
@@ -1288,7 +1300,9 @@
 		.list-articles-short .list-articles .entry-title {font-size: 1.62em}
 
 		#search-container input,
-		.wm-iconbox-module h3 {font-size: 2em}
+		.wm-iconbox-module h2,
+		.wm-iconbox-module h3,
+		.wm-iconbox-module h4 {font-size: 2em}
 
 		h1,
 		.h1, .heading-style-1,
@@ -1303,7 +1317,9 @@
 		h1, h2, h3, h4, h5, h6,
 		.h1, .h2, .h3, .h4, .h5, .h6, [class*="heading-style-"],
 		.nav-main,
-		.wm-posts.wm-posts-wm_staff .title h3 {font-weight: 300}
+		.wm-posts.wm-posts-wm_staff .title h2,
+		.wm-posts.wm-posts-wm_staff .title h3,
+		.wm-posts.wm-posts-wm_staff .title h4 {font-weight: 300}
 
 		.nav-main li li {font-weight: 400}
 
@@ -1324,7 +1340,9 @@
 		.widget .current-menu-item > .inner,
 		.widget .current_page_item > a,
 		.wm-filter li.active a,
+		.wm-posts .title h2,
 		.wm-posts .title h3,
+		.wm-posts .title h4,
 		.wm-accordion .wm-item-title:before,
 		.wm-accordion .wm-item.active .wm-item-title,
 		.white-transparent, .black-transparent,
@@ -1366,7 +1384,9 @@
 		h1, h2, h3, h4, h5, h6,
 		.h1, .h2, .h3, .h4, .h5, .h6, [class*="heading-style-"],
 		table,
+		.wm-iconbox-module h2,
 		.wm-iconbox-module h3,
+		.wm-iconbox-module h4,
 		.wm-testimonials .source,
 		.wp-caption .wp-caption-text {line-height: 1.28em}
 
@@ -1501,7 +1521,7 @@
 /**
  * Shortcodes
  *
- * @version  1.5
+ * @version  1.6
  */
 
 
@@ -1649,7 +1669,7 @@
 			background: url('../img/gradient-bottom.png' );
 			 **/
 			
-			background: url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/img/gradient-bottom.png');
+			background: url('//localhost/pab44/wp-content/themes/mustang/assets/img/gradient-bottom.png');
 			
 			background-repeat: repeat-x;
 			background-position: 0 100%;
@@ -1843,7 +1863,8 @@
 				        transform: none;
 			}
 			.wm-iconbox-module .image,
-			.wm-iconbox-module .image i:before {
+			.wm-iconbox-module .image [class^="icon-"]:before,
+			.wm-iconbox-module .image [class*=" icon-"]:before {
 				-webkit-transition: all .2s ease-in-out;
 				   -moz-transition: all .2s ease-in-out;
 				    -ms-transition: all .2s ease-in-out;
@@ -1861,7 +1882,8 @@
 					    -ms-transform: none;
 					        transform: none;
 				}
-				.wm-iconbox-module.wm-content-module-item:hover .image i:before {
+				.wm-iconbox-module.wm-content-module-item:hover .image [class^="icon-"]:before,
+				.wm-iconbox-module.wm-content-module-item:hover .image [class*=" icon-"]:before {
 					-webkit-transform: scale( 1.4 ) rotate( 360deg );
 					   -moz-transform: scale( 1.4 ) rotate( 360deg );
 					    -ms-transform: scale( 1.4 ) rotate( 360deg );
@@ -2008,6 +2030,9 @@
 			clear: both;
 			margin: 0;
 		}
+		.tiled-gallery {
+			margin-top: 1.62em;
+		}
 		p + .gallery,
 		h1 + .gallery,
 		h2 + .gallery,
@@ -2079,7 +2104,8 @@
 		h4 .wm-icon,
 		h5 .wm-icon,
 		h6 .wm-icon,
-		.wm-button i,
+		.wm-button [class^="icon-"],
+		.wm-button [class*=" icon-"],
 		.wm-progress-caption .wm-icon {margin-right: .28em}
 
 			.wm-icon.round-border,
@@ -2455,7 +2481,8 @@
 			.wm-message[class*="icon-"]:before {
 				position: absolute;
 				left: .9em;
-				top: .8em;
+				top: 1.62rem;
+				line-height: 1;
 			}
 
 		/* Message sizes */
@@ -2469,7 +2496,6 @@
 			/* l */
 				.wm-message.size-large[class*="icon-"] {padding-left: 6em}
 				.wm-message.size-large[class*="icon-"]:before {
-					top: .62em;
 					font-size: 2.62em;
 					font-size: 36px; /* IE requires size in pixels, otherwise it cumulates */
 				}
@@ -2477,7 +2503,6 @@
 				.wm-message.size-extra-large[class*="icon-"] {padding-left: 8em}
 				.wm-message.size-extra-large[class*="icon-"]:before {
 					left: .62em;
-					top: .33em;
 					font-size: 4.24em;
 					font-size: 58px; /* IE requires size in pixels, otherwise it cumulates */
 				}
@@ -2617,9 +2642,13 @@
 				.wm-posts .wm-posts-item.no-margin .image,
 				.wm-posts-wm_projects .no-margin .image {border-radius: 0}
 
+			.wm-posts-wm_projects .wm-posts-item:hover h2,
 			.wm-posts-wm_projects .wm-posts-item:hover h3,
+			.wm-posts-wm_projects .wm-posts-item:hover h4,
 			.wm-posts-wm_projects a:hover,
+			.wm-posts-post.wm-posts-layout-simple .wm-posts-item:hover h2,
 			.wm-posts-post.wm-posts-layout-simple .wm-posts-item:hover h3,
+			.wm-posts-post.wm-posts-layout-simple .wm-posts-item:hover h4,
 			.wm-posts-post.wm-posts-layout-simple a:hover {color: inherit}
 
 			.wm-posts-wm_projects .taxonomy {padding: .5em 1em 1em}
@@ -2686,7 +2715,9 @@
 					    -ms-transition: all .4s ease-in-out;
 					        transition: all .4s ease-in-out;
 				}
+					.wm-posts-wm_staff .wm-posts-item:hover .title h2,
 					.wm-posts-wm_staff .wm-posts-item:hover .title h3,
+					.wm-posts-wm_staff .wm-posts-item:hover .title h4,
 					.wm-posts-wm_staff .wm-posts-item:hover .title a:hover {color: inherit}
 
 					.content-section .custom-font-color .wm-posts-wm_staff .title {background: none}
@@ -3808,7 +3839,7 @@
 /**
  * Special CSS classes and animations
  *
- * @version  1.5
+ * @version  1.6
  */
 
 
@@ -4170,7 +4201,7 @@
 					background-image: url('../img/shadow-bottom.png');
 					 **/
 					
-					background-image: url('//www.33ruedesoies.fr/pab44/wp-content/themes/mustang/assets/img/shadow-bottom.png');
+					background-image: url('//localhost/pab44/wp-content/themes/mustang/assets/img/shadow-bottom.png');
 					
 					background-repeat: no-repeat;
 					background-position: 50% 0;
@@ -4403,6 +4434,8 @@
 				/* Remove icon background */
 					.no-icon-background .wm-iconbox-module .wm-content-module-element {padding-left: 80px}
 					.no-icon-background.small-icons .wm-iconbox-module .wm-content-module-element {padding-left: 58px}
+					.no-icon-background.text-center .wm-iconbox-module .wm-content-module-element,
+					.text-center .no-icon-background .wm-iconbox-module .wm-content-module-element,
 					.no-icon-background.text-center .wm-iconbox-module .wm-content-module-element {padding-left: 0}
 
 					.no-icon-background .wm-iconbox-module .font-icon,
@@ -4426,9 +4459,11 @@
 						}
 							.no-icon-background.text-center.small-icons .wm-iconbox-module .font-icon {font-size: 48px}
 
-					.no-icon-background .wm-iconbox-module.wm-content-module-item:hover .image i:before {text-shadow: none !important}
+					.no-icon-background .wm-iconbox-module.wm-content-module-item:hover .image [class^="icon-"]:before,
+					.no-icon-background .wm-iconbox-module.wm-content-module-item:hover .image [class*=" icon-"]:before {text-shadow: none !important}
 
-					.no-icon-background .wm-iconbox-module.wm-content-module-item:hover .image i:before {
+					.no-icon-background .wm-iconbox-module.wm-content-module-item:hover .image [class^="icon-"]:before,
+					.no-icon-background .wm-iconbox-module.wm-content-module-item:hover .image [class*=" icon-"]:before {
 						-webkit-transform: none;
 						   -moz-transform: none;
 						    -ms-transform: none;
@@ -4712,7 +4747,7 @@
 		}
 
 
-	/* Using Mustang Child Theme theme by WebMan - Oliver Juhas (http://www.webmandesign.eu), version 1.5.4. CSS generated on 2016/09/12 05:14, UTC. */
+	/* Using Mustang theme by WebMan - Oliver Juhas (http://www.webmandesign.eu), version 1.6. CSS generated on 2016/10/22 14:54, UTC. */
 
 
 

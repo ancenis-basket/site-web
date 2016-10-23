@@ -1,3 +1,117 @@
+﻿= 3.1.4 =
+
+* Change to the way the PayPal extension is integrated with the main plugin. This allows for some necessary filename changes in the extension.
+* Added checks for PayPal extension function calls within the main plugin to avoid possible errors if it is deactivated.
+* New wpmem_is_tab() API function checks the current tab in the plugin's admin panel.
+* New wpmem_is_reg_page() API function checks if the page the user registered on is the registration page.
+* New wpmem_load_dropins() API function runs dropin load function.
+* Documentation updates, cleaned up and addressed several @todo tags.
+* Updated [wpmem_field] shortcode to display display values instead of stored values for select (dropdown), multiple select, multiple checkbox, and radio group field types.
+* Fixed bug in admin js file introduced when forgot username shortcode was added.
+* Updates to reCAPTCHA2. Trims keys on save to avoid possible copy/paste whitespace issues, displays API error code(s) if WP_DEBUG is turned on, change use of file_get_contents() to wp_remote_fopen() for broader acceptable use.
+
+= 3.1.3 =
+
+* Fixed issue with display of [wp-members] field tag. Note: although this tag should remain operable, the tag is officially obsolete since 2.9.8 and should be used as [wpmem_field].
+* Fixed issue with calling PayPal extension functions if settings are enabled but the extension is disabled.
+* Updated some admin-side strings for translation.
+* Updated wpmem_redirect_to_login() to __not__ check for wpmem_is_blocked(). Handling that outside the function will expand its usability.
+* Updated row_after logic in login form function so that it can be used for adding tags at the end of a row w/o adding a tag at the beginning.
+* Updated widget to check for wpmem_do_sidebar() instead of obsolete wpmem() function.
+* Updated email shortcodes used in new install.
+* Added new utility function wpmem_get() for checking posted variables and query strings with isset() and setting a default value.
+* Added a nonce to register redirect by shortcode parameter. This will lead to being able to display a success message on the redirected page.
+* Added redirect_to argument in wpmem_redirect_to_login().
+* Added generic registration error message.
+* Added [wpmem_form forgot_username] shortcode for displaying the forgot username form.
+
+= 3.1.2 =
+
+* Minimum WordPress version increased to 3.6.
+* Added user counts to user screen links (set as transient)
+* Added redirect_to parameter to wpmem_login_url()
+* Added action parameter to wpmem_profile_url()
+* Added api function wpmem_user_pages() to return an array of the login, register, and profile page urls.
+* Added shortcode [wpmem_tos] for Terms of Service page url (replaces [wp-members page=tos url=http://mysite.com/path/to/tos/]).
+* Added wpmem_write_log() function for writing notices to the WP error log.
+* Deprecated [wp-members] shortcode, all other shortcodes no longer rely on wpmem_shortcode().
+* Fixed issue with pre-selected dropdown values to not select empty (separator) rows.
+* Fixed email shortcodes for field and custom shortcodes not being parsed.
+
+= 3.1.1 =
+
+* Added downgrade function (currently runs on deactivation) to allow for version rollbacks.
+* Added new dialogs functions to admin api, allows for custom dialogs to be added.
+* Added $user_id and $row to wpmem_admin_profile_field and wpmem_user_profile_field filters.
+* Added new api class and api functions.
+* Added [wpmem_loginout] shortcode.
+* Added support for new field types to native registration and users > add new (except file/image fields).
+* Updated users > add new so that user can be activated when added.
+* Updated [wpmem_logged_in] shortcode so that content is not shown on on a user profile page action.
+* Updated email settings to only save new from/name if changed.
+* Updated admin warning messges.
+* Updated multiselect and multicheckbox fields to allow user selected delimiter (defaults to pipe "|").
+* Fixes issue with profile update when file/image field is required.
+* Fixes image field edit in fields tab to include file type.
+* Fixes attribution setting for 3.0 settings array.
+* Fixes for PHP7.
+
+= 3.1.0 =
+
+This package contains several fixes, some new filters, new field types and other functional improvements.
+
+* Some general code cleanup, reviewing inline documentation and comments.
+* Fixed issue for sidebar with redirect_to parameter set in widget settings.
+* Fixed issue for custom error messages and email comparison error for profile update (so that errors show in form update state and not on links page).
+* Fixed main options tab where checkbox may not display correct setting if unchecked.
+* Fixed translation issue for required field error where all of the message except the field name was translated.
+* Fixed issue for register shortcode page where if a user has registered, and is logging in but the login fails, display the login error message.
+* Fixed register shortcode redirect parameter.
+* Fixed confirm_password to bypass sanitize_text_field (which breaks password comparison if certain characters are used).
+* Added logic so that user_pages are not blocked (login, register, user_profile).
+* Added after_wrapper array value for wpmem_{$page}_links_args filters
+* Added a new admin api class, utilities object class, and forms object class.
+* Added user facing strings as an array in the main $wpmem object class.
+* Added wpmem_default_text_strings filter for user facing text strings.
+* Added new wpmem_sidebar_status_args filter hook.
+* Added new container in main object for email from and from name settings.
+* Added file upload functions.
+* Added new field types: multiple checkbox, multiple select, radio, file, image, email, url.
+* Added "values" key to the register form rows array to hold possible values (i.e. select, multiple select, multiple checkbox, and radio group) and the actual value to be in the "value" key.
+* Added the ability for dropdown/select fields to have a default value other than the first value.
+* Added filter wpmem_user_upload_dir for filtering the location of user uploaded files.
+* Added wpmem_register_form_rows_admin and wpmem_register_form_rows_profile filter hooks.
+* Deprecated use of wpmem_chk_qstr() function, use add_query_arg() instead.
+* Deprecated use of get_currentuserinfo() (deprecated in WP 4.5), use wp_get_current_user() instead.
+* Email function updates, added 'footer' as an array value in the main wpmem_email_filter filter.
+* Changed install to set email/confirm_email and user_url as HTML5 field types "email" and "url" (now supported).
+* Changed get_action call from init action to template_redirect action.
+* Changed username in register form from log to user_login to match wp native registration form.
+* Changed [wp-members page="user-profile"] shortcode to [wpmem_profile] (old shortcode will still work).
+* Removed redirect parameter from register shortcode in shortcode menu.
+* Removed kubrick stylesheet from selector (still packaged with download, shows as custom url if used).
+* Changed all _update_ functions in install package to _upgrade_.
+* Fixes an issue with PayPal extension where users may be set to pending if moderated registration is enabled after the user already has an expiration date.
+* Update wpmem_do_sidebar to use use add_query_arg() if on a search query.
+
+= 3.0.9 =
+
+* Added Custom Post Type support.
+* Added wpmem_member_links_args and wpmem_register_links_args filters.
+* Added $link parameter to wpmem_forgot_link_str and wpmem_reg_link_str filters (gives just the link as an available parameter).
+* Added new wpmem_sb_reg_link_str and wpmem_sb_forgot_link_str filters (same format as above).
+* Added [email] and [user-profile] shortcodes to the new user registration email.
+* Added label_text key to wpmem_register_form_rows filter.
+* Added new auto excerpt settings, can now be set by post type.
+* Added new auto excerpt features including new wpmem_auto_excerpt_args filter.
+* Added forgot username retrieveal link (included on forgot password reset form).
+* Added wpmem_username_link and wpmem_username_link_str for filtering forgot username retrieval link.
+* Added new upgrade process to WP_Members object class.
+* Fixed handling of post bulk actions to keep current screen (if one is used).
+* Fixed handling of updates to the user pages in the options tab.
+* Fixed handling of empty post object in is_blocked() function.
+* Improved email functions to eliminate get_user_meta() calls when not needed.
+
 = 3.0.8 =
 
 * Added process for forgotten username retrieval.

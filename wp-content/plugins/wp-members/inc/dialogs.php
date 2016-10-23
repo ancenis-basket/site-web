@@ -19,6 +19,8 @@
  * - wpmem_inc_memberlinks
  * - wpmem_page_pwd_reset
  * - wpmem_page_user_edit
+ * - wpmem_page_forgot_username
+ * - wpmem_inc_forgotusername
  */
 
 
@@ -51,7 +53,7 @@ function wpmem_inc_loginfailed() {
 		'p_before'       => '<p>',
 		'message'        => $wpmem->get_text( 'login_failed' ),
 		'p_after'        => '</p>',
-		'link'           => '<a href="' . $_SERVER['REQUEST_URI'] . '">' . $wpmem->get_text( 'login_failed_link' ) . '</a>',
+		'link'           => '<a href="' . esc_url( $_SERVER['REQUEST_URI'] ) . '">' . $wpmem->get_text( 'login_failed_link' ) . '</a>',
 	);
 	
 	/**
@@ -133,15 +135,9 @@ function wpmem_inc_regmessage( $toggle, $msg = '' ) {
 	// Get dialogs set in the db.
 	$dialogs = get_option( 'wpmembers_dialogs' );
 
-	for ( $r = 0; $r < count( $defaults['toggles'] ); $r++ ) {
-		if ( $toggle == $defaults['toggles'][ $r ] ) {
-			if ( $dialogs[ $r+1 ] == $wpmem->get_text( $toggle ) ) {
-				$msg = $wpmem->get_text( $toggle );
-			} else {
-				$msg = __( stripslashes( $dialogs[ $r+1 ] ), 'wp-members' );
-			}
-			break;
-		}
+	if ( array_key_exists( $toggle, $dialogs ) ) {
+		$msg = $wpmem->get_text( $toggle );
+		$msg = ( $dialogs[ $toggle ] == $msg ) ? $msg : __( stripslashes( $dialogs[ $toggle ] ), 'wp-members' );
 	}
 	$defaults['msg'] = $msg;
 	
@@ -149,11 +145,12 @@ function wpmem_inc_regmessage( $toggle, $msg = '' ) {
 	 * Filter the message array
 	 *
 	 * @since 2.9.2
+	 * @since 3.1.1 added $dialogs parameter.
 	 *
 	 * @param array  $defaults An array of the defaults.
 	 * @param string $toggle   The toggle that we are on, if any.
 	 */
-	$defaults = apply_filters( 'wpmem_msg_dialog_arr', $defaults, $toggle );
+	$defaults = apply_filters( 'wpmem_msg_dialog_arr', $defaults, $toggle, $dialogs );
 	
 	// Merge $args with defaults.
 	$args = wp_parse_args( $args, $defaults );

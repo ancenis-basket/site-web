@@ -85,7 +85,7 @@ function wpmem_insert_activate_link( $actions, $user_object ) {
 		$var = get_user_meta( $user_object->ID, 'active', true );
 
 		if ( $var != 1 ) {
-			$url = "users.php?action=activate-single&amp;user=$user_object->ID";
+			$url = add_query_arg( array( 'action' => 'activate-single', 'user' => $user_object->ID ), "users.php" );
 			$url = wp_nonce_url( $url, 'activate-user' );
 			$actions['activate'] = '<a href="' . $url . '">Activate</a>';
 		}
@@ -135,20 +135,27 @@ function wpmem_users_page_load() {
 		check_admin_referer( 'bulk-users' );
 
 		// Get the users.
-		$users = $_REQUEST['users'];
-
-		// Update the users.
-		$x = 0;
-		foreach ( $users as $user ) {
-			// Check to see if the user is already activated, if not, activate.
-			if ( ! get_user_meta( $user, 'active', true ) ) {
-				wpmem_a_activate_user( $user, $chk_pass );
-				$x++;
+		if ( isset( $_REQUEST['users'] ) ) {
+			
+			$users = $_REQUEST['users'];
+	
+			// Update the users.
+			$x = 0;
+			foreach ( $users as $user ) {
+				// Check to see if the user is already activated, if not, activate.
+				if ( ! get_user_meta( $user, 'active', true ) ) {
+					wpmem_a_activate_user( $user, $chk_pass );
+					$x++;
+				}
 			}
+			$msg = urlencode( sprintf( __( '%s users activated', 'wp-members' ), $x ) );
+		
+		} else {
+			$msg = urlencode( __( 'No users selected', 'wp-members' ) );
 		}
 
 		// Set the return message.
-		$sendback = add_query_arg( array('activated' => $x . ' users activated' ), $sendback );
+		$sendback = add_query_arg( array( 'activated' => $msg ), $sendback );
 		break;
 
 	case 'activate-single':
@@ -168,14 +175,15 @@ function wpmem_users_page_load() {
 			$user_info = get_userdata( $users );
 
 			// Set the return message.
-			$sendback = add_query_arg( array('activated' => "$user_info->user_login activated" ), $sendback );
+			$msg = urlencode( sprintf( __( "%s activated", 'wp-members' ), $user_info->user_login ) );
 
 		} else {
 
-			// Get the return message.
-			$sendback = add_query_arg( array('activated' => "That user is already active" ), $sendback );
+			// Set the return message.
+			$msg = urlencode( __( "That user is already active", 'wp-members' ) );
 
 		}
+		$sendback = add_query_arg( array( 'activated' => $msg ), $sendback );
 		break;
 
 	case 'show':
@@ -228,13 +236,70 @@ function wpmem_users_admin_notices() {
  * Function to add user views to the top list.
  *
  * @since 2.8.2
+ * @since 3.1.2 Added user view counts as transient.
  *
- * @param  array $views
- * @return array $views
+ * @global object $wpdb
+ * @global object $wpmem
+ * @param  array  $views
+ * @return array  $views
  */
 function wpmem_users_views( $views ) {
-
+	
 	global $wpmem;
+	
+	// Get the cached user counts.
+	$user_counts = get_transient( 'wpmem_user_counts' );
+	
+	// check to see if data was successfully retrieved from the cache
+	if ( false === $user_counts ) {
+		
+		// @todo For now, 30 seconds.  We'll see how things go.
+		$transient_expires = 30; // Value in seconds, 1 day: ( 60 * 60 * 24 );
+
+		global $wpdb;
+		
+		// We need a count of total users.
+		// @todo - need a more elegant way of this entire process.
+		$sql = "SELECT COUNT(*) FROM " . $wpdb->prefix . "users";
+		$users = $wpdb->get_var( $sql );
+
+		// What needs to be counted?		
+		$count_metas = array();
+		if ( defined( 'WPMEM_EXP_MODULE' ) && $wpmem->use_exp == 1 ) {
+			$count_metas['pending'] = 'pending';
+		}
+		if ( $wpmem->use_trial == 1 ) {
+			$count_metas['trial'] = 'trial';
+		}
+		if ( defined( 'WPMEM_EXP_MODULE' ) && $wpmem->use_exp == 1 ) {
+			$count_metas['subscription'] = 'subscription';
+			$count_metas['expired'] = 'expired';
+		}
+		if ( $wpmem->mod_reg == 1 ) {
+			$count_metas['notactive'] = 'active';
+		}
+		$count_metas['notexported'] = 'exported';
+		
+		// Handle various counts.
+		$user_counts = array();
+		foreach ( $count_metas as $key => $meta_key ) {
+			if ( 'notactive' == $key || 'notexported' == $key ) {
+				$users_with_meta = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->usermeta WHERE meta_key='$meta_key' AND meta_value=1" );
+				$count = $users - $users_with_meta;
+			}
+			if ( 'trial' == $key || 'subscription' == $key ) {
+				$count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->usermeta WHERE meta_key = 'exp_type' AND meta_value = \"$key\"" );
+			}
+			if ( 'pending' == $key ) {
+				$count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->usermeta WHERE meta_key = 'exp_type' AND meta_value = \"$key\"" );
+			}
+			if ( 'expired' == $key ) {
+				$count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->usermeta WHERE meta_key = 'expires' AND STR_TO_DATE( meta_value, '%m/%d/%Y' ) < CURDATE() AND meta_value != '01/01/1970'" );
+			}
+			$user_counts[ $key ] = $count;
+		}
+		set_transient( 'wpmem_user_counts', $user_counts, $transient_expires );
+	}
 
 	$arr = array();
 	if ( defined( 'WPMEM_EXP_MODULE' ) && $wpmem->use_exp == 1 ) {
@@ -266,6 +331,7 @@ function wpmem_users_views( $views ) {
 		
 		if ( $echolink ) {
 			$views[$lcas] = "<a href=\"$link\" $curr>$arr[$row] <span class=\"count\"></span></a>";
+			$views[$lcas].= ( isset( $user_counts[ $lcas ] ) ) ? ' (' . $user_counts[ $lcas ] . ')' : '';
 		}
 	}
 
@@ -390,8 +456,10 @@ function wpmem_a_activate_user( $user_id, $chk_pass = false ) {
 	}
 
 	// If subscriptions can expire, and the user has no expiration date, set one.
-	if( $wpmem->use_exp == 1 && ! get_user_meta( $user_id, 'expires', true ) ) {
-		wpmem_set_exp( $user_id );
+	if ( $wpmem->use_exp == 1 && ! get_user_meta( $user_id, 'expires', true ) ) {
+		if ( function_exists( 'wpmem_set_exp' ) ) {
+			wpmem_set_exp( $user_id );
+		}
 	}
 
 	// Generate and send user approved email to user.

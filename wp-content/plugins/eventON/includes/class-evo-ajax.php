@@ -240,6 +240,7 @@ class evo_ajax{
 
 			$events = $eventon->evo_generator->get_all_event_data();
 			if(!empty($events)):
+				$taxopt = get_option( "evo_tax_meta"); // taxonomy options values;
 				$slug = 'eventon_events';
 				header("Content-Type: text/Calendar; charset=utf-8");
 				header("Content-Disposition: inline; filename={$slug}.ics");
@@ -256,8 +257,17 @@ class evo_ajax{
 						$summary = wp_trim_words($event['details'], 50, '[..]');
 					}
 
-					$location_name = (!empty($event['location_name']))? $event['location_name'] : ''; 
-					$location = (!empty($event['location_address']))? $location_name.' - '.$event['location_address'] : ''; 
+					// location 
+						$Locterms = wp_get_object_terms( $event_id, 'event_location' );
+						$location_name = $locationAddress = '';
+						if ( $Locterms && ! is_wp_error( $Locterms ) ){
+							$location_name = $Locterms[0]->name;
+							$termMeta = evo_get_term_meta('event_location',$Locterms[0]->term_id, $taxopt, true);
+							$locationAddress = !empty($termMeta['location_address'])? 
+								$termMeta['location_address']:
+								(!empty($event['location_address'])? $event['location_address']:'');
+						}
+						$location = (!empty($location_name)? $location_name:'').' '. (!empty($locationAddress)? $locationAddress:'');
 
 					$uid = uniqid();
 					echo "BEGIN:VEVENT\n";

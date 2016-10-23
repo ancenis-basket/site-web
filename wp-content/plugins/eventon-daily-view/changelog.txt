@@ -1,5 +1,18 @@
 Daily View (DV) addon for EventON Plugin
 ====================================
+v 1.0.1 (2016-8-24)
+FIXED: Removed new jq mobile script that was altering website behavior
+UODATED: Compatibility with eventON 2.4.5
+
+v 1.0 (2016-8-5)
+ADDED: compatibility with all month events
+ADDED: Day strip to show event tags with color and names upto 3
+ADDED: Prev and Next arrows to go to respective months from day strip
+ADDED: Tooltip style event names on day strip
+UPDATED: Day stip scrolling interactions
+UPDATED: Compatibility with checkbox style sort/filtering
+UPDATED: Mobile compatibility for days strip
+
 v 0.31 (2015-5-14)
 FIXED: Fixed day not working
 

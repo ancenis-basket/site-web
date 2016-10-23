@@ -3,11 +3,11 @@
  * Plugin Name: EventON
  * Plugin URI: http://www.myeventon.com/
  * Description: A beautifully crafted minimal calendar experience
- * Version: 2.4.6
+ * Version: 2.4.9
  * Author: AshanJay
  * Author URI: http://www.ashanjay.com
  * Requires at least: 4.0
- * Tested up to: 4.6
+ * Tested up to: 4.6.1
  *
  * Text Domain: eventon
  * Domain Path: /lang/languages/
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 if ( ! class_exists( 'EventON' ) ) {
 
 class EventON {
-	public $version = '2.4.6';
+	public $version = '2.4.9';
 	/**
 	 * @var evo_generator
 	 */

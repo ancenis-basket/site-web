@@ -180,10 +180,10 @@
 	}
 	.event_type_id span.evoterm_icon{margin-left: 10px;margin-top: 2px;}
 	.evo_metafield_image .image_src{display: block;}
-	.evo_metafield_image .image_src img{width: 100%; height: auto;}
+	.evo_metafield_image .image_src img{margin-top:10px;width: auto; height: auto;}
 
 	/* location */
-		.evotax_location_image img{width: 50px; height: auto; border-radius: 50%; overflow: hidden;}
+		.evotax_location_image img{width: 50px; height: 50px; border-radius: 50%; overflow: hidden;}
 
 	/* event organizer tax */
 		body.taxonomy-event_organizer table.wp-list-table th.column-id, body.taxonomy-event_location table.wp-list-table th.column-id{
@@ -486,7 +486,7 @@
 	.evo_addons_page .addon.activated{background-color: #B6D6E6;}
 	.evo_addons_page .addon.main.activated{background-color: #B6D6E6;}
 	.evo_addons_page .addon.justactivate{background-color: #B2DCEC;}
-	.evo_addons_page .addon.activated.hasupdate{background-color: #b1eca6;}
+	.evo_addons_page .addon.activated.hasupdate{background-color: #b5daae;}
 	.evo_addons_page .addon:hover{opacity: 0.8;}
 	.evo_addons_page .addon.donthaveit{
 		background-color: #e7e7e7;

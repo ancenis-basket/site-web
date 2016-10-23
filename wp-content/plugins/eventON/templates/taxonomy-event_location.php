@@ -7,7 +7,7 @@
  
  *	@Author: AJDE
  *	@EventON
- *	@version: 0.1
+ *	@version: 2.4.7
  */	
 	
 	global $eventon;
@@ -21,7 +21,8 @@
 
 	do_action('eventon_before_main_content');
 
-	$term_meta = get_option( "taxonomy_".$term->term_id );
+	$term_meta = evo_get_term_meta( 'event_location',$term->term_id );
+	//$term_meta = get_option( "taxonomy_".$term->term_id );
 
 	// location image
 		$img_url = false;
@@ -33,16 +34,19 @@
 	//location address
 		$location_address = $location_latlan = false;
 		$location_type = 'add';
-			$location_latlan = '';
 
-		if(!empty($term_meta['location_lat']) && $term_meta['location_lon']){
-			$location_latlan = $term_meta['location_lat'].','.$term_meta['location_lon'];
-			$location_type ='latlng';
-			$location_address = true;
-		}elseif(!empty($term_meta['location_address'])){
+			$location_latlan = (!empty($term_meta['location_lat']) && $term_meta['location_lon'])?
+				$term_meta['location_lat'].','.$term_meta['location_lon']:false;
+
+		if(empty($term_meta['location_address'])){
+			if($location_latlan){
+				$location_type ='latlng';
+				$location_address = true;
+			}
+		}else{
 			$location_address = stripslashes($term_meta['location_address']);
 		}
-
+		
 		
 ?>
 

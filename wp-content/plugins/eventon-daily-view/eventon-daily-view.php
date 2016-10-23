@@ -4,7 +4,7 @@
  Plugin URI: http://www.myeventon.com/addons/daily-view/
  Description: Adds the capabilities to create a calendar with horizontally scrollable list of days of the month right below month title and sort bar. Read the guide for more information on how to use this addon.
  Author: Ashan Jay
- Version: 0.31
+ Version: 1.0.1
  Author URI: http://www.ashanjay.com/
  Requires at least: 3.8
  Tested up to: 4.2.2
@@ -12,8 +12,8 @@
  
 class EventON_daily_view{
 	
-	public $version='0.31';
-	public $eventon_version = '2.3.1';
+	public $version='1.0.1';
+	public $eventon_version = '2.4.4';
 	public $name = 'DailyView';
 		
 	public $is_running_dv =false;
@@ -33,7 +33,7 @@ class EventON_daily_view{
 			include_once( 'includes/admin/class-admin_check.php' );
 			$this->check = new addon_check($this->addon_data);
 			$check = $this->check->initial_check();
-			
+
 			if($check){
 				$this->addon = new evo_addon($this->addon_data);
 				add_action( 'init', array( $this, 'init' ), 0 );	
@@ -44,6 +44,7 @@ class EventON_daily_view{
 		function super_init(){
 			// PLUGIN SLUGS			
 			$this->addon_data['plugin_url'] = path_join(WP_PLUGIN_URL, basename(dirname(__FILE__)));
+			$this->addon_data['plugin_url_'] = plugins_url('/'.basename(dirname(__FILE__)),dirname(__FILE__));
 			$this->addon_data['plugin_slug'] = plugin_basename(__FILE__);
 			list ($t1, $t2) = explode('/', $this->addon_data['plugin_slug'] );
 	        $this->addon_data['slug'] = $t1;
@@ -76,7 +77,7 @@ class EventON_daily_view{
 			include_once( 'includes/eventonDV_shortcode.php' );
 			
 			if ( defined('DOING_AJAX') ){
-				include_once( 'includes/eventonDV_ajax.php' );
+				include_once( 'includes/class_ajax.php' );
 			}
 
 			$this->shortcodes = new evo_dv_shortcode();

@@ -243,7 +243,33 @@
 				array('css'=>'color:#$', 'var'=>'evoeventtop_cmd_btnA','default'=>'ffffff'),
 				array('css'=>'background-color:#$', 'var'=>'evoeventtop_cmd_btn','default'=>'237dbd'),			
 			)			
-		)
+		),
+
+		// single events
+		array(
+			'item'=>'.evo_metarow_socialmedia a.evo_ss',
+			'multicss'=>array(
+				array('css'=>'background-color:#$', 'var'=>'evose_3','default'=>'transparent'),
+			)						
+		),array(
+			'item'=>'.evo_metarow_socialmedia a.evo_ss:hover',
+			'multicss'=>array(
+				array('css'=>'background-color:#$', 'var'=>'evose_4','default'=>'9d9d9d'),
+			)						
+		),array(
+			'item'=>'.evo_metarow_socialmedia a.evo_ss i',
+			'multicss'=>array(
+				array('css'=>'color:#$', 'var'=>'evose_1','default'=>'858585')
+			)						
+		),array(
+			'item'=>'.evo_metarow_socialmedia a.evo_ss:hover i',
+			'multicss'=>array(
+				array('css'=>'color:#$', 'var'=>'evose_2','default'=>'ffffff')
+			)						
+		),array(
+			'item'=>'.evo_metarow_socialmedia .evo_sm',
+			'css'=>'border-color:#$', 'var'=>'evose_5','default'=>'cdcdcd'
+		),
 	));
 
 

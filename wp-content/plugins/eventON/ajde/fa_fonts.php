@@ -1,7 +1,8 @@
 <?php
 /**
  * font awesome fonts list array
- * @version 	1.5.5
+ * @version 	1.6.0
+ * @fa_version 4.6.3
  */
 
 ob_start();?>
@@ -1994,6 +1995,14 @@ ob_start();?>
 }
 .fa-themeisle:before {
   content: "\f2b2";
+}
+.fa-google-plus-circle:before,
+.fa-google-plus-official:before {
+  content: "\f2b3";
+}
+.fa-fa:before,
+.fa-font-awesome:before {
+  content: "\f2b4";
 }
 <?php
 	$fonts_string = ob_get_clean();

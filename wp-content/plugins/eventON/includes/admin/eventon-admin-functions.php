@@ -195,5 +195,97 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	    update_option( $option, $page_id );
 	}
 
+// save event functions
+	// @version 2.4.7
 
+	
+	// Save location and organizer taxonomy values
+		function evoadmin_save_event_tax_termmeta($post_id){
+			$taxs = apply_filters('evo_event_tax_save_values',array(
+				'event_location'=>array(
+					'select'=>'evcal_location_name_select',
+					'name'=>'evcal_location_name',
+					'id'=>'evo_location_tax_id',
+					'fields'=>array(
+						'evcal_location_link',
+						'location_address',
+						'evo_loc_img'
+					)
+				),
+				'event_organizer'=> array(
+					'select'=>'evcal_organizer_name_select',
+					'name'=>'evcal_organizer',
+					'id'=>'evo_organizer_tax_id',
+					'fields'=>array(
+						'evcal_org_contact',
+						'evcal_org_address',
+						'evo_org_img',
+						'evcal_org_exlink',
+						'_evocal_org_exlink_target'
+					)
+				)
+			));
+
+			// each taxonomy
+			foreach($taxs as $tax=>$data){
+				$taxtermID = false;
+				// tax name chosen from the list
+				if(isset($_POST[ $data['select'] ]) && isset($_POST[ $data['name']  ]) && 
+					$_POST[ $data['select'] ] == $_POST[ $data['name']  ]){
+					if(!empty($_POST[ $data['id']  ])){
+						$taxtermID = (int)$_POST[ $data['id']  ];
+					}					
+				}elseif(isset($_POST[ $data['name'] ])){ // create new term
+					$term_name = esc_attr(stripslashes($_POST[ $data['name'] ]));
+					$term = term_exists( $term_name, $tax );
+					if($term !== 0 && $term !== null){
+						$taxtermID = (int)$term['term_id'];
+						wp_set_object_terms( $post_id, $taxtermID, $tax );
+					}else{
+						// create slug from location name
+							$trans = array(" "=>'-', ","=>'');
+							$term_slug= strtr($term_name, $trans);
+
+						// create wp term
+						$new_term_ = wp_insert_term( $term_name, $tax , array('slug'=>$term_slug) );
+
+						if(!is_wp_error($new_term_)){
+							$taxtermID = (int)$new_term_['term_id'];
+						}		
+					}
+				}
+
+				// update term meta and assign term to event
+					if($taxtermID){
+						$term_meta = array();
+						foreach( $data['fields'] as $field){
+							do_action('evo_tax_save_each_field', $field);
+							if($field=='location_address'){
+								if(isset($_POST['evcal_location']))
+									$latlon = eventon_get_latlon_from_address($_POST['evcal_location']);
+
+								// longitude
+								$term_meta['location_lon'] = (!empty($_POST['evcal_lon']))?$_POST['evcal_lon']:
+									(!empty($latlon['lng'])? floatval($latlon['lng']): null);
+
+								// latitude
+								$term_meta['location_lat'] = (!empty($_POST['evcal_lat']))?$_POST['evcal_lat']:
+									(!empty($latlon['lat'])? floatval($latlon['lat']): null);
+
+								$term_meta['location_address' ] = (isset($_POST[ 'evcal_location' ]))?$_POST[ 'evcal_location' ]:null;
+
+								continue;
+							}
+							$term_meta[ $field ] = (isset($_POST[ $field ]))?
+								str_replace('"', "'", $_POST[ $field ]):null; 
+						}
+
+						// save meta values
+							evo_save_term_metas($tax, $taxtermID, $term_meta);
+						// assign term to event & replace
+							wp_set_object_terms( $post_id, $taxtermID, $tax , false);	
+					}
+			} // endforeach
+
+		}
 ?>

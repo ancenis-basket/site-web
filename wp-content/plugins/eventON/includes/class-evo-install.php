@@ -16,7 +16,8 @@ class evo_install {
 
 	private static $evo_updates = array(
 		'2.3.16'=>'updates/eventon-update-2.3.16.php',
-		'2.3.22'=>'updates/eventon-update-2.3.22.php'
+		'2.3.22'=>'updates/eventon-update-2.3.22.php',
+		'2.4.7'=>'updates/eventon-update-2.4.7.php',
 	);
 
 	public static function init(){
@@ -73,7 +74,7 @@ class evo_install {
 	// update eventon version to current
 		private static function update_evo_version($version=null){
 			delete_option( 'eventon_plugin_version' );
-			add_option( 'eventon_plugin_version', is_null( $version ) ? EVO()->version : $version );
+			add_option( 'eventon_plugin_version', ( is_null( $version ) ? EVO()->version : $version ) );
 		}
 
 	// create pages that the plugin relies on 

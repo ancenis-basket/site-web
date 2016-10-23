@@ -1,6 +1,6 @@
 <?php
 return array(
-	'name' => __( 'Tab', 'js_composer' ),
+	'name' => __( 'Old Tab', 'js_composer' ),
 	'base' => 'vc_tab',
 	'allowed_container_element' => 'vc_row',
 	'is_container' => true,

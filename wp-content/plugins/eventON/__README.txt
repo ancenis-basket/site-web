@@ -4,8 +4,8 @@ Plugin Name: EventON
 Author URI: http://ashanjay.com/
 Tags: calendar, event calendar, event posts
 Requires at least: 4.0
-Tested up to: 4.6
-Stable tag: 2.4.5
+Tested up to: 4.6.1
+Stable tag: 2.4.9
 
 Event calendar plugin for wordpress that utilizes WP's custom post type.  
 
@@ -19,6 +19,44 @@ Event calendar plugin for wordpress that utilizes WP's custom post type. This pl
 1. Activate the plugin through the 'Plugins' menu in WordPress
 
 == Changelog ==
+= 2.4.9 (2016-10-18) =
+FIXED: Click outside lightbox close is back
+FIXED: Backend edit event page styles missing
+FIXED: Location address apostrophe escaping
+FIXED: Missing social share icons
+FIXED: Missing single event sidebar
+
+= 2.4.8 (2016-10-13) =
+ADDED: Single events addon has been merge into main eventON plugin now
+ADDED: Ability to show year on eventtop
+FIXED: Other style issues
+FIXED: Tiles image not expanding all the way & styles
+FIXED: Date time not saving - set Y/m/d format when saving time for event
+FIXED: more/less button not working on lightbox
+FIXED: Addon versions not correct on settings page
+
+= 2.4.7 (2016-10-7) =
+ADDED: Support for menu order for events with same time date
+ADDED: Support to expand event type categories more than 5
+FIXED: Location name not passing to eventop for some
+FIXED: hide multiple occurance not working on multiple calendar on same page
+FIXED: Select filtering type not showing multiple filters passed via shortcode
+FIXED: Get directions not working for duplicated events
+FIXED: Fullscreen jump months moving too far
+FIXED: Custom repeats initial save removed first repeat instance
+FIXED: Fixed apply filters missing translation
+FIXED: location name over image not saving value
+FIXED: organizer field value not showing in eventtop
+FIXED: Organizer open in new window not working
+FIXED: curl install check when generating latlon for event locations
+FIXED: All day events to last till end of last day hour
+FIXED: frontend lightbox map not working
+UPDATED: AJDE library wp-admin lightbox window elements
+UPDATED: youtube embed link proper content filter with eventon (thanks grupopolen for code)
+UPDATED: changed the way location & organizer tax data saved for less querying
+UPDATED: Concatenate location and location name in eventtop to one line
+UPDATED: Featured image UI on event top
+
 = 2.4.6 (2016-9-5) =
 FIXED: Mousewheel missing script error
 FIXED: last of month repeat not saving correct date

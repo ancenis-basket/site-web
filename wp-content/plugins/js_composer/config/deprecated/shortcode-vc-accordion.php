@@ -1,6 +1,6 @@
 <?php
 return array(
-	'name' => __( 'Accordion', 'js_composer' ),
+	'name' => __( 'Old Accordion', 'js_composer' ),
 	'base' => 'vc_accordion',
 	'show_settings_on_create' => false,
 	'is_container' => true,

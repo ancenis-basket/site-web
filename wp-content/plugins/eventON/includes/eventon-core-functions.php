@@ -7,7 +7,7 @@
  * @author 		AJDE
  * @category 	Core
  * @package 	EventON/Functions
- * @version     2.4.6
+ * @version     2.4.7
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -317,7 +317,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				// ALL day event
 				if(!empty($data['evcal_allday']) && $data['evcal_allday']=='yes'){
 					$Date = date_parse_from_format($_wp_date_format, $data['evcal_start_date']);
-					$unix_start = mktime(00, 05,00, $Date['month'], $Date['day'], $Date['year'] );
+					$unix_start = mktime(00, 00,01, $Date['month'], $Date['day'], $Date['year'] );
 				}else{
 					if(!empty($data['evcal_start_time_hour'])){
 						$__Sampm = (!empty($data['evcal_st_ampm']))? $data['evcal_st_ampm']:null;
@@ -328,13 +328,18 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 						
 						// event start time string
 						$date = $data['evcal_start_date'].' '.$time_string;
+						//$dateTformat = $_wp_date_format.' '.($_is_24h?'H:i':'g:ia');
+						//$unix_start = date_create_from_format($dateTformat, $date);
+						//$unix_start = $unix_start->getTimestamp();
+						$unix_start = strtotime($date);
 						
 						// parse string to array by time format
-						$__ti = ($_is_24h)?
+						/*$__ti = ($_is_24h)?
 							date_parse_from_format($_wp_date_format.' H:i', $date):
 							date_parse_from_format($_wp_date_format.' g:ia', $date);
 
 						$unix_start = mktime($__ti['hour'], $__ti['minute'],0, $__ti['month'], $__ti['day'], $__ti['year'] );
+						*/
 					}
 				}
 			}
@@ -347,7 +352,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				// ALL DAY
 				if(!empty($data['evcal_allday']) && $data['evcal_allday']=='yes' ){
 					$Date = date_parse_from_format($_wp_date_format, $data['evcal_end_date']);
-					$unix_end = mktime(00, 05,00, $Date['month'], $Date['day'], $Date['year'] );
+					$unix_end = mktime(23, 59,59, $Date['month'], $Date['day'], $Date['year'] );
 				}else{
 					if( !empty($data['evcal_end_time_hour'])  ){
 						$__Eampm = (!empty($data['evcal_et_ampm']))? $data['evcal_et_ampm']:null;
@@ -358,13 +363,18 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 						
 						// event start time string
 						$date = $__evo_end_date.' '.$time_string;
+						//$dateTformat = $_wp_date_format.' '.($_is_24h?'H:i':'g:ia');
+						//$unix_start = date_create_from_format($dateTformat, $date);
+						//$unix_start = $unix_start->getTimestamp();
+
+						$unix_end = strtotime($date);
 														
 						// parse string to array by time format
-						$__ti = ($_is_24h)?
+						/*$__ti = ($_is_24h)?
 							date_parse_from_format($_wp_date_format.' H:i', $date):
 							date_parse_from_format($_wp_date_format.' g:ia', $date);
 						
-						$unix_end = mktime($__ti['hour'], $__ti['minute'],0, $__ti['month'], $__ti['day'], $__ti['year'] );	
+						$unix_end = mktime($__ti['hour'], $__ti['minute'],0, $__ti['month'], $__ti['day'], $__ti['year'] );	*/
 					}
 				}	
 			}
@@ -988,7 +998,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		$evopt = (!empty($evopt))? $evopt: get_option('evcal_options_evcal_1');
 
 		$count=array();
-		for($x=3; $x<6; $x++ ){
+		for($x=3; $x <= evo_max_ett_count(); $x++ ){
 			if(!empty($evopt['evcal_ett_'.$x]) && $evopt['evcal_ett_'.$x]=='yes'){
 				$count[] = $x;
 			}else{	break;	}
@@ -999,8 +1009,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	function evo_get_ett_count($evopt=''){
 		$evopt = (!empty($evopt))? $evopt: get_option('evcal_options_evcal_1');
 
+		$maxnum = evo_max_ett_count();
 		$count=2;
-		for($x=3; $x<= apply_filters('evo_event_type_count',5); $x++ ){
+		for($x=3; $x<= $maxnum; $x++ ){
 			if(!empty($evopt['evcal_ett_'.$x]) && $evopt['evcal_ett_'.$x]=='yes'){
 				$count = $x;
 			}else{
@@ -1008,6 +1019,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			}
 		}
 		return $count;
+	}
+	// return the maximum allowed event type taxonomies
+	function evo_max_ett_count(){
+		return apply_filters('evo_event_type_count',5);
 	}
 
 	// this will return the count for custom meta data fields that are active
@@ -1500,40 +1515,56 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 			// make sure repeats are saved along with initial times for event
 			$numberof_repeats = count($_post_repeat_intervals);
-			if( !empty($unix_E) && !empty($unix_S) && 
-				$unix_S != $_post_repeat_intervals[0][0] &&
-				$unix_E != $_post_repeat_intervals[0][1] 
-			){
-				if($numberof_repeats==1)
-					$_post_repeat_intervals[] = array($unix_S,$unix_E);
-				if($numberof_repeats>=1)
-					$_post_repeat_intervals[0] = array($unix_S,$unix_E);
+						
+			$count = 0;
+			// each repeat interval
+			if($numberof_repeats>0){
+
+				foreach($_post_repeat_intervals as $field => $interval){
+
+					// initial repeat value
+					if($field==0){
+						if( $unix_S != $interval[0] &&	$unix_E != $interval[1]) continue;
+					}
+					
+					// for intervals that were added as new
+					if(isset($interval['type']) && isset($interval['type'])=='dates'){
+						
+						// start time
+						$__ti = ($_is_24h)?
+							date_parse_from_format($_wp_date_format.' H:i', $interval[0]):
+							date_parse_from_format($_wp_date_format.' g:ia', $interval[0]);
+
+						// end time
+						$__tie = ($_is_24h)?
+							date_parse_from_format($_wp_date_format.' H:i', $interval[1]):
+							date_parse_from_format($_wp_date_format.' g:ia', $interval[1]);
+
+						$repeat_intervals[] = array(
+							mktime($__ti['hour'], $__ti['minute'],0, $__ti['month'], $__ti['day'], $__ti['year'] ),
+							mktime($__tie['hour'], $__tie['minute'],0, $__tie['month'], $__tie['day'], $__tie['year'] )
+							);
+						$count .=$field.' ';
+					}else{
+						$count .=$field.' ';
+						$repeat_intervals[] = array($interval[0],$interval[1]);
+					}
+				}// end foreach
 			}
 
-			// each repeat interval
-			foreach($_post_repeat_intervals as $interval){
-				// for intervals that were added as new
-				if(isset($interval['type']) && isset($interval['type'])=='dates'){
-					
-					// start time
-					$__ti = ($_is_24h)?
-						date_parse_from_format($_wp_date_format.' H:i', $interval[0]):
-						date_parse_from_format($_wp_date_format.' g:ia', $interval[0]);
-
-					// end time
-					$__tie = ($_is_24h)?
-						date_parse_from_format($_wp_date_format.' H:i', $interval[1]):
-						date_parse_from_format($_wp_date_format.' g:ia', $interval[1]);
-
-					$repeat_intervals[] = array(
-						mktime($__ti['hour'], $__ti['minute'],0, $__ti['month'], $__ti['day'], $__ti['year'] ),
-						mktime($__tie['hour'], $__tie['minute'],0, $__tie['month'], $__tie['day'], $__tie['year'] )
-						);
-				}else{
-					$repeat_intervals[] = array($interval[0],$interval[1]);
+			// append Initial event date values to repeat dates array
+				if( !empty($unix_E) && !empty($unix_S) && 
+					$unix_S != $_post_repeat_intervals[0][0] &&
+					$unix_E != $_post_repeat_intervals[0][1] 
+				){
+					if($numberof_repeats==1){
+						$repeat_intervals[] = array($unix_S,$unix_E);
+					}elseif($numberof_repeats>=1){
+						array_unshift($repeat_intervals, array($unix_S,$unix_E) );
+					}						
 				}
-			}// end foreach
 
+			update_post_meta(3089,'aaa',$count);
 			// sort repeating dates
 			asort($repeat_intervals);
 
@@ -1649,6 +1680,34 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			return '#'.$pure_hex_val;
 		}
 
+// taxonomy term meta functions
+// @version 2.4.7
+	function evo_get_term_meta($tax, $termid, $options='', $secondarycheck= false){
+		$termmetas = !empty($options)? $options: get_option( "evo_tax_meta");
+
+		if( empty($termmetas[$tax][$termid])){
+			if($secondarycheck){
+				$secondarymetas = get_option( "taxonomy_".$termid);
+				return (!empty($secondarymetas)? $secondarymetas: false);
+			}else{ return false;}
+		} 
+		return $termmetas[$tax][$termid];
+	}
+	function evo_save_term_metas($tax, $termid, $data, $options=''){
+		if(empty($termid)) return false;
+		$termmetas = !empty($options)? $options: get_option( "evo_tax_meta");
+		
+		if(!empty($termmetas) && is_array($termmetas) && !empty($termmetas[$tax][$termid])){
+			$oldvals = $termmetas[$tax][$termid];
+			$newvals = array_merge($oldvals, $data);
+			$newvals = array_filter($newvals);
+			$termmetas[$tax][$termid] = $newvals;
+		}else{
+			$termmetas[$tax][$termid] = $data;
+		}
+		update_option('evo_tax_meta', $termmetas);
+	}
+
 // SUPPORT FUNCTIONS
 	// Generate location latLon from address
 		function eventon_get_latlon_from_address($address){
@@ -1667,22 +1726,25 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			$address = urlencode($address);
 			
 			$url = "http://maps.google.com/maps/api/geocode/json?address=$address&sensor=false";
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_PROXYPORT, 3128);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-			$response = curl_exec($ch);
-			curl_close($ch);
-			$response_a = json_decode($response);
+			
+			if( in_array  ('curl', get_loaded_extensions() ) ){
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, $url);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+				curl_setopt($ch, CURLOPT_PROXYPORT, 3128);
+				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+				$response = curl_exec($ch);
+				curl_close($ch);
+				$response_a = json_decode($response);
 
-			if (!empty($response_a) && !empty($response_a->results)) {
-			    $lat = $response_a->results[0]->geometry->location->lat;
-			    $lon = $response_a->results[0]->geometry->location->lng;
+				if (!empty($response_a) && !empty($response_a->results)) {
+				    $lat = $response_a->results[0]->geometry->location->lat;
+				    $lon = $response_a->results[0]->geometry->location->lng;
 
-			    //$lat = $xml->result->geometry->location->lat;
-			    //$lon = $xml->result->geometry->location->lng;
+				    //$lat = $xml->result->geometry->location->lat;
+				    //$lon = $xml->result->geometry->location->lng;
+				}
 			}
 
 		    return array(
@@ -1871,6 +1933,5 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		  return $dt;
 		}
 	}
-
 
 ?>

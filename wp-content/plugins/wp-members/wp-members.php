@@ -3,7 +3,7 @@
 Plugin Name: WP-Members
 Plugin URI:  http://rocketgeek.com
 Description: WP access restriction and user registration.  For more information on plugin features, refer to <a href="http://rocketgeek.com/plugins/wp-members/users-guide/">the online Users Guide</a>. A <a href="http://rocketgeek.com/plugins/wp-members/quick-start-guide/">Quick Start Guide</a> is also available. WP-Members(tm) is a trademark of butlerblog.com.
-Version:     3.1.0.3
+Version:     3.1.5.2
 Author:      Chad Butler
 Author URI:  http://butlerblog.com/
 Text Domain: wp-members
@@ -62,7 +62,7 @@ License:     GPLv2
 
 
 // Initialize constants.
-define( 'WPMEM_VERSION', '3.1.0.3' );
+define( 'WPMEM_VERSION', '3.1.5.2' );
 define( 'WPMEM_DEBUG', false );
 define( 'WPMEM_DIR',  plugin_dir_url ( __FILE__ ) );
 define( 'WPMEM_PATH', plugin_dir_path( __FILE__ ) );
@@ -75,6 +75,9 @@ add_action( 'after_setup_theme', 'wpmem_init', 10 );
 
 // Install the plugin.
 register_activation_hook( __FILE__, 'wpmem_install' );
+
+// Downgrade settings on deactivation.
+//register_deactivation_hook( __FILE__, 'wpmem_downgrade' );
 
 
 /**
@@ -131,15 +134,7 @@ function wpmem_init() {
 	}
 
 	// Preload the expiration module, if available.
-	$exp_plugin = 'wp-members-expiration/module.php';
-	$exp_active = ( in_array( $exp_plugin, get_option( 'active_plugins' ) ) ) ? true : false;
-	// Check multisite network active
-	if ( is_multisite() ) {
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-		}
-		$exp_active = ( is_plugin_active_for_network( $exp_plugin ) ) ? true : $exp_active;
-	}
+	$exp_active = ( function_exists( 'wpmem_exp_init' ) || function_exists( 'wpmem_set_exp' ) ) ? true : false;
 	define( 'WPMEM_EXP_MODULE', $exp_active ); 
 
 	/**
@@ -225,8 +220,11 @@ function wpmem_admin_options() {
  * Install the plugin options.
  *
  * @since 2.5.2
+ * @since 3.1.1 Added rollback.
+ *
+ * @param 
  */
-function wpmem_install() {
+function wpmem_install( $rollback = false ) {
 
 	/**
 	 * Load the install file.
@@ -249,15 +247,25 @@ function wpmem_install() {
 		$original_blog_id = get_current_blog_id();   
 		foreach ( $blogs as $blog_id ) {
 			switch_to_blog( $blog_id->blog_id );
-			wpmem_do_install();
+			( 'downgrade' == $rollback ) ? wpmem_downgrade_dialogs() : wpmem_do_install();
 		}
 		switch_to_blog( $original_blog_id );
 
 	} else {
 
 		// Single site install.
-		wpmem_do_install();
+		( 'downgrade' == $rollback ) ? wpmem_downgrade_dialogs() : wpmem_do_install();
 	}
+}
+
+
+/**
+ * Runs downgrade steps in install function.
+ *
+ * @since 3.1.1
+ */
+function wpmem_downgrade() {
+	wpmem_install( 'downgrade' );
 }
 
 
@@ -299,7 +307,7 @@ function wpmem_mu_new_site( $blog_id, $user_id, $domain, $path, $site_id, $meta 
  */
 function wpmem_load_textdomain() {
 	
-	// @todo See: https://ulrich.pogson.ch/load-theme-plugin-translations for notes on changes.
+	// @see: https://ulrich.pogson.ch/load-theme-plugin-translations for notes on changes.
 	
 	// Plugin textdomain.
 	$domain = 'wp-members';

@@ -7,7 +7,7 @@
  * You can use "Description" field of images to set the custom link on them.
  *
  * @since    1.0
- * @version  1.2
+ * @version  1.3.13
  *
  * @param  string class
  * @param  string ids
@@ -55,7 +55,7 @@
 		if ( is_array( $atts['ids'] ) && ! empty( $atts['ids'] ) ) {
 			$i = 0;
 			foreach ( $atts['ids'] as $id ) {
-				$image       = wp_get_attachment_image( $id, $atts['image_size'], false, array( 'title' => esc_attr( strip_tags( get_the_title( $id ) ) ) ) );
+				$image       = wp_get_attachment_image( $id, $atts['image_size'], false, array( 'title' => esc_attr( wp_strip_all_tags( get_the_title( $id ) ) ) ) );
 				$image_thumb = '<a data-slide-index="' . $i++ . '" href="">' . wp_get_attachment_image( $id, 'thumbnail' ) . '</a>';
 				$link        = wp_get_attachment_image_src( $id, apply_filters( 'wmhook_shortcode_' . $shortcode . '_modal_image_size', 'full', $atts ) );
 				$link        = $link[0];
@@ -95,10 +95,11 @@
 		$atts['class'] = trim( esc_attr( 'wm-slideshow clearfix auto-height ' . trim( $atts['class'] ) ) );
 		$atts['class'] = apply_filters( 'wmhook_shortcode_' . $shortcode . '_classes', $atts['class'], $atts );
 
-//Enqueue scripts
+// Enqueue scripts
+
 	$enqueue_scripts = array(
-			'jquery-owl-carousel',
-			'wm-shortcodes-slideshow'
+			'jquery-owlcarousel',
+			'wm-shortcodes-slideshow-owlcarousel'
 		);
 
 	wma_shortcode_enqueue_scripts( $shortcode, $enqueue_scripts, $atts );
@@ -107,5 +108,3 @@
 	if ( $atts['content'] ) {
 		$output = '<div class="' . esc_attr( $atts['class'] ) . '" data-speed="' . esc_attr( $atts['speed'] ) . '" data-nav="' . esc_attr( $atts['nav'] ) . '">' . $atts['content'] . '</div>';
 	}
-
-?>

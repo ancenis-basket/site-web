@@ -3,7 +3,7 @@
  * EVO_generator class.
  *
  * @class 		EVO_generator
- * @version		2.4.6
+ * @version		2.4.7
  * @package		EventON/Classes
  * @category	Class
  * @author 		AJDE
@@ -296,7 +296,7 @@ class EVO_generator {
 			// /print_r($args__);
 			extract($args__);
 
-			$this->_hide_mult_occur= ($hide_mult_occur=='yes')?true:false;
+			$this->_hide_mult_occur = ($hide_mult_occur=='yes')?true:false;
 
 			// Before beginning the eventON calendar Action
 			do_action('eventon_cal_variable_action', $args);
@@ -431,7 +431,7 @@ class EVO_generator {
 			$content='';
 
 			// HIDE or show multiple occurance of events in upcoming list
-			$this->_hide_mult_occur= ($hide_mult_occur=='yes')?true:false;
+			$this->_hide_mult_occur = ($hide_mult_occur=='yes')?true:false;
 
 
 			// check if upcoming list calendar view
@@ -439,7 +439,6 @@ class EVO_generator {
 				$this->is_upcoming_list= true;
 				$this->is_eventcard_open = false;
 			}
-
 
 			// *** GET STARTING month and year
 			extract( $this->get_starting_monthYear() );
@@ -495,7 +494,9 @@ class EVO_generator {
 			$content.= ob_get_clean();
 
 			// RESET calendar stuff
-			if($this->is_upcoming_list){ $this->is_upcoming_list=false;}
+			if($this->is_upcoming_list){ 
+				$this->is_upcoming_list=false;				
+			}
 
 			return $content;
 		}
@@ -524,6 +525,7 @@ class EVO_generator {
 						'post_status'		=>'publish',
 						'posts_per_page'	=>-1 ,
 						'order'				=>'ASC',
+						'orderby' => 'menu_order'
 					);
 
 					//search query addition
@@ -658,12 +660,14 @@ class EVO_generator {
 		){
 
 			$event_list_array= $featured_events = array();
+			$this->events_processed = array();
 			$wp_arguments= (!empty($wp_arguments))?$wp_arguments: $this->wp_arguments;
 
 			//print_r($wp_arguments);
 
 			// check if multiple occurance of events b/w months allowed
 			$__run_occurance_check = $hideMultOccur =  (($this->is_upcoming_list && $this->_hide_mult_occur) || (!empty($this->shortcode_args['hide_mult_occur']) && $this->shortcode_args['hide_mult_occur']=='yes'))? true:false;
+			
 			$_show_repeats = (!empty($this->shortcode_args['show_repeats']) && $this->shortcode_args['show_repeats']=='yes')? true: false;
 			$is_user_logged_in = is_user_logged_in();
 
@@ -1167,7 +1171,7 @@ class EVO_generator {
 					// check all days event
 					if($_is_allday){
 						$__from_to ="<em class='evcal_alldayevent_text'>(".$evcal_lang_allday.")</em>";
-						$__prettytime = $DATE_start_val['j'].' ('. ucfirst($DATE_start_val['l']) .') - '.$DATE_end_val['j'].' ('. ucfirst($DATE_end_val['l']).')';
+						$__prettytime = $DATE_start_val['F'].' '.$DATE_start_val['j'].' ('. ucfirst($DATE_start_val['l']) .') - '.$DATE_end_val['j'].' ('. ucfirst($DATE_end_val['l']).')';
 						$__time = "<span class='start'>".$evcal_lang_allday."</span>";
 					}else{
 
@@ -1318,6 +1322,8 @@ class EVO_generator {
 
 				// check featured events are prioritized
 				$__feature_events = (!empty($__shortC_arg['ft_event_priority']) && $__shortC_arg['ft_event_priority']!='no')?true:false;
+
+				$event_tax_meta_options = get_option( "evo_tax_meta");
 			
 			// Number of activated taxnomonies v 2.2.15
 				$_active_tax = evo_get_ett_count($this->evopt1);
@@ -1431,6 +1437,7 @@ class EVO_generator {
 							// append to eventcard array
 							if(!empty($img_src) ){
 								$_eventcard['ftimage'] = array(
+									'eventid'=>$event_id,
 									'img'=>$img_src,
 									'hovereffect'=> !empty($this->evopt1['evo_ftimghover'])? $this->evopt1['evo_ftimghover']:null,
 									'clickeffect'=> (!empty($this->evopt1['evo_ftimgclick']))? $this->evopt1['evo_ftimgclick']:null,
@@ -1464,8 +1471,10 @@ class EVO_generator {
 						$location_address = $location_name = $lonlat = false;
 						if ( $location_terms && ! is_wp_error( $location_terms ) ){
 							$evo_location_tax_id =  $location_terms[0]->term_id;
-							$LocTermMeta = get_option( "taxonomy_$evo_location_tax_id");
-
+							
+							// check location term meta values on new and old
+							$LocTermMeta = evo_get_term_meta( 'event_location', $evo_location_tax_id, $event_tax_meta_options, true);
+							
 							$location_address = !empty( $LocTermMeta['location_address'])? $LocTermMeta['location_address']: false;
 
 							// location name
@@ -1492,7 +1501,6 @@ class EVO_generator {
 						}
 
 						$_eventcard['timelocation'] = array(
-							//'timetext'=>$dateTime->get_formatted_smart_time($event_start_unix, $event_end_unix, $ev_vals),
 							'timetext'=>$_event_date_HTML['html_prettytime'],
 							'timezone'=>(!empty($ev_vals['evo_event_timezone'])? $ev_vals['evo_event_timezone'][0]:null),
 							'address'=>$location_address,
@@ -1532,8 +1540,10 @@ class EVO_generator {
 							);
 
 							// GET directions
-							if(!empty($ev_vals['evcal_location']))
-								$_eventcard['getdirection'] = array('fromaddress'=>$ev_vals['evcal_location'][0]);
+							if($location_address)
+								$_eventcard['getdirection'] = array(
+									'fromaddress'=>$location_address
+								);
 						}else{	$_eventInAttr['data-gmap_status'] = 'null';	}
 
 					// PAYPAL Code
@@ -1561,10 +1571,10 @@ class EVO_generator {
 						$hideOrganizer_from_eventCard = (!empty($ev_vals['evo_evcrd_field_org']) && $ev_vals['evo_evcrd_field_org'][0] == 'yes')? true: false;
 
 						if($organizer_term_id && !$hideOrganizer_from_eventCard){
+							// organizer meta is run from eventCard.php
 							$_eventcard['organizer'] = array(
 								'organizer_term_id'=>$organizer_term_id,
-								'organizer_name'=>$organizer_name,
-								'openinnewwindow'=>(!empty($ev_vals['_evocal_org_exlink_target'])? $ev_vals['_evocal_org_exlink_target'][0]: false)
+								'organizer_name'=>$organizer_name
 							);
 						}
 
@@ -1697,11 +1707,10 @@ class EVO_generator {
 
 							$event_color = (!empty($ev_color['et_color']))?
 								$ev_color['et_color']:$event_color;
-
-							// remove additional '#' in the hex code
-							$event_color = '#'.str_replace('#', '', $event_color);
 						}
-
+						// remove additional '#' in the hex code
+							$event_color = '#'.str_replace('#', '', $event_color);
+							
 					// if UX to be open in new window then use link to single event or that link
 						$link_append = array(); $_link_text  ='';
 						if(!empty($__shortC_arg['lang']) && $__shortC_arg['lang']!='L1'){
@@ -1745,16 +1754,20 @@ class EVO_generator {
 										'. ( !empty($location_name)? '<span itemprop="name">'.$location_name.'</span>':'').'
 										<span itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
 											<item itemprop="streetAddress">'.$location_address.'</item>
-										</span>
-									</item>';
+										</span>';
+
+								if(!empty($evo_location_tax_id))
+									$__scheme_data_location .= apply_filters('evo_location_schema','',$evo_location_tax_id);
+
+								$__scheme_data_location .= '</item>';
 							}
 
 							$ev_location = (!empty($location_address))?
-								'<em class="evcal_location" '.( (!empty($lonlat))? $lonlat:null ).' data-add_str="'.$location_address.'">'.$location_address.'</em>':null;
+								'<em class="evcal_location" '.( ($lonlat)? $lonlat:null ).' data-add_str="'.$location_address.'">'.$location_address.'</em>':null;
 							// location type
-							$event_location_variables .= (!empty($lonlat))? 'data-location_type="lonlat"': 'data-location_type="address"';
+							$event_location_variables .= (($lonlat))? 'data-location_type="lonlat"': 'data-location_type="address"';
 							// location name
-							$event_location_variables .= (!empty($ev_vals['evcal_location_name']))? ' data-location_name="'.$ev_vals['evcal_location_name'][0].'"':null;
+							$event_location_variables .= ($location_name)? ' data-location_name="'.$location_name.'"':null;
 							// location status
 							$event_location_variables .= ' data-location_status="true"';
 						}else{
@@ -1786,11 +1799,14 @@ class EVO_generator {
 								$___day_name = ($eventop_fields_ && in_array('dayname',$eventop_fields))?
 									"<em class='evo_day' >".$DATE_start_val['D']."</em>":
 									null;
+							// event start year
+								$showStartYear = ($eventop_fields_ && in_array('eventyear',$eventop_fields))?'yes':'no';
 							$__eventtop['day_block']= array(
 								'start'=>$DATE_start_val,
 								'color'=>$event_color,
 								'day_name'=>$___day_name,
 								'html'=>$_event_date_HTML,
+								'showyear'=>$showStartYear,
 								'yearlong'=>$__year_long_event,'monthlong'=>$__month_long_event,
 							);
 						}
@@ -1813,9 +1829,11 @@ class EVO_generator {
 							'fields'=>$eventop_fields,
 							'evvals'=>$ev_vals,
 							'html'=> $_event_date_HTML,
+							'locationaddress'=>$location_address,
 							'location'=>$ev_location,
-							'locationname'=> (!empty($ev_vals['evcal_location_name'])?
-							$ev_vals['evcal_location_name'][0]:null),
+							'locationname'=> $location_name,
+							'lonlat'=>$lonlat,
+							'organizer_name'=>$organizer_name,
 							'tax'=>$_html_tax_content,
 							'tags'=>$_event_tags,
 							'cmdcount'=>$_cmf_count,
@@ -2291,7 +2309,10 @@ class EVO_generator {
 
 				foreach($_filter_array as $ff=>$vv){ // vv = event_type etc.
 
-					$cats = get_categories(array( 'taxonomy'=>$vv));
+					// pluggable for other arguments
+					$cats = get_categories(apply_filters('evo_get_frontend_filter_tax',
+						array( 'taxonomy'=>$vv)
+					));
 
 					// filtering value filter is set to show
 					if(in_array($vv, $filtering_options) && strpos($args[$vv], 'NOT-')=== false && $cats){
@@ -2314,7 +2335,7 @@ class EVO_generator {
 									if(!$selectfilterType){
 										$inside .=  "<p class='". ($icon_str?'has_icon':'')."' data-filter_val='".$ct->term_id."' data-filter_slug='".$ct->slug."'>". $icon_str . $term_name."</p>";
 									}else{
-										$inside .=  "<p class='' ><input type='checkbox' data-filter_val='".$ct->term_id."' data-filter_slug='".$ct->slug."'/> ". $term_name."</p>";
+										$inside .=  "<p class='' ><input type='checkbox' data-filter_val='".$ct->term_id."' checked data-filter_slug='".$ct->slug."'/> ". $term_name."</p>";
 									}
 								}
 
@@ -2327,10 +2348,13 @@ class EVO_generator {
 								if(!$selectfilterType) $inside .= "<p class='evf_hide' data-filter_val='{$args[$vv]}'>{$__text_all}</p>";
 								if(!$selectfilterType) $inside .=  "<p  data-filter_val='all'>{$__text_all_}</p>";
 
-								foreach($cats as $ct){
+								// explode filter values
+									$filtering_values = explode(',', $__filter_val);
 
+								// each taxonomy term
+								foreach($cats as $ct){
 									// skip shortcode via set filter values from showing in list
-										if($ct->term_id == $__filter_val && !$selectfilterType) continue;
+										if(in_array($ct->term_id, $filtering_values) && !$selectfilterType) continue;
 									
 									// event type 1 tax icon
 										$icon_str = $this->helper->get_tax_icon($vv,$ct->term_id, $this->evopt1 );
@@ -2339,7 +2363,7 @@ class EVO_generator {
 									if(!$selectfilterType){
 										$inside .=  "<p class='". ($icon_str?'has_icon':'')."' data-filter_val='".$ct->term_id."' data-filter_slug='".$ct->slug."'>". $icon_str . $term_name."</p>";
 									}else{// checkbox select option
-										$checked = ($__filter_val == $ct->term_id) ? 'checked="checked"':'';
+										$checked = ( in_array($ct->term_id, $filtering_values) ) ? 'checked':'';
 										$inside .=  "<p class='{$ct->term_id}' ><input {$checked} type='checkbox' data-filter_val='".$ct->term_id."' data-filter_slug='".$ct->slug."'/> ". $term_name."</p>";
 									}
 								}
@@ -2388,7 +2412,7 @@ class EVO_generator {
 
 				// for select filter type
 				if($selectfilterType){
-					echo "<p class='evo_filter_submit'>".__('Apply Filters')."</p>";
+					echo "<p class='evo_filter_submit'>". $this->lang('evcal_lang_apply_filters','Apply Filters')."</p>";
 				}
 
 				// (---) Hook for addon

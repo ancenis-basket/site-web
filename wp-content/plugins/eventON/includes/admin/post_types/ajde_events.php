@@ -9,43 +9,7 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
-
-
-// if events single page hide permalink and preview changes that links to single event post page -- which doesnt have supported template without eventon single event addon
-	function eventon_perma_filter(){
-		add_action('admin_print_styles', 'eventon_remove_eventpost_previewbtn');
-		add_filter('get_sample_permalink_html', 'eventon_perm', 10,4);
-	}
-
-	function eventon_perm($return, $id, $new_title, $new_slug){
-		global $post;
-
-		if(!isset($post)) return $return;
-		if($post->post_type!='ajde_events') return $return;
-
-		$ret2 = preg_replace('/<span id="edit-slug-buttons">.*<\/span>|<span id=\'view-post-btn\'>.*<\/span>/i', '', $return);
-		return $ret2 ='';	
-	}
-
-// remove event preview link section for eventon events only
-// @updated 2.2.28
-	function eventon_remove_eventpost_previewbtn() {
-		global $pagenow, $typenow;	
-		
-		if ( $typenow == 'post' && ! empty( $_GET['post'] ) ) {
-			$typenow = $post->post_type;
-		} elseif ( empty( $typenow ) && ! empty( $_GET['post'] ) ) {
-	        $post = get_post( $_GET['post'] );
-	        $typenow = $post->post_type;
-	    }
-		
-		if ( $typenow == '' || $typenow == "ajde_events" ):
-		  ?>
-		<style>#preview-action{ display:none; }</style>
-		<?php 
-		endif;
-	}
-
+	
 /**
  * Columns for events page
  *

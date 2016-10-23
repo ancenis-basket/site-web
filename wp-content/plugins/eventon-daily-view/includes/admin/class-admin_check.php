@@ -6,7 +6,7 @@
  * @author 		AJDE
  * @category 	Core
  * @package 	ERRORS
- * @version     0.1
+ * @version     0.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -33,6 +33,9 @@ class addon_check{
 		}else{// good eventon version
 			$addon_file_ = false;
 			// check for class addon file url and if it exists via constants
+			
+			
+
 			if(defined('AJDE_EVCAL_PATH')){
 				$path = AJDE_EVCAL_PATH;
 				$url = $path .'/classes/class-evo-addons.php';
@@ -40,6 +43,18 @@ class addon_check{
 			}elseif(function_exists('evo_get_addon_class_file')){
 				$url = evo_get_addon_class_file();
 				$addon_file_ =file_exists($url)? $url: false;
+			}
+
+			if(!$addon_file_){
+				$pathX = ABSPATH . 'wp-content/plugins/eventON/';
+				$pathY = ABSPATH . 'wp-content/plugins/eventon/';
+				$urlX = $pathX .'classes/class-evo-addons.php';
+				$urlY = $pathY .'classes/class-evo-addons.php';
+
+				
+
+				$addon_file_ =file_exists($urlX)? $urlX: false;
+				if(!$addon_file_) $addon_file_ =file_exists($urlY)? $urlY: false;
 			}
 			
 			if(!$addon_file_){// eventon is not present

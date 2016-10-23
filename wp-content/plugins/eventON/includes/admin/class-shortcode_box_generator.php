@@ -199,7 +199,9 @@ class eventon_admin_shortcode_box{
 					'0'=>'None',
 					'X'=>__('Do not interact','eventon'),
 					'1'=>__('Slide Down EventCard','eventon'),
-					'3'=>__('Lightbox popup window','eventon')))
+					'3'=>__('Lightbox popup window','eventon'),
+					'4'=>__('Open in single event page','eventon')
+				))
 			),'etc_override'=>array(
 				'name'=>__('Event type color override','eventon'),
 				'type'=>'YN',
@@ -508,6 +510,58 @@ class eventon_admin_shortcode_box{
 							)
 						
 					))
+				),
+				array(
+					'id'=>'s_SE',
+					'name'=>'Single Event',
+					'code'=>'add_single_eventon',
+					'variables'=>array(
+						array(
+							'name'=>'Event ID',
+							'type'=>'select','var'=>'id',
+							'placeholder'=>'eg. 234',	
+							'options'=>	$this->get_event_ids()		
+						),array(
+							'name'=>'Show Event Excerpt',
+							'type'=>'YN',
+							'guide'=>'Show event excerpt under the single event box',
+							'var'=>'show_excerpt',
+							'default'=>'no'
+						),array(
+							'name'=>'Show expanded eventCard',
+							'type'=>'YN',
+							'guide'=>'Show single event eventCard expanded on load',
+							'var'=>'show_exp_evc',
+							'default'=>'no'
+						),array(
+							'name'=>'User click on Event Box',
+							'type'=>'select',
+							'guide'=>'What to do when user click on event box. NOTE: Show expended eventCard will be overridden if opening lightbox',
+							'var'=>'ev_uxval',
+							'options'=>array(
+								'4'=>'Go to Event Page',
+								'3'=>'Open event as Lightbox',
+								'2'=>'External Link',
+								'1'=>'SlideDown EventCard',
+								'X'=>'Do nothing'
+							),
+							'default'=>'4'
+						),
+						array(
+							'name'=>'External Link URL',
+							'type'=>'text',
+							'guide'=>'If user click on event box is set to external link this field is required with a complete url',
+							'var'=>'ext_url',
+							'placeholder'=>'http://'
+						),
+						$this->shortcode_default_field('lang')
+						,array(
+							'name'=>'Repeat Interval ID',
+							'type'=>'text','var'=>'repeat_interval',
+							'guide'=>'Enter the repeat interval instance ID such as 1, 2,3. This is only for repeating events',
+							'placeholder'=>'eg. 4',							
+						)
+					)
 				)
 			));
 			
@@ -525,6 +579,30 @@ class eventon_admin_shortcode_box{
 				$this->get_shortcode_field_array(),
 				'add_eventon'
 			);
+		}
+	// get event ids
+		function get_event_ids(){
+			global $post;
+			$backup_post = $post;
+
+			$events = new WP_Query(array(
+				'orderby'=>'title','order'=>'ASC',
+				'post_type'=> 'ajde_events',
+				'posts_per_page'=>-1
+			));
+			$ids = array();
+			if($events->have_posts()){
+				while($events->have_posts()): $events->the_post();
+					$id = $events->post->ID;
+					$ids[$id] = get_the_title($id).' ('.$id.')';
+
+				endwhile;	
+				//$events->reset_postdata();
+				wp_reset_postdata();			
+			}
+			
+			$post = $backup_post;
+			return $ids;
 		}
 }
 

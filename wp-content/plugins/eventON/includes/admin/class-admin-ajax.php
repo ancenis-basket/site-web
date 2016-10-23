@@ -110,11 +110,13 @@ class EVO_admin_ajax{
 				'evo_year_long'=>'yearlong',
 				'_featured'=>'featured',
 
-				'evcal_location_name'=>'location_name',
 				'evo_location_id'=>'evo_location_id',
+				'evcal_location_name'=>'location_name',				
 				'evcal_location'=>'event_location',				
-				'evcal_organizer'=>'event_organizer',
+				
 				'evo_organizer_id'=>'evo_organizer_id',
+				'evcal_organizer'=>'event_organizer',
+
 				'evcal_subtitle'=>'evcal_subtitle',
 				'evcal_lmlink'=>'learnmore link',
 				'image_url',
@@ -139,6 +141,7 @@ class EVO_admin_ajax{
 					$csvHeader.= $_cmd_name.",";
 				}
 
+			$csvHeader = apply_filters('evo_export_events_csv_header',$csvHeader);
 			$csvHeader.= "\n";
 			echo iconv("UTF-8", "ISO-8859-2", $csvHeader);
  
@@ -186,7 +189,13 @@ class EVO_admin_ajax{
 							$csvRow.= date('n/j/Y,g:i:A',$end).',';
 						}else{ $csvRow.= "'','',";	}
 
+					// taxonomy meta
+						$taxopt = get_option( "evo_tax_meta");
+						
+
 					// FOR EACH field
+					$loctaxid = $orgtaxid = '';
+					$loctaxname = $orgtaxname = '';
 					foreach($fields as $var=>$val){
 						
 						// yes no values
@@ -198,19 +207,56 @@ class EVO_admin_ajax{
 							if($val == 'evo_organizer_id'){
 								$Orgterms = wp_get_object_terms( $__id, 'event_organizer' );
 								if ( $Orgterms && ! is_wp_error( $Orgterms ) ){
-									$csvRow.= '"'.$Orgterms[0]->term_id . '",';
+									$orgtaxid = $Orgterms[0]->term_id;
+									$orgtaxname = $Orgterms[0]->name;
+									$csvRow.= '"'.$orgtaxid . '",';
 								}else{	$csvRow.= ",";	}
+							}
+							if($val == 'evcal_organizer'){
+								if($orgtaxname){
+									$csvRow.= '"'. $orgtaxname . '",';									
+								}elseif(!empty($pmv[$var]) ){
+									$value = htmlentities($pmv[$var][0]);
+									$csvRow.= '"'.$value.'"';
+								}else{	$csvRow.= ",";	}
+								continue;
 							}
 						// location tax field
 							if($val == 'evo_location_id'){
 								$Locterms = wp_get_object_terms( $__id, 'event_location' );
 								if ( $Locterms && ! is_wp_error( $Locterms ) ){
-									$csvRow.= '"'.$Locterms[0]->term_id . '",';
+									$loctaxid = $Locterms[0]->term_id;
+									$loctaxname = $Locterms[0]->name;
+									$csvRow.= '"'.$loctaxid . '",';
 								}else{	$csvRow.= ",";	}
+							}
+							if($val == 'location_name'){
+								if($loctaxname){
+									$csvRow.= '"'. $loctaxname . '",';									
+								}elseif(!empty($pmv[$var]) ){
+									$value = htmlentities($pmv[$var][0]);
+									$csvRow.= '"'.$value.'"';
+								}else{	$csvRow.= ",";	}
+								update_post_meta(3089,'aa',$loctaxname.'yy');
+								continue;
+							}
+							if($val == 'event_location'){
+								if($loctaxid){
+									$termMeta = evo_get_term_meta('event_location',$loctaxid, $taxopt, true);
+									$csvRow.= !empty($termMeta['location_address'])? 
+										'"'. $termMeta['location_address'] . '",':
+										",";									
+								}elseif(!empty($pmv[$var]) ){
+									$value = htmlentities($pmv[$var][0]);
+									$csvRow.= '"'.$value.'"';
+								}else{	$csvRow.= ",";	}
+								continue;
 							}
 
 						// skip fields
-						if(in_array($val, array('featured','all_day','hide_end_time','event_gmap','evo_year_long','_evo_month_long','repeatevent','color','publish_status','event_name','event_description','event_start_date','event_start_time','event_end_date','event_end_time','evo_organizer_id', 'evo_location_id'))) continue;
+						if(in_array($val, array('featured','all_day','hide_end_time','event_gmap','evo_year_long','_evo_month_long','repeatevent','color','publish_status','event_name','event_description','event_start_date','event_start_time','event_end_date','event_end_time','evo_organizer_id', 'evo_location_id'
+							)
+						)) continue;
 
 						// image
 						if($val =='image_url'){
@@ -251,6 +297,7 @@ class EVO_admin_ajax{
 							$csvRow.= ",";
 						}
 
+					$csvRow = apply_filters('evo_export_events_csv_row',$csvRow, $__id, $pmv);
 					$csvRow.= "\n";
 
 				echo iconv("UTF-8", "ISO-8859-2", $csvRow);
@@ -529,21 +576,29 @@ class EVO_admin_ajax{
 					// initial variables
 						$guide = ($_has_addon && !empty($_this_addon['guide_file']) )? "<span class='eventon_guide_btn ajde_popup_trig' ajax_url='{$_this_addon['guide_file']}' poptitle='How to use {$product['name']}'>Guide</span> | ":null;
 						
-						$__action_btn = (!$_has_addon)? "<a class='evo_admin_btn btn_secondary' target='_blank' href='". $product['download']."'>Get it now</a>": "<a class='ajde_popup_trig evo_admin_btn btn_prime' dynamic_c='1' content_id='eventon_pop_content_{$slug}' poptitle='Activate {$product['name']} License'>Activate Now</a>";
+						$__action_btn = (!$_has_addon)? "<a class='evo_admin_btn btn_secondary' target='_blank' href='". $product['download']."'>Get it now</a>": "<a class='ajde_popup_trig evo_admin_btn btn_prime' data-dynamic_c='1' data-content_id='eventon_pop_content_{$slug}' poptitle='Activate {$product['name']} License'>Activate Now</a>";
 
 						//$__remote_version = (!empty($_this_addon['remote_version']))? '<span title="Remote server version"> /'.$_this_addon['remote_version'].'</span>': false;
 
-						
-						
+						$pluginData = array();
+						if(file_exists(AJDE_EVCAL_DIR.'/'.$slug.'/'.$slug.'.php'))
+							$pluginData = get_plugin_data(AJDE_EVCAL_DIR.'/'.$slug.'/'.$slug.'.php');
+					
+						// /print_r($pluginData);
 					// ACTIVATED
 					if(!empty($_this_addon['status']) && $_this_addon['status']=='active' && $_has_addon):
+
+
 					
 					?>
 						<div id='evoaddon_<?php echo $slug;?>' class="addon activated" data-slug='<?php echo $slug;?>' data-key='<?php echo $_this_addon['key'];?>' data-email='<?php echo $_this_addon['email'];?>' data-product_id='<?php echo $product['id'];?>'>
 							<h2><?php echo $product['name']?></h2>
-							<p class='version'><span><?php echo $_this_addon['version']?></span></p>
+							<?php if(!empty($pluginData['Version'])):?>
+								<p class='version'><span><?php echo $pluginData['Version']?></span></p>
+							<?php endif;?>
+
 							<p class='status'>License Status: <strong>Activated</strong></p>
-							<p><a class='evo_deact_adodn ajde_popup_trig evo_admin_btn btn_triad' dynamic_c='1' content_id='eventon_pop_content_dea_<?php echo $slug;?>' poptitle='Deactivate <?php echo $product['name'];?> License'>Deactivate</a></p>
+							<p><a class='evo_deact_adodn ajde_popup_trig evo_admin_btn btn_triad' data-dynamic_c='1' data-content_id='eventon_pop_content_dea_<?php echo $slug;?>' poptitle='Deactivate <?php echo $product['name'];?> License'>Deactivate</a></p>
 							<p class="links"><?php echo $guide;?><a href='<?php echo $product['link'];?>' target='_blank'>Learn More</a></p>
 								<div id='eventon_pop_content_dea_<?php echo $slug;?>' class='evo_hide_this'>
 									<p class="evo_loader"></p>
@@ -556,7 +611,9 @@ class EVO_admin_ajax{
 					?>
 						<div id='evoaddon_<?php echo $slug;?>' class="addon <?php echo (!$_has_addon)?'donthaveit':null;?>" data-slug='<?php echo $slug;?>' data-key='<?php echo !empty($_this_addon['key'])?$_this_addon['key']:'';?>' data-email='<?php echo !empty($_this_addon['email'])?$_this_addon['email']:'';?>' data-product_id='<?php echo !empty($product['id'])? $product['id']:'';?>'>
 							<h2><?php echo $product['name']?></h2>
-							<?php if(!empty($_this_addon['version'])):?><p class='version'><span><?php echo $_this_addon['version']?></span></p><?php endif;?>
+							<?php if(!empty($pluginData['Version'])):?>
+								<p class='version'><span><?php echo $pluginData['Version']?></span></p>
+							<?php endif;?>
 							<p class='status'>License Status: <strong>Not Activated</strong></p>
 							<p class='action'><?php echo $__action_btn;?></p>
 							<p class="links"><?php echo $guide;?><a href='<?php echo $product['link'];?>' target='_blank'>Learn More</a></p>

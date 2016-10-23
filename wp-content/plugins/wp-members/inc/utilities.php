@@ -17,16 +17,18 @@
  *
  * Functions included:
  * - wpmem_create_formfield
- * - wpmem_selected
- * - wpmem_chk_qstr
- * - wpmem_generatePassword (deprecated)
+ * - wpmem_selected @deprecated 3.1.0 Use selected() or checked() instead.
+ * - wpmem_chk_qstr @deprecated 3.1.0 Use add_query_arg() instead.
+ * - wpmem_generatePassword @deprecated Unknown Use wp_generate_password() instead.
  * - wpmem_texturize
  * - wpmem_enqueue_style
  * - wpmem_do_excerpt
- * - wpmem_test_shortcode
+ * - wpmem_test_shortcode @deprecated 3.1.2 Use has_shortcode() instead.
  * - wpmem_get_excluded_meta
  * - wpmem_use_ssl
  * - wpmem_wp_reserved_terms
+ * - wpmem_write_log
+ * - wpmem_get
  */
 
 
@@ -53,7 +55,7 @@ function wpmem_create_formfield( $name, $type, $value, $valtochk=null, $class='t
 		'name'     => $name,
 		'type'     => $type,
 		'value'    => $value,
-		'valtochk' => $valtochk,
+		'compare'  => $valtochk,
 		'class'    => $class,
 	);
 	return $wpmem->forms->create_form_field( $args );
@@ -74,6 +76,7 @@ if ( ! function_exists( 'wpmem_selected' ) ):
  * @return string $issame
  */
 function wpmem_selected( $value, $valtochk, $type = null ) {
+	wpmem_write_log( "wpmem_selected() is deprecated as of WP-Members 3.1.0. Use selected() or checked() instead" );
 	$issame = ( $type == 'select' ) ? ' selected' : ' checked';
 	return ( $value == $valtochk ) ? $issame : '';
 }
@@ -85,12 +88,13 @@ if ( ! function_exists( 'wpmem_chk_qstr' ) ):
  * Checks querystrings.
  *
  * @since 2.0.0
+ * @deprecated 3.1.0 Use add_query_arg() instead.
  *
  * @param  string $url
  * @return string $return_url
  */
 function wpmem_chk_qstr( $url = null ) {
-
+	wpmem_write_log( "wpmem_chk_qstr() is deprecated as of WP-Members 3.1.0. Use add_query_arg() instead" );
 	$permalink = get_option( 'permalink_structure' );
 	if ( ! $permalink ) {
 		$url = ( ! $url ) ? get_option( 'home' ) . "/?" . $_SERVER['QUERY_STRING'] : $url;
@@ -109,11 +113,12 @@ if ( ! function_exists( 'wpmem_generatePassword' ) ):
  * Generates a random password.
  *
  * @since 2.0.0
- * @deprecated Unknown
+ * @deprecated Unknown Use wp_generate_password() instead.
  *
  * @return string The random password.
  */
 function wpmem_generatePassword() {
+	wpmem_write_log( "WP-Members function wpmem_generatePassword() is deprecated. Use wp_generate_password() instead" );
 	return substr( md5( uniqid( microtime() ) ), 0, 7 );
 }
 endif;
@@ -210,11 +215,6 @@ function wpmem_do_excerpt( $content ) {
 			
 			$defaults = array(
 				'length'           => $autoex['length'],
-				'strip_tags'       => false,
-				'close_tags'       => array( 'i', 'b', 'strong', 'em', 'h1', 'h2', 'h3', 'h4', 'h5' ),
-				'parse_shortcodes' => false,
-				'strip_shortcodes' => false,
-				'add_ellipsis'     => false,
 				'more_link'        => $more_link,
 				'blocked_only'     => false,
 			);
@@ -222,19 +222,14 @@ function wpmem_do_excerpt( $content ) {
 			 * Filter auto excerpt defaults.
 			 *
 			 * @since 3.0.9
+			 * @since 3.1.5 Deprecated add_ellipsis, strip_tags, close_tags, parse_shortcodes, strip_shortcodes.
 			 *
 			 * @param array {
 			 *     An array of settings to override the function defaults.
 			 *
 			 *     @type int         $length           The default length of the excerpt.
-			 *     @type bool|string $strip_tags       Can be a boolean to strip HTML tags from the excerpt
-			 *                                         or a string of allowed tags. default: false.
-			 *     @type array       $close_tags       An array of tags to close (without < >: 
-			 *                                         for example i, b, h1, etc).
-			 *     @type bool        $parse_shortcodes Parse shortcodes in the excerpt. default: false.
-			 *     @type bool        $strip_shortcodes Remove shortcodes in the excerpt. default: false.
-			 *     @type bool        $add_ellipsis     Add ellipsis (...) to the end of the excerpt.
 			 *     @type string      $more_link        The more link HTML.
+			 *     @type boolean     $blocked_only     Run autoexcerpt only on blocked content. default: false.
 			 * }
 			 * @param string $post->ID        The post ID.
 			 * @param string $post->post_type The content's post type.					 
@@ -259,61 +254,7 @@ function wpmem_do_excerpt( $content ) {
 			}
 		
 			if ( $do_excerpt ) {
-			
-				// If strip_tags is enabled, remove HTML tags.
-				if ( $args['strip_tags'] ) {
-					$allowable_tags = ( ! is_bool( $args['strip_tags'] ) ) ? $args['strip_tags'] : '';
-					$content = strip_tags( $content, $allowable_tags );
-				}
-				
-				// If parse shortcodes is enabled, parse shortcodes in the excerpt.
-				$content = ( $args['parse_shortcodes'] ) ? do_shortcode( $content ) : $content;
-				
-				// If strip shortcodes is enabled, strip shortcodes from the excerpt.
-				$content = ( $args['strip_shortcodes'] ) ? strip_shortcodes( $content ) : $content;
-	
-				// Create the excerpt.
-				$words = preg_split( "/[\n\r\t ]+/", $content, $args['length'] + 1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_OFFSET_CAPTURE );
-				if ( count( $words ) > $args['length'] ) { 
-					end( $words );
-					$last_word = prev( $words );
-					$content   = substr( $content, 0, $last_word[1] + strlen( $last_word[0] ) );
-				}
-				 
-				/* @todo - Possible better excerpt creation.
-				$excerpt = ''; $x = 1; $end_chk = false;
-				$words = explode( ' ', $content, ( $args['length'] + 100 ) );
-				foreach ( $words as $word ) {
-					if ( $x < $args['length'] + 1 ) {
-						$excerpt.= trim( $word ) . ' ';		
-						$offset = ( $x == 1 ) ? 1 : 0;
-						if ( strpos( $word, '<', $offset ) || $end_chk ) {
-							$end_chk = true;
-							if ( strpos( $word, '>' ) && ! strpos( $word, '><' ) ) {
-								$end_chk = false;
-								$x++;
-							}
-						} else {
-							$x++; 
-						}
-					} else {
-						break;
-					}
-				}
-				$content = $excerpt;
-				*/
-
-				// Check for common html tags and make sure they're closed.
-				foreach ( $args['close_tags'] as $tag ) {
-					if ( stristr( $content, '<' . $tag . '>' ) || stristr( $content, '<' . $tag . ' ' ) ) {
-						$after = stristr( $content, '</' . $tag . '>' );
-						$content = ( ! stristr( $after, '</' . $tag . '>' ) ) ? $content . '</' . $tag . '>' : $content;
-					}
-				}
-				$content = ( $args['add_ellipsis'] ) ? $content . '...' : $content; 
-				
-				// Add the more link to the excerpt.
-				$content = $content . ' ' . $args['more_link'];
+				$content = wp_trim_words( $content, $args['length'], $args['more_link'] );
 			}
 
 		}
@@ -342,6 +283,7 @@ if ( ! function_exists( 'wpmem_test_shortcode' ) ):
  * Tests $content for the presence of the [wp-members] shortcode.
  *
  * @since 2.6.0
+ * @deprecated 3.1.2 Use has_shortcode() instead.
  *
  * @global string $shortcode_tags
  * @return bool
@@ -350,6 +292,7 @@ if ( ! function_exists( 'wpmem_test_shortcode' ) ):
  */
 function wpmem_test_shortcode( $content, $tag ) {
 
+	wpmem_write_log( "wpmem_test_shortcode() is deprecated as of WP-Members 3.1.2. Use has_shortcode() instead." );
 	global $shortcode_tags;
 	if ( array_key_exists( $tag, $shortcode_tags ) ) {
 		preg_match_all( '/' . get_shortcode_regex() . '/s', $content, $matches, PREG_SET_ORDER );
@@ -417,4 +360,46 @@ function wpmem_wp_reserved_terms() {
 	return $reserved_terms;
 }
 
+
+/**
+ * Log debugging errors.
+ *
+ * @since 3.1.2
+ * 
+ * @param mixed (string|array|object) $log Information to write in the WP debug file.
+ */
+function wpmem_write_log ( $log ) {
+	if ( is_array( $log ) || is_object( $log ) ) {
+		error_log( print_r( $log, true ) );
+	} else {
+		error_log( $log );
+	}
+}
+
+
+/**
+ * Utility function to validate post.
+ *
+ * @since 3.1.3
+ *
+ * @todo Should this include trim? as an option? Perhaps that's better done on the returned result so that other escapes, etc could be done.
+ *
+ * @param  string $tag     The form field or query string.
+ * @param  string $default The default value (optional).
+ * @param  string $type    post|get|request (optional).
+ * @return string 
+ */
+function wpmem_get( $tag, $default = '', $type = 'post' ) {
+	switch ( $type ) {
+		case 'post':
+			return ( isset( $_POST[ $tag ] ) ) ? $_POST[ $tag ] : $default;
+			break;
+		case 'get':
+			return ( isset( $_GET[ $tag ] ) ) ? $_GET[ $tag ] : $default;
+			break;
+		case 'request':
+			return ( isset( $_REQUEST[ $tag ] ) ) ? $_REQUEST[ $tag ] : $default;
+			break;
+	}
+}
 // End of file.

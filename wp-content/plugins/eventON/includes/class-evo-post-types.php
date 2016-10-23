@@ -48,6 +48,8 @@ class EVO_post_types{
 				'label' => __('Event Location','eventon'), 
 				'show_ui' => true,
 				'query_var' => true,
+				'show_in_quick_edit'         => false,
+				'meta_box_cb'                => false,
 				'capabilities'	=> $__capabilities,
 				'rewrite' => apply_filters('evotax_slug_loc', array( 'slug' => 'event-location' ) )
 			)) 
@@ -59,6 +61,8 @@ class EVO_post_types{
 				'label' => __('Event Organizer','eventon'), 
 				'show_ui' => true,
 				'query_var' => true,
+				'show_in_quick_edit'         => false,
+				'meta_box_cb'                => false,
 				'capabilities'			=> $__capabilities,
 				'rewrite' => apply_filters('evotax_slug_org', array( 'slug' => 'event-organizer' ) )
 			)) 
@@ -148,7 +152,7 @@ class EVO_post_types{
 					'rewrite' 				=> apply_filters('eventon_event_slug', array(
 						'slug'=>$event_slug)),
 					'query_var'		 		=> true,
-					'supports' 				=> apply_filters('eventon_event_post_supports', array('title','author', 'editor','custom-fields','thumbnail','page-attributes')),
+					'supports' 				=> apply_filters('eventon_event_post_supports', array('title','author', 'editor','custom-fields','thumbnail','page-attributes','comments')),
 					//'supports' 			=> array('title','editor','thumbnail','page-attributes'),
 					'menu_position' 		=> 15, 
 					'has_archive' 			=> true,

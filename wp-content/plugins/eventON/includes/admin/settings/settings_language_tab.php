@@ -2,7 +2,7 @@
 /**
  * Language Settings 
  *
- * @version		2.3.21
+ * @version		2.4.7
  * @package		EventON/settings
  * @category	Settings
  * @author 		AJDE
@@ -214,7 +214,8 @@ class evo_settings_lang{
 						'placeholder'=>'Sort options all text'
 					),array(
 						'label'=>'Current Month','name'=>'evcal_lang_gototoday',
-					),
+					),array('label'=>'Apply Filters','name'=>'evcal_lang_apply_filters'),
+
 					array('type'=>'togend'),
 				array('type'=>'togheader','name'=>__('Event Card','eventon')),
 					array(
@@ -298,6 +299,18 @@ class evo_settings_lang{
 				array('type'=>'togend'),
 
 			)); 
+		
+			// single events
+			$singleEvents = array(
+				array('type'=>'togheader','name'=>'Single Events'),
+				array('label'=>'Login','var'=>'1',),
+				array('label'=>'You must login to see this event','var'=>'1'),
+				array('label'=>'This is a repeating event','var'=>'1'),
+				array('type'=>'togend'),
+			);
+
+			$output = array_merge($output, $singleEvents);
+			
 			return $output;
 		}
 			function _array_part_months(){

@@ -1,5 +1,5 @@
 /*!
- *  Font Awesome 4.6.2 by @davegandy - http://fontawesome.io - @fontawesome
+ *  Font Awesome 4.6.3 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
 /* FONT PATH
@@ -7,8 +7,8 @@
 
 @font-face {
   font-family: 'evo_FontAwesome';
-  src: url('evo_fontawesome-webfont.eot?v=4.6.2');
-  src: url('evo_fontawesome-webfont.eot?#iefix&v=4.6.2') format('embedded-opentype'), url('evo_fontawesome-webfont.woff2?v=4.6.2') format('woff2'), url('evo_fontawesome-webfont.woff?v=4.6.2') format('woff'), url('evo_fontawesome-webfont.ttf?v=4.6.2') format('truetype'), url('evo_fontawesome-webfont.svg?v=4.6.2#fontawesomeregular') format('svg');
+  src: url('evo_fontawesome-webfont.eot?v=4.6.3');
+  src: url('evo_fontawesome-webfont.eot?#iefix&v=4.6.3') format('embedded-opentype'), url('evo_fontawesome-webfont.woff2?v=4.6.3') format('woff2'), url('evo_fontawesome-webfont.woff?v=4.6.3') format('woff'), url('evo_fontawesome-webfont.ttf?v=4.6.3') format('truetype'), url('evo_fontawesome-webfont.svg?v=4.6.3#fontawesomeregular') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -20,6 +20,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 /* makes the font 33% larger relative to the icon container */
 .fa-lg {
   font-size: 1.33333333em;
@@ -2170,6 +2171,14 @@
 }
 .fa-themeisle:before {
   content: "\f2b2";
+}
+.fa-google-plus-circle:before,
+.fa-google-plus-official:before {
+  content: "\f2b3";
+}
+.fa-fa:before,
+.fa-font-awesome:before {
+  content: "\f2b4";
 }
 .sr-only {
   position: absolute;

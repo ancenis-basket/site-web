@@ -6,7 +6,7 @@
  * @subpackage  Widgets
  *
  * @since    1.0.9.9
- * @version  1.3.2
+ * @version  1.3.13
  */
 
 
@@ -48,6 +48,9 @@ class WM_Subnav extends WP_Widget {
 
 		/**
 		 * Constructor
+		 *
+		 * @since    1.0.9.9
+		 * @version  1.3.10
 		 */
 		function __construct() {
 
@@ -60,8 +63,9 @@ class WM_Subnav extends WP_Widget {
 				$atts['id']          = 'wm-subnav';
 				$atts['name']        = wp_get_theme( $theme )->get( 'Name' ) . ' ' . esc_html_x( 'Submenu', 'Widget name.', 'webman-amplifier' );
 				$atts['widget_ops']  = array(
-						'classname'   => 'wm-subnav',
-						'description' => esc_html_x( 'List of subpages', 'Widget description.', 'webman-amplifier' )
+						'classname'                   => 'wm-subnav',
+						'description'                 => esc_html_x( 'List of subpages', 'Widget description.', 'webman-amplifier' ),
+						'customize_selective_refresh' => true,
 					);
 				$atts['control_ops'] = array();
 
@@ -86,7 +90,7 @@ class WM_Subnav extends WP_Widget {
 		 * Output HTML
 		 *
 		 * @since    1.0.9.9
-		 * @version  1.2.8
+		 * @version  1.3.13
 		 */
 		function widget( $args, $instance ) {
 
@@ -132,7 +136,7 @@ class WM_Subnav extends WP_Widget {
 					if ( ! trim( $instance['title'] ) ) {
 
 						if ( $grandparent ) {
-							$instance['title'] = '<a href="' . esc_url( get_permalink( $grandparent ) ) . '">&laquo; ' . get_the_title( $grandparent ) . '</a>';
+							$instance['title'] = '<a href="' . esc_url( get_permalink( $grandparent ) ) . '">' . get_the_title( $grandparent ) . '</a>';
 						} else {
 							$instance['title'] = '<a href="' . esc_url( get_permalink( $post->ID ) ) . '">' . get_the_title( $post->ID ) . '</a>';
 						}

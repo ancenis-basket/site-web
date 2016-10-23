@@ -232,25 +232,27 @@ function wpmem_do_sidebar( $redirect_to = null ) {
 		global $user_login; 
 
 		/** This filter is documented in wp-members/inc/dialogs.php */
-		$logout = apply_filters( 'wpmem_logout_link', $url . '/?a=logout' );
+		$logout = apply_filters( 'wpmem_logout_link', add_query_arg( 'a', 'logout', $url ) );
 		
 		// Defaults.
 		$defaults = array(
+			'user_login'     => $user_login,
 			'wrapper_before' => '<p>',
 			'status_text'    => sprintf( $wpmem->get_text( 'sb_status' ), $user_login ) . '<br />',
 			'link_text'      => $wpmem->get_text( 'sb_logout' ),
 			'wrapper_after'  => '</p>',
 		);
-		
+	
 		/**
 		 * Filter sidebar login status arguments.
 		 *
 		 * @since 3.1.0
+		 * @since 3.1.2 Pass default args.
 		 *
-		 * @param  null
+		 * @param  array $defaults
 		 * @return array
 		 */
-		$args = apply_filters( 'wpmem_sidebar_status_args', '' );
+		$args = apply_filters( 'wpmem_sidebar_status_args', $defaults );
 		
 		// Merge $args with $defaults.
 		$args = wp_parse_args( $args, $defaults );

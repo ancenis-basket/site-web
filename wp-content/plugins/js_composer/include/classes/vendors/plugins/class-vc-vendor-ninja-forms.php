@@ -14,11 +14,10 @@ class Vc_Vendor_NinjaForms implements Vc_Vendor_Interface {
 	 * @since 4.4
 	 */
 	public function load() {
-		vc_lean_map( 'ninja_forms_display_form', array(
+		vc_lean_map( 'ninja_form', array(
 			$this,
 			'addShortcodeSettings',
-		) );
-
+		));
 	}
 
 	/**
@@ -31,7 +30,7 @@ class Vc_Vendor_NinjaForms implements Vc_Vendor_Interface {
 	 * @deprecated 4.9
 	 */
 	public function mapNinjaForms( $ninja_forms = array() ) {
-		// We map only ninja_forms_display_form shortcode same as contact-form-7
+		// We map only [ninja_form] shortcode same as contact-form-7
 		vc_map( array(
 				'base' => 'ninja_forms_display_form',
 				'name' => __( 'Ninja Forms', 'js_composer' ),
@@ -61,20 +60,8 @@ class Vc_Vendor_NinjaForms implements Vc_Vendor_Interface {
 	 * @return array
 	 */
 	public function addShortcodeSettings( $tag ) {
-		if ( ! function_exists( 'ninja_forms_get_all_forms' ) ) {
-			// experimental, maybe not needed
-			require_once( NINJA_FORMS_DIR . '/includes/database.php' );
-		}
-		$ninja_forms_data = ninja_forms_get_all_forms();
-		$ninja_forms = array();
-		if ( ! empty( $ninja_forms_data ) ) {
-			// Fill array with Name=>Value(ID)
-			foreach ( $ninja_forms_data as $key => $value ) {
-				if ( is_array( $value ) ) {
-					$ninja_forms[ $value['name'] ] = $value['id'];
-				}
-			}
-		}
+
+		$ninja_forms = $this->get_forms();
 
 		return array(
 			'base' => $tag,
@@ -94,4 +81,39 @@ class Vc_Vendor_NinjaForms implements Vc_Vendor_Interface {
 			),
 		);
 	}
+
+	private function get_forms()
+	{
+		$ninja_forms = array();
+		if( $this->is_ninja_forms_three() ) {
+
+			$ninja_forms_data = ninja_forms_get_all_forms();
+
+			if ( ! empty( $ninja_forms_data ) ) {
+				// Fill array with Name=>Value(ID)
+				foreach ( $ninja_forms_data as $key => $value ) {
+					if ( is_array( $value ) ) {
+						$ninja_forms[ $value['name'] ] = $value['id'];
+					}
+				}
+			}
+		} else {
+
+			$ninja_forms_data = Ninja_Forms()->form()->get_forms();
+
+			if ( ! empty( $ninja_forms_data ) ) {
+				// Fill array with Name=>Value(ID)
+				foreach ( $ninja_forms_data as $form ) {
+					$ninja_forms[ $form->get_setting( 'title' ) ] = $form->get_id();
+				}
+			}
+		}
+
+		return $ninja_forms;
+	}
+
+    private function is_ninja_forms_three()
+    {
+        return ( version_compare( get_option( 'ninja_forms_version', '0.0.0' ), '3.0', '<' ) || get_option( 'ninja_forms_load_deprecated', FALSE ) );
+    }
 }

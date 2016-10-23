@@ -19,6 +19,7 @@
 /**
  * Load utility functions.
  */
+require_once( WPMEM_PATH . 'inc/api.php' );
 require_once( WPMEM_PATH . 'inc/utilities.php' );
 
 
@@ -68,12 +69,14 @@ if ( ! function_exists( 'wpmem_block' ) ):
  *
  * @since 2.6.0
  * @since 3.0.0 Now a wrapper for $wpmem->is_blocked().
+ * @deprecated 3.1.1 Use wpmem_is_blocked() instead.
  *
  * @global object $wpmem The WP-Members object class.
  *
  * @return bool $block true if content is blocked, false otherwise.
  */
 function wpmem_block() {
+	wpmem_write_log( "wpmem_block() is deprecated as of WP-Members 3.1.1, use wpmem_is_blocked() instead" );
 	global $wpmem;
 	return $wpmem->is_blocked();
 }
@@ -151,9 +154,9 @@ function wpmem_login() {
 
 			// Determine where to put the user after login.
 			if ( isset( $_POST['redirect_to'] ) )  {
-				$redirect_to = trim( $_POST['redirect_to'] );
+				$redirect_to = esc_url( trim( $_POST['redirect_to'] ) );
 			} else {
-				$redirect_to = $_SERVER['REQUEST_URI'] . ( ( isset( $_SERVER['QUERY_STRING'] ) ) ? $_SERVER['QUERY_STRING'] : '' );
+				$redirect_to = esc_url( $_SERVER['REQUEST_URI'] . ( ( isset( $_SERVER['QUERY_STRING'] ) ) ? $_SERVER['QUERY_STRING'] : '' ) );
 			}
 
 			/**
@@ -220,33 +223,6 @@ function wpmem_logout( $redirect_to = null ) {
 endif;
 
 
-if ( ! function_exists( 'wpmem_login_status' ) ):
-/**
- * Returns or displays the user's login status.
- *
- * @since 2.0.0
- *
- * @param  boolean $echo   Determines whether function should print result or not (default: true).
- * @return string  $status The user status string produced by wpmem_inc_memberlinks().
- */
-function wpmem_login_status( $echo = true ) {
-
-	/**
-	 * Load the dialogs functions.
-	 */
-	require_once( WPMEM_PATH . 'inc/dialogs.php' );
-
-	if ( is_user_logged_in() ) { 
-		$status = wpmem_inc_memberlinks( 'status' );
-		if ( $echo ) {
-			echo $status; 
-		}
-		return $status;
-	}
-}
-endif;
-
-
 if ( ! function_exists( 'wpmem_inc_sidebar' ) ):
 /**
  * Displays the sidebar.
@@ -254,10 +230,10 @@ if ( ! function_exists( 'wpmem_inc_sidebar' ) ):
  * This function is a wrapper for wpmem_do_sidebar().
  *
  * @since 2.0.0
- *
- * @todo This function may be deprecated.
+ * @deprecated Unknown
  */
 function wpmem_inc_sidebar() {
+	wpmem_write_log( "WP-Members function wpmem_inc_sidebar() is deprecated. No alternative function exists" );
 	/**
 	 * Load the sidebar functions.
 	 */
@@ -307,35 +283,46 @@ function wpmem_change_password() {
 	global $user_ID;
 	if ( isset( $_POST['formsubmit'] ) ) {
 
-		$pass1 = trim( $_POST['pass1'] );
-		$pass2 = trim( $_POST['pass2'] );
+		$is_error = false;
+		
+		$pass1 = wpmem_get( 'pass1', false ); //trim( $_POST['pass1'] );
+		$pass2 = wpmem_get( 'pass2', false ); //trim( $_POST['pass2'] );
 
-		if ( ! $pass1 && ! $pass2 ) { // Check for both fields being empty.
-
-			return "pwdchangempty";
-
-		} elseif ( $pass1 != $pass2 ) { // Make sure the fields match.
-
-			return "pwdchangerr";
-
-		} else { // Update password in db (wp_update_user hashes the password).
-
-			wp_update_user( array ( 'ID' => $user_ID, 'user_pass' => $pass1 ) );
-
-			/**
-			 * Fires after password change.
-			 *
-			 * @since 2.9.0
-			 * @since 3.0.5 Added $pass1 to arguments passed.
-			 *
-			 * @param int    $user_ID The user's numeric ID.
-			 * @param string $pass1   The user's new plain text password.
-			 */
-			do_action( 'wpmem_pwd_change', $user_ID, $pass1 );
-
-			return "pwdchangesuccess";
-
+		// Check for both fields being empty.
+		$is_error = ( ! $pass1 && ! $pass2 ) ? "pwdchangempty" : $is_error;
+		// Make sure the fields match.
+		$is_error = ( $pass1 != $pass2 ) ? "pwdchangerr" : $is_error;
+		
+		/**
+		 * Filters the password change error.
+		 *
+		 * @since 3.1.5
+		 *
+		 * @param string $is_error
+		 * @param int    $user_ID  The user's numeric ID.
+		 * @param string $pass1    The user's new plain text password.
+		 */
+		$is_error = apply_filters( 'wpmem_pwd_change_error', $is_error, $user_ID, $pass1 );
+		
+		if ( $is_error ) {
+			return $is_error;
 		}
+
+		// Update user password.
+		wp_update_user( array ( 'ID' => $user_ID, 'user_pass' => $pass1 ) );
+
+		/**
+		 * Fires after password change.
+		 *
+		 * @since 2.9.0
+		 * @since 3.0.5 Added $pass1 to arguments passed.
+		 *
+		 * @param int    $user_ID The user's numeric ID.
+		 * @param string $pass1   The user's new plain text password.
+		 */
+		do_action( 'wpmem_pwd_change', $user_ID, $pass1 );
+
+		return "pwdchangesuccess";
 	}
 	return;
 }
@@ -381,7 +368,7 @@ function wpmem_reset_password() {
 
 				$user = get_user_by( 'login', $arr['user'] );
 
-				if ( strtolower( $user->user_email ) !== strtolower( $arr['email'] ) || ( ( $wpmem->mod_reg == 1 ) && ( get_user_meta( $user->ID,'active', true ) != 1 ) ) ) {
+				if ( strtolower( $user->user_email ) !== strtolower( $arr['email'] ) || ( ( $wpmem->mod_reg == 1 ) && ( get_user_meta( $user->ID, 'active', true ) != 1 ) ) ) {
 					// The username was there, but the email did not match OR the user hasn't been activated.
 					return "pwdreseterr";
 
@@ -487,16 +474,16 @@ function wpmem_wp_reg_validate( $errors, $sanitized_user_login, $user_email ) {
 	global $wpmem;
 
 	// Get any meta fields that should be excluded.
-	// @todo This needs to change to $wpmem->excluded_fields($tag).
 	$exclude = wpmem_get_excluded_meta( 'register' );
 
 	foreach ( $wpmem->fields as $field ) {
 		$is_error = false;
-		if ( $field[5] == 'y' && $field[2] != 'user_email' && ! in_array( $field[2], $exclude ) ) {
-			if ( ( $field[3] == 'checkbox' ) && ( ! isset( $_POST[ $field[2] ] ) ) ) {
+		$meta_key = $field[2];
+		if ( $field[5] == 'y' && $meta_key != 'user_email' && ! in_array( $meta_key, $exclude ) ) {
+			if ( ( $field[3] == 'checkbox' || $field[3] == 'multicheckbox' || $field[3] == 'multiselect' || $field[3] == 'radio' ) && ( ! isset( $_POST[ $meta_key ] ) ) ) {
 				$is_error = true;
 			} 
-			if ( ( $field[3] != 'checkbox' ) && ( ! $_POST[ $field[2] ] ) ) {
+			if ( ( $field[3] != 'checkbox' && $field[3] != 'multicheckbox' && $field[3] != 'multiselect' && $field[3] != 'radio' ) && ( ! $_POST[ $meta_key ] ) ) {
 				$is_error = true;
 			}
 			if ( $is_error ) { $errors->add( 'wpmem_error', sprintf( $wpmem->get_text( 'reg_empty_field' ), __( $field[1], 'wp-members' ) ) ); }
@@ -511,9 +498,11 @@ function wpmem_wp_reg_validate( $errors, $sanitized_user_login, $user_email ) {
  * Inserts registration data from the native WP registration.
  *
  * @since 2.8.3
+ * @since 3.1.1 Added new 3.1 field types and activate user support.
+ *
+ * @todo Compartmentalize file upload along with main register function.
  *
  * @global object $wpmem The WP-Members object class.
- *
  * @param int $user_id The WP user ID.
  */
 function wpmem_wp_reg_finalize( $user_id ) {
@@ -523,12 +512,23 @@ function wpmem_wp_reg_finalize( $user_id ) {
 	$add_new  = ( isset( $_POST['action'] ) && $_POST['action'] == 'createuser' ) ? true : false;
 	if ( $native_reg || $add_new ) {
 		// Get any excluded meta fields.
-		// @todo This needs to change to $wpmem->excluded_fields($tag).
 		$exclude = wpmem_get_excluded_meta( 'register' );
 		foreach ( $wpmem->fields as $meta ) {
-			if ( isset( $_POST[ $meta[2] ] ) && ! in_array( $meta[2], $exclude ) ) {
-				update_user_meta( $user_id, $meta[2], sanitize_text_field( $_POST[ $meta[2] ] ) );
+			if ( isset( $_POST[ $meta[2] ] ) && ! in_array( $meta[2], $exclude ) && 'file' != $meta[3] && 'image' != $meta[3] ) {
+				if ( 'multiselect' == $meta[3] || 'multicheckbox' == $meta[3] ) {
+					$delimiter = ( isset( $meta[8] ) ) ? $meta[8] : '|';
+					$data = implode( $delimiter, $_POST[ $meta[2] ] );
+				} else {
+					$data = $_POST[ $meta[2] ];
+				}
+				update_user_meta( $user_id, $meta[2], sanitize_text_field( $data ) );
 			}
+		}
+		
+		// If moderated registration and activate is checked, set active flags.
+		if ( is_admin() && $add_new && 1 == $wpmem->mod_reg && isset( $_POST['activate_user'] ) ) {
+			update_user_meta( $user_id, 'active', 1 );
+			wpmem_set_user_status( $user_id, 0 );
 		}
 	}
 	return;
@@ -559,7 +559,7 @@ function wpmem_wplogin_stylesheet() {
  */
 function wpmem_securify_comments( $open ) {
 
-	$open = ( ! is_user_logged_in() && wpmem_block() ) ? false : $open;
+	$open = ( ! is_user_logged_in() && wpmem_is_blocked() ) ? false : $open;
 
 	/**
 	 * Filters whether comments are open or not.
@@ -596,34 +596,6 @@ function wpmem_securify_comments_array( $comments , $post_id ) {
 
 
 /**
- * Redirects a user to defined login page with return redirect.
- *
- * @since 3.0.2
- *
- * @global object $wp    The WordPress object.
- * @global object $post  The WordPress post object.
- * @global object $wpmem The WP-Members object.
- */
-function wpmem_redirect_to_login() {
-	
-	global $wp, $post, $wpmem;
-
-	if ( ! is_user_logged_in() && $wpmem->is_blocked() ) {
-		
-		// Get current page location.
-		$current_page = home_url( add_query_arg( array(), $wp->request ) );
-		$redirect_to  = urlencode( $current_page );
-		
-		$url = add_query_arg( 'redirect_to', $redirect_to, $wpmem->user_pages['login'] );
-		
-		wp_redirect( $url );
-		exit();
-	}
-	return;
-}
-
-
-/**
  * Handles retrieving a forgotten username.
  *
  * @since 3.0.8
@@ -633,8 +605,9 @@ function wpmem_redirect_to_login() {
 function wpmem_retrieve_username() {
 	
 	if ( isset( $_POST['formsubmit'] ) ) {
-	
-		$user = ( isset( $_POST['user_email'] ) ) ? get_user_by( 'email', $_POST['user_email'] ) : false;
+		
+		$email = sanitize_email( $_POST['user_email'] );
+		$user  = ( isset( $_POST['user_email'] ) ) ? get_user_by( 'email', $email ) : false;
 	
 		if ( $user ) {
 

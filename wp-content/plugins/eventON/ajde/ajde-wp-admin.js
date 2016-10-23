@@ -13,44 +13,42 @@ jQuery(document).ready(function($){
 			$(this).append('<em>' +tipContent +'</em>').addClass(classes[1]);
 		});
 
-	
-
 	// lightbox hide
 		$('body').on('click',' .ajde_close_pop_trig',function(){
+			hide_popupwindowbox( $(this).closest('.ajde_admin_lightbox') );
+		});
+		$('body').on('click',' .ajde_close_pop_btn',function(){
 			var obj = $(this).parent();
-			hide_popupwindowbox();
-		});$('body').on('click',' .ajde_close_pop_btn',function(){
-			var obj = $(this).parent();
-			hide_popupwindowbox();
+			hide_popupwindowbox( $(this).closest('.ajde_admin_lightbox') );
 		});
 		
 		$(document).mouseup(function (e){
-			var container=$('.ajde_popup');
-			
-			if(container.hasClass('active')){
-				if (!container.is(e.target) // if the target of the click isn't the container...
-				&& container.has(e.target).length === 0) // ... nor a descendant of the container
-				{
-					container.animate({'margin-top':'70px','opacity':0}).fadeOut().removeClass('active');
-					$('#ajde_popup_bg').fadeOut();
-				}
+			var container = $('.ajde_popup');			
+			if(container.hasClass('nooutside')) return false;
+
+			if (!container.is(e.target) // if the target of the click isn't the container...
+			&& container.has(e.target).length === 0) // ... nor a descendant of the container
+			{
+				container.find('.ajde_close_pop_btn').trigger('click');
 			}
 		});
-		function hide_popupwindowbox(){			
-			var container=$('.ajde_popup');
-			var clear_content = container.attr('clear');
-			
-			if(container.hasClass('active')){
-				container.animate({'margin-top':'70px','opacity':0},300).fadeOut().
-					removeClass('active')
-					.delay(300)
-					.queue(function(n){
-						if(clear_content=='true')					
-							$(this).find('.ajde_popup_text').html('');							
-						n();
-					});
-				$('#ajde_popup_bg').fadeOut();			
-			}
+		
+	// trigger hide popup
+		$('body').on('evoadmin_lightbox_hide',function(event, lightboxclass){
+			lightboxELM = $('.ajde_admin_lightbox.'+lightboxclass);
+			hide_popupwindowbox( lightboxELM );
+		});
+		function hide_popupwindowbox( lightboxELM ){
+			if(! lightboxELM.hasClass('show')) return false;
+			Close = (lightboxELM.parent().find('.ajde_admin_lightbox.show').length == 1)? true: false;
+
+			lightboxELM.removeClass('show');
+			setTimeout( function(){ 
+				if(Close){
+					$('body').removeClass('evo_overflow');
+					$('html').removeClass('evo_overflow');
+				}
+			}, 500);			
 		}
 
 	// OPEN POPUP BOX		
@@ -65,23 +63,25 @@ jQuery(document).ready(function($){
 
 			// check if specific lightbox requested
 			LIGHTBOX = (typeof popc !== 'undefined' && popc !== false)?
-				$('.ajde_popup.'+popc).eq(0):$('.ajde_popup.regular').eq(0);
+				$('.ajde_admin_lightbox.'+popc).eq(0):$('.ajde_admin_lightbox.regular').eq(0);
+
+			POPUP = LIGHTBOX.find('.ajde_popup');
 			
 			if(LIGHTBOX.is("visible")===true) return false;
 
 			// append textbox id to popup if given
 			if(obj.attr('data-textbox')!==''){
-				$('.ajde_popup').attr({'data-textbox':obj.attr('data-textbox')});
+				POPUP.attr({'data-textbox':obj.attr('data-textbox')});
 			}
 
 			// dynamic content within the site
-				var dynamic_c = obj.attr('dynamic_c');
+				var dynamic_c = obj.attr('data-dynamic_c');
 				if(typeof dynamic_c !== 'undefined' && dynamic_c !== false){
 					
-					var content_id = obj.attr('content_id');
+					var content_id = obj.attr('data-content_id');
 					var content = $('#'+content_id).html();
 					
-					$('.ajde_popup').find('.ajde_popup_text').html( content);
+					LIGHTBOX.find('.ajde_popup_text').html( content);
 				}
 			
 			// if content coming from a AJAX file
@@ -106,16 +106,25 @@ jQuery(document).ready(function($){
 					LIGHTBOX.find('.ajde_header p').html(poptitle);
 				}
 						
-			$('.ajde_popup').find('.message').removeClass('bad good').hide();
+			POPUP.find('.message').removeClass('bad good').hide();
 
 			// open lightbox
-			LIGHTBOX.addClass('active').show().animate({'margin-top':'0px','opacity':1}).fadeIn();			
-			
-			$('html, body').animate({scrollTop:0}, 700);
-			$('#ajde_popup_bg').fadeIn();
+			LIGHTBOX.addClass('show');	
+			$('body').addClass('evo_overflow');
+			$('html').addClass('evo_overflow');
+
+			// $('html, body').animate({scrollTop:0}, 700);
+			// $('#ajde_popup_bg').fadeIn();
 		}
 	
 	// popup lightbox functions
+		// lightbox messages
+		$('body').on('ajde_lightbox_show_msg',function(event,message, boxclassname, type){
+			LIGHTBOX = $('.'+boxclassname+'.ajde_admin_lightbox');
+			type = (type!='bad')? 'good':'bad';
+			LIGHTBOX.find('p.message').removeClass('bad good').addClass(type).html(message).fadeIn();
+		});
+
 		function show_pop_bad_msg(msg){
 			$('.ajde_popup').find('.message').removeClass('bad good').addClass('bad').html(msg).fadeIn();
 		}

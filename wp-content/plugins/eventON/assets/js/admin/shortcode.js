@@ -1,5 +1,4 @@
 jQuery(document).ready(function($) {
-
     tinymce.create('tinymce.plugins.eventon_shortcode_button', {
          init : function(ed, url) {
              ed.addButton('eventon_shortcode_button', {

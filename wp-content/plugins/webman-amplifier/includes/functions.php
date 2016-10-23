@@ -5,7 +5,7 @@
  * @package  WebMan Amplifier
  *
  * @since    1.0
- * @version  1.2.6
+ * @version  1.3.19
  */
 
 
@@ -363,7 +363,7 @@
 	 * Posts list - returns array [post_name (slug) => name]
 	 *
 	 * @since    1.0
-	 * @version  1.0.5
+	 * @version  1.3.13
 	 *
 	 * @param    string $return    What field to return ('post_name' or 'ID').
 	 * @param    string $post_type What custom post type to return (defaults to "post").
@@ -396,7 +396,7 @@
 						//Set return parameter
 							$return_param = ( 'post_name' == $return ) ? ( $post->post_name ) : ( $post->ID );
 
-						$output[$return_param] = trim( strip_tags( $post->post_title ) );
+						$output[$return_param] = trim( wp_strip_all_tags( $post->post_title ) );
 					}
 				}
 
@@ -414,7 +414,7 @@
 	 * Pages list - returns array [post_name (slug) => name]
 	 *
 	 * @since    1.0
-	 * @version  1.0.5
+	 * @version  1.3.13
 	 *
 	 * @param    string $return What field to return ('post_name' or 'ID').
 	 *
@@ -456,7 +456,7 @@
 						//Set return parameter
 							$return_param = ( 'post_name' == $return ) ? ( $page_path ) : ( $page->ID );
 
-						$output[$return_param] = $indents . trim( strip_tags( $page->post_title ) );
+						$output[$return_param] = $indents . trim( wp_strip_all_tags( $page->post_title ) );
 					}
 				}
 
@@ -1473,15 +1473,23 @@
 		 * Supports both 4.2+ plugin versions and older too.
 		 *
 		 * @since    1.1
-		 * @version  1.1
+		 * @version  1.3.19
 		 *
 		 * @return  boolean
 		 */
 		if ( ! function_exists( 'wma_is_active_vc' ) ) {
 			function wma_is_active_vc() {
-				//Output
-					return apply_filters( 'wmhook_wmamp_' . 'wma_is_active_vc_output', ( class_exists( 'Vc_Manager' ) || class_exists( 'WPBakeryVisualComposer' ) ) );
+
+				// Requirements check
+
+					if ( wma_supports_subfeature( 'disable-visual-composer-support' ) ) {
+						return false;
+					}
+
+
+				// Output
+
+					return apply_filters( 'wmhook_wmamp_wma_is_active_vc_output', ( class_exists( 'Vc_Manager' ) || class_exists( 'WPBakeryVisualComposer' ) ) );
+
 			}
 		} // /wma_is_active_vc
-
-?>

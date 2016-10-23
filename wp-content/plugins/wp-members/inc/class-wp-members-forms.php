@@ -25,31 +25,36 @@ class WP_Members_Forms {
 	 * Creates various form fields and returns them as a string.
 	 *
 	 * @since 3.1.0
+	 * @since 3.1.1 Added $delimiter.
+	 * @since 3.1.2 Changed $valtochk to $compare
 	 *
 	 * @param array  $args {
 	 *     @type string $name
 	 *     @type string $type
 	 *     @type string $value
-	 *     @type string $valtochk
+	 *     @type string $compare
 	 *     @type string $class
 	 *     @type string $required
+	 *     @type string $delimiter
 	 * }
 	 * @return string $str The field returned as a string.
 	 */
 	function create_form_field( $args ) {
 		
-		$name     = $args['name'];
-		$type     = $args['type'];
-		$value    = $args['value'];
-		$valtochk = $args['valtochk'];
-		$class    = ( isset( $args['class'] ) ) ? $args['class'] : 'textbox';
-		$required = ( isset( $args['required'] ) ) ? $args['required'] : false;
+		$name      = $args['name'];
+		$type      = $args['type'];
+		$value     = maybe_unserialize( $args['value'] );
+		$compare   = $args['compare'];
+		$class     = ( isset( $args['class'] ) ) ? $args['class'] : 'textbox';
+		$required  = ( isset( $args['required'] ) ) ? $args['required'] : false;
+		$delimiter = ( isset( $args['delimiter'] ) ) ? $args['delimiter'] : '|';
 	
 		switch ( $type ) { 
 			
 		case "url":
 		case "email":
 			$class = ( $class == 'textbox' ) ? "textbox" : $class;
+			$value = ( 'url' == $type ) ? esc_url( $value ) : esc_attr( wp_unslash( $value ) );
 			$str = "<input name=\"$name\" type=\"$type\" id=\"$name\" value=\"$value\" class=\"$class\"" . ( ( $required ) ? " required " : "" ) . " />";
 			break;
 		
@@ -61,7 +66,7 @@ class WP_Members_Forms {
 	
 		case "checkbox":
 			$class = ( $class == 'textbox' ) ? "checkbox" : $class;
-			$str = "<input name=\"$name\" type=\"$type\" id=\"$name\" value=\"$value\"" . checked( $value, $valtochk, false ) . ( ( $required ) ? " required " : "" ) . " />";
+			$str = "<input name=\"$name\" type=\"$type\" id=\"$name\" value=\"" . esc_attr( $value ) . "\"" . checked( $value, $compare, false ) . ( ( $required ) ? " required " : "" ) . " />";
 			break;
 	
 		case "text":
@@ -80,11 +85,11 @@ class WP_Members_Forms {
 			break;
 	
 		case "hidden":
-			$str = "<input name=\"$name\" type=\"$type\" value=\"$value\" />";
+			$str = "<input name=\"$name\" type=\"$type\" value=\"" . esc_attr( $value ) . "\" />";
 			break;
 	
 		case "option":
-			$str = "<option value=\"$value\" " . selected( $value, $valtochk, false ) . " >$name</option>";
+			$str = "<option value=\"" . esc_attr( $value ) . "\" " . selected( $value, $compare, false ) . " >$name</option>";
 			break;
 	
 		case "select":
@@ -97,12 +102,16 @@ class WP_Members_Forms {
 				$pieces = explode( '|', $option );
 				if ( 'multiselect' == $type ) {
 					$chk = '';
-					$values = ( empty( $valtochk ) ) ? array() : ( is_array( $valtochk ) ? $valtochk : explode( '|', $valtochk ) );
+					$values = ( empty( $compare ) ) ? array() : ( is_array( $compare ) ? $compare : explode( $delimiter, $compare ) );
 				} else {
-					$chk = $valtochk;
+					$chk = $compare;
 					$values = array();
 				}
-				$chk = ( ( isset( $pieces[2] ) && '' == $valtochk ) || in_array( $pieces[1], $values ) ) ? $pieces[1] : $chk;
+				if ( isset( $pieces[1] ) && '' != $pieces[1] ) {
+					$chk = ( ( isset( $pieces[2] ) && '' == $compare ) || in_array( $pieces[1], $values ) ) ? $pieces[1] : $chk;
+				} else {
+					$chk = 'not selected';
+				}
 				$str = $str . "<option value=\"$pieces[1]\"" . selected( $pieces[1], $chk, false ) . ">" . __( $pieces[0], 'wp-members' ) . "</option>\n";
 			}
 			$str = $str . "</select>";
@@ -113,13 +122,13 @@ class WP_Members_Forms {
 			$str = '';
 			foreach ( $value as $option ) {
 				$pieces = explode( '|', $option );
-				$values = ( empty( $valtochk ) ) ? array() : ( is_array( $valtochk ) ? $valtochk : explode( '|', $valtochk ) );
-				$chk = ( isset( $pieces[2] ) && '' == $valtochk ) ? $pieces[1] : '';
+				$values = ( empty( $compare ) ) ? array() : ( is_array( $compare ) ? $compare : explode( $delimiter, $compare ) );
+				$chk = ( isset( $pieces[2] ) && '' == $compare ) ? $pieces[1] : '';
 				$str = $str . $this->create_form_field( array(
-					'name' => $name . '[]',
-					'type' => 'checkbox',
-					'value' => $pieces[1],
-					'valtochk' => ( in_array( $pieces[1], $values ) ) ? $pieces[1] : $chk,
+					'name'    => $name . '[]',
+					'type'    => 'checkbox',
+					'value'   => $pieces[1],
+					'compare' => ( in_array( $pieces[1], $values ) ) ? $pieces[1] : $chk,
 				) ) . "&nbsp;" . $pieces[0] . "<br />\n";
 			}
 			break;
@@ -131,7 +140,7 @@ class WP_Members_Forms {
 			foreach ( $value as $option ) {
 				$pieces = explode( '|', $option );
 				$id = $name . '_' . $num;
-				$str = $str . "<input type=\"radio\" name=\"$name\" id=\"$id\" value=\"$pieces[1]\"" . checked( $pieces[1], $valtochk, false ) . ( ( $required ) ? " required " : " " ) . "> " . __( $pieces[0], 'wp-members' ) . "<br />\n";
+				$str = $str . "<input type=\"radio\" name=\"$name\" id=\"$id\" value=\"$pieces[1]\"" . checked( $pieces[1], $compare, false ) . ( ( $required ) ? " required " : " " ) . "> " . __( $pieces[0], 'wp-members' ) . "<br />\n";
 				$num++;
 			}
 			break;		
@@ -192,7 +201,27 @@ class WP_Members_Forms {
 		return false;
 	} // End upload_file()
 	
-	
+	/**
+	 * Sets the file upload directory.
+	 *
+	 * This is a filter function for upload_dir.
+	 *
+	 * @link https://codex.wordpress.org/Plugin_API/Filter_Reference/upload_dir
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param  array $param {
+	 *     The directory information for upload.
+	 *
+	 *     @type string $path
+	 *     @type string $url
+	 *     @type string $subdir
+	 *     @type string $basedir
+	 *     @type string $baseurl
+	 *     @type string $error
+	 * }
+	 * @return array $param
+	 */
 	function file_upload_dir( $param ) {
 		$user_id  = ( isset( $this->file_user_id ) ) ? $this->file_user_id : null;
 		
@@ -210,7 +239,7 @@ class WP_Members_Forms {
 		 */
 		$args = apply_filters( 'wpmem_user_upload_dir', $args );
 
-		$param['subdir'] = $sub_dir;
+		$param['subdir'] = '/' . $args['wpmem_dir'] . $args['user_dir'];
 		$param['path']   = $param['basedir'] . '/' . $args['wpmem_dir'] . $args['user_dir'];
 		$param['url']    = $param['baseurl'] . '/' . $args['wpmem_dir'] . $args['user_dir'];
 	

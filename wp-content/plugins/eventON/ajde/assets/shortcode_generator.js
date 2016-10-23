@@ -89,7 +89,6 @@ jQuery(document).ready(function($){
 
 			ajdePOSH_update_shortcode();
 		});
-
 	
 	// input and select fields
 	$('.'+CODE+'POSH_inner').on('change','.'+CODE+'POSH_input, .'+CODE+'POSH_select', function(){
@@ -236,20 +235,9 @@ jQuery(document).ready(function($){
 		});
 
 		function hide_popupwindowbox(){
-			var container=$('#'+CODE+'POSH_outter').parent().parent();
-			var clear_content = container.attr('clear');
-			
-			if(container.hasClass('active')){
-				container.animate({'margin-top':'70px','opacity':0},300).fadeOut().
-					removeClass('active')
-					.delay(300)
-					.queue(function(n){
-						if(clear_content=='true')					
-							$(this).find('.ajde_popup_text').html('');							
-						n();
-					});
-				container.parent().next().fadeOut();
-				popup_open = false;					
-			}
+			var container=$('#'+CODE+'POSH_outter').parent().parent();			
+			$('body').trigger('evoadmin_lightbox_hide', ['eventon_shortcode']);
+			container.removeClass('active');
+			popup_open = false;	
 		}
 });

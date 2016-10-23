@@ -5,7 +5,7 @@
  * @author 		AJDE
  * @category 	Admin
  * @package 	eventon/Admin
- * @version     2.4.4
+ * @version     2.4.9
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -18,6 +18,8 @@ class evo_admin {
 	private $class_name;
 	/** Constructor */
 	public function __construct() {
+		$this->opt = get_option('evcal_options_evcal_1');
+
 		add_action('admin_menu', array($this,'eventon_admin_menu'), 5);
 		add_action( 'admin_head', array($this,'eventon_admin_menu_highlight'), 5);
 		add_action('admin_init', array($this,'eventon_admin_init'));
@@ -36,13 +38,11 @@ class evo_admin {
 	function eventon_admin_init() {
 		global $pagenow, $typenow, $wpdb, $post;	
 				
-		if ( $typenow == 'post' && ! empty( $_GET['post'] ) ) {
-			$typenow = $post->post_type;
-		} elseif ( empty( $typenow ) && isset($_GET['post'] ) ) {
-	       	$typenow = get_post_type( $_GET['post'] );
-	    }
+		$postType = !empty($_GET['post_type'])? $_GET['post_type']: false;
+	    if(!$postType && !empty($_GET['post']))
+	    	$postType = get_post_type($_GET['post']);
 		
-		if ( $typenow == '' || $typenow == "ajde_events" ) {		
+		if ( $postType && $postType == "ajde_events" ) {		
 			// Event Post Only
 			$print_css_on = array( 'post-new.php', 'post.php' );
 
@@ -50,12 +50,7 @@ class evo_admin {
 				add_action( 'admin_print_styles-'. $page, array($this,'eventon_admin_post_css') );
 				add_action( 'admin_print_scripts-'. $page, array($this,'eventon_admin_post_script') );
 			}
-			
-			// filter event post permalink edit options
-			if(!defined('EVO_SIN_EV')){
-				eventon_perma_filter();
-			}
-
+						
 			// taxonomy only page
 			if($pagenow =='edit-tags.php' || $pagenow == 'term.php'){
 				$this->eventon_load_colorpicker();
@@ -64,10 +59,7 @@ class evo_admin {
 		}
 
 		// Includes for admin
-			if(defined('DOING_AJAX')){
-				include_once( 'class-admin-ajax.php' );
-			}
-			
+			if(defined('DOING_AJAX')){	include_once( 'class-admin-ajax.php' );		}			
 
 		// evneton settings only 
 			if($pagenow =='admin.php' && isset($_GET['page']) && ($_GET['page']=='eventon' || $_GET['page']=='action_user')){
@@ -77,14 +69,12 @@ class evo_admin {
 
 		// all eventon wp-admin pages
 			$this->wp_admin_scripts_styles();
-			
+					
 		// create necessary pages	
 			$_eventon_create_pages = get_option('_eventon_create_pages'); // get saved status for creating pages
 			if(empty($_eventon_create_pages) || $_eventon_create_pages!= 1){
 				evo_install::create_pages();
 			}
-		
-			
 	}
 	
 // admin menus
@@ -120,6 +110,7 @@ class evo_admin {
 	/** Include and display the settings page. */
 		function eventon_settings_page() {
 			include_once(  AJDE_EVCAL_PATH.'/includes/admin/settings/eventon-admin-settings.php' );
+			include_once(  AJDE_EVCAL_PATH.'/includes/admin/settings/class-settings-appearance.php' );
 			eventon_settings();
 		}
 // correct menu highlight
@@ -244,6 +235,8 @@ class evo_admin {
 
 		}
 
+	
+
 // eventon kriyathmakada kiya test kara beleema
 	function kriyathmakada(){
 		require_once('class-evo-product.php');
@@ -273,7 +266,7 @@ class evo_admin {
 		
 	  	return $context;
 	}
-	function eventon_shortcode_pop_content(){
+	function eventon_shortcode_pop_content(){		
 		global $evo_shortcode_box, $eventon, $ajde;
 		$content='';
 		

@@ -1,7 +1,7 @@
 <?php
 /**
  * AJDE Plugin Settings Library
- * @version 	1.5.9
+ * @version 	1.6.0
  * @updated 	2016
  */
 
@@ -9,7 +9,7 @@ if(isset($GLOBALS['ajde'])) return;
 
 class ajde{
 
-	public $version = '1.5.9';
+	public $version = '1.6.0';
 
 	public function __construct(){
 
@@ -70,9 +70,9 @@ class ajde{
 			wp_enqueue_style('ajde_wp_admin');
 		}
 		public function register_backender_styles(){
-			wp_register_style( 'ajde_backender_styles',$this->path.'ajde_backender_style.css');
-			wp_register_style( 'colorpicker_styles',$this->path.'colorpicker/colorpicker_styles.css');
-			wp_register_style( 'ajde_wp_admin',$this->path.'ajde-wp-admin.css');
+			wp_register_style( 'ajde_backender_styles',$this->path.'ajde_backender_style.css','',$this->version);
+			wp_register_style( 'colorpicker_styles',$this->path.'colorpicker/colorpicker_styles.css','',$this->version);
+			wp_register_style( 'ajde_wp_admin',$this->path.'ajde-wp-admin.css','',$this->version);
 			
 		}
 		public function register_backender_scripts(){
@@ -88,7 +88,7 @@ class ajde{
 		}
 		function register_colorpicker(){
 			wp_register_script('backender_colorpicker',$this->path.'colorpicker/colorpicker.js' ,array('jquery'),$this->version, true);
-			wp_register_style( 'colorpicker_styles',$this->path.'colorpicker/colorpicker_styles.css');
+			wp_register_style( 'colorpicker_styles',$this->path.'colorpicker/colorpicker_styles.css','',$this->version);
 		}
 }
 $GLOBALS['ajde'] = new ajde();

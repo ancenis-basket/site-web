@@ -5,7 +5,7 @@ $vc_layout_sub_controls = array(
 	array( 'link_image', __( 'Link to bigger image', 'js_composer' ) ),
 );
 return array(
-	'name' => __( 'Posts Grid', 'js_composer' ),
+	'name' => __( 'Old Posts Grid', 'js_composer' ),
 	'base' => 'vc_posts_grid',
 	'content_element' => false,
 	'deprecated' => '4.4',

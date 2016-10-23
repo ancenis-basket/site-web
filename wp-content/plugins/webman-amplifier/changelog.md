@@ -1,5 +1,233 @@
 # WebMan Amplifier Changelog
 
+## 1.3.21
+
+* **Add**: Integration with WooSidebars plugin
+
+#### Files changed:
+
+	changelog.md
+	class-wm-amplifier.php
+	readme.txt
+	webman-amplifier.php
+	includes/integration/integration.php
+	includes/integration/woosidebars/class-woosidebars.php
+
+
+## 1.3.21
+
+* **Update**: Cleaning and improving custom post types permalinks setup
+* **Update**: Improving metaboxes and icons font admin screen styles
+
+#### Files changed:
+
+	changelog.md
+	readme.txt
+	webman-amplifier.php
+	assets/css/admin-icons.css
+	assets/scss/admin-icons.scss
+	assets/scss/metabox/_tabs.scss
+	assets/scss/metabox/_base.scss
+	includes/icons/class-icon-font.php
+	includes/custom-posts/logos.php
+	includes/custom-posts/modules.php
+	includes/custom-posts/projects.php
+	includes/custom-posts/staff.php
+	includes/custom-posts/testimonials.php
+
+
+## 1.3.20
+
+* **Fix**: Styling issue in icons list in WordPress dashboard
+
+#### Files changed:
+
+	changelog.md
+	readme.txt
+	webman-amplifier.php
+	includes/icons/class-icon-font.php
+
+
+## 1.3.19
+
+* **Update**: Improving accessibility: changing <i> icons to <span> with aria-hidden attribute
+* **Update**: Improving custom post types by allowing archive pages
+* **Update**: Improving taxonomies visibility in navigational menus and updating label texts
+* **Update**: Improved disabling of Visual Composer support
+* **Update**: Removed <header> tag from Content Modules
+* **Fix**: JavaScript errors in Safari browser
+
+#### Files changed:
+
+	changelog.md
+	readme.txt
+	webman-amplifier.php
+	assets/css/admin-addons.css
+	assets/js/shortcode-accordion.js
+	assets/js/shortcode-posts-isotope.js
+	assets/js/shortcode-posts-masonry.js
+	assets/js/shortcode-posts-owlcarousel.js
+	assets/js/shortcode-posts-slick.js
+	assets/js/shortcode-tabs.js
+	assets/scss/admin-addons.scss
+	includes/functions.php
+	includes/custom-posts/logos.php
+	includes/custom-posts/modules.php
+	includes/custom-posts/projects.php
+	includes/custom-posts/staff.php
+	includes/custom-posts/testimonials.php
+	includes/icons/class-icon-font.php
+	includes/shortcodes/definitions/definitions.php
+	includes/shortcodes/renderers/content_module.php
+	includes/shortcodes/renderers/icon.php
+	includes/shortcodes/renderers/message.php
+
+
+## 1.3.18
+
+* **Fix**: JavaScript errors in Beaver Builder page builder editor
+
+#### Files changed:
+
+	webman-amplifier.php
+	includes/shortcodes/page-builder/beaver-builder/beaver-builder.php
+
+
+## 1.3.17
+
+* **Fix**: Compatibility issue with OwlCarousel script
+
+#### Files changed:
+
+	webman-amplifier.php
+	assets/js/shortcode-posts-owlcarousel.js
+	includes/shortcodes/page-builder/beaver-builder/beaver-builder.php
+
+
+## 1.3.16
+
+* **Update**: Removing obsolete scripts
+
+#### Files changed:
+
+	webman-amplifier.php
+	assets/js/plugins/imagesloaded.min.js
+	includes/shortcodes/page-builder/beaver-builder/modules/css/settings.css
+
+
+## 1.3.15
+
+* **Update**: Improved support with Beaver Builder plugin
+* **Update**: Adding `is-active` CSS classes on active elements controlled with JavaScript
+* **Fix**: Shortcode JavaScript update when editing with Beaver Builder
+
+#### Files changed:
+
+	webman-amplifier.php
+	assets/js/shortcode-accordion.js
+	assets/js/shortcode-posts-isotope.js
+	assets/js/shortcode-posts-masonry.js
+	assets/js/shortcode-posts-slick.js
+	assets/js/shortcode-tabs.js
+	includes/shortcodes/class-shortcodes.php
+	includes/shortcodes/page-builder/beaver-builder/beaver-builder.php
+	includes/shortcodes/page-builder/beaver-builder/modules/includes/frontend.css.php
+	includes/shortcodes/page-builder/beaver-builder/modules/includes/frontend.js.php
+	includes/shortcodes/page-builder/beaver-builder/modules/includes/frontend.php
+
+
+## 1.3.14
+
+* **Update**: Removing closing PHP tag from end of files
+* **Update**: Removed bxSlider script
+* **Fix**: Enqueuing of shortcode scripts (need to register scripts earlier)
+
+#### Files changed:
+
+	*.php
+	includes/shortcodes/class-shortcodes.php
+
+
+## 1.3.13
+
+* **Update**: Removing arrow from Subnav widget title
+* **Update**: Improving security by using `wp_strip_all_tags` function
+* **Fix**: Visual Composer compatibility file PHP error
+* **Fix**: Typo in shortcodes definitions
+
+#### Files changed:
+
+	webman-amplifier.php
+	includes/functions.php
+	includes/metabox/fields/select.php
+	includes/shortcodes/definitions/definitions.php
+	includes/shortcodes/page-builder/visual-composer/visual-composer.php
+	includes/shortcodes/renderers/item.php
+	includes/shortcodes/renderers/slideshow.php
+	includes/widgets/w-subnav.php
+	includes/widgets/w-tabbed-widgets.php
+	includes/widgets/w-twitter.php
+	languages/webman-amplifier.pot
+
+
+## 1.3.12
+
+* **Fix**: Don't output metabox if we have empty array of fields
+
+#### Files changed:
+
+	webman-amplifier.php
+	includes/metabox/class-metabox.php
+
+
+## 1.3.11
+
+* **Update**: Removing obsolete IE8 scripts
+* **Fix**: Fixing compatibility with Beaver Builder page builder plugin
+
+#### Files changed:
+
+	webman-amplifier.php
+	assets/js/shortcode-posts-bxslider.js
+	assets/js/shortcode-posts-isotope.js
+	assets/js/shortcode-posts-masonry.js
+	assets/js/shortcode-posts-owlcarousel.js
+	assets/js/shortcode-posts-slick.js
+	assets/js/shortcode-slideshow-owlcarousel.js
+	includes/shortcodes/class-shortcodes.php
+	includes/shortcodes/renderers/content_module.php
+	includes/shortcodes/renderers/posts.php
+	includes/shortcodes/renderers/slideshow.php
+	includes/shortcodes/renderers/testimonials.php
+
+
+## 1.3.10
+
+* **Add**: Support for customizer selective refresh on widgets
+* **Update**: Removed custom `admin-thumbnail` image size
+* **Update**: Scripts: Isotope 3.0.1, Slick 1.6.0
+* **Update**: Setting Masonry script to use percent positioning
+* **Update**: Plugin PHPDoc DocBlock header
+
+#### Files changed:
+
+	class-wm-amplifier.php
+	webman-amplifier.php
+	assets/js/shortcode-posts.js
+	assets/scss/admin-addons.scss
+	includes/custom-posts/logos.php
+	includes/custom-posts/modules.php
+	includes/custom-posts/projects.php
+	includes/custom-posts/staff.php
+	includes/custom-posts/testimonials.php
+	includes/widgets/w-contact.php
+	includes/widgets/w-module.php
+	includes/widgets/w-posts.php
+	includes/widgets/w-subnav.php
+	includes/widgets/w-tabbed-widgets.php
+	includes/widgets/w-twitter.php
+
+
 ## 1.3.9
 
 * **Fix**: Icon font CSS styles conflict

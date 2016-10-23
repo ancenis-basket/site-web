@@ -1,6 +1,6 @@
 <?php
 return array(
-	'name' => __( 'Tabs', 'js_composer' ),
+	'name' => __( 'Old Tabs', 'js_composer' ),
 	'base' => 'vc_tabs',
 	'show_settings_on_create' => false,
 	'is_container' => true,

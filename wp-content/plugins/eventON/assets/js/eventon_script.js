@@ -1,6 +1,6 @@
 /**
  * Javascript code that is associated with the front end of the calendar
- * version: 2.4.5
+ * version: 2.4.7
  */
 
 jQuery(document).ready(function($){
@@ -17,56 +17,54 @@ jQuery(document).ready(function($){
 	}
 
 	// LIGHTBOX		
-		var popupcode = "<div class='evo_lightbox evo_popup'>";
-				popupcode += "<div class='evo_content_in'>";
-					popupcode += "<div class='evo_content_inin'>";
-						popupcode += "<div class='evo_lightbox_content'>";
-							popupcode += "<a class='evolbclose'>X</a>";
-							popupcode += "<div class='evo_lightbox_body eventon_list_event evo_pop_body evcal_eventcard'></div>";
-						popupcode += "</div>";
-					popupcode += "</div>";
-				popupcode += "</div>";
-			popupcode += "</div>";
-		$('body').append(popupcode);
-		
 		// close popup
-			$('body').on('click','.evolbclose', function(){				
-				closing_lightbox();				
+			$('body').on('click','.evolbclose', function(){	
+				LIGHTBOX = 	$(this).closest('.evo_lightbox');
+				closing_lightbox( LIGHTBOX );				
 			});
 
-		// close with click outside popup box when pop is shown
-			$(document).mouseup(function (e){
-				var container=$('.evo_pop_body');
+		// close with click outside popup box when pop is shown	
+			$(document).on('click', function(event) {
+				//event.stopPropagation(); 
+				//console.log($(event.target));
+			    if( 
+			    	$(event.target).hasClass('evo_content_inin')
+			    ){
+			    	closing_lightbox( $(event.target).closest('.evo_lightbox') );
+			       	//console.log('5');
+			    }
+			});		
+			function closing_lightbox( lightboxELM){
 				
-				if (!container.is(e.target) // if the target of the click isn't the container...
-					&& e.pageX < ($(window).width() - 30)
-				&& container.has(e.target).length === 0) // ... nor a descendant of the container
-				{					
-					closing_lightbox();
-				}				
-			});
-			function closing_lightbox(){
+				if(! lightboxELM.hasClass('show')) return false;
+				Close = (lightboxELM.parent().find('.evo_lightbox.show').length == 1)? true: false;
+				lightboxELM.removeClass('show');
 
-				if(!$('.evo_lightbox').hasClass('show')) return false;
-				if($('.evo_lightbox').hasClass('notfocus')) return false;
-				$('.evo_lightbox').removeClass('eventcard eventon_events_list show');
-						
 				setTimeout( function(){ 
-					$('body').find('.evo_lightbox_body').html('')
-						.attr('class','evo_lightbox_body eventon_list_event evo_pop_body evcal_eventcard'); 
-					$('body').removeClass('evo_overflow');
-					$('html').removeClass('evo_overflow');
+					lightboxELM.find('.evo_lightbox_body').html('');
+					
+					if(Close){
+						$('body').removeClass('evo_overflow');
+						$('html').removeClass('evo_overflow');
+					}
+					
 					// trigger action to hook in at this stage
-						$('body').trigger('lightbox_event_closing');
+						$('body').trigger('lightbox_event_closing',lightboxELM);
 				}, 500);
 			}
+
+		// when lightbox open triggered
+		$('body').on('evolightbox_show',function(){
+			$('body').addClass('evo_overflow');
+			$('html').addClass('evo_overflow');
+		});
 		
 	// OPENING event card -- USER INTREACTION and loading google maps
 		//event full description\		
 		$('body').on('click','.eventon_events_list .desc_trig', function(event){
 
 			var obj = $(this);
-			var attr = obj.closest('.evoLB').attr('data-cal_id');
+			var attr = obj.closest('.evo_lightbox').attr('data-cal_id');
 			if(typeof attr !== typeof undefined && attr !== false){
 				var cal_id = attr;
 				var cal = $('#'+cal_id);
@@ -93,11 +91,15 @@ jQuery(document).ready(function($){
 			// open as lightbox
 			if(ux_val=='3'){
 				event.preventDefault();
-				
-				$('.evo_pop_body').show();
-				fullheight_img_reset();    // added first reset
 
-				$('.evo_lightbox_body').html('');
+				// set elements
+				EVO_LIGHTBOX = $('.evo_lightbox.eventcard');
+				LIGHTBOX_body = EVO_LIGHTBOX.find('.evo_lightbox_body');
+				
+				// resets
+					EVO_LIGHTBOX.find('.evo_pop_body').show();
+					fullheight_img_reset();
+					LIGHTBOX_body.html('');
 
 				var event_list = obj.closest('.eventon_events_list');
 				var content = obj.closest('.eventon_list_event').find('.event_description').html();
@@ -108,27 +110,25 @@ jQuery(document).ready(function($){
 				
 				// RTL
 				if(event_list.hasClass('evortl')){	
-					$('.evo_popin').addClass('evortl');	
-					$('.evo_lightbox').addClass('evortl');
+					EVO_LIGHTBOX.find('.evo_popin').addClass('evortl');	
+					EVO_LIGHTBOX.addClass('evortl');
 				}
 			
-				$('.evo_lightbox_body').append('<div class="evopop_top">'+content_front+'</div>').append(_content);
-				$('.evo_lightbox_body').addClass('event_'+eventid);
+				LIGHTBOX_body.append('<div class="evopop_top">'+content_front+'</div>').append(_content);
+				LIGHTBOX_body.addClass('event_'+eventid);
 				
-				var this_map = $('.evo_lightbox_body').find('.evcal_gmaps');
+				var this_map = LIGHTBOX_body.find('.evcal_gmaps');
 				var idd = this_map.attr('id');
 				this_map.attr({'id':idd+'_evop'});
 				
-				$('.evo_lightbox').addClass('eventcard eventon_events_list show');
-				$('body').addClass('evo_overflow');
-				$('html').addClass('evo_overflow');
+				EVO_LIGHTBOX.addClass('show');
+				$('body').trigger('evolightbox_show');
 
 				obj.evoGenmaps({	
 					'_action':'lightbox',
 					'cal':cal,
 					'mapSpotId':idd+'_evop'
 				});
-
 
 				
 				fullheight_img_reset();    // added second reset
@@ -235,7 +235,7 @@ jQuery(document).ready(function($){
 					width = parseInt(OBJ.css('width') ),
 					Pwid = OBJ.parent().width();
 				maxMLEFT = (width-Pwid)*(-1);
-				
+
 				if( cur_mleft<=0){
 					
 					var new_marl = (cur_mleft+ (delta * 140));					
@@ -244,8 +244,10 @@ jQuery(document).ready(function($){
 					// moving to left
 					if(delta == -1 && ( (new_marl*(-1))< (width -200)) ){
 						new_marl = ( new_marl <maxMLEFT)? maxMLEFT: new_marl;
-						OBJ.stop().animate({'margin-left': new_marl });
-					
+
+						if(new_marl<0)
+							OBJ.stop().animate({'margin-left': new_marl });
+						
 					}else if(delta == 1){
 						OBJ.stop().animate({'margin-left': new_marl });
 					}
@@ -743,11 +745,8 @@ jQuery(document).ready(function($){
 			});
 		}
 	
-	// show more and less of event details
-		$('.eventon_events_list').on('click','.eventon_shad_p',function(){		
-			control_more_less( $(this) );		
-		});		
-		$('.evo_pop_body').on('click','.eventon_shad_p',function(){		
+	// show more and less of event details				
+		$('body').on('click','.eventon_shad_p',function(){		
 			control_more_less( $(this));		
 		});	
 	
@@ -891,6 +890,91 @@ jQuery(document).ready(function($){
 				false
 			);
 		});
+
+	// SINGLE EVENTS
+		if(is_mobile()){
+			if($('body').find('.fb.evo_ss').length==0) return true;
+			$('body').find('.fb.evo_ss').each(function(){
+				obj = $(this);
+				obj.attr({'href':'http://m.facebook.com/sharer.php?u='+obj.attr('data-url')});
+			});
+		}
+
+		$('.evo_sin_page').each(function(){
+			$(this).find('.desc_trig ').attr({'data-ux_val':'none'});
+		});
+	
+		// redirect only if not set to open as popup
+			$('.eventon_single_event').on('click', '.evcal_list_a',function(e){
+				var obj = $(this),
+					evodata = obj.closest('.ajde_evcal_calendar').find('.evo-data'),
+					ux_val = evodata.data('ux_val');
+
+				e.preventDefault();
+
+				// open in event page
+				if(ux_val == 4){ 
+					var url = obj.parent().siblings('.evo_event_schema').find('[itemprop=url]').attr('href');
+					window.location.href= url;
+				}else if(ux_val == '2'){ // External Link
+					var url = evodata.attr('data-exturl');
+					window.location.href= url;
+				}else if(ux_val == 'X'){ // do not do anything
+					return false;
+				}
+			})
+
+		// click on the single event box
+			$('.eventon_single_event').find('.evcal_list_a').each(function(){			
+				var obj = $(this),
+					evObj = obj.parent(),
+					evodata = obj.closest('.ajde_evcal_calendar').find('.evo-data');
+				
+				var ev_link = evObj.siblings('.evo_event_schema').find('a[itemprop=url]').attr('href');
+				
+				//console.log(ev_link);
+				if(ev_link!=''){
+					obj.attr({'href':ev_link, 'data-exlk':'1'});
+				}
+				
+				// show event excerpt
+				var ev_excerpt = evObj.siblings('.evcal_eventcard').find('.event_excerpt').html();
+				
+				if(ev_excerpt!='' && ev_excerpt!== undefined && evodata.data('excerpt')=='1' ){
+					var appendation = '<div class="event_excerpt_in">'+ev_excerpt+'</div>'
+					evObj.append(appendation);
+				}
+			
+			});
+
+		// each single event box
+			$('body').find('.eventon_single_event').each(function(){
+
+				var _this = $(this);
+				// show expanded eventCard
+				if( _this.find('.evo-data').data('expanded')=='1'){
+					_this.find('.evcal_eventcard').show();
+
+					var idd = _this.find('.evcal_gmaps');
+
+					// close button
+					_this.find('.evcal_close').parent().css({'padding-right':0});
+					_this.find('.evcal_close').hide();
+
+					//console.log(idd);
+					var obj = _this.find('.desc_trig');
+
+					obj.evoGenmaps({'fnt':2});
+
+				// open eventBox and lightbox	
+				}else if( _this.data('uxval')=='3'){
+
+					var obj = _this.find('.desc_trig');
+
+					// remove other attr - that cause to redirect
+					obj.removeAttr('data-exlk').attr({'data-ux_val':'3'});
+				}
+			})
 
 	// HELPER items script
 		// yes no button		

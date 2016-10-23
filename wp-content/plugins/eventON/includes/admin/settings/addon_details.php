@@ -14,6 +14,12 @@ if(!is_admin()) return;
 			'link'=>'http://www.myeventon.com/addons/action-user/',
 			'download'=>'http://www.myeventon.com/addons/action-user/',
 			'desc'=>'Wanna get event contributors involved in your EventON calendar with better permission control? You can do that plus lot more with Action User addon.',
+		),'eventon-action-user-plus' => array(
+			'id'=>'EVOPA',
+			'name'=>'Paid Action User',
+			'link'=>'http://www.myeventon.com/addons/action-user-plus/',
+			'download'=>'http://www.myeventon.com/addons/action-user-plus/',
+			'desc'=>'Add extra features to actionUser such as user role permission and paid submissions',
 		),'eventon-daily-view' => array(
 			'id'=>'EVODV',
 			'name'=>'Daily View Addon',
@@ -41,13 +47,7 @@ if(!is_admin()) return;
 			'download'=>'http://www.myeventon.com/addons/event-lists-extended/',
 			'desc'=>'Do you need to show events list regardless of what month the events are on? With this adodn you can create various event lists including past events, next 5 events, upcoming events and etc.'
 		)		
-		,'eventon-single-event'=>array(
-			'id'=>'EVOSE',
-			'name'=>'Single Events',
-			'link'=>'http://www.myeventon.com/addons/single-events/',
-			'download'=>'http://www.myeventon.com/addons/single-events/',
-			'desc'=>'Looking to promote single events in EventON via social media? Use this addon to share individual event pages that matches the awesome EventON layout design.'
-		),'eventon-daily-repeats'=>array(
+		,'eventon-daily-repeats'=>array(
 			'id'=>'EVODR',
 			'name'=>'Daily Repeats',
 			'link'=>'http://www.myeventon.com/addons/daily-repeats/',
@@ -149,6 +149,12 @@ if(!is_admin()) return;
 			'link'=>'http://www.myeventon.com/addons/ics-importer',
 			'download'=>'http://www.myeventon.com/addons/ics-importer',
 			'desc'=>'Import events using ICS file'
+		),'eventon-speakers-schedule'=>array(
+			'id'=>'EVOSS',
+			'name'=>'Speakers & Schedule',
+			'link'=>'http://www.myeventon.com/addons/speakers-schedule',
+			'download'=>'http://www.myeventon.com/addons/speakers-schedule',
+			'desc'=>'Set Speakers and Schedule for events'
 		)
 	);
 ?>

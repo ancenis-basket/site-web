@@ -1,3 +1,19 @@
+07.09.2016 - ver 4.12.1
+   Fixed: backend editor loading - getContent in case if #content doesn't exists
+   Fixed: Grid item background image URL quoting
+   Fixed: Entypo icons
+   Fixed: Templates preview element icons
+   Fixed: Remove extra next/prev buttons for prettyPhoto
+   Fixed: Lightbox in firefox
+   Fixed: Empty content welcome block for latest woocommerce
+   Fixed: Hook into the YoastSEO:ready event directly.
+   Fixed: Disable scrollTo when autoplay enabled
+   Fixed: PrettyPhoto is-single hover controls
+   Fixed: Grid Item ajax response rendering when no posts found
+   Updated: Make old names for deprecated elements
+   Updated: Old buttons and CTA removed from add element list
+   Updated: FontAwesome to 4.6.3
+
 08.06.2016 - ver 4.12
    - Added: Set default templates for post types
    - Added: Option to disable/hide row

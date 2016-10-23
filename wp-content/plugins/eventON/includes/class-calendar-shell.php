@@ -29,10 +29,9 @@ class evo_cal_shell {
 	// Event types and other functions
 		public function get_event_types(){
 			$output;
-			for($x = 1; $x< $this->cal->event_types ; $x++){
+			for($x = 1; $x< evo_max_ett_count() ; $x++){
 				$ab = ($x==1)? '':'_'.$x;
 				$event_type = 'event_type'.$ab;
-
 				$output[$x] = $event_type;
 			}
 			return $output;
@@ -52,8 +51,7 @@ class evo_cal_shell {
 			return array_merge($this->get_event_types(), $this->get_extra_tax());
 		}
 		public function verify_eventtypes(){
-
-			for($x= 3; $x<6; $x++){
+			for($x= 3; $x<= evo_max_ett_count(); $x++){
 				if( !empty($this->cal->evopt1['evcal_ett_'.$x]) && $this->cal->evopt1['evcal_ett_'.$x]=='yes'){
 					$this->cal->event_types = $x+1;
 				}else{

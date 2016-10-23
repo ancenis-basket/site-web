@@ -29,6 +29,7 @@ class evodv_frontend{
 			
 			wp_register_style( 'evo_dv_styles',$eventon_dv->plugin_url.'/assets/dv_styles.css');		
 			wp_register_script('evo_dv_mousewheel',$eventon_dv->plugin_url.'/assets/jquery.mousewheel.min.js', array('jquery'), $eventon_dv->version, true );
+			//wp_register_script('evodv_other',$eventon_dv->plugin_url.'/assets/jquery.mobile.min.js', array('jquery'), $eventon_dv->version, true );	
 			wp_register_script('evo_dv_script',$eventon_dv->plugin_url.'/assets/dv_script.js', array('jquery'), $eventon_dv->version, true );	
 
 			if(has_eventon_shortcode('add_eventon_dv')){
@@ -40,6 +41,7 @@ class evodv_frontend{
 		}
 		public function print_scripts(){
 			wp_enqueue_script('evo_dv_mousewheel');
+			//wp_enqueue_script('evodv_other');	
 			wp_enqueue_script('evo_dv_script');	
 		}
 
@@ -53,7 +55,6 @@ class evodv_frontend{
 				return;
 
 			$this->print_scripts();
-
 			$eventon_dv->is_running_dv=false;
 		}
 
@@ -79,7 +80,6 @@ class evodv_frontend{
 				wp_dequeue_script('evo_dv_script');
 			}
 		}
-
 
 	/**	MAIN Function to generate the calendar outter shell	for daily view */
 		public function generate_calendar($args, $type=''){
@@ -220,8 +220,7 @@ class evodv_frontend{
 			
 		}
 
-
-	// days grid 		
+	// days strip		
 		function get_daily_view_list($day, $month, $year, $filters='', $shortcode=''){
 			global $eventon;
 
@@ -231,6 +230,10 @@ class evodv_frontend{
 			$this->set_full_day_names($lang);
 
 			$number_days_in_month = $this->days_in_month( $month, $year);
+
+			// current month data
+				$TODAY = current_time('Y-n-j');
+				$TODAY = explode('-', $TODAY);
 			
 			// calculate date range for the calendar
 				date_default_timezone_set('UTC');
@@ -248,20 +251,22 @@ class evodv_frontend{
 				//print_r($updated_shortcode_args);
 
 			// get Events array
-				$event_list_array = $eventon->evo_generator->evo_get_wp_events_array('',$updated_shortcode_args, $filters );	
-			
+				$event_list_array = $eventon->evo_generator->evo_get_wp_events_array('',$updated_shortcode_args, $filters );
 			
 			// build a month array with days that have events
-			$date_with_events= $dates_event_counts = array();
+			$date_with_events= $dates_event_counts = $days_w_e = array();
 			if(is_array($event_list_array) && count($event_list_array)>0){
 				
-				foreach($event_list_array as $event){	
-
+				// each event
+				foreach($event_list_array as $event){
 					$__dur_type = $__duration ='';
+					
 					// check for all year event
 					$_is_all_year = (!empty($event['event_pmv']['evo_year_long']) && $event['event_pmv']['evo_year_long'][0]=='yes')? true:false;	
+					// check if month long
+					$_is_all_month = $_is_all_year? false: ((!empty($event['event_pmv']['_evo_month_long']) && $event['event_pmv']['_evo_month_long'][0]=='yes')? true:false );
 
-					if($_is_all_year){
+					if($_is_all_year || $_is_all_month){
 						$__duration= $number_days_in_month;
 						$start_date = 1;
 					}else{	
@@ -282,6 +287,9 @@ class evodv_frontend{
 								$dates_event_counts[$start_date] = $__no_events+1;
 
 								$date_with_events[$start_date] = $start_date;
+								$days_w_e[$start_date]['et'][] = $event['event_title'];
+								$days_w_e[$start_date]['ec'][] = (!empty($event['event_pmv']['evcal_event_color'])? 
+									$event['event_pmv']['evcal_event_color'][0]:'');
 							}else if($start_date<$end_date){
 							// different date
 								$__duration = $end_date - $start_date+1;						
@@ -311,7 +319,6 @@ class evodv_frontend{
 						$__duration = ($__duration==0 && $__dur_type=='eom')? 1: $__duration;
 						for($x=0; $x<$__duration; $x++){
 							if( $number_days_in_month >= ($start_date+$x) )
-
 								$__this_date = (int)$start_date + $x;
 								//echo $__this_date.'*'.$start_date.'-'.$__duration.'&'.$x.' ';
 								
@@ -319,9 +326,10 @@ class evodv_frontend{
 									(int)$dates_event_counts[$__this_date]:0;
 
 								$dates_event_counts[$__this_date] = $__no_events+1;
-								
-
 								$date_with_events[$start_date+$x] = $start_date+$x;
+								$days_w_e[$__this_date]['et'][] = $event['event_title'];
+								$days_w_e[$__this_date]['ec'][] = (!empty($event['event_pmv']['evcal_event_color'])? 
+									$event['event_pmv']['evcal_event_color'][0]:'');
 						}
 					}
 				}
@@ -331,6 +339,8 @@ class evodv_frontend{
 			$__focus_day = ($day >$number_days_in_month)? $number_days_in_month: $day;
 
 			$output='';
+
+			$output.= "<p class='evodv_action prev'></p>";
 			for($x=0; $x<$number_days_in_month; $x++){
 				$day_classes = array();
 
@@ -341,33 +351,52 @@ class evodv_frontend{
 						if(in_array($x+1, $date_with_events))
 							$day_classes[] = 'has_events';
 					}				
-					if($__focus_day==($x+1))
-						$day_classes[] = 'on_focus';
-					if($x+1 < $__focus_day)
-						$day_classes[] ='past_day';
+					if($__focus_day==($x+1)) $day_classes[] = 'on_focus';
+					if($x+1 < $__focus_day)	$day_classes[] ='past_day';
+					if( $x+1 == $__focus_day) $day_classes[] ='focused';
+					if( $x+1 == $TODAY[2] && $year == $TODAY[0] && $month == $TODAY[1]) 
+						$day_classes[] ='today';
 					
 
 				// number of events for that day
+				$daysEventCount = 0;
 				if(!empty($dates_event_counts[$x+1])){
-					$count = ($dates_event_counts[$x+1]==1)? $dates_event_counts[$x+1]: $dates_event_counts[$x+1];
-					$__events = 'data-events="'.$count.'"';
+					$daysEventCount = ($dates_event_counts[$x+1]==1)? (int)$dates_event_counts[$x+1]: (int)$dates_event_counts[$x+1];
+					$__events = 'data-events="'.$daysEventCount.'"';
 				}else{$__events ='data-events="0"';}
 
 				// data  full length day name
 				$day_name = 'data-dnm="'.$this->full_day_names[$day_of_week].'"';
 
-				$output.= "<p class='evo_day ".implode(' ', $day_classes)."' {$__events} {$day_name} data-date='".($x+1)."'>
-						<span class='evo_day_name'>".$this->day_names[$day_of_week]."</span><span class='evo_day_num'>".($x+1)."</span>
+				// json array
+				$json = (array_key_exists($x+1, $days_w_e))? ($days_w_e[$x+1]): null;
+
+				// days event count elements
+					$innerItems = '';
+					if($daysEventCount>0){
+						switch($daysEventCount){
+							case 1: $innerItems= "<em data-title='".$json['et'][0]."' style='background-color:#{$json['ec'][0]}'></em>"; break;
+							case 2: $innerItems= "<em data-title='".$json['et'][0]."' style='background-color:#{$json['ec'][0]}'></em><em data-title='".$json['et'][1]."' style='background-color:#{$json['ec'][1]}'></em>"; break;
+							case 3: $innerItems= "<em data-title='".$json['et'][0]."' style='background-color:#{$json['ec'][0]}'></em>
+								<em data-title='".$json['et'][1]."' style='background-color:#{$json['ec'][1]}'></em>
+								<em data-title='".$json['et'][2]."' style='background-color:#{$json['ec'][2]}'></em>"; break;
+							case ($daysEventCount>3): $innerItems= "<em class='more' data-title='".$daysEventCount."+'></em>"; break;
+						}
+					}				
+
+				$output.= "<p class='evo_day ".implode(' ', $day_classes)."' {$__events} {$day_name} data-date='".($x+1)."' data-cdate='". ( $year.'-'.$month.'-'.($x+1))."'>
+						<span class='evo_day_name'>".$this->day_names[$day_of_week]."</span>
+						<span class='evo_day_num'>".($x+1)."</span>
+						<span class='evoday_events'>".$innerItems."</span>
 					</p>";
-				
 			}
-			$output.= "<div class='clear'></div>";
+			$output .= "<p class='evodv_action next'></p>";
+			//$output.= "<div class='clear'></div>";
 			
 			return $output;
 			//return ob_get_clean();
 		}
 		
-
 	//	create the content for the days 
 		function content_below_sortbar_this($content,$args=''){
 			global $eventon_dv;
@@ -384,7 +413,7 @@ class evodv_frontend{
 			//print_r($day_data);
 
 			// DAILY VIEW section
-			$dv_strip_margin = (( ($day_data['day'])*(-40) )+130 ).'px';
+			$dv_strip_margin = (( ($day_data['day'])*(-60) )+130 ).'px';
 			$hide_arrows = ($evcal_val1['evcal_arrow_hide']=='yes')? true:false;
 			
 
@@ -409,14 +438,17 @@ class evodv_frontend{
 
 			$content.="
 			<div class='eventon_daily_list ".( (!$hide_arrows)? 'dvlist_hasarrows': 'dvlist_noarrows' )."' cal_id='{$day_data['cal_id']}'>
-				".( (!$hide_arrows)? "<a class='evo_daily_prev evcal_arrows'><i class='fa fa-angle-left'></i></a><a class='evo_daily_next evcal_arrows'><i class='fa fa-angle-right'></i></a>":null )."<div class='eventon_dv_outter'>
-					<div class='eventon_daily_in' style='margin-left:{$dv_strip_margin}'>";	
+				<div class='eventon_dv_outter'>
+					<div class='eventon_daily_in' data-left='{$dv_strip_margin}' style='left:{}'>";	
 						
 						$content .= $this->get_daily_view_list($day_data['day'],$day_data['month'], $day_data['year']);
+						//$content .= $this->get_daily_view_list($day_data['day'],$day_data['month']+1, $day_data['year']);
 						
 					$content .="</div>
 				</div>
 			</div>";
+
+			//$content.= "<div class='evodv_carousel'><div class='inner'>".$this->get_daily_view_list($day_data['day'],$day_data['month'], $day_data['year']) . "</div></div>";
 			
 			echo $content;
 			

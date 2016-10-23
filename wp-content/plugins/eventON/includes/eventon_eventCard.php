@@ -182,14 +182,16 @@ function eventon_eventcard_print($array, $evOPT, $evoOPT2){
 				case 'organizer':					
 					$evcal_evcard_org = eventon_get_custom_language($evoOPT2, 'evcal_evcard_org','Organizer');
 
-					$ORGMeta = get_option( "taxonomy_".$object->organizer_term_id);
-
+					$ORGMeta = evo_get_term_meta('event_organizer',$object->organizer_term_id,'',true);
+					
 					$img_src = (!empty($ORGMeta['evo_org_img'])? 
 						wp_get_attachment_image_src($ORGMeta['evo_org_img'],'medium'): null);
 
+					$newdinwow = (!empty($ORGMeta['_evocal_org_exlink_target']) && $ORGMeta['_evocal_org_exlink_target']=='yes')? 'target="_blank"':'';
+
 					// organizer name text openinnewwindow
 						if(!empty($ORGMeta['evcal_org_exlink'])){
-							$orgNAME = "<span class='evo_card_organizer_name_t'><a ".( $object->openinnewwindow=='yes'?'target="_blank"':'')." href='{$ORGMeta['evcal_org_exlink']}'>".$object->organizer_name."</a></span>";
+							$orgNAME = "<span class='evo_card_organizer_name_t'><a ".( $newdinwow )." href='{$ORGMeta['evcal_org_exlink']}'>".$object->organizer_name."</a></span>";
 						}else{
 							$orgNAME = "<span class='evo_card_organizer_name_t'>".$object->organizer_name."</span>";
 						}					

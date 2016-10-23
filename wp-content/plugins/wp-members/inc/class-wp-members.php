@@ -69,9 +69,9 @@ class WP_Members {
 		require_once( WPMEM_PATH . 'inc/class-wp-members-forms.php' );
 		$this->forms = new WP_Members_Forms;
 		
-		// Load utilities.
-		require_once( WPMEM_PATH . 'inc/class-wp-members-utilities.php' );
-		$this->utitilies = new WP_Members_Utilities;
+		// Load api.
+		require_once( WPMEM_PATH . 'inc/class-wp-members-api.php' );
+		$this->api = new WP_Members_API;
 		
 	}
 
@@ -79,22 +79,29 @@ class WP_Members {
 	 * Plugin initialization function to load shortcodes.
 	 *
 	 * @since 3.0.0
+	 * @since 3.0.7 Added wpmem_show_count.
+	 * @since 3.1.0 Added wpmem_profile.
+	 * @since 3.1.1 Added wpmem_loginout.
 	 */
 	function load_shortcodes() {
 
 		/**
 		 * Load the shortcode functions.
+		 *
+		 * @since 3.0.0
 		 */
 		require_once( WPMEM_PATH . 'inc/shortcodes.php' );
 		
 		add_shortcode( 'wp-members',       'wpmem_shortcode'       );
-		add_shortcode( 'wpmem_field',      'wpmem_shortcode'       );
+		add_shortcode( 'wpmem_field',      'wpmem_sc_fields'       );
 		add_shortcode( 'wpmem_logged_in',  'wpmem_sc_logged_in'    );
 		add_shortcode( 'wpmem_logged_out', 'wpmem_sc_logged_out'   );
-		add_shortcode( 'wpmem_logout',     'wpmem_shortcode'       );
+		add_shortcode( 'wpmem_logout',     'wpmem_sc_logout'       );
 		add_shortcode( 'wpmem_form',       'wpmem_sc_forms'        );
 		add_shortcode( 'wpmem_show_count', 'wpmem_sc_user_count'   );
 		add_shortcode( 'wpmem_profile',    'wpmem_sc_user_profile' );
+		add_shortcode( 'wpmem_loginout',   'wpmem_sc_loginout'     );
+		add_shortcode( 'wpmem_tos',        'wpmem_sc_tos'          );
 		
 		/**
 		 * Fires after shortcodes load (for adding additional custom shortcodes).
@@ -150,11 +157,11 @@ class WP_Members {
 	function load_dropins() {
 
 		/**
-		 * Filters the dropin file folder.
+		 * Filters the drop-in file folder.
 		 *
 		 * @since 3.0.0
 		 *
-		 * @param string $folder The dropin file folder.
+		 * @param string $folder The drop-in file folder.
 		 */
 		$folder = apply_filters( 'wpmem_dropin_folder', WP_PLUGIN_DIR . '/wp-members-dropins/' );
 		
@@ -164,7 +171,7 @@ class WP_Members {
 		}
 
 		/**
-		 * Fires after dropins load (for adding additional dropings).
+		 * Fires after dropins load (for adding additional drop-ins).
 		 *
 		 * @since 3.0.0
 		 */
@@ -218,14 +225,18 @@ class WP_Members {
 	/**
 	 * Gets the regchk value.
 	 *
+	 * regchk is a legacy variable that contains information about the current
+	 * action being performed. Login, logout, password, registration, profile
+	 * update functions all return a specific value that is stored in regchk.
+	 * This value and information about the current action can then be used to
+	 * determine what content is to be displayed by the securify function.
+	 *
 	 * @since 3.0.0
 	 *
 	 * @global string $wpmem_a The WP-Members action variable.
 	 *
-	 * @param  string $action The action being done.
+	 * @param  string $action The current action.
 	 * @return string         The regchk value.
-	 *
-	 * @todo Describe regchk.
 	 */
 	function get_regchk( $action ) {
 
@@ -275,7 +286,7 @@ class WP_Members {
 		 */
 		$regchk = apply_filters( 'wpmem_regchk', $regchk, $action );
 		
-		// @todo Remove legacy global variable.
+		// Legacy global variable for use with older extensions.
 		global $wpmem_regchk;
 		$wpmem_regchk = $regchk;
 		
@@ -366,7 +377,11 @@ class WP_Members {
 	 * The Securify Content Filter.
 	 *
 	 * This is the primary function that picks up where get_action() leaves off.
-	 * Determines whether content is shown or hidden for both post and pages.
+	 * Determines whether content is shown or hidden for both post and pages. This
+	 * is a filter function for the_content.
+	 *
+	 * @link https://developer.wordpress.org/reference/functions/the_content/
+	 * @link https://developer.wordpress.org/reference/hooks/the_content/
 	 *
 	 * @since 3.0.0
 	 *
@@ -381,7 +396,7 @@ class WP_Members {
 
 		$content = ( is_single() || is_page() ) ? $content : wpmem_do_excerpt( $content );
 
-		if ( ( ! wpmem_test_shortcode( $content, 'wp-members' ) ) ) {
+		if ( ( ! has_shortcode( $content, 'wp-members' ) ) ) {
 
 			if ( $this->regchk == "captcha" ) {
 				global $wpmem_captcha_err;
@@ -458,6 +473,7 @@ class WP_Members {
 		 * Filter the value of $content after wpmem_securify has run.
 		 *
 		 * @since 2.7.7
+		 * @since 3.0.0 Moved to new method in WP_Members Class.
 		 *
 		 * @param string $content The content after securify has run.
 		 */
@@ -478,15 +494,82 @@ class WP_Members {
 	 * Sets the registration fields.
 	 *
 	 * @since 3.0.0
+	 * @since 3.1.5 Added $form argument.
+	 *
+	 * @param string $form The form being generated.
 	 */
-	function load_fields() {
-		$this->fields = get_option( 'wpmembers_fields' );
+	function load_fields( $form = 'default' ) {
+		$fields = get_option( 'wpmembers_fields' );
+		
+		// Validate fields settings.
+		if ( ! isset( $fields ) || empty( $fields ) ) {
+			/**
+			 * Load installation routine.
+			 */
+			require_once( WPMEM_PATH . 'wp-members-install.php' );
+			// Update settings.
+			$fields = wpmem_install_fields();
+		}
+		
+		// Add new field array keys
+		foreach ( $fields as $key => $val ) {
+			
+			// Key fields with meta key.
+			$meta_key = $val[2];
+			
+			// Old format, new key.
+			foreach ( $val as $subkey => $subval ) {
+				$this->fields[ $meta_key ][ $subkey ] = $subval;
+			}
+			
+			// Setup field properties.
+			$this->fields[ $meta_key ]['label']    = $val[1];
+			$this->fields[ $meta_key ]['type']     = $val[3];
+			$this->fields[ $meta_key ]['register'] = ( 'y' == $val[4] ) ? true : false;
+			$this->fields[ $meta_key ]['required'] = ( 'y' == $val[5] ) ? true : false;
+			$this->fields[ $meta_key ]['profile']  = '';
+			$this->fields[ $meta_key ]['native']   = ( 'y' == $val[6] ) ? true : false;
+			
+			// Certain field types have additional properties.
+			switch ( $val[3] ) {
+				
+				case 'checkbox':
+					$this->fields[ $meta_key ]['checked_value']   = $val[7];
+					$this->fields[ $meta_key ]['checked_default'] = ( 'y' == $val[8] ) ? true : false;
+					break;
+
+				case 'select':
+				case 'multiselect':
+				case 'multicheckbox':
+				case 'radio':
+					$this->fields[ $meta_key ]['values']    = $val[7];
+					$this->fields[ $meta_key ]['delimiter'] = ( isset( $val[8] ) ) ? $val[8] : '|';
+					$this->fields[ $meta_key ]['options'] = array();
+					foreach ( $val[7] as $value ) {
+						$pieces = explode( $this->fields[ $meta_key ]['delimiter'], trim( $value ) );
+						if ( $pieces[1] != '' ) {
+							$this->fields[ $meta_key ]['options'][ $pieces[1] ] = $pieces[0];
+						}
+					}
+					break;
+
+				case 'file':
+				case 'image':
+					$this->fields[ $meta_key ]['file_types'] = $val[7];
+					break;
+
+				case 'hidden':
+					$this->fields[ $meta_key ]['value'] = $val[7];
+					break;
+					
+			}
+		}
 	}
 	
 	/**
 	 * Get excluded meta fields.
 	 *
-	 * @since Unknown
+	 * @since 3.0.0
 	 *
 	 * @param  string $tag A tag so we know where the function is being used.
 	 * @return array       The excluded fields.
@@ -500,7 +583,7 @@ class WP_Members {
 		 * Filter the fields to be excluded when user is created/updated.
 		 *
 		 * @since 2.9.3
-		 * @since Unknown Moved to new method in WP_Members Class.
+		 * @since 3.0.0 Moved to new method in WP_Members Class.
 		 *
 		 * @param array       An array of the field meta names to exclude.
 		 * @param string $tag A tag so we know where the function is being used.
@@ -573,8 +656,6 @@ class WP_Members {
 			'forgot_link'          => __( 'Click here to reset', 'wp-members' ),
 			'register_link_before' => __( 'New User?', 'wp-members' ) . '&nbsp;',
 			'register_link'        => __( 'Click here to register', 'wp-members' ),
-			'username_link_before' => __( 'Forgot username?', 'wp-members' ) . '&nbsp;',
-			'username_link'        => __( 'Click here', 'wp-members' ),
 			
 			// Password change form.
 			'pwdchg_heading'       => __( 'Change Password', 'wp-members' ),
@@ -587,6 +668,8 @@ class WP_Members {
 			'pwdreset_username'    => __( 'Username' ),
 			'pwdreset_email'       => __( 'Email' ),
 			'pwdreset_button'      => __( 'Reset Password' ),
+			'username_link_before' => __( 'Forgot username?', 'wp-members' ) . '&nbsp;',
+			'username_link'        => __( 'Click here', 'wp-members' ),
 			
 			// Retrieve username form.
 			'username_heading'     => __( 'Retrieve username', 'wp-members' ),
@@ -624,6 +707,7 @@ class WP_Members {
 			'reg_email_match'      => __( 'Emails did not match.', 'wp-members' ),
 			'reg_empty_captcha'    => __( 'You must complete the CAPTCHA form.', 'wp-members' ),
 			'reg_invalid_captcha'  => __( 'CAPTCHA was not valid.', 'wp-members' ),
+			'reg_generic'          => __( 'There was an error processing the form.', 'wp-members' ),
 			
 			// Links.
 			'profile_edit'         => __( 'Edit My Information', 'wp-members' ),

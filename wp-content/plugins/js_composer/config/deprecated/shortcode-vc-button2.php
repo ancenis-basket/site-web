@@ -1,9 +1,10 @@
 <?php
 return array(
-	'name' => __( 'Button', 'js_composer' ) . ' 2',
+	'name' => __( 'Old Button', 'js_composer' ) . ' 2',
 	'base' => 'vc_button2',
 	'icon' => 'icon-wpb-ui-button',
 	'deprecated' => '4.5',
+	'content_element' => false,
 	'category' => array(
 		__( 'Content', 'js_composer' )
 	),

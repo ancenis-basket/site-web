@@ -2,7 +2,7 @@
 /**
  * Event Top section
  * process content as html output
- * @since  eventon 2.3.17
+ * @since  eventon 2.4.8
  * @version  0.1
  */
 function eventon_get_eventtop_print($array, $evOPT, $evOPT2){
@@ -36,8 +36,11 @@ function eventon_get_eventtop_print($array, $evOPT, $evOPT2){
 			break;
 			case 'day_block':
 
-				$OT.="<span class='evcal_cblock ".( $object->yearlong?'yrl ':null).( $object->monthlong?'mnl ':null)."' data-bgcolor='".$object->color."' data-smon='".$object->start['F']."' data-syr='".$object->start['Y']."'><em class='evo_date' >".$object->day_name.$object->html['html_date'].'</em>';
-				$OT.="<em class='evo_time'>".$object->html['html_time']."</em>";
+				$OT.="<span class='evcal_cblock ".( $object->yearlong?'yrl ':null).( $object->monthlong?'mnl ':null)."' data-bgcolor='".$object->color."' data-smon='".$object->start['F']."' data-syr='".$object->start['Y']."'>";
+				if($object->showyear=='yes')
+					$OT.= "<em class='evo_year' >".$object->start['Y'].'</em>';
+				$OT.= "<em class='evo_date' >".$object->day_name.$object->html['html_date'].'</em>';
+				$OT.= "<span class='evo_time'>".$object->html['html_time']."</span>";
 				$OT.= "<em class='clear'></em></span>";
 
 			break;
@@ -76,20 +79,29 @@ function eventon_get_eventtop_print($array, $evOPT, $evOPT2){
 				// time
 				if($object->fields_ && in_array('time',$object->fields))
 					$OT.= "<em class='evcal_time'>".$object->html['html_fromto'].(!empty($object->timezone)? ' <em class="evo_etop_timezone">'.$object->timezone. '</em>':null)."</em> ";
-				//location
-				if($object->fields_ && in_array('location',$object->fields) && !empty($object->location))
-					$OT.=$object->location;
+				
+				// location information
+				if($object->fields_){
+					// location name
+					$LOCname = (in_array('locationame',$object->fields) && $object->locationname)? $object->locationname: false;
 
-				//location name
-				if($object->fields_ && in_array('locationame',$object->fields) && $object->locationname)
-					$OT.='<em class="evcal_location event_location_name">'.stripslashes($object->locationname).'</em>';
+					// location address
+					$LOCadd = (in_array('location',$object->fields) && !empty($object->locationaddress))? $object->locationaddress: false;
+
+					if($LOCname || $LOCadd){
+						$OT.= '<em class="evcal_location" '.( ($object->lonlat)? $object->lonlat:null ).' data-add_str="'.$LOCadd.'">'.($LOCname? '<em class="event_location_name">'.$LOCname.'</em>':'').
+							( ($LOCname && $LOCadd)?', ':'').
+							$LOCadd.'</em>';
+					}
+				}
 
 				$OT.="</span>";
 				$OT.="<span class='evcal_desc3'>";
 
 				//organizer
-				$org = (!empty($object->evvals['evcal_organizer']))? $object->evvals['evcal_organizer'][0]:'';
-				if($object->fields_ && in_array('organizer',$object->fields) && !empty($org)){
+				$org = ($object->organizer_name)? $object->organizer_name: ((!empty($object->evvals['evcal_organizer']))? $object->evvals['evcal_organizer'][0]:false);
+
+				if($object->fields_ && in_array('organizer',$object->fields) && $org){
 					$OT.="<em class='evcal_oganizer'><i>".( eventon_get_custom_language( $evOPT2,'evcal_evcard_org', 'Event Organized By')  ).':</i> '.$org."</em>";
 				}
 				//event type

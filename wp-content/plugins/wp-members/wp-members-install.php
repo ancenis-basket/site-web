@@ -15,10 +15,11 @@
  *
  * Functions included:
  * - wpmem_do_install
- * - wpmem_update_settings
- * - wpmem_append_email
- * - wpmem_default_dialogs
- * - wpmem_update_captcha
+ * - wpmem_upgrade_settings
+ * - wpmem_upgrade_email
+ * - wpmem_upgrade_dialogs
+ * - wpmem_downgrade_dialogs
+ * - wpmem_upgrade_captcha
  */
 
  
@@ -42,114 +43,16 @@ function wpmem_do_install() {
 
 	if ( ! get_option( 'wpmembers_settings' ) || $chk_force == true ) {
 
-		// This is a clean install (or an upgrade from 2.1 or earlier).
-		
-		$wpmem_settings = array(
-			'version' => WPMEM_VERSION,
-			'block'   => array(
-				'post' => ( is_multisite() ) ? 0 : 1,
-				'page' => 0,
-			),
-			'show_excerpt' => array(
-				'post' => 0,
-				'page' => 0,
-			),
-			'show_reg' => array(
-				'post' => 1,
-				'page' => 1,
-			),
-			'show_login' => array(
-				'post' => 1,
-				'page' => 1,
-			),
-			'autoex' => array(
-				'post' => array( 'enabled' => 0, 'length' => '' ),
-				'page' => array( 'enabled' => 0, 'length' => '' ),
-			),
-			'notify'    => 0,
-			'mod_reg'   => 0,
-			'captcha'   => 0,
-			'use_exp'   => 0,
-			'use_trial' => 0,
-			'warnings'  => 0,
-			'user_pages' => array(
-				'profile'  => '',
-				'register' => '',
-				'login'    => '',
-			),
-			'cssurl'    => '',
-			'style'     => plugin_dir_url ( __FILE__ ) . 'css/generic-no-float.css',
-			'attrib'    => 0,
-			'post_types' => array(),
-			'form_tags'  => array( 'default' => 'Registration Default' ),
-			'email'      => array( 'from' => '', 'from_name' => '' ),
-		);
-
-		// Using update_option to allow for forced update.
-		update_option( 'wpmembers_settings', $wpmem_settings, '', 'yes' );
-
-		/*
-		 * Field array elements:
-		 * 
-		 * 	array(
-		 * 		order, 
-		 * 		label, 
-		 *		optionname, 
-		 * 		type, 
-		 * 		display, 
-		 * 		required, 
-		 * 		native, 
-		 * 		checked value, 
-		 * 		checked by default,
-		 * 	);
-		 */
-		$wpmem_fields_options_arr = array(
-			array( 1,  'First Name',         'first_name',       'text',     'y', 'y', 'y' ),
-			array( 2,  'Last Name',          'last_name',        'text',     'y', 'y', 'y' ),
-			array( 3,  'Address 1',          'addr1',            'text',     'y', 'y', 'n' ),
-			array( 4,  'Address 2',          'addr2',            'text',     'y', 'n', 'n' ),
-			array( 5,  'City',               'city',             'text',     'y', 'y', 'n' ),
-			array( 6,  'State',              'thestate',         'text',     'y', 'y', 'n' ),
-			array( 7,  'Zip',                'zip',              'text',     'y', 'y', 'n' ),
-			array( 8,  'Country',            'country',          'text',     'y', 'y', 'n' ),
-			array( 9,  'Day Phone',          'phone1',           'text',     'y', 'y', 'n' ),
-			array( 10, 'Email',              'user_email',       'email',    'y', 'y', 'y' ),
-			array( 11, 'Confirm Email',      'confirm_email',    'email',    'n', 'n', 'n' ),
-			array( 12, 'Website',            'user_url',         'url',      'n', 'n', 'y' ),
-			array( 13, 'Biographical Info',  'description',      'textarea', 'n', 'n', 'y' ),
-			array( 14, 'Password',           'password',         'password', 'n', 'n', 'n' ),
-			array( 15, 'Confirm Password',   'confirm_password', 'password', 'n', 'n', 'n' ),
-			array( 16, 'TOS',                'tos',              'checkbox', 'n', 'n', 'n', 'agree', 'n' ),
-		);
-
-		update_option( 'wpmembers_fields', $wpmem_fields_options_arr, '', 'yes' ); // using update_option to allow for forced update
-
-		$wpmem_dialogs_arr = array(
-			"This content is restricted to site members.  If you are an existing user, please log in.  New users may register below.",
-			"Sorry, that username is taken, please try another.",
-			"Sorry, that email address already has an account.<br />Please try another.",
-			"Congratulations! Your registration was successful.<br /><br />You may now log in using the password that was emailed to you.",
-			"Your information was updated!",
-			"Passwords did not match.<br /><br />Please try again.",
-			"Password successfully changed!",
-			"Either the username or email address do not exist in our records.",
-			"Password successfully reset!<br /><br />An email containing a new password has been sent to the email address on file for your account.",
-		);
-
-		// Insert TOS dialog placeholder.
-		$dummy_tos = "Put your TOS (Terms of Service) text here.  You can use HTML markup.";
-		update_option( 'wpmembers_tos', $dummy_tos );
-		update_option( 'wpmembers_dialogs', $wpmem_dialogs_arr, '', 'yes' ); // using update_option to allow for forced update
+		wpmem_install_settings();
+		wpmem_install_fields();
+		wpmem_install_dialogs();
 		wpmem_append_email();
-
-		// If it's a new install, use the Twenty Twelve stylesheet.
 		update_option( 'wpmembers_style', plugin_dir_url ( __FILE__ ) . 'css/generic-no-float.css', '', 'yes' );
 
 	} else {
 		
 		wpmem_upgrade_settings();
 		wpmem_upgrade_captcha();
-		wpmem_upgrade_dialogs();
 		wpmem_append_email();
 		
 	}
@@ -165,6 +68,9 @@ function wpmem_do_install() {
  * @return array $wpmem_newsettings
  */
 function wpmem_upgrade_settings() {
+	
+	// Update dialogs for 3.1.1
+	wpmem_upgrade_dialogs();
 
 	$wpmem_settings = get_option( 'wpmembers_settings' );
 
@@ -304,11 +210,11 @@ You may wish to retain a copy for your records.
 username: [username]
 password: [password]
 
-You may login here:
+You may log in here:
 [reglink]
 
 You may change your password here:
-[members-area]
+[user-profile]
 ';
 
 	$arr = array(
@@ -350,8 +256,8 @@ You may wish to retain a copy for your records.
 username: [username]
 password: [password]
 
-You may login and change your password here:
-[members-area]
+You may log in and change your password here:
+[user-profile]
 
 You originally registered at:
 [reglink]
@@ -447,29 +353,49 @@ username: [username]
 
 
 /**
- * Checks the dialogs array for string changes.
+ * Checks the dialogs array for necessary changes.
  *
  * @since 2.9.3
  * @since 3.0.0 Changed from update_dialogs() to wpmem_update_dialogs().
  * @since 3.1.0 Changed from wpmem_update_dialogs() to wpmem_upgrade_dialogs().
+ * @since 3.1.1 Converts numeric dialog array to associative.
  */
 function wpmem_upgrade_dialogs() {
 
-	$wpmem_dialogs_arr = get_option( 'wpmembers_dialogs' );
-	$do_update = false;
-
-	if ( $wpmem_dialogs_arr[0] == "This content is restricted to site members.  If you are an existing user, please login.  New users may register below." ) {
-		$wpmem_dialogs_arr[0] = "This content is restricted to site members.  If you are an existing user, please log in.  New users may register below.";
-		$do_update = true;
+	$wpmem_dialogs = get_option( 'wpmembers_dialogs' );
+	
+	if ( ! array_key_exists( 'restricted_msg', $wpmem_dialogs ) ) {
+		// Update is needed.
+		$new_arr  = array();
+		$new_keys = array( 'restricted_msg', 'user', 'email', 'success', 'editsuccess', 'pwdchangerr', 'pwdchangesuccess', 'pwdreseterr', 'pwdresetsuccess' );
+		foreach ( $wpmem_dialogs as $key => $val ) {
+			$new_arr[ $new_keys[ $key ] ] = $val;
+		}
+		update_option( 'wpmembers_dialogs', $new_arr, '', 'yes' );
 	}
 
-	if ( $wpmem_dialogs_arr[3] == "Congratulations! Your registration was successful.<br /><br />You may now login using the password that was emailed to you." ) {
-		$wpmem_dialogs_arr[3] = "Congratulations! Your registration was successful.<br /><br />You may now log in using the password that was emailed to you.";
-		$do_update = true;
-	}
+	return;
+}
 
-	if ( $do_update ) {
-		update_option( 'wpmembers_dialogs', $wpmem_dialogs_arr, '', 'yes' );
+
+/**
+ * Downgrades dialogs array for pre-3.1.1 version rollback.
+ *
+ * @since 3.1.1
+ */
+function wpmem_downgrade_dialogs() {
+	
+	$wpmem_dialogs = get_option( 'wpmembers_dialogs' );
+	
+	if ( array_key_exists( 'restricted_msg', $wpmem_dialogs ) ) {
+		// Update is needed.
+		$new_arr  = array();
+		$i = 0;
+		foreach ( $wpmem_dialogs as $key => $val ) {
+			$new_arr[ $i ] = $val;
+			$i++;
+		}
+		update_option( 'wpmembers_dialogs', $new_arr, '', 'yes' );
 	}
 
 	return;
@@ -508,6 +434,112 @@ function wpmem_upgrade_captcha() {
 		}
 	}
 	return;
+}
+
+
+function wpmem_install_settings() {
+		
+	$wpmem_settings = array(
+		'version' => WPMEM_VERSION,
+		'block'   => array(
+			'post' => ( is_multisite() ) ? 0 : 1,
+			'page' => 0,
+		),
+		'show_excerpt' => array(
+			'post' => 0,
+			'page' => 0,
+		),
+		'show_reg' => array(
+			'post' => 1,
+			'page' => 1,
+		),
+		'show_login' => array(
+			'post' => 1,
+			'page' => 1,
+		),
+		'autoex' => array(
+			'post' => array( 'enabled' => 0, 'length' => '' ),
+			'page' => array( 'enabled' => 0, 'length' => '' ),
+		),
+		'notify'    => 0,
+		'mod_reg'   => 0,
+		'captcha'   => 0,
+		'use_exp'   => 0,
+		'use_trial' => 0,
+		'warnings'  => 0,
+		'user_pages' => array(
+			'profile'  => '',
+			'register' => '',
+			'login'    => '',
+		),
+		'cssurl'    => '',
+		'style'     => plugin_dir_url ( __FILE__ ) . 'css/generic-no-float.css',
+		'attrib'    => 0,
+		'post_types' => array(),
+		'form_tags'  => array( 'default' => 'Registration Default' ),
+		'email'      => array( 'from' => '', 'from_name' => '' ),
+	);
+	
+	// Using update_option to allow for forced update.
+	update_option( 'wpmembers_settings', $wpmem_settings, '', 'yes' );
+}
+
+function wpmem_install_fields() {
+	/*
+	 * Field array elements:
+	 * 
+	 * 	array(
+	 * 		order, 
+	 * 		label, 
+	 *		optionname, 
+	 * 		type, 
+	 * 		display, 
+	 * 		required, 
+	 * 		native, 
+	 * 		checked value, 
+	 * 		checked by default,
+	 * 	);
+	 */
+	$wpmem_fields_options_arr = array(
+		array( 1,  'First Name',         'first_name',       'text',     'y', 'y', 'y' ),
+		array( 2,  'Last Name',          'last_name',        'text',     'y', 'y', 'y' ),
+		array( 3,  'Address 1',          'addr1',            'text',     'y', 'y', 'n' ),
+		array( 4,  'Address 2',          'addr2',            'text',     'y', 'n', 'n' ),
+		array( 5,  'City',               'city',             'text',     'y', 'y', 'n' ),
+		array( 6,  'State',              'thestate',         'text',     'y', 'y', 'n' ),
+		array( 7,  'Zip',                'zip',              'text',     'y', 'y', 'n' ),
+		array( 8,  'Country',            'country',          'text',     'y', 'y', 'n' ),
+		array( 9,  'Day Phone',          'phone1',           'text',     'y', 'y', 'n' ),
+		array( 10, 'Email',              'user_email',       'email',    'y', 'y', 'y' ),
+		array( 11, 'Confirm Email',      'confirm_email',    'email',    'n', 'n', 'n' ),
+		array( 12, 'Website',            'user_url',         'url',      'n', 'n', 'y' ),
+		array( 13, 'Biographical Info',  'description',      'textarea', 'n', 'n', 'y' ),
+		array( 14, 'Password',           'password',         'password', 'n', 'n', 'n' ),
+		array( 15, 'Confirm Password',   'confirm_password', 'password', 'n', 'n', 'n' ),
+		array( 16, 'TOS',                'tos',              'checkbox', 'n', 'n', 'n', 'agree', 'n' ),
+	);
+
+	update_option( 'wpmembers_fields', $wpmem_fields_options_arr, '', 'yes' ); // using update_option to allow for forced update
+}
+
+function wpmem_install_dialogs() {
+	$wpmem_dialogs_arr = array(
+		'restricted_msg'   => "This content is restricted to site members.  If you are an existing user, please log in.  New users may register below.",
+		'user'             => "Sorry, that username is taken, please try another.",
+		'email'            => "Sorry, that email address already has an account.<br />Please try another.",
+		'success'          => "Congratulations! Your registration was successful.<br /><br />You may now log in using the password that was emailed to you.",
+		'editsuccess'      => "Your information was updated!",
+		'pwdchangerr'      => "Passwords did not match.<br /><br />Please try again.",
+		'pwdchangesuccess' => "Password successfully changed!",
+		'pwdreseterr'      => "Either the username or email address do not exist in our records.",
+		'pwdresetsuccess'  => "Password successfully reset!<br /><br />An email containing a new password has been sent to the email address on file for your account.",
+	);
+	
+	// Insert TOS dialog placeholder.
+	$dummy_tos = "Put your TOS (Terms of Service) text here.  You can use HTML markup.";
+	
+	update_option( 'wpmembers_tos', $dummy_tos );
+	update_option( 'wpmembers_dialogs', $wpmem_dialogs_arr, '', 'yes' ); // using update_option to allow for forced update
 }
 
 // End of file.

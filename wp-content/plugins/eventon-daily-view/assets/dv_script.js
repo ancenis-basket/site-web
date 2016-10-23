@@ -10,15 +10,56 @@ jQuery(document).ready(function($){
 	var current_day;
 	var current_events;
 
+
 	function init(){
 		set_daily_strip_sizes('');
 		$('body').find('div.evoDV').each(function(){
-			//$(this).attr({'data-runajax':0});
+
+			IN = $(this).find('.eventon_daily_in');
+			LEFT = parseInt(IN.attr('data-left'));
+			//console.log(LEFT);
+			IN.css('margin-left',LEFT);
+			//$(this).attr({'data-runajax':0});			
 		});
 
 		update_num_events();
 	}
 
+	// Hover on event dots tooltip
+		$('.eventon_daily_list').on('mouseover','em',function(){
+			OBJ = $(this);
+			
+			PAR = OBJ.closest('.eventon_daily_list');
+
+			p = OBJ.offset();
+			t = PAR.offset();
+			w = PAR.width();
+			xleft = p.left - t.left;
+			xtop = p.top - t.top;
+
+			TITLE = OBJ.data('title');
+
+			// adjust side of the tooltip
+			if((w/2) > xleft){
+				HTML = "<em class='evodv_tooltip' style='top:"+(xtop-13)+"px;left:"+(xleft+23)+"px;'>"+TITLE+"</em>";
+			}else{
+
+				xright = w - xleft;
+				HTML = "<em class='evodv_tooltip left' style='top:"+(xtop-13)+"px;right:"+(xright+13)+"px;'>"+TITLE+"</em>";
+			}
+			
+			PAR.append(HTML);
+
+		}).mouseout(function(){
+			OBJ = $(this);
+			OBJ.closest('.eventon_daily_list').find('.evodv_tooltip').remove();
+
+		});
+
+	// switch month within day strip
+		$('body').on('click','.evodv_action',function(){
+
+		});
 	// update number of events for current day
 		function update_num_events(){
 			$('.evoDV').each(function(){
@@ -147,18 +188,18 @@ jQuery(document).ready(function($){
 			$.ajax({
 				beforeSend: function(){
 					ev_cal.find('.eventon_events_list').slideUp('fast');
-					ev_cal.find('#eventon_loadbar').show().css({width:'0%'}).animate({width:'100%'});
+					ev_cal.find('#eventon_loadbar').slideDown().css({width:'0%'}).animate({width:'100%'});
 				},
 				type: 'POST',
 				url:the_ajax_script.ajaxurl,
 				data: data_arg,
 				dataType:'json',
 				success:function(data){
-					//alert(data);
+					// /alert(data);
 					ev_cal.find('.eventon_events_list').html(data.content);
 					ev_cal.find('.eventon_other_vals').val(new_day_);
 				},complete:function(){
-					ev_cal.find('#eventon_loadbar').css({width:'100%'}).fadeOut();
+					ev_cal.find('#eventon_loadbar').css({width:'100%'}).slideUp();
 					ev_cal.find('.eventon_events_list').delay(300).slideDown();
 					ev_cal.evoGenmaps({'delay':400});
 				}
@@ -168,8 +209,15 @@ jQuery(document).ready(function($){
 	
 	// filter the events	
 		$('.eventon_filter_dropdown').on( 'click','p',function(){
+			filter_section = $(this).closest('.eventon_filter_line');
+			if(filter_section.hasClass('selecttype')) return;
+
 			var cal_head = $(this).closest('.eventon_sorting_section').siblings('.calendar_header');
-			
+			eventon_dv_get_new_days(cal_head,'','');
+		});
+
+		$('body').on('click','.evo_filter_submit',function(){
+			var cal_head = $(this).closest('.eventon_sorting_section').siblings('.calendar_header');
 			eventon_dv_get_new_days(cal_head,'','');
 		});
 
@@ -214,6 +262,14 @@ jQuery(document).ready(function($){
 				}
 			}
 		});
+
+		// switching months with day strip
+			$('.eventon_daily_list').on('click','.evodv_action',function(event){
+				classN = ($(this).hasClass('next'))? 'evcal_btn_next':'evcal_btn_prev';
+				calendar = $(this).closest('.ajde_evcal_calendar');
+
+				calendar.find('.'+classN).trigger('click');
+			});
 	
 	// AJAX: update the days list for new month
 		function eventon_dv_get_new_days(cal_header, change, cday){
@@ -259,10 +315,9 @@ jQuery(document).ready(function($){
 				shortcode: 		ev_cal.evo_shortcodes(),
 			};
 			
-
-
 			var this_section = cal_header.parent().find('.eventon_daily_in');
 			var this_section_days = cal_header.parent().find('.eventon_daily_list');
+			owl = cal_header.parent().find('.evodv_carousel');
 			
 			$.ajax({
 				beforeSend: function(){
@@ -273,7 +328,7 @@ jQuery(document).ready(function($){
 				data: data_arg,
 				dataType:'json',
 				success:function(data){
-					//alert(data);
+					//console.log(data);
 					this_section.html(data.days_list);
 					revert_to_beginning(cal_id, data.last_date_of_month, new_d);
 
@@ -283,11 +338,8 @@ jQuery(document).ready(function($){
 				},complete:function(){
 					this_section_days.slideDown('slow');				
 					set_daily_strip_sizes();
-
-
 				}
 			});
-
 			//ajax_update_month_events(cal_id, new_d);
 		}
 		
@@ -327,9 +379,12 @@ jQuery(document).ready(function($){
 	// mouse wheel
 		$('.eventon_daily_in').mousewheel(function(e, delta) {
 			//$(this).scrollLeft -= (delta * 40);
+			OBJ = $(this);
 			
-			var cur_mleft = parseInt($(this).css('marginLeft'));
-			var width = parseInt($(this).css('width') );
+			var cur_mleft = parseInt(OBJ.css('marginLeft')),
+				width = parseInt(OBJ.css('width') ),
+				Pwid = OBJ.parent().width();
+			maxMLEFT = (width-Pwid)*(-1);
 			
 			if( cur_mleft<=0){
 				
@@ -337,16 +392,66 @@ jQuery(document).ready(function($){
 				
 				if(new_marl>0){ new_marl=0;}
 				
+				// moving to left
 				if(delta == -1 && ( (new_marl*(-1))< (width -200)) ){
-				
-					$(this).stop().animate({'margin-left': new_marl });
+					new_marl = ( new_marl <maxMLEFT)? maxMLEFT: new_marl;
+					OBJ.stop().animate({'margin-left': new_marl });
 				
 				}else if(delta == 1){
-					$(this).stop().animate({'margin-left': new_marl });
+					OBJ.stop().animate({'margin-left': new_marl });
 				}
 			}
 			e.preventDefault();
 		});
+		// touch function
+			$('.eventon_daily_in').on('swipeleft',function(event){				
+				swiping('swipeleft', $(this));
+				event.preventDefault();
+			});
+			$('.eventon_daily_in').on('swiperight',function(event){				
+				swiping('swiperight', $(this));
+				event.preventDefault();
+			});
+
+			function swiping(direction, OBJ){
+				var leftNow = parseInt(OBJ.css('marginLeft'));
+				var Pwid = OBJ.parent().width();
+				var width = parseInt(OBJ.css('width') );
+				maxMLEFT = (width-Pwid)*(-1);
+				swipeMove = 300;
+				
+				if(direction =='swipeleft'){
+					var newLEFT = ( leftNow - swipeMove );	
+					// /console.log(newLEFT);
+
+					if( newLEFT*(-1) < (width) ){
+						newLEFT = ( newLEFT <maxMLEFT)? maxMLEFT: newLEFT;
+						OBJ.stop().animate({'margin-left': newLEFT });
+					}
+				}else{
+					var newLEFT = ( leftNow + swipeMove );	
+					// /console.log(newLEFT);
+
+					newLEFT = ( newLEFT >0 )? 0: newLEFT;
+					OBJ.stop().animate({'margin-left': newLEFT });
+				}
+				
+			}
+		// adjust margin left when window resized
+			$(window).on('resize', function(){
+				$('.eventon_daily_in').each(function(){
+					OBJ = $(this);
+					var leftNow = parseInt(OBJ.css('marginLeft'));
+					var Pwid = OBJ.parent().width();
+					var width = parseInt(OBJ.css('width') );
+
+					maxMLEFT = (width-Pwid)*(-1);
+
+					if(leftNow < maxMLEFT)
+						OBJ.stop().css({'margin-left': maxMLEFT });
+
+				});
+			});
 	
 	// remove days back to beginning of month
 		function revert_to_beginning(cal_id, new_d, current_day){
@@ -386,41 +491,11 @@ jQuery(document).ready(function($){
 				var days = day_holder.children('.evo_day');	
 				var day_width = parseInt(day_holder.find('.evo_day:gt(20)').outerWidth());
 
-				var d_holder_width = (parseInt(days.length) )* (day_width);
+				var d_holder_width = (parseInt(days.length)+2 )* (day_width);
 						
 				day_holder.css({'width':d_holder_width});
 
 				//console.log(day_width+' '+d_holder_width+' '+days.length);
 			}
 	
-	// push one day back
-		$(this).find('.evo_daily_prev').click(function(){
-			var day_holder = $(this).siblings('.eventon_dv_outter').find('.eventon_daily_in');
-			var cur_marginL = parseInt(day_holder.css('margin-left'));
-			
-			if(cur_marginL<0){
-				var day_blk_width = day_holder.find('.evo_day:gt(20)').outerWidth();
-				var new_marginL = cur_marginL + (day_blk_width*2);
-				
-				new_marginL = (new_marginL>0)?0:new_marginL;
-				day_holder.animate({'margin-left':new_marginL});
-			}			
-		});
-	// push one day forward
-		$(this).find('.evo_daily_next').click(function(){
-			var day_holder_out = $(this).siblings('.eventon_dv_outter');
-			var strip_width_in = parseInt(day_holder_out.width());
-			var day_holder = day_holder_out.find('.eventon_daily_in');
-			var cur_marginL = parseInt(day_holder.css('margin-left'));
-			var strip_width_out = parseInt(day_holder.width());
-			var exceed_width = cur_marginL - strip_width_in;
-			
-			if(exceed_width> ((-1)*strip_width_out)){
-			
-				var day_blk_width = day_holder.find('.evo_day:gt(20)').outerWidth();		
-				var new_marginL = cur_marginL - (day_blk_width*2);
-				
-				day_holder.animate({'margin-left':new_marginL});
-			}
-		});
 });
