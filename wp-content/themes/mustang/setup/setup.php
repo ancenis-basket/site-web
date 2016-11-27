@@ -1208,7 +1208,7 @@
 		function wm_section_inner_wrappers() {
 			//Helper variables
 				$output = '<div class="wrap-inner"><div class="pane twelve">';
-
+				
 			//Output
 				return apply_filters( 'wm_section_inner_wrappers_output', $output );
 		}
@@ -1348,7 +1348,10 @@
 				$output  = "\r\n\r\n";
 				$output .= ( wm_option( 'skin-header-sticky' ) ) ? ( '<header class="header-wrapper"><div id="header" class="header wrap clearfix">' . "\r\n" ) : ( '<header id="header" class="header wrap clearfix">' . "\r\n" );
 				$output .= apply_filters( 'wmhook_section_inner_wrappers', '' );
-				$output .= '<div class="header-container clearfix">';
+				
+                                $output .=  "<div id=\"logohlb\" class=\"logohlb\"></div>";
+				
+                                $output .= '<div class="header-container clearfix">';
 
 			//Output
 				echo apply_filters( 'wmhook_wm_section_header_top_output', $output );
