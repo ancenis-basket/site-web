@@ -159,7 +159,8 @@ function eventon_top_adds($array){
 // throw html content for the switch statement for this index
 add_filter('eventon_eventtop_custom', 'eventon_top_content', 10, 2);
 function eventon_top_content($object, $helpers){
-
+        
+        $OT.="<br/>";
 	$event_id = $object->eventid;
 
 	// $event_pmv = $object->evvals; // event post meta values
@@ -270,4 +271,5 @@ $args = array(
 
 	die();//fonction de sécurité très importante!
 }
+
 ?>
