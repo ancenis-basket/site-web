@@ -413,7 +413,7 @@ class evodv_frontend{
 			//print_r($day_data);
 
 			// DAILY VIEW section
-			$dv_strip_margin = (( ($day_data['day'])*(-60) )+130 ).'px';
+			$dv_strip_margin = (( ($day_data['day'])*(-40) )+130 ).'px';
 			$hide_arrows = ($evcal_val1['evcal_arrow_hide']=='yes')? true:false;
 			
 
