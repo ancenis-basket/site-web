@@ -87,7 +87,7 @@ function wpmem_insert_activate_link( $actions, $user_object ) {
 		if ( $var != 1 ) {
 			$url = add_query_arg( array( 'action' => 'activate-single', 'user' => $user_object->ID ), "users.php" );
 			$url = wp_nonce_url( $url, 'activate-user' );
-			$actions['activate'] = '<a href="' . $url . '">Activate</a>';
+			$actions['activate'] = '<a href="' . $url . '">' . __( 'Activate', 'wp-members' ) . '</a>';
 		}
 	}
 	return $actions;
@@ -118,9 +118,9 @@ function wpmem_users_page_load() {
 	if ( $action == 'activate' || 'activate-single' ) {
 		// Find out if we need to set passwords.
 		$chk_pass = false;
-		$wpmem_fields = get_option( 'wpmembers_fields' );
+		$wpmem_fields = wpmem_fields();
 		foreach ( $wpmem_fields as $field ) {
-			if ( $field[2] == 'password' && $field[4] == 'y' ) {
+			if ( $field['type'] == 'password' && $field['register'] ) {
 				$chk_pass = true;
 				break;
 			}
@@ -330,8 +330,13 @@ function wpmem_users_views( $views ) {
 		}
 		
 		if ( $echolink ) {
-			$views[$lcas] = "<a href=\"$link\" $curr>$arr[$row] <span class=\"count\"></span></a>";
-			$views[$lcas].= ( isset( $user_counts[ $lcas ] ) ) ? ' (' . $user_counts[ $lcas ] . ')' : '';
+			$views[$lcas] = sprintf(
+					'<a href="%s" %s>%s <span class="count">(%d)</span></a>',
+					$link,
+					$curr,
+					$arr[$row],
+					isset( $user_counts[ $lcas ] ) ? $user_counts[ $lcas ] : ''
+			   );
 		}
 	}
 
@@ -432,6 +437,7 @@ function wpmem_add_user_column_content( $value, $column_name, $user_id ) {
  * user profile update.
  *
  * @since 2.4
+ * @since 3.1.6 Dependencies now loaded by object.
  *
  * @param int   $user_id
  * @param bool  $chk_pass
@@ -463,7 +469,6 @@ function wpmem_a_activate_user( $user_id, $chk_pass = false ) {
 	}
 
 	// Generate and send user approved email to user.
-	require_once( WPMEM_PATH . '/inc/email.php' );
 	wpmem_inc_regemail( $user_id, $new_pass, 2 );
 
 	// Set the active flag in usermeta.

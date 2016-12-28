@@ -28,7 +28,6 @@
  * - wpmem_use_ssl
  * - wpmem_wp_reserved_terms
  * - wpmem_write_log
- * - wpmem_get
  */
 
 
@@ -198,13 +197,19 @@ function wpmem_do_excerpt( $content ) {
 		// Build an excerpt if one does not exist.
 		if ( ! $has_more_link ) {
 			
-			if ( is_singular( $post->post_type ) ) {
+			$is_singular = ( is_singular( $post->post_type ) ) ? true : false;
+			
+			if ( $is_singular ) {
 				// If it's a single post, we don't need the 'more' link.
 				$more_link_text = '';
 				$more_link      = '';
 			} else {
 				// The default $more_link_text.
-				$more_link_text = __( '(more&hellip;)' );
+				if ( isset( $wpmem->autoex[ $post->post_type ]['text'] ) && '' != $wpmem->autoex[ $post->post_type ]['text'] ) {
+					$more_link_text = __( $wpmem->autoex[ $post->post_type ]['text'], 'wp-members' );
+				} else {
+					$more_link_text = __( '(more&hellip;)' );
+				}
 				// The default $more_link.
 				$more_link = ' <a href="'. get_permalink( $post->ID ) . '" class="more-link">' . $more_link_text . '</a>';
 			}
@@ -255,6 +260,10 @@ function wpmem_do_excerpt( $content ) {
 		
 			if ( $do_excerpt ) {
 				$content = wp_trim_words( $content, $args['length'], $args['more_link'] );
+				// Check if the more link was added (note: singular has no more_link):
+				if ( ! $is_singular && ! strpos( $content, $args['more_link'] ) ) {
+					$content = $content . $args['more_link'];
+				}
 			}
 
 		}
@@ -376,30 +385,4 @@ function wpmem_write_log ( $log ) {
 	}
 }
 
-
-/**
- * Utility function to validate post.
- *
- * @since 3.1.3
- *
- * @todo Should this include trim? as an option? Perhaps that's better done on the returned result so that other escapes, etc could be done.
- *
- * @param  string $tag     The form field or query string.
- * @param  string $default The default value (optional).
- * @param  string $type    post|get|request (optional).
- * @return string 
- */
-function wpmem_get( $tag, $default = '', $type = 'post' ) {
-	switch ( $type ) {
-		case 'post':
-			return ( isset( $_POST[ $tag ] ) ) ? $_POST[ $tag ] : $default;
-			break;
-		case 'get':
-			return ( isset( $_GET[ $tag ] ) ) ? $_GET[ $tag ] : $default;
-			break;
-		case 'request':
-			return ( isset( $_REQUEST[ $tag ] ) ) ? $_REQUEST[ $tag ] : $default;
-			break;
-	}
-}
 // End of file.

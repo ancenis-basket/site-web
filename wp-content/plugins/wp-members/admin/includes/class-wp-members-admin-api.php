@@ -207,14 +207,14 @@ class WP_Members_Admin_API {
 		
 		$defaults = array(
 			'name'          => $args['name'],
-            'heading'       => 'Custom email',
-            'subject_label' => 'Subject',
+			'heading'       => __( 'Custom email', 'wp-members' ),
+			'subject_label' => __( 'Subject', 'wp-members' ),
 			'subject_input' => $args['name'] . '_subject',
-			'subject_value' => ( $settings ) ? $settings['subj'] : 'Subject',
-            'body_label'    => 'Body',
+			'subject_value' => ( $settings ) ? $settings['subj'] : __( 'Subject', 'wp-members' ),
+			'body_label'    => __( 'Body', 'wp-members' ),
 			'body_input'    => $args['name'] . '_body',
-			'body_value'    => ( $settings ) ? $settings['body'] : 'Your custom email message content.',
-        );
+			'body_value'    => ( $settings ) ? $settings['body'] : __( 'Your custom email message content.', 'wp-members' ),
+		);
 		
 		// Merge args with settings.
 		$args = wp_parse_args( $args, $defaults );
@@ -418,10 +418,10 @@ class WP_Members_Admin_API {
 		$this->current_form = $current_form;
 		global $wpmem;
 		// Add numeric array form fields as associative
-		foreach( $wpmem->fields as $field ) {
-			$wpmem->fields[ $field[2] ] = $field;
-		}
-		$this->current_form_fields = $wpmem->fields;
+		//foreach( $wpmem->fields as $field ) {
+		//	$wpmem->fields[ $field[2] ] = $field;
+		//}
+		$this->current_form_fields = wpmem_fields();
 	}
 	
 } // End of WP_Members_Admin_API class.

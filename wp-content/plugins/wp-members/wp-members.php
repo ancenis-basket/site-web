@@ -3,7 +3,7 @@
 Plugin Name: WP-Members
 Plugin URI:  http://rocketgeek.com
 Description: WP access restriction and user registration.  For more information on plugin features, refer to <a href="http://rocketgeek.com/plugins/wp-members/users-guide/">the online Users Guide</a>. A <a href="http://rocketgeek.com/plugins/wp-members/quick-start-guide/">Quick Start Guide</a> is also available. WP-Members(tm) is a trademark of butlerblog.com.
-Version:     3.1.5.2
+Version:     3.1.6.3
 Author:      Chad Butler
 Author URI:  http://butlerblog.com/
 Text Domain: wp-members
@@ -62,7 +62,7 @@ License:     GPLv2
 
 
 // Initialize constants.
-define( 'WPMEM_VERSION', '3.1.5.2' );
+define( 'WPMEM_VERSION', '3.1.6.3' );
 define( 'WPMEM_DEBUG', false );
 define( 'WPMEM_DIR',  plugin_dir_url ( __FILE__ ) );
 define( 'WPMEM_PATH', plugin_dir_path( __FILE__ ) );
@@ -89,6 +89,7 @@ register_activation_hook( __FILE__, 'wpmem_install' );
  * its features and options.
  *
  * @since 2.9.0
+ * @since 3.1.6 Dependencies now loaded by object.
  *
  * @global object $wpmem The WP-Members object class.
  */
@@ -111,48 +112,6 @@ function wpmem_init() {
 	
 	// Invoke the WP_Members class.
 	$wpmem = new WP_Members();
-
-	/**
-	 * Fires after main settings are loaded.
-	 *
-	 * @since 3.0
-	 */
-	do_action( 'wpmem_settings_loaded' );
-
-	/**
-	 * Filter the location and name of the pluggable file.
-	 *
-	 * @since 2.9.0
-	 *
-	 * @param string The path to WP-Members plugin functions file.
-	 */
-	$wpmem_pluggable = apply_filters( 'wpmem_plugins_file', WP_PLUGIN_DIR . '/wp-members-pluggable.php' );
-
-	// Preload any custom functions, if available.
-	if ( file_exists( $wpmem_pluggable ) ) {
-		include( $wpmem_pluggable );
-	}
-
-	// Preload the expiration module, if available.
-	$exp_active = ( function_exists( 'wpmem_exp_init' ) || function_exists( 'wpmem_set_exp' ) ) ? true : false;
-	define( 'WPMEM_EXP_MODULE', $exp_active ); 
-
-	/**
-	 * Load the WP-Members core functions file.
-	 */
-	require_once( WPMEM_PATH . 'inc/core.php' );
-
-	// Load actions and filters.
-	$wpmem->load_hooks();
-
-	// Load shortcodes.
-	$wpmem->load_shortcodes();
-
-	// Load fields.
-	$wpmem->load_fields();
-	
-	// Load contants.
-	$wpmem->load_constants();
 
 	/**
 	 * Fires after initialization of plugin options.
@@ -221,10 +180,11 @@ function wpmem_admin_options() {
  *
  * @since 2.5.2
  * @since 3.1.1 Added rollback.
+ * @since 3.1.6 Removed rollback.
  *
  * @param 
  */
-function wpmem_install( $rollback = false ) {
+function wpmem_install() {
 
 	/**
 	 * Load the install file.
@@ -247,14 +207,14 @@ function wpmem_install( $rollback = false ) {
 		$original_blog_id = get_current_blog_id();   
 		foreach ( $blogs as $blog_id ) {
 			switch_to_blog( $blog_id->blog_id );
-			( 'downgrade' == $rollback ) ? wpmem_downgrade_dialogs() : wpmem_do_install();
+			wpmem_do_install();
 		}
 		switch_to_blog( $original_blog_id );
 
 	} else {
 
 		// Single site install.
-		( 'downgrade' == $rollback ) ? wpmem_downgrade_dialogs() : wpmem_do_install();
+		wpmem_do_install();
 	}
 }
 
@@ -265,7 +225,7 @@ function wpmem_install( $rollback = false ) {
  * @since 3.1.1
  */
 function wpmem_downgrade() {
-	wpmem_install( 'downgrade' );
+	//wpmem_install( 'downgrade' );
 }
 
 

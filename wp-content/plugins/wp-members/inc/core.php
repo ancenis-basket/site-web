@@ -17,13 +17,6 @@
 
 
 /**
- * Load utility functions.
- */
-require_once( WPMEM_PATH . 'inc/api.php' );
-require_once( WPMEM_PATH . 'inc/utilities.php' );
-
-
-/**
  * The Main Action Function.
  *
  * Does actions required at initialization prior to headers being sent.
@@ -154,9 +147,9 @@ function wpmem_login() {
 
 			// Determine where to put the user after login.
 			if ( isset( $_POST['redirect_to'] ) )  {
-				$redirect_to = esc_url( trim( $_POST['redirect_to'] ) );
+				$redirect_to = esc_url_raw( trim( $_POST['redirect_to'] ) );
 			} else {
-				$redirect_to = esc_url( $_SERVER['REQUEST_URI'] . ( ( isset( $_SERVER['QUERY_STRING'] ) ) ? $_SERVER['QUERY_STRING'] : '' ) );
+				$redirect_to = esc_url_raw( $_SERVER['REQUEST_URI'] . ( ( isset( $_SERVER['QUERY_STRING'] ) ) ? $_SERVER['QUERY_STRING'] : '' ) );
 			}
 
 			/**
@@ -193,6 +186,7 @@ if ( ! function_exists( 'wpmem_logout' ) ):
  * Logs the user out then redirects.
  *
  * @since 2.0.0
+ * @since 3.1.6 Added wp_destroy_current_session(), removed nocache_headers().
  *
  * @param string $redirect_to The URL to redirect to at logout.
  */
@@ -210,12 +204,11 @@ function wpmem_logout( $redirect_to = null ) {
 	 */
 	$redirect_to = apply_filters( 'wpmem_logout_redirect', $redirect_to );
 
+	wp_destroy_current_session();
 	wp_clear_auth_cookie();
 
 	/** This action is defined in /wp-includes/pluggable.php. */
 	do_action( 'wp_logout' );
-
-	nocache_headers();
 
 	wp_redirect( $redirect_to );
 	exit();
@@ -249,19 +242,9 @@ if ( ! function_exists( 'widget_wpmemwidget_init' ) ):
  * Initializes the WP-Members widget.
  *
  * @since 2.0.0
+ * @since 3.1.6 Dependencies now loaded by object.
  */
 function widget_wpmemwidget_init() {
-
-	/**
-	 * Load the WP-Members widget class.
-	 */
-	require_once( WPMEM_PATH . 'inc/class-wp-members-widget.php' );
-
-	/**
-	 * Load the sidebar functions.
-	 */
-	require_once( WPMEM_PATH . 'inc/sidebar.php' );
-
 	// Register the WP-Members widget.
 	register_widget( 'widget_wpmemwidget' );
 }
@@ -476,17 +459,16 @@ function wpmem_wp_reg_validate( $errors, $sanitized_user_login, $user_email ) {
 	// Get any meta fields that should be excluded.
 	$exclude = wpmem_get_excluded_meta( 'register' );
 
-	foreach ( $wpmem->fields as $field ) {
+	foreach ( wpmem_fields() as $meta_key => $field ) {
 		$is_error = false;
-		$meta_key = $field[2];
-		if ( $field[5] == 'y' && $meta_key != 'user_email' && ! in_array( $meta_key, $exclude ) ) {
-			if ( ( $field[3] == 'checkbox' || $field[3] == 'multicheckbox' || $field[3] == 'multiselect' || $field[3] == 'radio' ) && ( ! isset( $_POST[ $meta_key ] ) ) ) {
+		if ( $field['required'] && $meta_key != 'user_email' && ! in_array( $meta_key, $exclude ) ) {
+			if ( ( $field['type'] == 'checkbox' || $field['type'] == 'multicheckbox' || $field['type'] == 'multiselect' || $field['type'] == 'radio' ) && ( ! isset( $_POST[ $meta_key ] ) ) ) {
 				$is_error = true;
 			} 
-			if ( ( $field[3] != 'checkbox' && $field[3] != 'multicheckbox' && $field[3] != 'multiselect' && $field[3] != 'radio' ) && ( ! $_POST[ $meta_key ] ) ) {
+			if ( ( $field['type'] != 'checkbox' && $field['type'] != 'multicheckbox' && $field['type'] != 'multiselect' && $field['type'] != 'radio' ) && ( ! $_POST[ $meta_key ] ) ) {
 				$is_error = true;
 			}
-			if ( $is_error ) { $errors->add( 'wpmem_error', sprintf( $wpmem->get_text( 'reg_empty_field' ), __( $field[1], 'wp-members' ) ) ); }
+			if ( $is_error ) { $errors->add( 'wpmem_error', sprintf( $wpmem->get_text( 'reg_empty_field' ), __( $field['label'], 'wp-members' ) ) ); }
 		}
 	}
 
@@ -508,25 +490,25 @@ function wpmem_wp_reg_validate( $errors, $sanitized_user_login, $user_email ) {
 function wpmem_wp_reg_finalize( $user_id ) {
 
 	global $wpmem;
-	$native_reg = ( isset( $_POST['wp-submit'] ) && $_POST['wp-submit'] == esc_attr( __( 'Register' ) ) ) ? true : false;
-	$add_new  = ( isset( $_POST['action'] ) && $_POST['action'] == 'createuser' ) ? true : false;
-	if ( $native_reg || $add_new ) {
+	$is_native  = ( isset( $_POST['wp-submit'] ) && $_POST['wp-submit'] == esc_attr( __( 'Register' ) ) ) ? true : false;
+	$is_add_new = ( isset( $_POST['action'] ) && $_POST['action'] == 'createuser' ) ? true : false;
+	$is_woo     = ( isset( $_POST['woocommerce_checkout_place_order'] ) || isset( $_POST['woocommerce-register-nonce'] ) ) ? true : false;
+	if ( $is_native || $is_add_new || $is_woo ) {
 		// Get any excluded meta fields.
 		$exclude = wpmem_get_excluded_meta( 'register' );
-		foreach ( $wpmem->fields as $meta ) {
-			if ( isset( $_POST[ $meta[2] ] ) && ! in_array( $meta[2], $exclude ) && 'file' != $meta[3] && 'image' != $meta[3] ) {
-				if ( 'multiselect' == $meta[3] || 'multicheckbox' == $meta[3] ) {
-					$delimiter = ( isset( $meta[8] ) ) ? $meta[8] : '|';
-					$data = implode( $delimiter, $_POST[ $meta[2] ] );
+		foreach ( wpmem_fields() as $meta_key => $field ) {
+			if ( isset( $_POST[ $meta_key ] ) && ! in_array( $meta_key, $exclude ) && 'file' != $field['type'] && 'image' != $field['type'] ) {
+				if ( 'multiselect' == $field['type'] || 'multicheckbox' == $field['type'] ) {
+					$data = implode( $field['delimiter'], $_POST[ $meta_key ] );
 				} else {
-					$data = $_POST[ $meta[2] ];
+					$data = $_POST[ $meta_key ];
 				}
-				update_user_meta( $user_id, $meta[2], sanitize_text_field( $data ) );
+				update_user_meta( $user_id, $meta_key, sanitize_text_field( $data ) );
 			}
 		}
 		
 		// If moderated registration and activate is checked, set active flags.
-		if ( is_admin() && $add_new && 1 == $wpmem->mod_reg && isset( $_POST['activate_user'] ) ) {
+		if ( is_admin() && $is_add_new && 1 == $wpmem->mod_reg && isset( $_POST['activate_user'] ) ) {
 			update_user_meta( $user_id, 'active', 1 );
 			wpmem_set_user_status( $user_id, 0 );
 		}
@@ -599,6 +581,7 @@ function wpmem_securify_comments_array( $comments , $post_id ) {
  * Handles retrieving a forgotten username.
  *
  * @since 3.0.8
+ * @since 3.1.6 Dependencies now loaded by object.
  *
  * @return string $regchk The regchk value.
  */
@@ -610,11 +593,6 @@ function wpmem_retrieve_username() {
 		$user  = ( isset( $_POST['user_email'] ) ) ? get_user_by( 'email', $email ) : false;
 	
 		if ( $user ) {
-
-			/**
-			 * Load the email functions.
-			 */
-			require_once( WPMEM_PATH . 'inc/email.php' );
 			
 			// Send it in an email.
 			wpmem_inc_regemail( $user->ID, '', 4 );

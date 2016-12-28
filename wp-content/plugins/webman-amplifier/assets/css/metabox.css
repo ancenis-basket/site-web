@@ -1,4 +1,4 @@
-/** WebMan Metabox Generator styles @package     WebMan Amplifier @subpackage  Metabox @since    1.2.2 @version  1.2.5 */
+/** WebMan Metabox Generator styles @package     WebMan Amplifier @subpackage  Metabox @since    1.2.2 @version  1.4 */
 .wm-meta-wrap { direction: ltr; min-width: 180px; max-width: 100%; padding: 0; background: none; border: 0; }
 
 .wm-admin-wrap .wm-meta-wrap { margin-top: 20px; background: #fff; border: 1px solid #dfdfdf; box-shadow: 0 0 5px #ddd; }
@@ -47,13 +47,13 @@ body.wm-visual-composer-on .wm-meta-wrap .postarea + .form-table { margin: 0 0 2
 
 .wm-meta-wrap .option + .option, .wm-meta-wrap tbody + tbody { border-top: 1px solid #e6e6e6; }
 
-.wm-meta-wrap .option > th { padding: 20px 10px 20px 20px; }
+.wm-meta-wrap .option > th { padding: 20px 10px; padding-left: 20px; }
 
-.wm-meta-wrap .option > td { position: relative; padding: 20px 50px 20px 10px; vertical-align: top; }
+.wm-meta-wrap .option > td { position: relative; padding: 20px 50px; padding-left: 10px; vertical-align: top; }
 
 .wm-meta-wrap .option:hover > th, .wm-meta-wrap .option:hover > td { background: #fcfcfc; }
 
-.wm-meta-wrap .option-heading th, .wm-meta-wrap .option-heading td { padding: 1em 10px 1em 20px; background: #e6e6e6; cursor: help; }
+.wm-meta-wrap .option-heading th, .wm-meta-wrap .option-heading td { padding: 1em 10px; padding-left: 20px; background: #e6e6e6; cursor: help; }
 
 .wm-meta-wrap .option-heading.toggle { border-left: 2px solid #999; }
 
@@ -83,13 +83,13 @@ body.wm-visual-composer-on .wm-meta-wrap .postarea + .form-table { margin: 0 0 2
 
 .wm-meta-wrap ul.tabs { display: block; position: relative; padding: 10px 20px 0; margin: 0; height: 32px; background: #f5f5f5; border-bottom: 1px solid #dfdfdf; }
 
-.wm-meta-wrap ul.tabs li { float: left; margin: 0 6px 0 0; }
+.wm-meta-wrap ul.tabs li { float: left; margin: 0 6px; margin-left: 0; }
 
 .wm-meta-wrap ul.tabs li a { display: block; height: 32px; padding: 0 20px; line-height: 32px; text-decoration: none; background: #dfdfdf; color: #3e3e3e; border-top: 1px solid #dfdfdf; border-left: 1px solid #dfdfdf; border-right: 1px solid #dfdfdf; border-radius: 3px 3px 0 0; }
 
 .wm-meta-wrap ul.tabs li a:hover { background: #ddd; }
 
-.wm-meta-wrap ul.tabs li a img { margin: 0 .25em -.25em -5px; vertical-align: baseline; }
+.wm-meta-wrap ul.tabs li a img { margin: 0 .25em -.25em; margin-left: -5px; vertical-align: baseline; }
 
 .wm-meta-wrap ul.tabs li a:active, .wm-meta-wrap ul.tabs li.ui-state-active a { background: #fff; color: #000; outline: 0; }
 
@@ -147,7 +147,7 @@ body.wm-visual-composer-on .wm-meta-wrap .postarea + .form-table { margin: 0 0 2
 
 .wm-meta-wrap .checkbox-wrap .description { float: left; margin: 0; }
 
-.wm-meta-wrap .radio-wrap.custom-label .inline-radio { display: inline-block; padding: .5em; margin: 0 .5em .5em 0; text-align: center; background: #fff; border: 1px solid #e6e6e6; border-radius: 3px; }
+.wm-meta-wrap .radio-wrap.custom-label .inline-radio { display: inline-block; padding: .5em; margin: 0 .5em .5em; margin-left: 0; text-align: center; background: #fff; border: 1px solid #e6e6e6; border-radius: 3px; }
 
 .wm-meta-wrap .radio-wrap.custom-label .inline-radio:hover, .wm-meta-wrap .radio-wrap.custom-label .inline-radio.active { z-index: 1; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25); -webkit-transform: scale(1.5); -ms-transform: scale(1.5); transform: scale(1.5); }
 
@@ -171,7 +171,7 @@ body.wm-visual-composer-on .wm-meta-wrap .postarea + .form-table { margin: 0 0 2
 
 .wm-meta-wrap .zip-wrap input.fieldtype-zip[readonly] { background: #fff; }
 
-.wm-meta-wrap .image-preview a, .wm-meta-wrap .gallery-preview a, .wm-meta-wrap .gallery-loading { display: inline-block; max-width: 100px; padding: 4px; margin: 4px 4px 0 0; background: #fff; border: 1px solid #ddd; border-radius: 3px; cursor: pointer; }
+.wm-meta-wrap .image-preview a, .wm-meta-wrap .gallery-preview a, .wm-meta-wrap .gallery-loading { display: inline-block; max-width: 100px; padding: 4px; margin: 4px 4px 0; margin-left: 0; background: #fff; border: 1px solid #ddd; border-radius: 3px; cursor: pointer; }
 
 .wm-meta-wrap .gallery-loading { display: none; }
 
@@ -193,7 +193,7 @@ body.wm-visual-composer-on .wm-meta-wrap .postarea + .form-table { margin: 0 0 2
 
 .wm-meta-wrap .repeater-cell .option > th { width: 140px; padding: 10px; }
 
-.wm-meta-wrap .repeater-cell .option > td { padding: 10px 60px 10px 10px; }
+.wm-meta-wrap .repeater-cell .option > td { padding: 10px 60px; padding-left: 10px; }
 
 .wm-meta-wrap .repeater-cell .checkbox-wrap label { width: 140px; }
 
@@ -203,7 +203,7 @@ body.wm-visual-composer-on .wm-meta-wrap .postarea + .form-table { margin: 0 0 2
 
 .wm-meta-wrap .button-move-cell { cursor: move; }
 
-.wm-meta-wrap .button-add-cell { margin-top: 20px; float: right; }
+.wm-meta-wrap .button-add-cell { float: right; margin-top: 20px; }
 
 .wm-meta-wrap .ui-sortable-placeholder { visibility: visible !important; margin-top: 1em !important; margin-bottom: 1em !important; border: 1px dashed #b4b9be; border-color: rgba(0, 0, 0, 0.3); }
 

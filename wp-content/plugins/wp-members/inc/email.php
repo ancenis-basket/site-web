@@ -46,6 +46,9 @@ function wpmem_inc_regemail( $user_id, $password, $toggle, $wpmem_fields = null,
 
 	global $wpmem;
 
+	// Handle backward compatibility for customizations that may call the email function directly.
+	$wpmem_fields = wpmem_fields();
+
 	/*
 	 * Determine which email is being sent.
 	 *
@@ -122,11 +125,6 @@ function wpmem_inc_regemail( $user_id, $password, $toggle, $wpmem_fields = null,
 	 * @param string $arr['toggle']  Toggle to determine what email is being generated (newreg|newmod|appmod|repass|admin).
 	 */
 	$arr['headers'] = apply_filters( 'wpmem_email_headers', $default_header, $arr['toggle'] );
-
-	// Handle backward compatibility for customizations that may call the email function directly.
-	if ( ! $wpmem_fields ) {
-		$wpmem_fields = $wpmem->fields;
-	}
 
 	/**
 	 * Filter the email.
@@ -242,9 +240,8 @@ function wpmem_inc_regemail( $user_id, $password, $toggle, $wpmem_fields = null,
 			);
 
 			// Add custom field shortcodes.
-			foreach ( $wpmem_fields as $field ) {
-				$meta_key = $field[2];
-				$val = ( is_array( $field_data ) && 'y' == $field[4] ) ? $field_data[ $meta_key ] : get_user_meta( $user_id, $meta_key, true );
+			foreach ( $wpmem_fields as $meta_key => $field ) {
+				$val = ( is_array( $field_data ) && $field['register'] ) ? $field_data[ $meta_key ] : get_user_meta( $user_id, $meta_key, true );
 				$shortcodes[ $meta_key ] = $val;
 			}
 			
@@ -300,13 +297,16 @@ if ( ! function_exists( 'wpmem_notify_admin' ) ):
  * @global object $wpmem                The WP_Members object.
  * @global string $wpmem_mail_from      The email from address.
  * @global string $wpmem_mail_from_name The email from name.
- * @param  int    $user_ID              The User's ID.
+ * @param  int    $user_id              The User's ID.
  * @param  array  $wpmem_fields         Array of the WP-Members fields (defaults to null).
- * @param  array  $fields               Array of the registration data (defaults to null).
+ * @param  array  $field_data           Array of the registration data (defaults to null).
  */
-function wpmem_notify_admin( $user_id, $wpmem_fields, $field_data = null ) {
+function wpmem_notify_admin( $user_id, $wpmem_fields = null, $field_data = null ) {
 
 	global $wpmem;
+	
+	// Handle backward compatibility for customizations that may call the email function directly.
+	$wpmem_fields = wpmem_fields();
 
 	// WP default user fields.
 	$wp_user_fields = array(
@@ -344,21 +344,20 @@ function wpmem_notify_admin( $user_id, $wpmem_fields, $field_data = null ) {
 
 	// Builds an array of the user data fields.
 	$field_arr = array();
-	foreach ( $wpmem_fields as $field ) {
-		if ( $field[4] == 'y' ) {
-			$meta_key = $field[2];
+	foreach ( $wpmem_fields as $meta_key => $field ) {
+		if ( $field['register'] ) {
 			if ( ! in_array( $meta_key, wpmem_get_excluded_meta( 'email' ) ) ) {
-				if ( ( $meta_key != 'user_email' ) && ( $meta_key != 'password' ) ) {
-					if ( $meta_key == 'user_url' ) {
+				if ( ( 'user_email' != $meta_key ) && ( 'password' != $meta_key ) ) {
+					if ( 'user_url' == $meta_key ) {
 						$val = esc_url( $user->user_url );
 					} elseif ( in_array( $meta_key, $wp_user_fields ) ) {
 						$val = esc_html( $user->{$meta_key} );
-					} elseif ( 'file' == $field[3] || 'image' == $field[3] ) {
+					} elseif ( 'file' == $field['type'] || 'image' == $field['type'] ) {
 						$val = wp_get_attachment_url( get_user_meta( $user_id, $meta_key, true ) );
 					} else {
 						$val = ( is_array( $field_data ) ) ? esc_html( $field_data[ $meta_key ] ) : esc_html( get_user_meta( $user_id, $meta_key, true ) );
 					}
-					$field_arr[ $field[1] ] = $val;
+					$field_arr[ $field['label'] ] = $val;
 				}
 			}
 		}
@@ -373,7 +372,7 @@ function wpmem_notify_admin( $user_id, $wpmem_fields, $field_data = null ) {
 
 	// Handle backward compatibility for customizations that may call the email function directly.
 	if ( ! $wpmem_fields ) {
-		$wpmem_fields = $wpmem->fields;
+		$wpmem_fields = wpmem_fields();
 	}
 
 	/**
@@ -431,10 +430,9 @@ function wpmem_notify_admin( $user_id, $wpmem_fields, $field_data = null ) {
 			);			
 			
 			// Add custom field shortcodes.
-			foreach ( $wpmem_fields as $field ) {
-				$meta_key = $field[2];
-				$val = ( is_array( $field_data ) && 'y' == $field[4] ) ? $field_data[ $meta_key ] : get_user_meta( $user_id, $meta_key, true );
-				$shortcodes[ $key ] = $val;
+			foreach ( $wpmem_fields as $meta_key => $field ) {
+				$val = ( is_array( $field_data ) && $field['register'] ) ? $field_data[ $meta_key ] : get_user_meta( $user_id, $meta_key, true );
+				$shortcodes[ $meta_key ] = $val;
 			}
 			
 			/**
@@ -457,10 +455,9 @@ function wpmem_notify_admin( $user_id, $wpmem_fields, $field_data = null ) {
 			}
 
 			// Create the custom field shortcodes.
-			foreach ( $wpmem_fields as $field ) {
-				$meta_key  = $field[2];
+			foreach ( $wpmem_fields as $meta_key => $field ) {
 				$shortcd[] = '[' . $meta_key . ']';
-				$replace[] = ( is_array( $field_data ) && 'y' == $field[4] ) ? $field_data[ $meta_key ] : get_user_meta( $user_id, $meta_key, true );
+				$replace[] = ( is_array( $field_data ) && $field['register'] ) ? $field_data[ $meta_key ] : get_user_meta( $user_id, $meta_key, true );
 			}
 
 			// Get the subject, body, and footer shortcodes.

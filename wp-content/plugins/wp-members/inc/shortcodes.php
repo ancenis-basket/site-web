@@ -141,7 +141,6 @@ function wpmem_sc_forms( $atts, $content = null, $tag = 'wpmem_form' ) {
 	return do_shortcode( $content );
 }
 
-
 /**
  * Handles the logged in status shortcodes.
  *
@@ -157,7 +156,14 @@ function wpmem_sc_forms( $atts, $content = null, $tag = 'wpmem_form' ) {
  *
  * @global object $wpmem The WP_Members object.
  *
- * @param  array  $atts
+ * @param  array  $atts {
+ *     The shortcode attributes.
+ *
+ *     @type string $status
+ *     @type int    $id
+ *     @type string $role
+ *     @type string $sub
+ * }
  * @param  string $content
  * @param  string $tag
  * @return string $content
@@ -229,7 +235,6 @@ function wpmem_sc_logged_in( $atts, $content = null, $tag = 'wpmem_logged_in' ) 
 	}
 }
 
-
 /**
  * Handles the [wpmem_logged_out] shortcode.
  *
@@ -243,7 +248,6 @@ function wpmem_sc_logged_in( $atts, $content = null, $tag = 'wpmem_logged_in' ) 
 function wpmem_sc_logged_out( $atts, $content = null, $tag ) {
 	return ( ! is_user_logged_in() ) ? do_shortcode( $content ) : '';
 }
-
 
 if ( ! function_exists( 'wpmem_shortcode' ) ):
 /**
@@ -259,7 +263,16 @@ if ( ! function_exists( 'wpmem_shortcode' ) ):
  *
  * @global object $wpmem The WP_Members object.
  *
- * @param  array  $attr page|url|status|msg|field|id
+ * @param  array  $attr {
+ *     The shortcode attributes.
+ *
+ *     @type string $page
+ *     @type string $url
+ *     @type string $status
+ *     @type string $msg
+ *     @type string $field
+ *     @type int    $id
+ * }
  * @param  string $content
  * @param  string $tag
  * @return string Returns the result of wpmem_do_sc_pages|wpmem_list_users|wpmem_sc_expmessage|$content.
@@ -324,7 +337,6 @@ function wpmem_shortcode( $attr, $content = null, $tag = 'wp-members' ) {
 }
 endif;
 
-
 if ( ! function_exists( 'wpmem_do_sc_pages' ) ):
 /**
  * Builds the shortcode pages (login, register, user-profile, user-edit, password).
@@ -339,8 +351,14 @@ if ( ! function_exists( 'wpmem_do_sc_pages' ) ):
  * @global string $wpmem_themsg The WP-Members message container.
  * @global object $post         The WordPress post object.
  *
- * @param  string $page
- * @param  string $redirect_to
+ * @param  string $atts {
+ *     The shortcode attributes.
+ *
+ *     @type string $page
+ *     @type string $redirect_to
+ *     @type string $register
+ * }
+ * @param  string $content
  * @param  string $tag
  * @return string $content
  */
@@ -473,7 +491,6 @@ function wpmem_do_sc_pages( $atts, $content, $tag ) {
 } // End wpmem_do_sc_pages.
 endif;
 
-
 /**
  * User count shortcode [wpmem_show_count].
  *
@@ -486,7 +503,14 @@ endif;
  * @since 3.1.5 Added total user count features.
  *
  * @global object $wpdb    The WordPress database object.
- * @param  array  $atts    Shortcode attributes.
+ * @param  array  $atts {
+ *     The shortcode attributes.
+ *
+ *     @type string $key
+ *     @type string $value
+ *     @type string $role
+ *     @type string $label
+ * }
  * @param  string $content The shortcode content.
  * @return string $content
  */
@@ -510,14 +534,17 @@ function wpmem_sc_user_count( $atts, $content = null ) {
 	return do_shortcode( $content );
 }
 
-
 /**
  * Creates the user profile dashboard area [wpmem_profile].
  *
  * @since 3.1.0
  * @since 3.1.2 Added function arguments.
  *
- * @param  array  $atts
+ * @param  array  $atts {
+ *     The shortcode attributes.
+ *
+ *     @type string $page
+ * }
  * @param  string $content
  * @param  string $tag
  * @return string $content
@@ -528,37 +555,28 @@ function wpmem_sc_user_profile( $atts, $content, $tag ) {
 	return $content;
 }
 
-
 /**
  * Log in/out shortcode [wpmem_loginout].
  *
  * @since 3.1.1
+ * @since 3.1.6 Uses wpmem_loginout().
  *
- * @param  array  $atts
+ * @param  array  $atts {
+ *     The shortcode attributes.
+ *
+ *     @type string  $login_redirect_to  The url to redirect to after login (optional).
+ *     @type string  $logout_redirect_to The url to redirect to after logout (optional).
+ *     @type string  $login_text         Text for the login link (optional).
+ *     @type string  $logout_text        Text for the logout link (optional).
+ * }
  * @param  string $content
  * @param  string $tag
  * @return string $content
  */
 function wpmem_sc_loginout( $atts, $content, $tag ) {
-	$defaults = array(
-		'login_redirect_to'  => ( isset( $atts['login_redirect_to']  ) ) ? $atts['login_redirect_to']  : wpmem_current_url(),
-		'logout_redirect_to' => ( isset( $atts['logout_redirect_to'] ) ) ? $atts['logout_redirect_to'] : wpmem_current_url(), // @todo - This is not currently active.
-		'login_text'         => ( isset( $atts['login_text']         ) ) ? $atts['login_text']         : __( 'log in',  'wp-members' ),
-		'logout_text'        => ( isset( $atts['logout_text']        ) ) ? $atts['logout_text']        : __( 'log out', 'wp-members' ),
-	);
-	$args = wp_parse_args( $atts, $defaults );
-	$redirect_to = ( is_user_logged_in() ) ? $args['logout_redirect_to'] : $args['login_redirect_to'];
-	$text = ( is_user_logged_in() ) ? $args['logout_text'] : $args['login_text'];
-	if ( is_user_logged_in() ) {
-		/** This filter is defined in /inc/dialogs.php */
-		$link = apply_filters( 'wpmem_logout_link', add_query_arg( 'a', 'logout' ) );
-	} else {
-		$link = wpmem_login_url( $args['login_redirect_to'] );
-	}
-	$link = sprintf( '<a href="%s">%s</a>', $link, $text );
+	$link = wpmem_loginout( $atts );
 	return do_shortcode( $link );
 }
-
 
 /**
  * Function to handle field shortcodes [wpmem_field].
@@ -581,7 +599,16 @@ function wpmem_sc_loginout( $atts, $content, $tag ) {
  * @since 3.1.5 Added display attribute, meta key as a direct attribute, and image/file display.
  *
  * @global object $wpmem   The WP_Members object.
- * @param  array  $atts    Shortcode attributes.
+ * @param  array  $atts {
+ *     The shortcode attributes.
+ *
+ *     @type string {meta_key}
+ *     @type string $field
+ *     @type int    $id
+ *     @type string $underscores
+ *     @type string $display
+ *     @type string size
+ * }
  * @param  string $content Any content passed with the shortcode (default:null).
  * @param  string $tag     The shortcode tag (wpmem_form).
  * @return string $content Content to return.
@@ -601,18 +628,32 @@ function wpmem_sc_fields( $atts, $content = null, $tag ) {
 	
 	// If there is userdata.
 	if ( $user_info ) {
-		
+
 		global $wpmem;
-		$field_type = ( isset( $wpmem->fields[ $field ]['type'] ) ) ? $wpmem->fields[ $field ]['type'] : 'native';
-		
+		$fields = wpmem_fields();
+		$field_type = ( isset( $fields[ $field ]['type'] ) ) ? $fields[ $field ]['type'] : 'native';
+
 		$result = $user_info->{$field};
 		
-		// Handle select, multiple select, multiple checkbox, and radio groups.
-		$array_fields = array( 'select', 'multiselect', 'multicheckbox', 'radio' );
-		if ( ( ! isset( $atts['options'] ) ) && in_array( $field_type, $array_fields ) ) {
-			$result = ( isset( $atts['display'] ) && 'raw' == $atts['display'] ) ? $user_info->{$field} : $wpmem->fields[ $field ]['options'][ $user_info->{$field} ];
+		// Handle select and radio groups (have single selections).
+		if ( 'select' == $field_type || 'radio' == $field_type ) {
+			$result = ( isset( $atts['display'] ) && 'raw' == $atts['display'] ) ? $user_info->{$field} : $fields[ $field ]['options'][ $user_info->{$field} ];
 		}
-		
+
+		// Handle multiple select and multiple checkbox (have multiple selections).
+		if ( 'multiselect' == $field_type || 'multicheckbox' == $field_type ) {
+			if ( isset( $atts['display'] ) && 'raw' == $atts['display'] ) {
+				$result = $user_info->{$field};
+			} else {
+				$saved_vals = explode( $fields[ $field ]['delimiter'], $user_info->{$field} );
+				$result = ''; $x = 1;
+				foreach ( $saved_vals as $value ) {
+					$result.= ( $x > 1 ) ? ', ' : ''; $x++;
+					$result.= $fields[ $field ]['options'][ $value ];
+				}
+			}
+		}
+
 		// Handle file/image fields.
 		if ( isset( $field_type ) && ( 'file' == $field_type || 'image' == $field_type ) ) {
 			if ( isset( $atts['display'] ) && 'raw' == $atts['display'] ) {
@@ -633,12 +674,12 @@ function wpmem_sc_fields( $atts, $content = null, $tag ) {
 			}
 			return do_shortcode( $result );
 		}
-		
+
 		// Remove underscores from value if requested (default: on).
 		if ( isset( $atts['underscores'] ) && 'off' == $atts['underscores'] && $user_info ) {
 			$result = str_replace( '_', ' ', $result );
 		}
-		
+
 		$content = ( $content ) ? $result . $content : $result;
 
 		return do_shortcode( htmlspecialchars( $content ) );
@@ -646,13 +687,16 @@ function wpmem_sc_fields( $atts, $content = null, $tag ) {
 	return;
 }
 
-
 /**
  * Logout link shortcode [wpmem_logout].
  *
  * @since 3.1.2
  *
- * @param  array  $atts
+ * @param  array  $atts {
+ *     The shortcode attributes.
+ *
+ *     @type string $url
+ * }
  * @param  string $content
  * @param  string $tag
  * @retrun string $content
@@ -666,13 +710,16 @@ function wpmem_sc_logout( $atts, $content, $tag ) {
 	}
 }
 
-
 /**
  * TOS shortcode [wpmem_tos].
  *
  * @since 3.1.2
  *
- * @param  array  $atts
+ * @param  array  $atts {
+ *     The shortcode attributes.
+ *
+ *     @type string $url
+ * }
  * @param  string $content
  * @param  string $tag
  * @retrun string $content

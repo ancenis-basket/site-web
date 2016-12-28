@@ -25,10 +25,12 @@
  * - wpmem_user_has_role
  * - wpmem_create_membership_number
  * - wpmem_login_status
+ * - wpmem_get
  * - wpmem_is_reg_page
  * - wpmem_load_dropins
+ * - wpmem_loginout
+ * - wpmem_array_insert
  */
-
 
 /**
  * Redirects a user to defined login page with return redirect.
@@ -51,7 +53,6 @@ function wpmem_redirect_to_login( $redirect_to = false ) {
 	return;
 }
 
-
 /**
  * Checks if content is blocked (replaces wpmem_block()).
  *
@@ -64,7 +65,6 @@ function wpmem_is_blocked() {
 	global $wpmem;
 	return $wpmem->is_blocked();
 }
-
 
 /**
  * Wrapper to get the login page location.
@@ -86,20 +86,18 @@ function wpmem_login_url( $redirect_to = false ) {
 	return $url;
 }
 
-
 /**
  * Wrapper to get the register page location.
  *
  * @since 3.1.1
  *
- * @global object $wpmem
- * @return string The register page url.
+ * @global object $wpmem The WP_Members object.
+ * @return string        The register page url.
  */
 function wpmem_register_url() {
 	global $wpmem;
 	return $wpmem->user_pages['register'];
 }
-
 
 /**
  * Wrapper to get the profile page location.
@@ -107,15 +105,14 @@ function wpmem_register_url() {
  * @since 3.1.1
  * @since 3.1.2 Added $a parameter.
  *
- * @global object $wpmem
- * @param  string $a      Action (optional).
- * @return string         The profile page url.
+ * @global object $wpmem The WP_Members object.
+ * @param  string $a     Action (optional).
+ * @return string        The profile page url.
  */
 function wpmem_profile_url( $a = false ) {
 	global $wpmem;
 	return ( $a ) ? add_query_arg( 'a', $a, $wpmem->user_pages['profile'] ) : $wpmem->user_pages['profile'];
 }
-
 
 /**
  * Returns an array of user pages.
@@ -123,7 +120,13 @@ function wpmem_profile_url( $a = false ) {
  * @since 3.1.2
  * @since 3.1.3 Added array keys.
  *
- * @return array $pages
+ * @return array $pages {
+ *     The URLs of login, register, and user profile pages.
+ *
+ *     @type string $login
+ *     @type string $register
+ *     @type string $profile
+ * }
  */
 function wpmem_user_pages() {
 	$pages = array( 
@@ -133,7 +136,6 @@ function wpmem_user_pages() {
 	);
 	return $pages;
 }
-
 
 /**
  * Returns the current full url.
@@ -150,20 +152,26 @@ function wpmem_current_url( $slash = true ) {
 	return ( $slash ) ? trailingslashit( $url ) : $url;
 }
 
-
 /**
  * Wrapper for $wpmem->create_form_field().
  *
  * @since 3.1.2
  *
- * @param  array  $args
- * @return string 
+ * @param array  $args {
+ *     @type string  $name      (required) The field meta key.
+ *     @type string  $type      (required) The field HTML type (url, email, image, file, checkbox, text, textarea, password, hidden, select, multiselect, multicheckbox, radio).
+ *     @type string  $value     (required) The field's value (can be a null value).
+ *     @type string  $compare   (required) Compare value.
+ *     @type string  $class     (optional) Class identifier for the field.
+ *     @type boolean $required  (optional) If a value is required default: true).
+ *     @type string  $delimiter (optional) The field delimiter (pipe or comma, default: | ).
+ * }
+ * @return string The HTML of the form field.
  */
 function wpmem_form_field( $args ) {
 	global $wpmem;
 	return $wpmem->forms->create_form_field( $args );
 }
-
 
 /**
  * Wrapper to get form fields.
@@ -171,8 +179,8 @@ function wpmem_form_field( $args ) {
  * @since 3.1.1
  * @since 3.1.5 Checks if fields array is set or empty before returning.
  *
- * @global object $wpmem
- * @param  string $form The form being generated.
+ * @global object $wpmem  The WP_Members object.
+ * @param  string $form   The form being generated.
  * @return array  $fields The form fields.
  */
 function wpmem_fields( $form = 'default' ) {
@@ -183,14 +191,13 @@ function wpmem_fields( $form = 'default' ) {
 	return $wpmem->fields;
 }
 
-
 /**
  * Wrapper to return a string from the get_text function.
  *
  * @since 3.1.1
  * @since 3.1.2 Added $echo argument.
  *
- * @global object $wpmem The WP_Members object class.
+ * @global object $wpmem The WP_Members object.
  * @param  string $str   The string to retrieve.
  * @param  bool   $echo  Print the string (default: false).
  * @return string $str   The localized string.
@@ -203,7 +210,6 @@ function wpmem_gettext( $str, $echo = false ) {
 		return $wpmem->get_text( $str );
 	}
 }
-
 
 /**
  * Wrapper to use custom dialog.
@@ -220,7 +226,6 @@ function wpmem_use_custom_dialog( $defaults, $tag, $dialogs ) {
 	return $defaults;
 }
 
-
 /**
  * Checks if user has a particular role.
  *
@@ -231,11 +236,12 @@ function wpmem_use_custom_dialog( $defaults, $tag, $dialogs ) {
  * is passed).
  *
  * @since 3.1.1
+ * @since 3.1.6 Include accepting an array of roles to check.
  *
- * @global object  $current_user Current user object.
- * @param  string  $role         Slug of the role being checked.
- * @param  int     $user_id      ID of the user being checked (optional).
- * @return boolean $has_role     True if user has the role, otherwise false.
+ * @global object        $current_user Current user object.
+ * @param  string|array  $role         Slug or array of slugs of the role being checked.
+ * @param  int           $user_id      ID of the user being checked (optional).
+ * @return boolean       $has_role     True if user has the role, otherwise false.
  */
 function wpmem_user_has_role( $role, $user_id = false ) {
 	global $current_user, $wpmem;
@@ -246,16 +252,29 @@ function wpmem_user_has_role( $role, $user_id = false ) {
 	if ( is_user_logged_in() && ! $user_id ) {
 		$user = ( isset( $current_user ) ) ? $current_user : wp_get_current_user();
 	}
-	return ( in_array( $role, $user->roles ) ) ? true : $has_role;
+	if ( is_array( $role ) ) {
+		foreach ( $role as $r ) {
+			if ( in_array( $r, $user->roles ) ) {
+				return true;
+			}
+		}
+	} else {
+		return ( in_array( $role, $user->roles ) ) ? true : $has_role;
+	}
 }
-
 
 /**
  * Creates a membership number.
  *
  * @since 3.1.1
  *
- * @param  array  $args
+ * @param  array  $args {
+ *     @type string $option
+ *     @type string $meta_key
+ *     @type int    $start     (optional, default 0)
+ *     @type int    $increment (optional, default 1)
+ *     @type int    $lead
+ * }
  * @return string $membersip_number
  */
 function wpmem_create_membership_number( $args ) {
@@ -263,22 +282,17 @@ function wpmem_create_membership_number( $args ) {
 	return $wpmem->api->generate_membership_number( $args );
 }
 
-
 /**
  * Returns or displays the user's login status.
  *
  * @since 2.0.0
  * @since 3.1.2 Moved to api.php, no longer pluggable.
+ * @since 3.1.6 Dependencies now loaded by object.
  *
  * @param  boolean $echo   Determines whether function should print result or not (default: true).
  * @return string  $status The user status string produced by wpmem_inc_memberlinks().
  */
 function wpmem_login_status( $echo = true ) {
-
-	/**
-	 * Load the dialogs functions.
-	 */
-	require_once( WPMEM_PATH . 'inc/dialogs.php' );
 
 	if ( is_user_logged_in() ) { 
 		$status = wpmem_inc_memberlinks( 'status' );
@@ -289,6 +303,29 @@ function wpmem_login_status( $echo = true ) {
 	}
 }
 
+/**
+ * Utility function to validate $_POST, $_GET, and $_REQUEST.
+ *
+ * @since 3.1.3
+ *
+ * @param  string $tag     The form field or query string.
+ * @param  string $default The default value (optional).
+ * @param  string $type    post|get|request (optional).
+ * @return string 
+ */
+function wpmem_get( $tag, $default = '', $type = 'post' ) {
+	switch ( $type ) {
+		case 'post':
+			return ( isset( $_POST[ $tag ] ) ) ? $_POST[ $tag ] : $default;
+			break;
+		case 'get':
+			return ( isset( $_GET[ $tag ] ) ) ? $_GET[ $tag ] : $default;
+			break;
+		case 'request':
+			return ( isset( $_REQUEST[ $tag ] ) ) ? $_REQUEST[ $tag ] : $default;
+			break;
+	}
+}
 
 /**
  * Compares wpmem_reg_page value with the register page URL. 
@@ -310,15 +347,74 @@ function wpmem_is_reg_page( $check ) {
 	return ( $check_page == $reg_page ) ? true : false;
 }
 
-
 /**
  * Wrapper for load_dropins()
  *
  * @since 3.1.4
+ *
+ * @global object $wpmem The WP_Members object.
  */
 function wpmem_load_dropins() {
 	global $wpmem;
 	$wpmem->load_dropins();
+}
+
+/**
+ * Creates a login/logout link.
+ *
+ * @since 3.1.6
+ *
+ * @param  array   $args {
+ *     Array of arguments to customize output.
+ *
+ *     @type string  $login_redirect_to  The url to redirect to after login (optional).
+ *     @type string  $logout_redirect_to The url to redirect to after logout (optional).
+ *     @type string  $login_text         Text for the login link (optional).
+ *     @type string  $logout_text        Text for the logout link (optional).
+ * }
+ * @param  boolean $echo (default: false)
+ * @return string  $link
+ */
+function wpmem_loginout( $args = array(), $echo = false ) {
+	$defaults = array(
+		'login_redirect_to'  => ( isset( $args['login_redirect_to']  ) ) ? $args['login_redirect_to']  : wpmem_current_url(),
+		'logout_redirect_to' => ( isset( $args['logout_redirect_to'] ) ) ? $args['logout_redirect_to'] : wpmem_current_url(), // @todo - This is not currently active.
+		'login_text'         => ( isset( $args['login_text']         ) ) ? $args['login_text']         : __( 'log in',  'wp-members' ),
+		'logout_text'        => ( isset( $args['logout_text']        ) ) ? $args['logout_text']        : __( 'log out', 'wp-members' ),
+	);
+	$args     = wp_parse_args( $args, $defaults );
+	$redirect = ( is_user_logged_in() ) ? $args['logout_redirect_to'] : $args['login_redirect_to'];
+	$text     = ( is_user_logged_in() ) ? $args['logout_text']        : $args['login_text'];
+	if ( is_user_logged_in() ) {
+		/** This filter is defined in /inc/dialogs.php */
+		$link = apply_filters( 'wpmem_logout_link', add_query_arg( 'a', 'logout' ) );
+	} else {
+		$link = wpmem_login_url( $redirect );
+	}
+	$link = sprintf( '<a href="%s">%s</a>', $link, $text );
+	return $link;
+}
+
+/**
+ * Inserts array items at a specific point in an array.
+ *
+ * @since 3.1.6
+ *
+ * @param  array  $array Original array.
+ * @param  array  $new   Array of new items to insert into $array.
+ * @param  string $key   Array key to insert new items before or after.
+ * @param  string $loc   Location to insert relative to $key (before|after) default:after.
+ * @return array         Original array with new items inserted.
+ */
+function wpmem_array_insert( array $array, array $new, $key, $loc = 'after' ) {
+	$keys = array_keys( $array );
+	if ( 'before' == $loc ) {
+		$pos = (int) array_search( $key, $keys );
+	} else {
+		$index = array_search( $key, $keys );
+		$pos = ( false === $index ) ? count( $array ) : $index + 1;
+	}
+	return array_merge( array_slice( $array, 0, $pos ), $new, array_slice( $array, $pos ) );
 }
 
 // End of file.

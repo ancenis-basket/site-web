@@ -1,0 +1,76 @@
+// Tabs
+
+.wm-meta-wrap {
+
+	ul.tabs {
+		display: block;
+		position: relative;
+		padding: 10px 20px 0;
+		margin: 0;
+		height: 32px;
+		background: #f5f5f5;
+		border-bottom: 1px solid #dfdfdf;
+
+		li {
+			float: $left; // {{RTL}}
+			margin: 0 6px;
+			margin-#{$left}: 0; // {{RTL}}
+
+			a {
+				display: block;
+				height: 32px;
+				padding: 0 20px;
+				line-height: 32px;
+				text-decoration: none;
+				background: #dfdfdf;
+				color: #3e3e3e;
+				border-top: 1px solid #dfdfdf;
+				border-left: 1px solid #dfdfdf;
+				border-right: 1px solid #dfdfdf;
+				border-radius: 3px 3px 0 0;
+
+				&:hover {
+					background: #ddd;
+				}
+
+				img {
+					margin: 0 .25em -.25em;
+					margin-#{$left}: -5px; // {{RTL}}
+					vertical-align: baseline;
+				}
+
+			}
+
+			a:active,
+			&.ui-state-active a {
+				background: #fff;
+				color: #000;
+				outline: 0;
+			}
+
+		}
+
+	}
+
+	.tab-content {
+		clear: both;
+		position: relative;
+		background: transparent;
+		border: 0;
+
+		&.no-table {
+			padding: 0 20px 20px;
+		}
+
+		#wp-content-editor-tools {
+			padding-top: 20px;
+			background: #fff;
+		}
+
+	}
+
+}
+
+.no-js .tab-content {
+	display: none;
+}

@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 /**
  * WordPress with s2Member only.
  *
@@ -16,7 +17,7 @@
  */
 define ('_WS_PLUGIN__S2MEMBER_ONLY', TRUE);
 
-include_once dirname(__FILE__).'/includes/classes/utils-s2o.inc.php';
+include_once dirname(__FILE__).'/src/includes/classes/utils-s2o.inc.php';
 
 if(($ws_plugin__s2member_o['wp_dir'] = c_ws_plugin__s2member_utils_s2o::wp_dir(dirname(__FILE__), dirname($_SERVER['SCRIPT_FILENAME']))))
 {

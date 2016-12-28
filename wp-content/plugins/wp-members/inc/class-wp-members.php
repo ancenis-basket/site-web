@@ -32,8 +32,11 @@ class WP_Members {
 	 * Plugin initialization function.
 	 *
 	 * @since 3.0.0
+	 * @since 3.1.6 Dependencies now loaded by object.
 	 */
 	function __construct() {
+		
+		$this->load_dependencies();
 	
 		/**
 		 * Filter the options before they are loaded into constants.
@@ -52,7 +55,7 @@ class WP_Members {
 			 */
 			require_once( WPMEM_PATH . 'wp-members-install.php' );
 			// Update settings.
-			$settings = apply_filters( 'wpmem_settings', wpmem_upgrade_settings() );
+			$settings = apply_filters( 'wpmem_settings', wpmem_do_install() );
 		}
 		
 		// Assemble settings.
@@ -66,13 +69,37 @@ class WP_Members {
 		$this->cssurl = ( isset( $this->style ) && $this->style == 'use_custom' ) ? $this->cssurl : $this->style;
 		
 		// Load forms.
-		require_once( WPMEM_PATH . 'inc/class-wp-members-forms.php' );
 		$this->forms = new WP_Members_Forms;
 		
 		// Load api.
-		require_once( WPMEM_PATH . 'inc/class-wp-members-api.php' );
 		$this->api = new WP_Members_API;
 		
+		/**
+		 * Fires after main settings are loaded.
+		 *
+		 * @since 3.0
+		 * @todo Consider deprecating this action. It is undocumented (and unlikely used by users),
+		 *       With the move of the remaining initial loading to the constructor, the object is
+		 *       no longer available to this action, and moving it doesn't make much sense since
+		 *       wpmem_after_init would come right after it.
+		 */
+		do_action( 'wpmem_settings_loaded' );
+	
+		// Preload the expiration module, if available.
+		$exp_active = ( function_exists( 'wpmem_exp_init' ) || function_exists( 'wpmem_set_exp' ) ) ? true : false;
+		define( 'WPMEM_EXP_MODULE', $exp_active ); 
+	
+		// Load actions and filters.
+		$this->load_hooks();
+	
+		// Load shortcodes.
+		$this->load_shortcodes();
+	
+		// Load fields.
+		//$this->load_fields();
+		
+		// Load contants.
+		$this->load_constants();
 	}
 
 	/**
@@ -82,15 +109,17 @@ class WP_Members {
 	 * @since 3.0.7 Added wpmem_show_count.
 	 * @since 3.1.0 Added wpmem_profile.
 	 * @since 3.1.1 Added wpmem_loginout.
+	 * @since 3.1.6 Dependencies now loaded by object.
 	 */
 	function load_shortcodes() {
 
 		/**
-		 * Load the shortcode functions.
+		 * Fires before shortcodes load.
 		 *
 		 * @since 3.0.0
+		 * @since 3.1.6 Fires before shortcodes load.
 		 */
-		require_once( WPMEM_PATH . 'inc/shortcodes.php' );
+		do_action( 'wpmem_load_shortcodes' );
 		
 		add_shortcode( 'wp-members',       'wpmem_shortcode'       );
 		add_shortcode( 'wpmem_field',      'wpmem_sc_fields'       );
@@ -104,11 +133,12 @@ class WP_Members {
 		add_shortcode( 'wpmem_tos',        'wpmem_sc_tos'          );
 		
 		/**
-		 * Fires after shortcodes load (for adding additional custom shortcodes).
-		 *
+		 * Fires after shortcodes load.
+		 * 
 		 * @since 3.0.0
+		 * @since 3.1.6 Was wpmem_load_shortcodes, now wpmem_shortcodes_loaded.
 		 */
-		do_action( 'wpmem_load_shortcodes' );
+		do_action( 'wpmem_shortcodes_loaded' );
 	}
 	
 	/**
@@ -117,6 +147,14 @@ class WP_Members {
 	 * @since 3.0.0
 	 */
 	function load_hooks() {
+		
+		/**
+		 * Fires before action and filter hooks load.
+		 *
+		 * @since 3.0.0
+		 * @since 3.1.6 Fires before hooks load.
+		 */
+		do_action( 'wpmem_load_hooks' );
 
 		// Add actions.
 		add_action( 'template_redirect',     array( $this, 'get_action' ) );
@@ -140,11 +178,12 @@ class WP_Members {
 		}
 
 		/**
-		 * Fires after action and filter hooks load (for adding/removing hooks).
+		 * Fires after action and filter hooks load.
 		 *
 		 * @since 3.0.0
+		 * @since 3.1.6 Was wpmem_load_hooks, now wpmem_hooks_loaded.
 		 */
-		do_action( 'wpmem_load_hooks' );
+		do_action( 'wpmem_hooks_loaded' );
 	}
 	
 	/**
@@ -156,6 +195,14 @@ class WP_Members {
 	 */
 	function load_dropins() {
 
+		/**
+		 * Fires before dropins load (for adding additional drop-ins).
+		 *
+		 * @since 3.0.0
+		 * @since 3.1.6 Fires before dropins.
+		 */
+		do_action( 'wpmem_load_dropins' );
+		
 		/**
 		 * Filters the drop-in file folder.
 		 *
@@ -171,11 +218,12 @@ class WP_Members {
 		}
 
 		/**
-		 * Fires after dropins load (for adding additional drop-ins).
+		 * Fires before dropins load (for adding additional drop-ins).
 		 *
 		 * @since 3.0.0
+		 * @since 3.1.6 Was wpmem_load_dropins, now wpmem_dropins_loaded.
 		 */
-		do_action( 'wpmem_load_dropins' );
+		do_action( 'wpmem_dropins_loaded' );
 	}
 	
 	/**
@@ -200,6 +248,40 @@ class WP_Members {
 		( ! defined( 'WPMEM_LOGURL' ) ) ? define( 'WPMEM_LOGURL', $this->user_pages['login']    ) : '';
 		
 		define( 'WPMEM_CSSURL', $this->cssurl );
+	}
+
+	/**
+	 * Load dependent files.
+	 *
+	 * @since 3.1.6
+	 */
+	function load_dependencies() {
+		
+		/**
+		 * Filter the location and name of the pluggable file.
+		 *
+		 * @since 2.9.0
+		 * @since 3.1.6 Moved in load order to come before dependencies.
+		 *
+		 * @param string The path to WP-Members plugin functions file.
+		 */
+		$wpmem_pluggable = apply_filters( 'wpmem_plugins_file', WP_PLUGIN_DIR . '/wp-members-pluggable.php' );
+	
+		// Preload any custom functions, if available.
+		if ( file_exists( $wpmem_pluggable ) ) {
+			include( $wpmem_pluggable );
+		}
+		
+		require_once( WPMEM_PATH . 'inc/class-wp-members-api.php' );
+		require_once( WPMEM_PATH . 'inc/class-wp-members-forms.php' );
+		require_once( WPMEM_PATH . 'inc/class-wp-members-widget.php' );
+		require_once( WPMEM_PATH . 'inc/core.php' );
+		require_once( WPMEM_PATH . 'inc/api.php' );
+		require_once( WPMEM_PATH . 'inc/utilities.php' );
+		require_once( WPMEM_PATH . 'inc/dialogs.php' );
+		require_once( WPMEM_PATH . 'inc/sidebar.php' );
+		require_once( WPMEM_PATH . 'inc/shortcodes.php' );
+		require_once( WPMEM_PATH . 'inc/email.php' );
 	}
 	
 	/**

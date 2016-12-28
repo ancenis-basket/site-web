@@ -2,8 +2,8 @@
 Contributors: cbutlerjr
 Tags: access, authentication, content, login, member, membership, password, protect, register, registration, restriction, subscriber
 Requires at least: 3.6
-Tested up to: 4.6.1
-Stable tag: 3.1.5.2
+Tested up to: 4.7.0
+Stable tag: 3.1.6.3
 License: GPLv2
 
 WP-Members&trade; is a free membership management framework for WordPress&reg; that restricts content to registered users.
@@ -112,8 +112,8 @@ Premium priority support is available at the plugin's site [RocketGeek.com](http
 
 == Upgrade Notice ==
 
-WP-Members 3.1.5 is a security and feature update. Minimum WP version is 3.6.
-WP-Members 3.1.5.1 and 3.1.5.2 are minor fixes to shortcodes.
+WP-Members 3.1.6.3 fixes some invalid characters in certain files in the wordpress.org repo version.
+WP-Members 3.1.6 is primarily a settings update. See changelog for important details. Minimum WP version is 3.6.
 
 == Screenshots ==
 
@@ -136,15 +136,44 @@ WP-Members 3.1.5.1 and 3.1.5.2 are minor fixes to shortcodes.
 
 == Changelog ==
 
-= 3.1.5.2 =
+= 3.1.6.3 =
 
-* Fixes undefined index for [wpmem_field] if the field is not a field in the plugin's fields array (such as user_login, user_registered, etc).
-* Fixes undefined index for [wpmem_loginout] for text attributes.
-* Updated [wp-members] deprecated shortcode notice to include post/page information on where the shortcode is being used.
+* Fixes some invalid characters in the wordpress.org repo version of the plugin that seem to have crept in during the 3.1.6.2 commit.
+* Applies some admin strings for translation.
+* Notes WordPress 4.7 compatibility.
 
-= 3.1.5.1 =
+= 3.1.6.2 =
 
-* Fixes [wpmem_field] support for raw data display (when display=raw attribute is used) for select (dropdown), multiple select, multiple checkbox, and radio groups.
+* Applies style properties for the remember me checkbox label to the default stylesheets. The label tag was added to this text in 3.1.6 (see below).
+
+= 3.1.6.1 =
+
+* Fixes issue with displaying checkbox state on the admin user profile screen.
+* Fixes issue with auto excerpt when excerpts are displayed on single posts/pages.
+
+= 3.1.6 =
+
+* Fixed [wpmem_field] display handling for multiple select and multiple checkbox field types.
+* Updates to always load fields from wpmem_fields() API function.
+* Updates to begin to utilize new fields settings array.  Fields setting is still store in the same array format as before.  However, it is loaded into the new settings format.  Current object class keeps numeric keys in place for legacy purposes.
+* Updates to dropdown handling on main options tab to display proper preselected value when site is using ssl (https://) and no value is selected.
+* Added wpmem_loginout() API function, changed [wpmem_loginout] shortcode to use API function.
+* Added wpmem_array_insert() API function, allows for inserting array elements at any point in an array.
+* Added wp_destroy_current_session() to logout function.
+* Added WooCommerce support in native WP registration functions. Began adding WooCommerce classes to registration form elements.
+* Added to wpmem_user_has_role() function to check for a single role or if the user has a role that is in an array of roles.
+* Added wpmem_shortcodes_loaded, wpmem_hooks_loaded, and wpmem_dropins_loaded to fire after.
+* Added text input to set a default 'read more' link for auto excerpt.
+* Fixed issue with auto excerpt where an excerpt shorter than the excerpt setting would not display the more link.
+* Preliminary updates to include placeholder support in fields (this will be an option in a future release).
+* Localization fix of untranslated strings.
+* Wrap "Remember Me" checkbox label with label tag in login form.
+* Moved remaining initialization functions to class constructor.
+* Moved wpmem_load_shortcodes, wpmem_load_hooks, and wpmem_load_dropins to fire before.
+* reCAPTCHA version 1 is no longer supported by Google. It is now deprecated in the plugin. If you have reCAPTCHA v1 selected, it will remain so. But once this is changed to a different CAPTCHA setting or if this is a new install, reCAPTCHA version 1 will no longer be available as a selection.
+* Custom field term "Option Name" changed to "Meta Key" for clarity.
+* Marked required custom field properties as required in Add/Edit Field dialogs.
+* Changed redirect_to process to escape the url with esc_url_raw rather than esc_url, otherwise query string variables do not get handled correctly.
 
 = 3.1.5 =
 
@@ -158,6 +187,7 @@ WP-Members 3.1.5.1 and 3.1.5.2 are minor fixes to shortcodes.
 * Field loader now validates settings, if none exist due to install error it will run the default fields install.
 * Removed dialog setting downgrade on deactivation. Need to re-evaluate necessity of downgrading.
 * Fixed issue with slash handling in Emails tab.
+* Updated [wp-members] deprecated shortcode notice to include post/page information on where the shortcode is being used.
 
 = 3.1.4 =
 

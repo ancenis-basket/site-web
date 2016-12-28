@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 /**
  * The main plugin file.
  *
@@ -19,8 +20,8 @@
  */
 /* -- This section for WordPress parsing. ------------------------------------------------------------------------------
 
-Version: 160801
-Stable tag: 160801
+Version: 161129
+Stable tag: 161129
 
 SSL Compatible: yes
 bbPress Compatible: yes
@@ -35,11 +36,11 @@ Authorize.Net Compatible: yes w/s2Member Pro
 Google Wallet Compatible: yes w/s2Member Pro
 ClickBank Compatible: yes w/s2Member Pro
 
-Tested up to: 4.6
+Tested up to: 4.7-alpha
 Requires at least: 4.2
 
-Requires PHP: 5.2+
-Tested up to PHP: 7.0.8
+Requires PHP: 5.2
+Tested up to PHP: 7.0.12
 
 Copyright: © 2009 WebSharks, Inc.
 License: GNU General Public License
@@ -50,7 +51,7 @@ Author URI: http://s2member.com/
 Donate link: http://s2member.com/donate/
 
 Text Domain: s2member
-Domain Path: /includes/translations
+Domain Path: /src/includes/translations
 
 Plugin Name: s2Member Framework
 Forum URI: http://s2member.com/forums/
@@ -80,8 +81,9 @@ if(!defined('WPINC')) // MUST have WordPress.
  *
  * @var string
  */
+${__FILE__}['tmp'] = '161129'; //version//
 if(!defined('WS_PLUGIN__S2MEMBER_VERSION'))
-	define('WS_PLUGIN__S2MEMBER_VERSION', '160801' /* !#distro-version#! */);
+	define('WS_PLUGIN__S2MEMBER_VERSION', ${__FILE__}['tmp']);
 /**
  * Minimum PHP version required to run s2Member.
  *
@@ -90,8 +92,9 @@ if(!defined('WS_PLUGIN__S2MEMBER_VERSION'))
  *
  * @var string
  */
+${__FILE__}['tmp'] = '5.2'; //php-required-version//
 if(!defined('WS_PLUGIN__S2MEMBER_MIN_PHP_VERSION'))
-	define('WS_PLUGIN__S2MEMBER_MIN_PHP_VERSION', '5.2' /* !#php-requires-at-least-version#! */);
+	define('WS_PLUGIN__S2MEMBER_MIN_PHP_VERSION', ${__FILE__}['tmp']);
 /**
  * Minimum WordPress version required to run s2Member.
  *
@@ -100,8 +103,9 @@ if(!defined('WS_PLUGIN__S2MEMBER_MIN_PHP_VERSION'))
  *
  * @var string
  */
+${__FILE__}['tmp'] = '4.2'; //wp-required-version//
 if(!defined('WS_PLUGIN__S2MEMBER_MIN_WP_VERSION'))
-	define('WS_PLUGIN__S2MEMBER_MIN_WP_VERSION', '4.2' /* !#wp-requires-at-least-version#! */);
+	define('WS_PLUGIN__S2MEMBER_MIN_WP_VERSION', ${__FILE__}['tmp']);
 /**
  * Minimum Pro version required by the Framework.
  *
@@ -110,8 +114,9 @@ if(!defined('WS_PLUGIN__S2MEMBER_MIN_WP_VERSION'))
  *
  * @var string
  */
+${__FILE__}['tmp'] = '161129'; //version//
 if(!defined('WS_PLUGIN__S2MEMBER_MIN_PRO_VERSION'))
-	define('WS_PLUGIN__S2MEMBER_MIN_PRO_VERSION', '160801' /* !#distro-version#! */);
+	define('WS_PLUGIN__S2MEMBER_MIN_PRO_VERSION', ${__FILE__}['tmp']);
 /*
 Several compatibility checks.
 If all pass, load the s2Member plugin.
@@ -126,11 +131,11 @@ if(version_compare(PHP_VERSION, WS_PLUGIN__S2MEMBER_MIN_PHP_VERSION, '>=') && ve
 	/*
 	System configuraton.
 	*/
-	include_once dirname(__FILE__).'/includes/syscon.inc.php';
+	include_once dirname(__FILE__).'/src/includes/syscon.inc.php';
 	/*
 	Hooks and Filters.
 	*/
-	include_once dirname(__FILE__).'/includes/hooks.inc.php';
+	include_once dirname(__FILE__).'/src/includes/hooks.inc.php';
 	/*
 	Hook after system config & Hooks are loaded.
 	*/
@@ -155,11 +160,11 @@ if(version_compare(PHP_VERSION, WS_PLUGIN__S2MEMBER_MIN_PHP_VERSION, '>=') && ve
 	/*
 	Function includes.
 	*/
-	include_once dirname(__FILE__).'/includes/funcs.inc.php';
+	include_once dirname(__FILE__).'/src/includes/funcs.inc.php';
 	/*
 	Include Shortcodes.
 	*/
-	include_once dirname(__FILE__).'/includes/codes.inc.php';
+	include_once dirname(__FILE__).'/src/includes/codes.inc.php';
 	/*
 	Hooks after loaded.
 	*/
@@ -180,3 +185,4 @@ else if(is_admin()) // Admin compatibility errors.
 		add_action('all_admin_notices', create_function('', 'echo \'<div class="error fade"><p>You need WordPress v\' . WS_PLUGIN__S2MEMBER_MIN_WP_VERSION . \'+ to use the s2Member plugin.</p></div>\';'));
 	}
 }
+unset(${__FILE__}); // Housekeeping.

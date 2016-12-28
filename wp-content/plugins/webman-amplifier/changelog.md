@@ -1,5 +1,41 @@
 # WebMan Amplifier Changelog
 
+## 1.4
+
+* **Add**: Compatibility with WordPress 4.7
+* **Update**: Removing obsolete `wma_vc_custom_post_removal()` function
+* **Update**: Improved RTL stylesheets
+* **Update**: Subnav widget improved
+* **Update**: Renamed "Enter title here" text for Staff custom post type
+* **Update**: Improved icon font processor (removing query string from URLs, minifying CSS file)
+* **Update**: Font Awesome 4.7
+* **Update**: Localization
+* **Fix**: Taxonomy name in column heading of custom post types admin table
+
+#### Files changed:
+
+	changelog.md
+	class-wm-amplifier.php
+	readme.txt
+	webman-amplifier.php
+	assets/font/config.php
+	assets/font/fontello.css
+	assets/font/fontello.dev.css
+	assets/scss/metabox.scss
+	assets/scss/shortcodes-generator.scss
+	assets/scss/shortcodes-vc-addons.scss
+	includes/custom-posts/logos.php
+	includes/custom-posts/modules.php
+	includes/custom-posts/projects.php
+	includes/custom-posts/staff.php
+	includes/custom-posts/testimonials.php
+	includes/icons/class-icon-font.php
+	includes/metabox/class-metabox.php
+	includes/shortcodes/class-shortcodes.php
+	includes/visual-editor/visual-editor.php
+	includes/widgets/w-subnav.php
+
+
 ## 1.3.21
 
 * **Add**: Integration with WooSidebars plugin
