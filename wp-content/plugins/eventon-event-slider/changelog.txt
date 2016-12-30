@@ -1,0 +1,12 @@
+﻿Event Slider (SL) addon for EventON Plugin
+====================================
+v 1.0 (2016-11-15)
+ADDED: Mini carasouel type slider
+FIXED: Vertical slider not working correct
+FIXED: Click on events from slider to perform correct ux_val
+
+v 0.2 (2016-7-24)
+ADDED: Support for opening events as single events from slider
+
+v 0.1 (2016-5-26)
+Initial release

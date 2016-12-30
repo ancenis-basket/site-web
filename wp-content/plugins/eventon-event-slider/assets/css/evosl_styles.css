@@ -1,0 +1,1096 @@
+/**
+ * Eventon Event Slider
+ * @version 1.0
+ */
+
+/* Slider specific styles */
+    @-webkit-keyframes rightEnd {
+        0% {      left: 0;    }
+        50% {        left: -15px;    }
+        100% {        left: 0;    }
+    }
+    @keyframes rightEnd {
+        0% {        left: 0;    }
+        50% {        left: -15px;    }
+        100% {        left: 0;    }
+    }
+    @-webkit-keyframes topEnd {
+        0% {        top: 0;    }
+        50% {        top: -15px;    }
+        100% {        top: 0;    }
+    }
+    @keyframes topEnd {
+        0% {        top: 0;    }
+        50% {        top: -15px;    }
+        100% {        top: 0;    }
+    }
+    @-webkit-keyframes leftEnd {
+        0% {        left: 0;    }
+        50% {        left: 15px;    }
+        100% {        left: 0;    }
+    }
+    @keyframes leftEnd {
+        0% {        left: 0;    }
+        50% {        left: 15px;    }
+        100% {        left: 0;    }
+    }
+    @-webkit-keyframes bottomEnd {
+        0% {        bottom: 0;    }
+        50% {        bottom: -15px;    }
+        100% {        bottom: 0;    }
+    }
+    @keyframes bottomEnd {
+        0% {        bottom: 0;    }
+        50% {        bottom: -15px;    }
+        100% {        bottom: 0;    }
+    }
+    .evoSlideOuter .rightEnd {
+        -webkit-animation: rightEnd 0.3s;
+        animation: rightEnd 0.3s;
+        position: relative;
+    }
+    .evoSlideOuter .leftEnd {
+        -webkit-animation: leftEnd 0.3s;
+        animation: leftEnd 0.3s;
+        position: relative;
+    }
+    .evoSlideOuter.vertical .rightEnd {
+        -webkit-animation: topEnd 0.3s;
+        animation: topEnd 0.3s;
+        position: relative;
+    }
+    .evoSlideOuter.vertical .leftEnd {
+        -webkit-animation: bottomEnd 0.3s;
+        animation: bottomEnd 0.3s;
+        position: relative;
+    }
+    .evoSlideOuter.evortl .rightEnd {
+        -webkit-animation: leftEnd 0.3s;
+        animation: leftEnd 0.3s;
+        position: relative;
+    }
+    .evoSlideOuter.evortl .leftEnd {
+        -webkit-animation: rightEnd 0.3s;
+        animation: rightEnd 0.3s;
+        position: relative;
+    }
+    /*  GRab cursor */
+        .evoSlider.evoGrab > * {
+          cursor: -webkit-grab;
+          cursor: -moz-grab;
+          cursor: -o-grab;
+          cursor: -ms-grab;
+          cursor: grab;
+        }
+        .evoSlider.evoGrabbing > * {
+          cursor: move;
+          cursor: -webkit-grabbing;
+          cursor: -moz-grabbing;
+          cursor: -o-grabbing;
+          cursor: -ms-grabbing;
+          cursor: grabbing;
+        }
+    
+    div.evosliderbox li {
+        display: block;
+        float: left;
+        margin-right: 6px;
+        cursor:pointer;
+        padding-bottom: 0px;
+    }
+    .evo_slider_container_demo {
+        width: 100%;
+        max-width: 960px;
+        margin: 0px auto;
+    }
+    .evosliderbox {   max-width: 100%;}
+    .evo_slider_width {  width:100%;}
+    .evo_slide_item { position:relative;}
+    .evo_slide_et_color {
+        position: absolute;
+        top: 10px;
+        left:10px;
+        z-index: 57;
+    }
+    .et_color_1 { color:#F44336;}
+    .et_color_2 {  color:#8BC34A;}
+    .et_color_3 {  color:#FFC107;}
+    .et_color_4 {  color:#009688;}
+    img.evo_slide_img {
+        width: 100%;
+        max-width: 100%;
+        display: block;
+        height: auto;
+        position: relative;
+        z-index: 55;
+    }
+    ul#image-gallery {
+        max-height: none;
+        overflow: hidden;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        height: auto !important;
+    }
+
+    .evoSlideOuter {
+        overflow: hidden;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        padding-bottom: 0px;
+    }
+    .evoSlider:before, .evoSlider:after {
+        content: " ";    display: table;
+    }
+    .evoSlider {    overflow: hidden;    margin: 0;}
+    .evoSlideWrapper {
+        max-width: 100%;
+        overflow: hidden;
+        position: relative;
+    }
+    .evoSlideWrapper > .evoSlider:after {    clear: both;}
+    .evoSlideWrapper .evoSlide {
+        -webkit-transform: translate(0px, 0px);
+        -ms-transform: translate(0px, 0px);
+        transform: translate(0px, 0px);
+        -webkit-transition: all 1s;
+        -webkit-transition-property: -webkit-transform,height;
+        -moz-transition-property: -moz-transform,height;
+        transition-property: transform,height;
+        -webkit-transition-duration: inherit !important;
+        transition-duration: inherit !important;
+        -webkit-transition-timing-function: inherit !important;
+        transition-timing-function: inherit !important;
+    }
+    .evoSlideWrapper .evoFade {    position: relative;}
+    .evoSlideWrapper .evoFade > * {
+        position: absolute !important;
+        top: 0;
+        left: 0;
+        z-index: 9;
+        margin-right: 0;
+        width: 100%;
+    }
+    .evoSlideWrapper.usingCss .evoFade > * {
+        opacity: 0;
+        -webkit-transition-delay: 0s;
+        transition-delay: 0s;
+        -webkit-transition-duration: inherit !important;
+        transition-duration: inherit !important;
+        -webkit-transition-property: opacity;
+        transition-property: opacity;
+        -webkit-transition-timing-function: inherit !important;
+        transition-timing-function: inherit !important;
+    }
+    .evoSlideWrapper .evoFade > *.active {   z-index: 10;}
+    .evoSlideWrapper.usingCss .evoFade > *.active {    opacity: 1;}
+
+/* Pager */
+    .evoSlideOuter .evoPager.evopg {
+        margin: 10px 0 0;
+        padding: 0;
+        text-align: center;
+    }
+    .evoSlideOuter .evoPager.evopg > li {
+        cursor: pointer;
+        display: inline-block;
+        padding: 0 5px;
+    }
+    .evoSlideOuter .evoPager.evopg > li a {
+        background-color: #222222;
+        border-radius: 30px;
+        display: inline-block;
+        height: 8px;
+        overflow: hidden;
+        text-indent: -999em;
+        width: 8px;
+        position: relative;
+        z-index: 99;
+        -webkit-transition: all 0.5s linear 0s;
+        transition: all 0.5s linear 0s;
+    }
+    .evosl_footer .evoPager.evopg > li:hover a, 
+    .evosl_footer .evoPager.evopg > li.active a {
+        background-color: #428bca; position: relative;
+    }
+    .evosl_footer .evoPager.evopg > li.active a:before{
+        content:"";
+        position: absolute;
+        border: 1px solid #a9a9a9;
+        width: 16px;height: 16px;
+        border-radius: 50%;
+        left: -4px;top: -4px;
+    }
+    .evoSlideOuter .media {        opacity: 0.8;    }
+    .evoSlideOuter .media.active {        opacity: 1;    }
+
+/** Gallery */
+    .evoSlideOuter .evoPager.evoGallery {
+        list-style: none outside none;
+        padding-left: 0;
+        margin: 0;
+        overflow: hidden;
+        transform: translate3d(0px, 0px, 0px);
+        -moz-transform: translate3d(0px, 0px, 0px);
+        -ms-transform: translate3d(0px, 0px, 0px);
+        -webkit-transform: translate3d(0px, 0px, 0px);
+        -o-transform: translate3d(0px, 0px, 0px);
+        -webkit-transition-property: -webkit-transform;
+        -moz-transition-property: -moz-transform;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .evoSlideOuter .evoPager.evoGallery li {
+        overflow: hidden;
+        -webkit-transition: border-radius 0.12s linear 0s 0.35s linear 0s;
+        transition: border-radius 0.12s linear 0s 0.35s linear 0s;
+    }
+    .evoSlideOuter .evoPager.evoGallery li.active, .evoSlideOuter .evoPager.evoGallery li:hover {
+        border-radius: 5px;
+    }
+    .evoSlideOuter .evoPager.evoGallery img {
+        display: block;
+        height: auto;
+        max-width: 100%;
+        width: 100%;
+    }
+    .evoSlideOuter .evoPager.evoGallery:before, .evoSlideOuter .evoPager.evoGallery:after {
+        content: " ";
+        display: table;
+    }
+    .evoSlideOuter .evoPager.evoGallery:after { clear: both;    }
+
+/* slider actions */
+    .evoAction > a {
+        width: 32px;
+        display: block;
+        bottom: 8px;
+        height: 32px;
+        cursor: pointer;
+        position: absolute;
+        z-index: 57;
+        margin-top: -16px;
+        opacity: 0.3;
+        -webkit-transition: opacity 0.35s linear 0s;
+        transition: opacity 0.35s linear 0s;
+        text-align: center;
+        height: 35px;
+        width: 35px;
+        display: block;
+        cursor: pointer;
+        border: 1px solid #222222;
+        border-radius: 50%;
+        color: #222222;
+    }
+    .evoAction > a i{
+        font-size: 24px;
+        margin-top: 4px;
+        position: absolute;
+        left: 12px;
+    }
+    .evoAction > a:hover {opacity: 1; background-color: #fff    }
+    .evoAction > a:hover i{color: #3d3d3d}
+    .evoAction > .evoPrev {
+        background-position: 0 0;
+        left: 10px;
+    }
+    .evoAction > .evoNext {
+        background-position: -32px 0;
+        right: 10px;
+    }
+    .evoAction > a.disabled {
+        pointer-events: none;
+    }
+    .evo-hidden {
+        height: 1px;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        overflow: hidden;
+    }
+
+/* Content for evo slides */
+    li.evo_slide_item {
+        overflow: hidden;
+        height: auto;
+    }
+    .evo_date_holder.evos_top {
+        position: relative;
+        max-width: 150px;
+        z-index: 57;
+        padding: 50px 0px 0px 50px;
+    }
+    .evo_start_slide_date {
+        display: inline-block;
+        text-align: center;
+        line-height: 1;
+    }
+    .evo_end_slide_date {
+        display: inline-block;
+        vertical-align: top;
+        text-align: right;
+        padding-left: 4px;
+        padding-top: 6px;
+        line-height: 1;
+    }
+    p.evs_t1 {
+        color: #fff;
+        font-size: 50px;
+        padding: 0px;
+        margin: 0px;
+        letter-spacing: normal;
+        white-space: normal;
+        font-weight: 700;
+    }
+    p.evs_t2 {
+        padding: 0px;
+        margin: 0px;
+        color: #fff;
+        font-size: 30px;
+        text-transform: uppercase;
+        letter-spacing: normal;
+        white-space: normal;
+    }
+    p.evs_t3 {
+        font-size: 25px;
+        color: #fff;
+        padding: 0px;
+        margin: 0px;
+        letter-spacing: normal;
+        white-space: normal;
+        font-weight: 600;
+    }
+    p.evs_t4 {
+        color: #fff;
+        font-size: 15px;
+        text-transform: uppercase;
+        padding: 0px;
+        margin: 0px;
+        letter-spacing: normal;
+        white-space: normal;
+    }
+    .evo_slide_content {
+        position: relative;
+        z-index: 57;
+        color: #fff;
+        max-width: 90%;
+        padding: 10px 0px 0px 50px;
+        margin: 0px;
+    }
+    .evo_slide_overlay {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 56;
+        width: 100%;
+        height: 100%;
+    }
+    h1.evo_slide_title {
+        font-size: 36px;
+        padding: 0px;
+        margin: 0px;
+        line-height: 1;
+    }
+    .evo_slide_loc-time-user p {
+        line-height: 1;
+        padding: 0px;
+        margin: 0px;
+        display: inline-block;
+        padding: 6px 0px;
+        font-size: 14px;
+        margin-right: 6px;
+    }
+    .evo_slide_loc-time-user {    padding: 6px 0px;}
+    .evo_slide_loc-time-user p i.material-icons {
+        font-size: 16px;
+        top: 3px;
+        position: relative;
+    }
+    .evo_slide_button a {
+        color: #fff;
+        border: solid 1px #fff;
+        border-radius: 4px;
+        padding: 4px 20px;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 10px;
+        font-size: 14px;
+        background-color: rgba(255, 255, 255, 0.1);
+        transition: all 0.5s ease;
+    }
+    .evo_slide_button a:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+    p.evo_slide_desc {
+        font-size: 14px;
+        max-width: 80%;
+    }
+    .evo_slide_light {  color:#fff;}
+    .evo_slide_dark {  color:#333;}
+    .evo_slide_overlay {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 56;
+        width: 100%;
+        height: 100%;
+        transition: all 0.5s ease;
+    }
+    .evo_multi_thumb {
+    	height:200px;
+    	width:100%;
+        background-position:center center;
+        background-repeat: no-repeat;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover !important;
+    }
+    li.evo_slide_item:hover .evo_slide_overlay {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+    .evo_slide_item {
+        background-position:center center;
+        background-repeat: no-repeat;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover !important;
+    }
+    .evosl_footer_outter{
+      position: relative;
+      text-align: center;
+      width: auto;
+    }    
+    .evosl_footer {
+        display: inline-block;
+        position: relative;
+        width: auto;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+/* vertical */
+    .evosliderbox.verticalSlider .evoAction {
+        position: absolute;
+        top: 0px;
+        width: 100%; height: 0;
+        right: 0px;
+    }
+    .evoSlideOuter.vertical {   position: relative;    }
+    .evoSlideOuter.vertical.noPager {  padding-right: 0px !important;    }
+    .evoSlideOuter.vertical .evoGallery {
+        position: absolute !important;
+        right: 0;
+        top: 0;
+    }
+    .evoSlideOuter.vertical .evoSlider > * {
+        width: 100% !important;
+        max-width: none !important;
+    }
+    .verticalSlider.ajde_evcal_calendar .eventon_list_event{float: none!important;}
+
+    /* vertical controlls */
+        .evosliderbox.verticalSlider .evoSlideOuter.vertical .evoAction > a {
+            left: auto;
+            margin-top: 0;
+            right: 50%;
+            margin-right: -13px;
+            background-color: rgba(255, 255, 255,1); opacity: 0.3
+        }
+        .evosliderbox.verticalSlider .evoSlideOuter.vertical .evoAction a:hover {opacity: 1}
+        .evoSlideOuter.vertical .evoAction > .evoNext {
+            bottom: 10px;
+            top: 350px;
+            background-position: 32px -31px;
+        }
+        .evoSlideOuter.vertical .evoAction > .evoPrev {
+            bottom: auto;
+            top: 10px;
+        }
+        
+        .evosliderbox.verticalSlider li{padding-bottom: 0;}
+        .evosliderbox.verticalSlider .evoAction > .evoPrev{right: 20px;}
+        .evosliderbox.verticalSlider .evoSlideOuter.vertical .evoAction > a.evoNext i{top: 3px;}
+        .evosliderbox.verticalSlider .evoSlideOuter.vertical .evoAction > a i{
+            -ms-transform: rotate(90deg); /* IE 9 */
+            -webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
+            transform: rotate(90deg);
+            left: 14px;
+        }
+/* widget */
+    #evcal_widget .evosliderbox .eventon_events_list .eventon_list_event .evcal_cblock{
+        left: 40px;
+        position: relative;
+        padding: 80px 0 20px;
+        width: 100%;
+    }
+    #evcal_widget .evosliderbox .eventon_events_list .eventon_list_event .mul_val .evcal_desc,
+    #evcal_widget .evosliderbox .eventon_list_event a.sin_val.hasFtIMG .evcal_desc, .sin_val.hasFtIMG .evcal_desc{
+        padding:0px 40px 20px;
+    }
+    #evcal_widget .evosliderbox .eventon_events_list .eventon_list_event .evcal_desc .evcal_desc_info em{color: #fff}
+    #evcal_widget .evosliderbox .eventon_events_list .eventon_list_event .evcal_cblock span.start{
+        font-size: 36px;
+    }
+    #evcal_widget .evosliderbox .eventon_events_list .eventon_list_event .evcal_cblock span.start em{font-size: 14px;}
+    #evcal_widget .evosliderbox .eventon_events_list .eventon_list_event .evcal_cblock span.end{font-size: 24px;}
+
+/* General Slider styles */
+    .evosliderbox.ajde_evcal_calendar .evo_time{display: none;}
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event {
+        /*border-left: solid 1px transparent;*/
+        box-sizing: border-box;
+    }
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .desc_trig{background-color: transparent;}
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_cblock{color: #fff;}
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .ev_ftImg{display: none;}
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_desc3_rsvp{display: none;}
+
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .hasFtIMG .evcal_desc{padding-left: 100px;}
+    .evosliderbox .eventon_events_list .eventon_list_event .evcal_desc span.evcal_event_subtitle{
+        color: #fff;
+    }
+
+    /* Added styles to override Arrow position */
+        .evoSlideOuter .evoSlider, .evoSlideOuter .evoPager {
+            width: 80%;
+            margin: 0 auto !important;
+        }
+        .verticalSlider .evoSlideOuter .evoSlider{width: 100%;}
+        .verticalSlider.evosliderbox .evosl_footer_outter ul.evoPager{width: 100%; padding: 5px 0;}
+
+    .item.evo_slider_dark .evoAction > a {  background-image: url('../img/controls-dark.svg') !important;}
+    ul#content-slider {   background-color: transparent;}
+    li.evo_multi_item {    position: relative; box-sizing: border-box;}
+    li.evo_multi_item:nth-child(even) {background: #FFF}
+    li.evo_multi_item:nth-child(odd) {background: #F1F1F1}
+    .evo_date_holder_multi {
+        position: relative;
+        max-width: 150px;
+        z-index: 57;
+        padding: 10px 0px 0px 15px;
+    	color:#3A3A3A;
+    }
+    h1.evo_slide_title_multi {
+        font-size: 24px;
+        padding: 0px;
+        margin: 0px;
+        line-height: 1.3;
+    	color:#3A3A3A;
+    }
+    .evo_slide_content_multi {
+        position: relative;
+        z-index: 57;
+        color: #3A3A3A;
+        max-width: 90%;
+        padding: 10px 0px 0px 15px;
+        margin: 0px;
+        margin-bottom: 55px;
+    }
+    .evo_slide_button_multi a {
+        color: #3A3A3A;
+        border: solid 1px #3A3A3A;
+        border-radius: 4px;
+        padding: 4px 20px;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 10px;
+        font-size: 14px;
+        background-color: rgba(255, 255, 255, 0.1);
+        transition: all 0.5s ease;
+    }
+    p.evs_t1_multi {
+        color: #3A3A3A;
+        font-size: 50px;
+        padding: 0px;
+        margin: 0px;
+        letter-spacing: normal;
+        white-space: normal;
+        font-weight: 700;
+    }
+    p.evs_t2_multi {
+        padding: 0px;
+        margin: 0px;
+        color: #3A3A3A;
+        font-size: 30px;
+        text-transform: uppercase;
+        letter-spacing: normal;
+        white-space: normal;
+    }
+    p.evs_t3_multi {
+        font-size: 25px;
+        color: #3A3A3A;
+        padding: 0px;
+        margin: 0px;
+        letter-spacing: normal;
+        white-space: normal;
+        font-weight: 600;
+    }
+    p.evs_t4_multi {
+        color: #3A3A3A;
+        font-size: 15px;
+        text-transform: uppercase;
+        padding: 0px;
+        margin: 0px;
+        letter-spacing: normal;
+        white-space: normal;
+    }
+
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event:before{
+        content:'';
+        position: absolute;
+        top: 0;left: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.2); 
+        transition: all 0.5s ease;
+        pointer-events:none;
+    }
+    .evosliderbox.ajde_evcal_calendar .eventon_list_event:hover:before{
+        background-color: rgba(0, 0, 0, 0);
+    }
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_cblock{
+        background-color: transparent !important;
+        color: #fff;
+        font-size: 20px;
+        padding: 50px 0px 0px 50px;
+        font-weight: bold;
+        position: relative;
+        line-height: 1;
+        min-height: 0px;
+        margin: 0px;
+        left: 0px;
+        top: 0px;
+        display: block;
+    }
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .month_long .evcal_cblock{
+        display: none;
+    }
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_list_a {
+        display: block;
+        width: 100%;
+        position: relative;
+        padding: 0px;
+        overflow: hidden;
+        border-left-width: 0px;
+        border-left-style: solid;
+        min-height: 0px;
+        border-bottom: none;
+    }
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_list_a:hover {
+        display: block;
+        width: 100%;
+        position: relative;
+        padding: 0px;
+        overflow: hidden;
+        border-left-width: 0px;
+        border-left-style: solid;
+        min-height: 0px;
+        border-bottom: none;
+    }
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .hasFtIMG .evcal_desc{
+        padding: 20px 50px;
+        border-left: 0px;
+        margin: 0px 0px 20px 0px;
+        position: relative;
+    }
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_desc{
+        padding: 20px 50px;
+        border-left: 0px;
+        margin: 0px 0px 20px 0px;
+        position: relative;
+    }
+
+    div.evosliderbox ul {
+        list-style: none outside none;
+        padding-left: 0;
+        margin-bottom: 0;
+        border-bottom: 0px;
+        padding: 0px;
+    }
+    div.evosliderbox ul{height: auto;
+        display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+        display: -ms-flexbox;      /* TWEENER - IE 10 */
+        display: -webkit-flex;     /* NEW - Chrome */
+        display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
+        -webkit-flex-wrap: wrap;
+        flex-wrap: wrap;
+        display: -webkit-box; 
+    }
+    div.evosliderbox.verticalSlider ul{height: auto; display: block;}
+
+    .evosliderbox .evoAction {
+        position: absolute;
+        top: 0px;
+        width: 100%;
+    }
+    .evosliderbox .evoAction > a {
+        top: 10px;
+        margin-top: 0px;
+    }
+    .evosliderbox .evoPager a {
+        font-size: 0px;
+        width: 10px;
+        height: 10px;
+        background-color: #e1e1e1;
+        display: inline-block;
+        border-radius: 50%;
+    }
+    .evosliderbox ul.evoPager.evopg {
+        display: inline-block;
+        width: auto;
+        padding: 5px 55px;
+        vertical-align: top;
+    }
+    .evosliderbox .evoPager a {
+        font-size: 0px;
+        width: 10px;
+        height: 10px;
+        background-color: #e1e1e1;
+        display: inline-block;
+        border-radius: 50%;
+        margin: 0px 5px;
+        transition: all 0.5s ease;
+        outline:none;
+    }
+    .evosliderbox .evoPager a:hover {
+        background-color: #206177;
+    }
+    .evosl_footer_outter {
+        text-align: center;
+    }
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_list_a:after {
+        height: 0px;
+    	background-color:transparent;
+    }
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_desc span.evcal_desc2{
+        color: #fff;
+        text-transform: uppercase;
+        font-size: 30px;
+    }
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_desc .evcal_desc_info{
+        font-size: 12px;
+        line-height: 1.5;
+        padding-bottom: 0px;
+        opacity: 1;
+        color: #fff;
+    }
+    .evosliderbox.ajde_evcal_calendar em.evo_time {
+        display: none;
+    }
+    .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_cblock em.evo_day {
+        color: #fff;
+        margin-bottom: 3px;
+        font-size: 20px;
+    }
+    .evosliderbox.ajde_evcal_calendar .evcal_cblock .evo_date .start {
+        float: left;
+        font-size: 40px;
+        clear: both;
+    }
+    .evosliderbox.ajde_evcal_calendar .evcal_cblock .evo_date .start em {
+        margin-left: 0;
+        margin-top: 3px;
+        font-size: 20px;
+    }
+    .evosliderbox.ajde_evcal_calendar .evcal_cblock .evo_date .end {
+        float: left;
+        margin-left: 4px;
+        font-size: 20px;
+    }
+    .evosliderbox .evcal_desc .evcal_desc3 em {
+        color: #fff;
+    }
+    .evosliderbox .evcal_desc .evcal_desc3 em i {
+        color: #fff;
+    }
+
+/* multi slider */
+    .evosliderbox.ajde_evcal_calendar.multiSlider .eventon_events_list .eventon_list_event .evcal_cblock {
+        padding: 20px 0px 0px 20px;
+    }
+    .evosliderbox.ajde_evcal_calendar.multiSlider .eventon_list_event .evcal_desc span.evcal_desc2, .evo_pop_body .evcal_desc span.evcal_desc2 {
+        font-size: 20px;
+    }
+    .evosliderbox.ajde_evcal_calendar.multiSlider .eventon_list_event .hasFtIMG .evcal_desc, .evo_pop_body .hasFtIMG .evcal_desc {
+        padding: 10px 20px;
+    }
+    .evosliderbox.ajde_evcal_calendar.multiSlider .eventon_events_list .eventon_list_event .evcal_desc, .evo_pop_body .evcal_desc, #page-content p.evcal_desc {
+        padding: 10px 20px;
+    }
+
+/* multi mini slider */
+    .evosliderbox.ajde_evcal_calendar.multiminiSlider .eventon_events_list .eventon_list_event .evcal_cblock { 
+        padding: 15px 0px 0px 15px;}
+    .evosliderbox.ajde_evcal_calendar.multiminiSlider .evcal_cblock .evo_date .start {
+        font-size: 30px;
+    }
+    .evosliderbox.ajde_evcal_calendar.multiminiSlider .evcal_cblock .evo_date .end {
+        margin-left: 4px;font-size: 20px;
+    }
+    .evosliderbox.ajde_evcal_calendar.multiminiSlider .evcal_cblock .evo_date .start em {
+        font-size: 15px;
+    }
+    .evosliderbox.ajde_evcal_calendar.multiminiSlider .eventon_events_list .eventon_list_event .evcal_cblock em.evo_day {
+        font-size: 18px;
+    }
+    .evosliderbox.ajde_evcal_calendar.multiminiSlider .eventon_events_list .eventon_list_event .evcal_desc span.evcal_desc2, .evo_pop_body .evcal_desc span.evcal_desc2 {
+        font-size: 16px;
+    }
+    .evosliderbox.ajde_evcal_calendar.multiminiSlider .eventon_events_list .eventon_list_event .evcal_desc, .evo_pop_body .evcal_desc, #page-content p.evcal_desc {
+        padding: 10px 15px;
+        margin: 0px 0px 20px 0px;
+    }
+    .multiminiSlider .eventon_events_list .eventon_list_event .evcal_desc .evcal_location { display: none; }
+    .multiminiSlider .evcal_desc .evcal_desc3 {  display: none !important;}
+
+/* mini carousel slider */
+    .ajde_evcal_calendar.minicarSlider{position: relative;}
+    .evosliderbox.ajde_evcal_calendar.minicarSlider .evcal_cblock .evo_date .start {
+        font-size: 30px;
+    }
+    .evosliderbox.ajde_evcal_calendar.minicarSlider .evcal_cblock .evo_date .end {
+        margin-left: 4px;font-size: 20px;
+    }
+    .evosliderbox.ajde_evcal_calendar.minicarSlider .evcal_cblock .evo_date .start em {
+        font-size: 15px;
+    }
+    .evosliderbox.ajde_evcal_calendar.minicarSlider .eventon_events_list .eventon_list_event .evcal_cblock em.evo_day {
+        font-size: 18px;
+    }
+    .evosliderbox.ajde_evcal_calendar.minicarSlider .eventon_events_list .eventon_list_event .evcal_desc span.evcal_desc2{
+        font-size: 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }    
+    .minicarSlider .eventon_events_list .eventon_list_event .evcal_desc .evcal_location {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
+    }
+    .minicarSlider .evcal_desc .evcal_desc3 {  display: none !important;}
+
+    .minicarSlider.ajde_evcal_calendar .eventon_events_list .eventon_list_event .ev_ftImg{
+        display: block;
+        border-radius: 0px;
+        height: 100px; max-height: none;
+        width: 75px;
+        margin: 0;
+    }
+    .minicarSlider.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_cblock{
+        padding: 10px 0px 0px 10px; position: absolute;
+    }
+    .minicarSlider.ajde_evcal_calendar .eventon_events_list .eventon_list_event .hasFtIMG .evcal_cblock{padding-left: 85px;}
+    .ajde_evcal_calendar.minicarSlider.evosliderbox .eventon_events_list .eventon_list_event .evcal_desc{
+        padding: 10px 15px 10px 60px;
+        margin: 0px;        
+    }
+    .ajde_evcal_calendar.minicarSlider.evosliderbox .eventon_events_list .eventon_list_event .hasFtIMG .evcal_desc{padding-left: 130px;}
+    .ajde_evcal_calendar.minicarSlider.evosliderbox .eventon_events_list .eventon_list_event .mul_val .evcal_desc{padding-left: 90px;}
+    .ajde_evcal_calendar.minicarSlider.evosliderbox .eventon_events_list .eventon_list_event .mul_val.hasFtIMG .evcal_desc{padding-left: 160px;}
+    .ajde_evcal_calendar.minicarSlider.evosliderbox .eventon_events_list .eventon_list_event .evcal_event_subtitle{font-size: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .ajde_evcal_calendar.minicarSlider.evosliderbox .eventon_events_list .eventon_list_event{max-height: 100px; overflow: hidden;}
+    .ajde_evcal_calendar.minicarSlider.evosliderbox .eventon_events_list .eventon_list_event a.desc_trig{height: 100px;}
+    .ajde_evcal_calendar.minicarSlider .evosl_footer_outter{
+        position: absolute; top: 0; width: 100%;
+    }
+    .ajde_evcal_calendar.minicarSlider .evoAction{width: 100%;}
+    .ajde_evcal_calendar.minicarSlider .evoAction a{background-color: #fff}
+    .ajde_evcal_calendar.minicarSlider .evosl_footer{width: 100%;}
+    .evosliderbox.ajde_evcal_calendar.minicarSlider .eventon_events_list .eventon_list_event:before{z-index: 1;}
+
+/* RTL Syles */
+    .evoSlideOuter.evortl {
+        direction: rtl;
+    }
+    .evoSlideOuter .evoSlider, .evoSlideOuter .evoPager {
+        padding-left: 0;
+        list-style: none outside none;
+    }
+    .evoSlideOuter.evortl .evoSlider, .evoSlideOuter.evortl .evoPager {
+        padding-right: 0;
+    }
+    .evoSlideOuter .evoSlider > *,  .evoSlideOuter .evoGallery li {
+        float: left;
+    }
+    .evoSlideOuter.evortl .evoSlider > *,  .evoSlideOuter.evortl .evoGallery li {
+        float: right !important;
+    }
+    .evosliderbox.ajde_evcal_calendar.rtlslider {
+        text-align: right;
+    }
+    .evosliderbox.ajde_evcal_calendar.rtlslider .eventon_events_list .eventon_list_event .evcal_cblock {
+        padding: 50px 50px 0px 0px;
+        right: 0px;
+        text-align: right;
+    }
+    .evosliderbox.ajde_evcal_calendar.rtlslider .evcal_cblock .evo_date .start,
+    .rtlslider .eventon_events_list .eventon_list_event .evcal_cblock em.evo_day
+    .rtlslider .evcal_desc .evcal_desc3 em,
+    .rtlslider .evcal_desc .evcal_desc3 em
+    { float: right;}
+    .evosliderbox.ajde_evcal_calendar.rtlslider .evcal_cblock .evo_date .end {
+        float: right;
+        margin-right: 4px;
+        direction: rtl;
+    }
+    .rtlslider .evcal_desc .evcal_desc3 em,
+    .rtlslider .eventon_events_list .eventon_list_event .evcal_desc .evcal_location,
+    .evosliderbox.ajde_evcal_calendar.rtlslider .eventon_events_list .eventon_list_event .evcal_desc, #page-content p.evcal_desc,
+    .rtlslider .eventon_events_list .eventon_list_event .evcal_desc .evcal_location,
+    .rtlslider .evoSlideOuter .evoPager.evopg
+    { direction: rtl;}
+    .rtlslider .eventon_events_list .eventon_list_event .evcal_cblock em.evo_day {
+        float: right;
+        padding-left: 6px;
+    }
+    .rtlslider .eventon_events_list .eventon_list_event .evcal_desc .evcal_time::before {
+        right: 0;
+    }
+    .rtlslider .eventon_events_list .eventon_list_event .evcal_desc .evcal_location{
+        padding-right: 15px;
+        margin-left: 5px;
+    }
+    .rtlslider .evoPrev {
+        background-position: 0 0;
+        right: 10px;
+        /* Safari */
+        -webkit-transform: rotate(-180deg);
+        /* Firefox */
+        -moz-transform: rotate(-180deg);
+        /* IE */
+        -ms-transform: rotate(-180deg);
+        /* Opera */
+        -o-transform: rotate(-180deg);
+        left:inherit;
+    }
+    .rtlslider .evoNext {
+        background-position: 0 0;
+        left: 10px;
+        /* Safari */
+        -webkit-transform: rotate(-180deg);
+        /* Firefox */
+        -moz-transform: rotate(-180deg);
+        /* IE */
+        -ms-transform: rotate(-180deg);
+        /* Opera */
+        -o-transform: rotate(-180deg);
+        right:inherit;
+    }
+
+/* responsive styles */
+    @media only screen and (max-width: 650px) {
+        h1.evo_slide_title { font-size: 24px;  }
+        .evo_slide_loc-time-user p { font-size: 10px;  }
+        .evo_slide_loc-time-user p i.material-icons {
+            font-size: 12px;  top: 2px;
+        }
+        .evo_slide_button a {
+            margin-top: 4px;    font-size: 12px;
+        }
+        .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .hasFtIMG .evcal_desc{
+            padding: 15px 20px;
+        }
+        .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_desc {
+            padding: 20px 20px;
+        }
+        .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_cblock {
+            padding: 20px 0px 0px 20px;
+        }
+
+        /* mini carousel */
+            .evosliderbox.ajde_evcal_calendar.minicarSlider .eventon_events_list .eventon_list_event .evcal_cblock
+            {padding: 10px 0px 0px 10px; position: absolute;}
+            .minicarSlider.ajde_evcal_calendar .eventon_events_list .eventon_list_event .hasFtIMG .evcal_cblock{padding-left: 85px;}
+            .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .hasFtIMG .evcal_desc{
+                padding: 10px 15px;
+                margin: 0px;
+                padding-left: 130px;
+            }
+        
+        .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_desc span.evcal_desc2 {
+          font-size: 26px;
+        }
+        .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_desc .evcal_desc_info {
+          font-size: 10px;
+        }
+        .evo_slide_content {   padding: 10px 0px 0px 40px;  }
+        p.evo_slide_desc {    font-size: 10px;  }
+        p.evs_t1 {      font-size: 36px;  }
+        p.evs_t2 {      font-size: 22px;  }
+        p.evs_t3 {      font-size: 20px;  }
+        p.evs_t4 {      font-size: 12px;  }
+        .evo_date_holder.evos_top {    padding: 40px 0px 0px 40px;  }
+        .evosliderbox.ajde_evcal_calendar.rtlslider .eventon_events_list .eventon_list_event .evcal_cblock {
+            padding: 20px 20px 0px 0px;
+        }
+        .evosliderbox.ajde_evcal_calendar.rtlslider .eventon_events_list .eventon_list_event .evcal_desc{
+            padding: 20px;
+        }
+    }
+
+    @media only screen and (max-width: 479px) {
+        h1.evo_slide_title {font-size: 20px;  }
+        p.evs_t1 { font-size: 30px;  }
+        p.evs_t2 {font-size: 16px;  }
+        p.evs_t3 { font-size: 18px;  }
+        p.evs_t4 { font-size: 10px;  }
+        .evo_date_holder.evos_top {    padding: 30px 0px 0px 30px;  }
+        .evo_slide_content { padding: 10px 0px 0px 30px;  }
+        li.evo_slide_item { overflow: hidden;  }
+        .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_desc span.evcal_desc2 {
+          font-size: 20px;
+        }
+        .evosliderbox.ajde_evcal_calendar.multiSlider .eventon_events_list .eventon_list_event .evcal_desc{
+            margin: 0px 0px 40px 0px;
+        }
+        .evosliderbox.ajde_evcal_calendar.rtlslider .eventon_events_list .eventon_list_event .evcal_cblock {
+            padding: 20px 20px 0px 0px;
+        }
+        .evosliderbox.ajde_evcal_calendar.rtlslider .eventon_events_list .eventon_list_event .evcal_desc{
+            padding: 20px;
+        }
+    }
+
+    @media only screen and (max-width: 320px) {
+      .evo_date_holder.evos_top { padding: 30px 0px 0px 30px;  }
+      .evo_slide_content { padding: 10px 0px 0px 30px; }
+      h1.evo_slide_title { font-size: 14px; }
+      .evo_slide_button a {
+          margin-top: 4px;
+          font-size: 8px;
+      }
+      .evosliderbox.ajde_evcal_calendar .eventon_events_list .eventon_list_event .evcal_desc span.evcal_desc2{
+          font-size: 16px;
+      }
+      .evosliderbox.ajde_evcal_calendar.multiSlider .eventon_list_event .hasFtIMG .evcal_desc{
+          margin: 0px 0px 40px 0px;
+      }
+      .evosliderbox.ajde_evcal_calendar.multiSlider .eventon_events_list .eventon_list_event .evcal_desc{
+          margin: 0px 0px 40px 0px;
+      }
+      .evosliderbox.ajde_evcal_calendar.rtlslider .eventon_events_list .eventon_list_event .evcal_cblock {
+          padding: 20px 20px 0px 0px;
+      }
+      .evosliderbox.ajde_evcal_calendar.rtlslider .eventon_events_list .eventon_list_event .evcal_desc{
+          padding: 20px;
+      }
+    }
