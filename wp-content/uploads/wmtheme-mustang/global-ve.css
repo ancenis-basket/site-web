@@ -518,11 +518,11 @@
 		     url('../font/basic-icons/fontello.svg#fontello') format('svg');
 		 **/
 		
-		src: url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.eot');
-		src: url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.eot?#iefix') format('embedded-opentype'),
-		     url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.woff') format('woff'),
-		     url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.ttf') format('truetype'),
-		     url('//localhost/pab44/wp-content/themes/mustang/assets/font/basic-icons/fontello.svg#fontello') format('svg');
+		src: url('//localhost/paysdancenisbasket/wp-content/themes/mustang/assets/font/basic-icons/fontello.eot');
+		src: url('//localhost/paysdancenisbasket/wp-content/themes/mustang/assets/font/basic-icons/fontello.eot?#iefix') format('embedded-opentype'),
+		     url('//localhost/paysdancenisbasket/wp-content/themes/mustang/assets/font/basic-icons/fontello.woff') format('woff'),
+		     url('//localhost/paysdancenisbasket/wp-content/themes/mustang/assets/font/basic-icons/fontello.ttf') format('truetype'),
+		     url('//localhost/paysdancenisbasket/wp-content/themes/mustang/assets/font/basic-icons/fontello.svg#fontello') format('svg');
 		
 		font-weight: normal;
 		font-style: normal;
@@ -782,7 +782,7 @@
 			background-image: url('../img/lines.png');
 			 **/
 			
-			background-image: url('//localhost/pab44/wp-content/themes/mustang/assets/img/lines.png');
+			background-image: url('//localhost/paysdancenisbasket/wp-content/themes/mustang/assets/img/lines.png');
 			
 			background-repeat: repeat;
 			background-position: 0 -16px;
@@ -1669,7 +1669,7 @@
 			background: url('../img/gradient-bottom.png' );
 			 **/
 			
-			background: url('//localhost/pab44/wp-content/themes/mustang/assets/img/gradient-bottom.png');
+			background: url('//localhost/paysdancenisbasket/wp-content/themes/mustang/assets/img/gradient-bottom.png');
 			
 			background-repeat: repeat-x;
 			background-position: 0 100%;
@@ -4201,7 +4201,7 @@
 					background-image: url('../img/shadow-bottom.png');
 					 **/
 					
-					background-image: url('//localhost/pab44/wp-content/themes/mustang/assets/img/shadow-bottom.png');
+					background-image: url('//localhost/paysdancenisbasket/wp-content/themes/mustang/assets/img/shadow-bottom.png');
 					
 					background-repeat: no-repeat;
 					background-position: 50% 0;
