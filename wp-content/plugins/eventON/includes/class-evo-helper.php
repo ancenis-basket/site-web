@@ -3,8 +3,8 @@
  * Helper functions to be used by eventon or its addons
  * front-end only
  *
- * @version 0.5
- * @since  2.3.20
+ * @version 0.7
+ * @updated  2.5.6
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -27,8 +27,7 @@ class evo_helper{
 				$__post_content = !empty($_POST['post_content'])? $_POST['post_content']: 
 					(!empty($args['post_content'])?$args['post_content']:false);
 				$__post_content = ($__post_content)?
-			        	wpautop(convert_chars(stripslashes($__post_content))): 
-			        	'';
+			        	convert_chars(stripslashes($__post_content)): '';
 
 			    // author id
 			    $current_user = wp_get_current_user();
@@ -67,25 +66,43 @@ class evo_helper{
 		}
 
 	// ADMIN & Frontend Helper
+	// @updated 2.5.2
 		public function send_email($args){
 			$defaults = array(
 				'html'=>'yes',
 				'preview'=>'no',
+				'to'=>'',
+				'from'=>'',
+				'from_name'=>'','from_email'=>'',
+				'header'=>'',
+				'subject'=>'',
+				'message'=>'',
+				'type'=>'',// bcc
+				'attachments'=> array(),
+				'return_details'=>false
 			);
 			$args = array_merge($defaults, $args);
 
 			if($args['html']=='yes'){
-				add_filter('wp_mail_content_type',create_function('', 'return "text/html";'));
+				add_filter( 'wp_mail_content_type',array($this,'set_html_content_type'));
 			}
 
 			if(!empty($args['header'])){
 				$headers = $args['header'];
 			}else{
-				$headers[] = 'From: '.$args['from'];
-			}			
+				$headers = array();
+				if(empty($args['from_email'])){
+					$headers[] = 'From: '.$args['from'];
+				}else{
+					$headers[] = 'From: '.(!empty($args['from_name'])? $args['from_name']:'') .' <'.
+						$args['from_email'] . '>';
+				}
+			}	
+
+			$return = '';	
 
 			if($args['preview']=='yes'){
-				return array(
+				$return = array(
 					'to'=>$args['to'],
 					'subject'=>$args['subject'],
 					'message'=>$args['message'],
@@ -95,15 +112,39 @@ class evo_helper{
 			}else if(!empty($args['type']) && $args['type']=='bcc' ){
 				$bcc = (is_array($args['to']))? implode(',', $args['to']): $args['to'];
 				$headers[] = "Bcc: ".$bcc;
-				return wp_mail($args['from'], $args['subject'], $args['message'], $headers);	
+				$return = wp_mail($args['from'], $args['subject'], $args['message'], $headers, $args['attachments']);	
 			}else{
-				return wp_mail($args['to'], $args['subject'], $args['message'], $headers);
+				$return = wp_mail($args['to'], $args['subject'], $args['message'], $headers, $args['attachments']);
 			}
 
-			if($args['html']=='yes') remove_filter( 'wp_mail_content_type', array($this,'set_html_content_type') );
+			if($args['html']=='yes'){
+				remove_filter( 'wp_mail_content_type', array($this,'set_html_content_type') );
+			} 
+
+			if($args['return_details']){
+				// get the errors
+				$ts_mail_errors = array();
+				if(!$return){
+					global $ts_mail_errors;
+					global $phpmailer;
+
+					if (!isset($ts_mail_errors)) $ts_mail_errors = array();
+
+					if (isset($phpmailer)) {
+						$ts_mail_errors[] = $phpmailer->ErrorInfo;
+					}
+				}
+				return array('result'=>$return, 'error'=>$ts_mail_errors);
+			}else{
+				return $return;
+			}
+			
 		}
 		function set_html_content_type() {
 			return 'text/html';
+		}
+		function set_charset_type() {
+			return 'utf8';
 		}
 
 		// GET email body with eventon header and footer for email included
@@ -209,6 +250,22 @@ class evo_helper{
 		}
 		function echo_tooltips($content, $position=''){
 			$this->tooltips($content, $position='',true);
+		}
+
+	// template locator
+	// pass: paths array, file name, default template with full path and file
+		function template_locator($paths, $file, $template){
+			foreach($paths as $path){
+				if(file_exists($path.$file) ){	
+					$template = $path.$file;
+					break;
+				}
+			}				
+			if ( ! $template ) { 
+				$template = AJDE_EVCAL_PATH . '/templates/' . $file;
+			}
+
+			return $template;
 		}	
 
 }

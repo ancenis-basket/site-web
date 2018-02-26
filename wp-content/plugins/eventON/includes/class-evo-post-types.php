@@ -1,7 +1,5 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
-}
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
  * Post types
@@ -69,40 +67,42 @@ class EVO_post_types{
 		);
 
 		// Event type custom taxonomy NAMES
-		$event_type_names = evo_get_ettNames($evOpt);
+			$event_type_names = evo_get_ettNames($evOpt);
 
-		// for each activated event type category
-		for($x=1; $x<evo_get_ett_count($evOpt)+1; $x++){
-			$ab = ($x==1)? '':'_'.$x;
-			$ab2 = ($x==1)? '':'-'.$x;
-			$evt_name = $event_type_names[$x];
+			// for each activated event type category
+			for($x=1; $x<=evo_get_ett_count($evOpt); $x++){
+				$ab = ($x==1)? '':'_'.$x;
+				$ab2 = ($x==1)? '':'-'.$x;
+				$evt_name = $event_type_names[$x];
 
-			register_taxonomy( 'event_type'.$ab, 
-				apply_filters( 'eventon_taxonomy_objects_event_type'.$ab, array('ajde_events') ),
-				apply_filters( 'eventon_taxonomy_args_event_type'.$ab, array(
-					'hierarchical' => true, 
-					'labels' => array(
-		                    'name' 				=> __( "$evt_name Categories", 'eventon' ),
-		                    'singular_name' 	=> __( "$evt_name Category", 'eventon' ),
-							'menu_name'			=> _x( $evt_name, 'Admin menu name', 'eventon' ),
-		                    'search_items' 		=> __( "Search {$evt_name} Categories", 'eventon' ),
-		                    'all_items' 		=> __( "All {$evt_name} Categories", 'eventon' ),
-		                    'parent_item' 		=> __( "Parent {$evt_name} Category", 'eventon' ),
-		                    'parent_item_colon' => __( "Parent {$evt_name} Category:", 'eventon' ),
-		                    'edit_item' 		=> __( "Edit {$evt_name} Category", 'eventon' ),
-		                    'update_item' 		=> __( "Update {$evt_name} Category", 'eventon' ),
-		                    'add_new_item' 		=> __( "Add New {$evt_name} Category", 'eventon' ),
-		                    'new_item_name' 	=> __( "New {$evt_name} Category Name", 'eventon' )
-		            	),
-					'show_ui' => true,
-					'query_var' => true,
-					'capabilities'			=> $__capabilities,
-					'rewrite' => array( 'slug' => 'event-type'.$ab2 ) 
-				)) 
-			);
-		}
+				register_taxonomy( 'event_type'.$ab, 
+					apply_filters( 'eventon_taxonomy_objects_event_type'.$ab, array('ajde_events') ),
+					apply_filters( 'eventon_taxonomy_args_event_type'.$ab, array(
+						'hierarchical' => true, 
+						'labels' => array(
+			                    'name' 				=> __( "$evt_name Categories", 'eventon' ),
+			                    'singular_name' 	=> __( "$evt_name Category", 'eventon' ),
+								'menu_name'			=> _x( $evt_name, 'Admin menu name', 'eventon' ),
+			                    'search_items' 		=> __( "Search {$evt_name} Categories", 'eventon' ),
+			                    'all_items' 		=> __( "All {$evt_name} Categories", 'eventon' ),
+			                    'parent_item' 		=> __( "Parent {$evt_name} Category", 'eventon' ),
+			                    'parent_item_colon' => __( "Parent {$evt_name} Category:", 'eventon' ),
+			                    'edit_item' 		=> __( "Edit {$evt_name} Category", 'eventon' ),
+			                    'update_item' 		=> __( "Update {$evt_name} Category", 'eventon' ),
+			                    'add_new_item' 		=> __( "Add New {$evt_name} Category", 'eventon' ),
+			                    'new_item_name' 	=> __( "New {$evt_name} Category Name", 'eventon' )
+			            	),
+						'show_ui' => true,
+						'query_var' => true,
+						'capabilities'			=> $__capabilities,
+						'rewrite' => array( 'slug' => 'event-type'.$ab2 ) 
+					)) 
+				);
+			}
 	}
 	
+
+
 	/** Register core post types */
 	public static function register_post_types() {
 		if ( post_type_exists('ajde_events') )
@@ -114,11 +114,14 @@ class EVO_post_types{
 		$evOpt = self::$evOpt;
 		$event_slug = (!empty($evOpt['evo_event_slug']))? $evOpt['evo_event_slug']: 'events';
 		
+		$sin_name = (!empty($evOpt['evo_textstr_sin']))? $evOpt['evo_textstr_sin']: __('Event','eventon');
+		$plu_name = (!empty($evOpt['evo_textstr_plu']))? $evOpt['evo_textstr_plu']: __('Events','eventon');
+
 		register_post_type('ajde_events', 
 			apply_filters( 'eventon_register_post_type_ajde_events',
 				array(
 					'labels' => array(
-							'name'                  => __( 'Events', 'eventon' ),
+						/*'name'                  => __( 'Events', 'eventon' ),
 							'singular_name'         => __( 'Event', 'eventon' ),
 							'menu_name'             => _x( 'Events', 'Admin menu name', 'eventon' ),
 							'add_new'               => __( 'Add Event', 'eventon' ),
@@ -141,7 +144,31 @@ class EVO_post_types{
 							'filter_items_list'     => __( 'Filter Events', 'eventon' ),
 							'items_list_navigation' => __( 'Events navigation', 'eventon' ),
 							'items_list'            => __( 'Events list', 'eventon' ),
-						),
+						*/
+						'name'                  => $plu_name,
+						'singular_name'         => $sin_name,
+						'menu_name'             => $plu_name,
+						'add_new'               => __( 'Add','eventon').' '. $sin_name,
+						'add_new_item'          => __( 'Add New','eventon').' '.$sin_name,
+						'edit'                  => __( 'Edit', 'eventon' ),
+						'edit_item'             => __( 'Edit','eventon').' '.$sin_name,
+						'new_item'              => __( 'New','eventon').' '.$sin_name,
+						'view'                  => __( 'View','eventon').' '.$sin_name,
+						'view_item'             => __( 'View','eventon').' '.$sin_name,
+						'search_items'          => __( 'Search '.$plu_name, 'eventon' ),
+						'not_found'             => __( 'No '.$plu_name.' found', 'eventon' ),
+						'not_found_in_trash'    => __( 'No '.$plu_name.' found in trash', 'eventon' ),
+						'parent'                => __( 'Parent '.$sin_name, 'eventon' ),
+						'featured_image'        => __( $sin_name.' Image', 'eventon' ),
+						'set_featured_image'    => __( 'Set '.$sin_name.' image', 'eventon' ),
+						'remove_featured_image' => __( 'Remove '.$sin_name.' image', 'eventon' ),
+						'use_featured_image'    => __( 'Use as '.$sin_name.' image', 'eventon' ),
+						'insert_into_item'      => __( 'Insert into '.$sin_name, 'eventon' ),
+						'uploaded_to_this_item' => __( 'Uploaded to this '.$sin_name, 'eventon' ),
+						'filter_items_list'     => __( 'Filter '.$plu_name, 'eventon' ),
+						'items_list_navigation' => __( $plu_name.' navigation', 'eventon' ),
+						'items_list'            => __( $plu_name.' list', 'eventon' ),
+					),
 					'description' 			=> __( 'This is where you can add new events to your calendar.', 'eventon' ),
 					'public' 				=> true,
 					'show_ui' 				=> true,
@@ -150,7 +177,8 @@ class EVO_post_types{
 					'publicly_queryable' 	=> true,
 					'hierarchical' 			=> false,
 					'rewrite' 				=> apply_filters('eventon_event_slug', array(
-						'slug'=>$event_slug)),
+						'slug'=>$event_slug
+					)),
 					'query_var'		 		=> true,
 					'supports' 				=> apply_filters('eventon_event_post_supports', array('title','author', 'editor','custom-fields','thumbnail','page-attributes','comments')),
 					//'supports' 			=> array('title','editor','thumbnail','page-attributes'),

@@ -6,6 +6,9 @@ jQuery(document).ready(function($){
 	var date_format = $('#evcal_dates').attr('date_format');
 	var time_format = ($('body').find('input[name=_evo_time_format]').val()=='24h')? 'H:i':'h:i:A';
 
+	// select2
+		//$('.evo_select_field_select2').select2();
+
 	// meta box sections
 	// click hide and show
 		$('#evo_mb').on('click','.evomb_header',function(){			
@@ -29,6 +32,8 @@ jQuery(document).ready(function($){
 			});		
 			$('#evo_collapse_meta_boxes').val(box_ids);
 		}
+
+	
 	
 	// location picker
 		$('#evcal_location_field').on('change',function(){
@@ -97,43 +102,7 @@ jQuery(document).ready(function($){
 				}
 		});
 
-	//makeInputSelect("evcal_location_field");
-		function makeInputSelect(id) {
-		    var $sel = $("#" + id);
-		    var $inp = $("#" + id + "_Other");
-		    var selW = $sel.width();
-		    var selH = $sel.height();
-		    var selOff = $sel.offset();
-		    $inp.width(selW);
-		    //
-		    $sel.click(function(event) {
-		        if(event.which <= 1) { //left click
-		            var offX = event.pageX - selOff.left;
-		            var offY = event.pageY - selOff.top;
-		            if(offX < $sel.width() - 22 && offY < selH) { // input
-		                $sel.hide();
-		                $inp.show().focus();
-		            }
-		        }
-		    });
-		    $sel.change(function() {
-		        $inp.val($sel.val());
-		    });
-		    $inp.blur(function() {
-		        // remove selected attribute
-		        $sel.find("option:selected").attr("selected",false);
-		        // remove old user input option
-		        $sel.find("option[frominput=1]").remove();
-		        // add and select a new user input option
-		        $sel.append($("<option />").val($inp.val()).text($inp.val()).attr("frominput", 1).attr("selected", true));
-		        $inp.hide();
-		        $sel.show();        
-		    });
-		    //
-		    $sel.after($inp);
-		    $inp.hide();
-		}
-		
+	
 	/** COLOR picker **/	
 		$('#color_selector').ColorPicker({		
 			color: get_default_set_color(),
@@ -255,6 +224,8 @@ jQuery(document).ready(function($){
 		// frequency
 		$('#evcal_rep_freq').change(function(){
 			var field = $(this).find("option:selected").attr('field');
+			$('.repeat_section_extra').hide();
+			$('.evo_preset_repeat_settings').show();
 
 			// monthly
 			if(field =='months'){
@@ -262,21 +233,29 @@ jQuery(document).ready(function($){
 
 				// show or hide day of week
 				var field_x = $('#evo_rep_by').find("option:selected").attr('value');
-				if(field_x=='dow'){
-					$('.evo_rep_month_2').show();
-				}else{
-					$('.evo_rep_month_2').hide();
-				}
-				$('.evo_preset_repeat_settings').show();
+				var condition = (field_x=='dow');
+				$('.repeat_monthly_modes').toggle(condition);
+												
 				$('.repeat_information').hide();
-			// custom repeating patterns
-			}else if(field=='custom'){
+				$('.repeat_monthly_only').show();
+			
+			}else if(field =='weeks'){
+				$('.evo_rep_week').show();
+
+				// show or hide day of week
+				var field_x = $('#evo_rep_by_wk').find("option:selected").attr('value');
+				var condition = (field_x=='dow');
+				$('.evo_rep_week_dow').toggle(condition);
+				
+				$('.repeat_information').hide();
+				$('.repeat_weekly_only').show();
+			
+			}else if(field=='custom'){// custom repeating patterns
 				$('.evo_preset_repeat_settings').hide();
 				$('.repeat_information').show();
 			}else{
 				$('.evo_rep_month').hide();
-				$('.evo_rep_month_2').hide();
-				$('.evo_preset_repeat_settings').show();
+				$('.repeat_monthly_modes').hide();
 				$('.repeat_information').hide();
 			}
 			$('#evcal_re').html(field);
@@ -291,8 +270,9 @@ jQuery(document).ready(function($){
 				'timeFormat':time_format
 			});
 
-		// adding a new repeat interval
+		// adding a new custom repeat interval
 		// @since 2.2.24
+		// @updated 2.5.3
 			$('#evo_add_repeat_interval').on('click',function(){
 				var obj = $('.evo_repeat_interval_new');
 
@@ -306,8 +286,13 @@ jQuery(document).ready(function($){
 						obj.find('.rietD').val() &&
 						obj.find('.rietT').val() 
 					){		
-						count = $('.evo_custom_repeat_list').find('li').length;		
-						var html = '<li class="new"><span>from</span>'+obj.find('.ristD').val()+' '+obj.find('.ristT').val()+' <span class="e">End</span> '+obj.find('.rietD').val()+' '+obj.find('.rietT').val()+'<em alt="Delete">x</em><input type="hidden" name="repeat_intervals['+count+'][0]" value="'+obj.find('.ristD').val()+' '+obj.find('.ristT').val()+'"/><input type="hidden" name="repeat_intervals['+count+'][1]" value="'+obj.find('.rietD').val()+' '+obj.find('.rietT').val()+'"/><input type="hidden" name="repeat_intervals['+count+'][type]" value="dates"></li>';
+						if($('ul.evo_custom_repeat_list').find('li').length > 0){
+							count = parseInt($('ul.evo_custom_repeat_list li:last-child').data('cnt'))+1;	
+						}else{
+							count = 1;
+						}
+
+						var html = '<li data-cnt="'+count+'" class="new"><span>from</span>'+obj.find('.ristD').val()+' '+obj.find('.ristT').val()+' <span class="e">End</span> '+obj.find('.rietD').val()+' '+obj.find('.rietT').val()+'<em alt="Delete">x</em><input type="hidden" name="repeat_intervals['+count+'][0]" value="'+obj.find('.ristD').val()+' '+obj.find('.ristT').val()+'"/><input type="hidden" name="repeat_intervals['+count+'][1]" value="'+obj.find('.rietD').val()+' '+obj.find('.rietT').val()+'"/><input type="hidden" name="repeat_intervals['+count+'][type]" value="dates"></li>';
 
 						$('ul.evo_custom_repeat_list').append(html);
 						obj.find('input').val('');
@@ -319,8 +304,9 @@ jQuery(document).ready(function($){
 
 		// delete a repeat interval
 			$('.evo_custom_repeat_list').on('click','li em',function(){
-				$(this).parent().slideUp(function(){
-					$(this).remove();
+				LI = $(this).closest('li');
+				LI.slideUp(function(){
+					LI.remove();
 				});
 			});
 
@@ -337,15 +323,12 @@ jQuery(document).ready(function($){
 
 		// repeat by value from select field
 		// show correct info based on this selection
-		$('#evo_rep_by').change(function(){
+		$('select.repeat_mode_selection').on('change',function(){
 			var field = $(this).find("option:selected").attr('value');
-			if(field=='dow'){
-				$('.evo_rep_month_2').show();
-				//$('.evo_month_rep_value').html().show();
-			}else{
-				$('.evo_rep_month_2').hide();
-			}	
+			var condition = (field=='dow');
+			$(this).parent().siblings('.repeat_modes').toggle(condition);
 		});
+		
 		
 	// end time hide or not
 		$('#evo_endtime').click(function(){
@@ -393,5 +376,24 @@ jQuery(document).ready(function($){
 	      	}
 		});
 
+	// update event post meta data on real time
+		$('body').on('evo_update_event_metadata',function(event, eid, values, evomb_body){
+			var ajaxdataa_ = {};
+			ajaxdataa_['action']='eventon_eventpost_update_meta';
+			ajaxdataa_['eid'] = eid;
+			ajaxdataa_['values'] = values;
+
+			$.ajax({
+				beforeSend: function(){ 
+					evomb_body.addClass( 'loading');
+				},
+				url:	the_ajax_script.ajaxurl,
+				data: 	ajaxdataa_,	dataType:'json', type: 	'POST',
+				success:function(data){},
+				complete:function(){ 				
+					evomb_body.removeClass( 'loading');
+				}
+			});
+		});
 	
 });

@@ -106,7 +106,7 @@ class evo_cal_help {
 
 				// each saved order item
 				foreach($correct_order as $box){
-					if(array_key_exists($box, $array) 
+					if(is_array($array) && array_key_exists($box, $array) 
 						&& (!empty($evoCard_hide) && !in_array($box, $evoCard_hide) || empty($evoCard_hide)) 
 					){
 						$new_array[$box]=$array[$box];
@@ -115,7 +115,7 @@ class evo_cal_help {
 			}else{
 				$new_array = $array;
 			}	
-			return $new_array;
+			return apply_filters('evo_eventcard_array_after_sorted', $new_array, $array);
 		}
 
 	// get repeating intervals for the event

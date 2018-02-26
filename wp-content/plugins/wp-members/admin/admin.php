@@ -6,17 +6,16 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2016  Chad Butler
+ * Copyright (c) 2006-2017  Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
  * @package WP-Members
  * @author Chad Butler
- * @copyright 2006-2016
+ * @copyright 2006-2017
  *
  * Functions included:
  * - wpmem_a_do_field_reorder
  * - wpmem_admin_plugin_links
- * - wpmem_load_admin_js
  * - wpmem_a_captcha_tab
  * - wpmem_add_captcha_tab
  * - wpmem_admin
@@ -27,32 +26,10 @@
  * - wpmem_admin_enqueue_scripts
  */
 
-
-/** 
- * Actions and Filters
- */
-add_action( 'admin_enqueue_scripts',         'wpmem_admin_enqueue_scripts' );
-add_action( 'wpmem_admin_do_tab',            'wpmem_admin_do_tab' );
-add_action( 'wp_ajax_wpmem_a_field_reorder', 'wpmem_a_do_field_reorder' );
-add_action( 'user_new_form',                 'wpmem_admin_add_new_user' );
-add_filter( 'plugin_action_links',           'wpmem_admin_plugin_links', 10, 2 );
-
-
-/**
- * Calls the function to reorder fields.
- *
- * @since 2.8.0
- */
-function wpmem_a_do_field_reorder() {
-	/**
-	 * Load the fields tab functions.
-	 */
-	include_once( WPMEM_PATH . 'admin/tab-fields.php' );
-
-	// Reorder registration fields.
-	wpmem_a_field_reorder();
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit();
 }
-
 
 /**
  * Filter to add link to settings from plugin panel.
@@ -73,20 +50,6 @@ function wpmem_admin_plugin_links( $links, $file ) {
 		$links = array_merge( array( $settings_link ), $links );
 	}
 	return $links;
-}
-
-
-/**
- * Loads the admin javascript and css files.
- *
- * @since 2.5.1
- * @deprecated 3.0.6 Replaced by wpmem_admin_enqueue_scripts().
- */
-function wpmem_load_admin_js() {
-	wpmem_write_log( "wpmem_load_admin_js() is deprecated as of WP-Members 3.0.6" );
-	// Queue up admin ajax and styles.
-	wp_enqueue_script( 'wpmem-admin-js',  WPMEM_DIR . 'admin/js/admin.js',   '', WPMEM_VERSION );
-	wp_enqueue_style ( 'wpmem-admin-css', WPMEM_DIR . 'admin/css/admin.css', '', WPMEM_VERSION );
 }
 
 
@@ -130,20 +93,24 @@ function wpmem_add_captcha_tab( $tabs ) {
  */
 function wpmem_admin() {
 
-	$did_update = ( isset( $_POST['wpmem_admin_a'] ) ) ? wpmem_admin_action( $_POST['wpmem_admin_a'] ) : false;
+	$did_update = ( isset( $_POST['wpmem_admin_a'] ) ) ? wpmem_admin_action( sanitize_text_field( $_POST['wpmem_admin_a'] ) ) : false;
 
 	global $wpmem;
 
 	if ( $wpmem->captcha ) {
-		add_filter( 'wpmem_admin_tabs', 'wpmem_add_captcha_tab' );
+		add_filter( 'wpmem_admin_tabs',   'wpmem_add_captcha_tab' );
 		add_action( 'wpmem_admin_do_tab', 'wpmem_a_captcha_tab', 1, 1 );
+	}
+	if ( $wpmem->dropins ) {
+		add_filter( 'wpmem_admin_tabs',   'wpmem_add_dropins_tab'          );
+		add_action( 'wpmem_admin_do_tab', 'wpmem_render_dropins_tab', 1, 1 );
 	} ?>
 
 	<div class="wrap">
 		<?php screen_icon( 'options-general' ); ?>
 		<!--<h2>WP-Members <?php _e('Settings', 'wp-members'); ?></h2>-->
 		<?php 
-		$tab = ( isset( $_GET['tab'] ) ) ? $_GET['tab'] : 'options';
+		$tab = ( isset( $_GET['tab'] ) ) ? sanitize_text_field( $_GET['tab'] ) : 'options';
 
 		// Render the tab being displayed.
 		$wpmem->admin->do_tabs( $tab );
@@ -187,9 +154,6 @@ function wpmem_admin_do_tab( $tab ) {
 
 	case 'options' :
 		wpmem_a_build_options();
-		break;
-	case 'fields' :
-		wpmem_a_build_fields();
 		break;
 	case 'dialogs' :
 		wpmem_a_build_dialogs();
@@ -237,12 +201,6 @@ function wpmem_admin_action( $action ) {
 		$did_update = ( 'update_cpts' == $action ) ? wpmem_update_cpts() : wpmem_update_options();
 		break;
 
-	case 'update_fields':
-	case 'add_field': 
-	case 'edit_field':
-		$did_update = wpmem_update_fields( $action );
-		break;
-
 	case 'update_dialogs':
 		$did_update = wpmem_update_dialogs();
 		break;
@@ -266,10 +224,6 @@ function wpmem_admin_action( $action ) {
  * @since 2.9.1
  */
 function wpmem_admin_add_new_user() {
-	/**
-	 * Load WP native registration functions.
-	 */
-	include_once( WPMEM_PATH . 'inc/wp-registration.php' );
 	// Output the custom registration fields.
 	echo wpmem_do_wp_newuser_form();
 	return;
@@ -282,10 +236,12 @@ function wpmem_admin_add_new_user() {
  * Only loads the js and css on admin screens that use them.
  *
  * @since 3.0.6
+ * @deprecated 3.1.7 Use wpmem_dashboard_enqueue_scripts() instead.
  *
  * @param str $hook The admin screen hook being loaded.
  */
 function wpmem_admin_enqueue_scripts( $hook ) {
+	wpmem_write_log( "wpmem_admin_enqueue_scripts() is deprecated as of WP-Members 3.1.7. Use wpmem_dashboard_enqueue_scripts() instead" );
 	if ( $hook == 'edit.php' || $hook == 'settings_page_wpmem-settings' ) {
 		wp_enqueue_style( 'wpmem-admin', WPMEM_DIR . 'admin/css/admin.css', '', WPMEM_VERSION );
 	}

@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: WP-Members
-Plugin URI:  http://rocketgeek.com
+Plugin URI:  https://rocketgeek.com
 Description: WP access restriction and user registration.  For more information on plugin features, refer to <a href="http://rocketgeek.com/plugins/wp-members/users-guide/">the online Users Guide</a>. A <a href="http://rocketgeek.com/plugins/wp-members/quick-start-guide/">Quick Start Guide</a> is also available. WP-Members(tm) is a trademark of butlerblog.com.
-Version:     3.1.6.3
+Version:     3.1.9.3
 Author:      Chad Butler
 Author URI:  http://butlerblog.com/
 Text Domain: wp-members
@@ -13,7 +13,7 @@ License:     GPLv2
 
 
 /*  
-	Copyright (c) 2006-2016  Chad Butler
+	Copyright (c) 2006-2017  Chad Butler
 
 	The name WP-Members(tm) is a trademark of butlerblog.com
 
@@ -51,7 +51,7 @@ License:     GPLv2
 	derivative work you are developing complies with the license, copyright, 
 	trademark, or if you do not understand the difference between
 	open source and public domain, contact the original author at:
-	http://rocketgeek.com/contact/.
+	https://rocketgeek.com/contact/.
 
 
 	INSTALLATION PROCEDURE:
@@ -60,9 +60,13 @@ License:     GPLv2
 	visit http://rocketgeek.com
 */
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit();
+}
 
 // Initialize constants.
-define( 'WPMEM_VERSION', '3.1.6.3' );
+define( 'WPMEM_VERSION', '3.1.9.3' );
 define( 'WPMEM_DEBUG', false );
 define( 'WPMEM_DIR',  plugin_dir_url ( __FILE__ ) );
 define( 'WPMEM_PATH', plugin_dir_path( __FILE__ ) );
@@ -119,47 +123,6 @@ function wpmem_init() {
 	 * @since 2.9.0
 	 */
 	do_action( 'wpmem_after_init' );
-}
-
-
-/**
- * Scripts for admin panels.
- *
- * Determines which scripts to load and actions to use based on the 
- * current users capabilities.
- *
- * @since 2.5.2
- * @since 3.1.0 Added admin api object.
- *
- * @global object $wpmem WP_Members object class.
- */
-function wpmem_chk_admin() {
-
-	global $wpmem;
-
-	/**
-	 * Fires before initialization of admin options.
-	 *
-	 * @since 2.9.0
-	 */
-	do_action( 'wpmem_pre_admin_init' );
-
-	/**
-	 * Load the admin api class.
-	 *
-	 * @since 3.1
-	 */	
-	include_once( WPMEM_PATH . 'admin/includes/class-wp-members-admin-api.php' );
-	
-	// Initilize the admin api.
-	$wpmem->load_admin_api();
-
-	/**
-	 * Fires after initialization of admin options.
-	 *
-	 * @since 2.9.0
-	 */
-	do_action( 'wpmem_after_admin_init' );
 }
 
 

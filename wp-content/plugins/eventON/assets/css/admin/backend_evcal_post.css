@@ -6,39 +6,7 @@
 /* hide location and organizer tag boxes */
 	#tagsdiv-event_location, #tagsdiv-event_organizer{display: none;}
 
-/* buttons within black boxes */
-	.eventon_mb .actions a.button_evo, a.button_evo{
-		background: none;
-		border:none;
-		cursor: pointer;
-		display: inline-block;
-		color: #fff;
-		border:1px solid #A5A5A5;
-		border-radius:4px;
-		padding: 6px 8px 6px 6px;
-		margin-right: 5px;
-		text-decoration: none;
-	}
-	.eventon_mb .actions a.button_evo:before{		
-		display: inline-block;
-		min-width: 20px;
-		height: 20px;
-		font-size: 20px;
-		line-height: 1;
-		font-family: dashicons;
-		text-decoration: inherit;
-		font-weight: 400;
-		font-style: normal;
-		vertical-align: top;
-		text-align: center;
-		-webkit-transition: color .1s ease-in 0;
-		transition: color .1s ease-in 0;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-		color:#fff;	
-		text-decoration: none;
-	}
-	.eventon_mb .actions a.button_evo:hover, a.button_evo:hover{	background-color:#919191;}	
+/* buttons within black boxes */	
 	.evomb_body p.yesno_row{display: block;}
 
 /** EVENT COLOR **/
@@ -130,13 +98,15 @@
 	}
 
 /* event start end dates */
+	.evo_start_event.evo_datetimes, .evo_end_event.evo_datetimes{margin-bottom: 20px;}
 	.evo_datetime_frontendview{		
-	    background-color: #656464;
+	    background-color: #f1f1f1;
 	    padding: 8px;
 	    font-style: italic;
 	    border-radius: 5px;
 	    color: #c5c0b9;
 	}
+
 	#ui-datepicker-div{
 		border-radius: 0px;
 		border: none;
@@ -147,30 +117,48 @@
 	.ui-datepicker-calendar .ui-state-default{background: #e6e6e6;	}
 	.ui-datepicker-calendar .ui-state-default.ui-state-highlight{background: #fbf9ee;	}
 
-	.evo_datetimes p, .evd p{color:white}
+	.evo_datetimes p.evo_event_time_label{font-size: 16px;}
+	.evo_datetimes p, .evd p{color:#5a5a5a}
 	.evo_datetimes p{margin-bottom:4px;}
 	.evo_datetimes span{
 		font-style:italic; color:#b4b0b0}
 	#evcal_dates, .evcal_row_dark{
-		background-color:#7b7a7a;
+		background-color:#f9f9f9;
 		padding:20px;
 		position:relative;
 		margin:-15px -22px
 	}
+	#evo_mb .evo_datetimes input.evcal_data_picker, #evo_mb .evo_datetimes .evcal_date_select
+	{font-style: normal;}
 
-	input.evcal_data_picker, .evcalr_2_p input, #evcal_eventb_ev_id{
-		-moz-box-shadow: 0px 2px #686767;
-		-webkit-box-shadow: 0px 2px #686767;
-		box-shadow: 0px 2px #686767;
-		background-color:#fff;
-		border:none; border-radius:0;
-		height:30px;
-		width:165px;
-		font-size:14px;
-		padding:0 8px 3px; margin:0;
-		display:block;
+	#evo_mb .evo_datetimes .evcal_date_select, 
+	#evo_mb .evcal_date_time .evcal_select.evcal_ampm_sel select,
+	#evo_mb .evo_datetimes input.evcal_data_picker{
+		height:auto;
+		font-size:20px; font-weight: bold;
+		line-height:26px;
+		color:#717171;
 		cursor:pointer;
-		color:#7a7a7a
+		margin:0;
+		border:none;
+		background:transparent;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		padding:10px;
+		width: auto;
+		background-color: #f9d29f;
+		box-shadow:none;
+	}
+	#evo_mb .evo_datetimes .evcal_date_select:hover, 
+	#evo_mb .evcal_date_time .evcal_select.evcal_ampm_sel select:hover,
+	#evo_mb .evo_datetimes input.evcal_data_picker:hover{opacity: 0.6;}
+	#evo_mb .evo_datetimes input.evcal_data_picker{
+		width: 165px;
+		background-color: #f5c485;color:#fff;
+	}
+	#evo_mb .evcal_date_time .evcal_select.evcal_ampm_sel select{
+		color:#585858;
+		background-color: #ffebd1
 	}
 	.evcalr_2_p input{
 		display:inline-block;
@@ -183,48 +171,11 @@
 		float:left;
 		width:180px;
 	}
-	.evcal_date_time{
-		padding-top:15px;
-		float:left; width:175px;
-	}
-	.evcal_date_time .evcal_select{
-		background:#fff;
-		-moz-box-shadow: 0px 2px #686767;
-		-webkit-box-shadow: 0px 2px #686767;
-		box-shadow: 0px 2px #686767;
-		display:inline-block;
-		border-radius: 4px
-
-	}
-
-	.evcal_date_time .evcal_select:hover{
-		-moz-box-shadow: 0px 1px 0px #363636;
-		-webkit-box-shadow: 0px 1px 0px #363636;
-		box-shadow: 0px 1px 0px #363636;
-	}
-	.evcal_date_time .evcal_select select{
-		height:30px;
-		font-size:20px;
-		line-height:26px;
-		color:#afafaf;
-		cursor:pointer;
-		margin:0;
-		border:none;
-		background:transparent;
-		-webkit-appearance: none;
-		-moz-appearance: none;
-		padding:0 5px;
-		width: auto;
-	}
-	.evcal_date_time .evcal_select.evcal_ampm_sel select{color:#585858;}
+	.evcal_date_time{float:left; width:175px;}
+	.evcal_date_time .evcal_select{	display:inline-block;	}	
 	.evcal_date_time .evcal_select select:hover{
 		color:black
 	}
-	.evcal_date_time .evcal_select.evcal_ampm_sel{
-		background-color:#b5b5b5;
-		background-image:none
-	}
-
 
 	.evcal_data_block_style1{
 		position:relative;
@@ -243,6 +194,21 @@
 	}
 	.evcal_data_block_style1 .evcal_metaf_icon{height:36px; width:28px; margin-top:6px;}
 
+/* multi data types */
+	.evomdt_selection li{
+		display: inline-block; 
+		margin-right: 5px;
+		padding: 5px 10px;
+		border-radius: 5px;
+		background-color: #3d3d3d;
+		color:#eaeaea;
+	}
+	.evomdt_selection li i{
+		cursor: pointer;
+		margin-left: 8px;
+		opacity: 0.5;
+	}
+	.evomdt_selection li i:hover{opacity: 1;}
 /* event post specific settngs */
 	.evo_event_opts label{
 		padding-top: 4px;
@@ -260,13 +226,13 @@
 		height:21px; width:28px;
 		display:block; float:left; margin:0 5px 0 0;
 	}
-	.evcal_db_uis{margin-bottom:-15px;}
+	.evcal_db_uis{margin-bottom:-15px; margin-top: -15px;}
 	.evcal_db_ui_0{	background-image:url(../../images/admin/useri_000.png);}
 	.evcal_db_ui_1{	background-image:url(../../images/admin/useri_001.png);}
 	.evcal_db_ui_2{	background-image:url(../../images/admin/useri_002.png);}
 	.evcal_db_ui_3{	background-image:url(../../images/admin/useri_003.png);}
 	.evcal_db_ui_4{	background-image:url(../../images/admin/useri_004.png);}
-	.evcal_db_uis .evcal_db_ui.selected{border-color:#dfa872}
+	.evcal_db_uis .evcal_db_ui.selected{border-color:#dfa872; background-color: #f9d29f}
 	.evcal_db_ui:hover{border-color:#f2d7bc}
 	.evcal_db_ui:focus{outline:none;}
 	.evcal_db_ui{	
@@ -320,9 +286,9 @@
 
 /*-- recurring events --*/
 	#evcal_rep, .evcal_rep, .evo_dark_metabox_darker{
-		border-top: 3px solid #666565;
-		background: #706f6f;
-		margin:015px -25px -14px;
+		border-top: 3px solid #e0e0e0;
+		background: #efefef;
+		margin:15px -25px -14px;
 	}
 	.evcalr_1 .yesno_leg_line label{
 		text-transform:uppercase;
@@ -332,7 +298,7 @@
 	.evomb_body .eventon_ev_post_set_line{
 		margin:0;
 		padding:0;
-		border-top:1px solid #626161;
+		border-top:1px solid #cecece;
 	}
 
 	
@@ -344,7 +310,6 @@
 	}
 	#evcal_rep .evcalr_2_p{
 		margin:15px 0;
-		color:#ebebeb;
 		font:12px arial;
 	}
 	.evcalr_2_p em{
@@ -372,21 +337,23 @@
 	.evcalr_2 select, .evcalr_2 input{border-radius:4px;}
 
 	/* @since 2.2.24 */
-	.evo_custom_repeat_list{
+	ul.evo_custom_repeat_list{
+		color:#fff;
 		list-style-type: none;
-		background-color: #7a7a7a;
+		background-color: #8e8e8e;
 		border-radius: 5px;
 		overflow: hidden;
-		border:1px solid #929292;
+		border:none
 	}
 	.evo_custom_repeat_list li:hover{
-		background-color: #8C8C8C
+		background-color: #9e9e9e
 	}
 	.evo_custom_repeat_list li{
-		border-bottom: 1px solid #929292;
+		border-bottom: 1px solid #a7a7a7;
 		margin: 0;
 		padding: 7px 8px;
 	}
+	.evo_custom_repeat_list li.initial{background-color: #676666}
 	.evo_custom_repeat_list li.new{
 		border-left:3px solid #E0B17C;
 	}
@@ -399,23 +366,36 @@
 	}
 	.evo_custom_repeat_list li em{
 		float: right;
-		font-style: normal;
-		text-transform: uppercase;
-		opacity: 0.4;
-		cursor: pointer;
+	    font-style: normal;
+	    text-transform: uppercase;
+	    opacity: 0.4;
+	    cursor: pointer;
+	    border: 1px solid #fff;
+	    border-radius: 50%;
+	    width: 20px;
+	    text-align: center;
+	    box-sizing: border-box;
+	    -webkit-box-sizing: border-box;
+	    font-size: 12px;
+	    height: 20px;
+	    line-height: 18px;
 	}
-	.evo_custom_repeat_list li em:hover{opacity: 1}
+	.evo_custom_repeat_list li em:hover{opacity: 1; color:#3d3d3d; background-color: #fff}
+	.evo_custom_repeat_list li dd{ 
+		display: inline-block;
+	    margin: 0px;
+	    text-transform: uppercase;
+	    background-color: #f9d29f;
+	    padding: 1px 5px;
+	    margin-right: 5px;
+	    border-radius: 5px;
+	}
 	.evomb_body .evo_repeat_interval_new{
 		padding: 10px 0 20px;
 	}
 	.evomb_body .evo_repeat_interval_new span{
 		min-width: 55px;
 		display: inline-block;		
-	}
-	.evomb_body .evo_repeat_interval_new input{
-		background-color: #5F5F5F;
-		color: #fff;
-		border: 1px solid #888;
 	}
 	.evomb_body .evo_repeat_interval_new input.rietT, .evomb_body .evo_repeat_interval_new input.ristT{
 		width: 100px;
@@ -445,15 +425,16 @@
 /* eventon only settings table style */
 	.evo_negative_25{margin:0 -25px;}
 	.eventon_settings_table{
-		border-top: 1px solid #999;
+		border-top: 1px solid #e8e8e8;
 		margin-top: 10px;
 		border-spacing:0px;
 	}	
 	.eventon_settings_table tr.yesnosub td:first-child{border-left: 5px solid #F9CA8D}
-	.evo_negative_25 .eventon_settings_table td{padding-left: 25px; padding-right: 25px;}
-	.eventon_settings_table td{
-		border-bottom: 1px solid #858484;
-		padding: 5px;
+	.evo_negative_25 .eventon_settings_table td, 
+	.eventon_settings_table td
+	{
+		padding: 5px 25px;
+		border-bottom: 1px solid #e8e8e8;
 	}
 	.eventon_settings_table .yesno_leg_line{padding-top: 5px;padding-bottom: 8px;}
 	.eventon_settings_table input{width: 100%;}
@@ -475,16 +456,13 @@
 		padding:0px;
 		margin:0px -25px;
 	}
-	.evo_select_tax .evo_btn, .evomb_section .evo_btn{
-		background-color: #B9B8B8;
-	    border-radius: 5px;
-	    padding: 4px 8px 4px;
-	    margin: 3px 5px 0 0px;
-	    cursor: pointer;
-	    display: inline-block;
-	    text-transform: uppercase;
-	}
-	.evo_select_tax .evo_btn:hover, .evomb_section .evo_btn:hover{opacity: 0.6}
+	.evo_select_tax .evo_btn, .evomb_section .evo_btn, 
+	a.button_evo,
+	.eventon_mb .actions a.button_evo
+	{background-color:#b3b3b3}
+	.button_evo:before{font-family:dashicons; font-weight: normal;}
+	.evomb_section .evcal_location_data_section .evo_btn{margin-left: 5px; margin-top: 0;}
+	.evomb_section .evcal_location_data_section label{margin-top: 5px;}
 	.evo_tax_list_terms span{
 		margin-right: 8px; display: inline-block;
 	}
@@ -504,6 +482,31 @@
   		z-index: 50;
   		display: block;
 	}
+	.evomb_body .evo_singular_tax_for_event.loading{opacity: 0.5;}
+	.evo_singular_tax_for_event .evo_selected_tax_term em{text-transform: capitalize;}
+	.evomb_body .evo_selected_tax_actions{margin-bottom: 10px;}
+	.evomb_body .evo_selected_tax_term{
+		display: block;
+	    margin-right: 5px; margin-bottom: 5px;
+	    padding: 5px 10px;
+	    border-radius: 5px;
+	    background-color: #d6d6d6;
+    	color: #3c3c3c;
+	    font-size: 16px;
+	}
+	.evomb_body .evo_selected_tax_term i{
+		float: right;
+	    margin: 0 5px;
+	    line-height: 130%;
+	    cursor: pointer;
+	    font-size: 18px;
+	    color: #7b7a7a;
+	}
+	.evomb_body .evo_selected_tax_term i:hover{opacity: 0.7;}
+	.evomb_section .evo_selected_tax_actions a.evo_btn{margin-left: 0;} 
+	.evo_term_lightbox em.evo_legend{display: block; font-size: 12px;opacity: 0.5;}
+	.select2-container--open{z-index: 95100;}
+	.select2-drop{z-index: 100000;}
 
 /*------------------ */
 /* ui v3 */
@@ -565,23 +568,29 @@
 		font-style: italic;
 	}
 	.evomb_body{
-		background-color:#7b7a7a;
-		color:#fff;
+		background-color:#f9f9f9;
+		color:#808080;
 		padding:15px 25px;
 		font:13px 'open sans';
-		border-top:2px solid #666565
+		border-top:2px solid #e8e8e8
 	}
+	.evomb_body .ajde_yn_btn {   border-color: #c7c7c7;	}
+	.evomb_body .yesno_leg_line label{color:#808080;}
 	.evomb_body.closed{	display:none	}
 	.evomb_body p{	margin:0; padding-bottom:5px;	}
-	#evo_mb input{
+	#evo_mb input, #evo_mb textarea{
 		border-radius: 4px;
 		padding:3px 6px 4px;
 		font-style: italic;
+		margin-bottom: 5px;
 	}
 	#evo_mb select{border-radius: 5px;}
-	.evomb_body input, select.evo_select_field, .evo_metafield_image input[type=button]{
-		-webkit-box-shadow: 0px 2px #686767;
-		box-shadow: 0px 2px #686767;
+	.evomb_body input, 
+	.evomb_body textarea,
+	select.evo_select_field, 
+	.evo_metafield_image input[type=button]{
+		-webkit-box-shadow: 0px 0 2px #b7b7b7;
+		box-shadow:0px 0 2px #b7b7b7;
 		border:none;
 		border-radius: 4px;
 		line-height: 130%
@@ -591,7 +600,7 @@
 		margin-bottom: 10px;
 		display: block;
 		cursor: default;
-		color: #C9C6C6;
+		color: #5a5a5a;
 	}
 	.evMB_end{	height:10px;width:100%;	}
 

@@ -25,25 +25,42 @@
 	do_action('eventon_before_main_content');
 ?>
 
-<div id="content">
-	<div class="hentry">
-		<header class="entry-header ">
-			<h1 class="entry-title"><?php echo $tax_name.': '.single_cat_title( '', false ); ?></h1>
-
-			<?php if ( category_description() ) : // Show an optional category description ?>
-			<div class="entry-meta"><?php echo category_description(); ?></div>
-			<?php endif; ?>
-		</header><!-- .archive-header -->
+<div class='wrap evotax_term_card evotax_term_card container'>
+	<header class="page-header ">
+		<h1 class="page-title"><?php echo $tax_name.': '.single_cat_title( '', false ); ?></h1>
+		<?php if ( category_description() ) : // Show an optional category description ?>
+		<div class="page-meta"><?php echo category_description(); ?></div>
+		<?php endif; ?>
+	</header><!-- .archive-header -->
+	
+	<div id='primary' class='content-area'>
+		<div class='<?php echo apply_filters('evotax_template_content_class', 'eventon site-main');?>'>
 		
-		<div class='eventon entry-content'>
-		<?php 
-			echo do_shortcode('[add_eventon_list number_of_months="4" '.$tax.'='.$term->term_id.']');
-		?>
+			<div class="evotax_term_details endborder_curves" >						
+				
+				<h2 class="tax_term_name">
+					<i><?php echo $tax_name;?></i>
+					<span><?php echo $term->name;?></span>
+				</h2>
+				<div class='tax_term_description'><?php echo category_description();?></div>
+			</div>
+
+		
+			<?php 
+				$shortcode = apply_filters('evo_tax_archieve_page_shortcode', 
+					'[add_eventon_list number_of_months="5" '.$tax.'='.$term->term_id.' hide_mult_occur="no" hide_empty_months="yes"]', 
+					$tax,
+					$term->term_id
+				);
+				echo do_shortcode($shortcode);
+			?>
 		</div>
 	</div>
+	
+	<?php get_sidebar(); ?>
 </div>
 
 <?php	do_action('eventon_after_main_content'); ?>
 
-<?php get_sidebar(); ?>
+
 <?php get_footer(); ?>

@@ -1,6 +1,6 @@
 /**
  * Javascript: Eventon Daily View
- * @version 0.26
+ * @version 1.0.4
  */
 jQuery(document).ready(function($){
 
@@ -13,7 +13,7 @@ jQuery(document).ready(function($){
 
 	function init(){
 		set_daily_strip_sizes('');
-		$('body').find('div.evoDV').each(function(){
+		/*$('body').find('div.evoDV').each(function(){
 
 			IN = $(this).find('.eventon_daily_in');
 			LEFT = parseInt(IN.attr('data-left'));
@@ -21,6 +21,7 @@ jQuery(document).ready(function($){
 			IN.css('margin-left',LEFT);
 			//$(this).attr({'data-runajax':0});			
 		});
+		*/
 
 		update_num_events();
 	}
@@ -56,10 +57,6 @@ jQuery(document).ready(function($){
 
 		});
 
-	// switch month within day strip
-		$('body').on('click','.evodv_action',function(){
-
-		});
 	// update number of events for current day
 		function update_num_events(){
 			$('.evoDV').each(function(){
@@ -94,35 +91,45 @@ jQuery(document).ready(function($){
 		});
 
 	// User DV box arrows to switch days
-		$('.evodv_current_day').on('click', '.evodv_daynum span', function(){
+		$('.evodv_current_day').on('click', '.evodv_daynum_switch', function(){
 
-			if(!$(this).hasClass('disable')){
-				var dir = $(this).attr('data-dir');
-				var cal = $(this).closest('.ajde_evcal_calendar');
-				var cal_id = cal.attr('id');
+			OBJ = $(this);
+			var dir = OBJ.attr('data-dir');
+			var cal = OBJ.closest('.ajde_evcal_calendar');
+			var cal_id = cal.attr('id');
 
-				var daysinmonth = cal.find('.eventon_daily_in .evo_day').length;
-				var thisday = parseInt($(this).parent().find('b').html());
+			var daysinmonth = parseInt(cal.find('.eventon_daily_list').attr('data-mdays'));
+			var thisday = parseInt(OBJ.parent().find('b').html());
 
-				// remove disable class
-				$(this).parent().find('span').removeClass('disable');
+			// remove disable class
+			OBJ.parent().find('span').removeClass('disable');
 
-				if(dir == 'next'){
+			//console.log(dir);
+
+			if(dir == 'next'){
+
+				if(thisday == daysinmonth){
+					calendar = OBJ.closest('.ajde_evcal_calendar');
+					calendar.find('.evcal_btn_next').trigger('click');
+				}else{
 					var day_obj = cal.find('p.evo_day.on_focus');
 					var new_day = cal.find('p.evo_day.on_focus').next().data('date');
-
-					// add disable calss
-					if(thisday == (daysinmonth-1)) {$(this).addClass('disable');}					
+					changin_dates(new_day, cal_id, day_obj, true);
+				}
+				
+			}else{
+				if(thisday == 1){
+					calendar = OBJ.closest('.ajde_evcal_calendar');
+					calendar.find('.evcal_btn_prev').trigger('click');
 				}else{
 					var day_obj = cal.find('p.evo_day.on_focus');
 					var new_day = cal.find('p.evo_day.on_focus').prev().data('date');
-					if(thisday==2){ $(this).addClass('disable'); }
+					changin_dates(new_day, cal_id, day_obj, true);
 				}
-				
-				changin_dates(new_day, cal_id, day_obj, true);
-			}
+			}			
 
 		});
+
 	
 	// change the dates on current date section
 		function changin_dates(new_day, cal_id, day_obj, ajax){
@@ -130,6 +137,8 @@ jQuery(document).ready(function($){
 			
 			day_obj.parent().find('.evo_day').removeClass('on_focus');
 			new_day_obj.addClass('on_focus');
+
+			day_obj.closest('.eventon_daily_list').attr('data-fday', new_day);
 
 			// update global values
 			current_date = new_day;
@@ -159,14 +168,17 @@ jQuery(document).ready(function($){
 			var sort_by=evcal_sort.attr('sort_by');
 			var cat=evcal_sort.attr('cat');
 			
-			var ev_type = evodata.attr('data-ev_type'); 
-			var ev_type_2 = evodata.attr('data-ev_type_2');
+			var ev_type = evodata.attr('data-ev_type'),
+				ev_type_2 = evodata.attr('data-ev_type_2');
 			
 			// wether to switch to 1st of month
-				var new_date_el = ev_cal.find('.eventon_other_vals[name=dv_focus_day]');
+				other_valsOBJ = ev_cal.find('.eventon_other_vals[name="dv_focus_day"]');
+				other_valsDOBJ = ev_cal.find('.eventon_other_vals[name="dv_def_focus_day"]');
+				var new_date_el = other_valsOBJ;
 				var new_day_ =1;
 				
-				new_day_ = (new_date_el.attr('data-mo1st')=='1')? 1: new_day;
+			// move to first month when switching months
+				new_day_ = (new_date_el.attr('data-mo1st')=='yes')? 1: new_day;
 
 			// change values to new in ATTRs
 			evodata.attr({'data-cday':new_day});
@@ -181,14 +193,13 @@ jQuery(document).ready(function($){
 				direction: 		'none',
 				filters: 		ev_cal.evoGetFilters(),
 				shortcode: 		ev_cal.evo_shortcodes(),
-				evodata: 		ev_cal.evo_getevodata()			
+				evodata: 		ev_cal.evo_getevodata()	
 			};
-			
-			
+						
 			$.ajax({
 				beforeSend: function(){
 					ev_cal.find('.eventon_events_list').slideUp('fast');
-					ev_cal.find('#eventon_loadbar').slideDown().css({width:'0%'}).animate({width:'100%'});
+					ev_cal.find('#eventon_loadbar').slideDown();
 				},
 				type: 'POST',
 				url:the_ajax_script.ajaxurl,
@@ -197,9 +208,16 @@ jQuery(document).ready(function($){
 				success:function(data){
 					// /alert(data);
 					ev_cal.find('.eventon_events_list').html(data.content);
-					ev_cal.find('.eventon_other_vals').val(new_day_);
+
+					//console.log(new_day+'rrr');
+					if(other_valsOBJ.data('mo1st')=='yes'){
+						other_valsOBJ.attr('data-day',new_day);						
+					}else{
+						other_valsOBJ.attr('data-day',new_day).val(new_day);
+					}
+					other_valsDOBJ.val(new_day);
 				},complete:function(){
-					ev_cal.find('#eventon_loadbar').css({width:'100%'}).slideUp();
+					ev_cal.find('#eventon_loadbar').slideUp();
 					ev_cal.find('.eventon_events_list').delay(300).slideDown();
 					ev_cal.evoGenmaps({'delay':400});
 				}
@@ -213,12 +231,12 @@ jQuery(document).ready(function($){
 			if(filter_section.hasClass('selecttype')) return;
 
 			var cal_head = $(this).closest('.eventon_sorting_section').siblings('.calendar_header');
-			eventon_dv_get_new_days(cal_head,'','');
+			eventon_dv_get_new_days(cal_head,'','','filtering');
 		});
 
 		$('body').on('click','.evo_filter_submit',function(){
 			var cal_head = $(this).closest('.eventon_sorting_section').siblings('.calendar_header');
-			eventon_dv_get_new_days(cal_head,'','');
+			eventon_dv_get_new_days(cal_head,'','','filtering');
 		});
 
 	// go to today
@@ -233,7 +251,7 @@ jQuery(document).ready(function($){
 			if(container.attr('data-m')!==undefined && container.attr('data-y')!==undefined){
 				
 				var cal_head = $(this).closest('.calendar_header');
-				var evo_dv = cal_head.find('.eventon_other_vals').length;
+				var evo_dv = cal_head.find('.eventon_other_vals[name="dv_focus_day"]').length;
 
 				if(evo_dv>0)
 					eventon_dv_get_new_days(cal_head,'','');
@@ -245,7 +263,7 @@ jQuery(document).ready(function($){
 			var top = $(this).closest('.ajde_evcal_calendar');
 			if(top.hasClass('evoDV')){
 				var cal_head = $(this).parents('.calendar_header');
-				var evo_dv = cal_head.find('.eventon_other_vals').length;		
+				var evo_dv = cal_head.find('.eventon_other_vals[name="dv_focus_day"]').length;		
 				if(evo_dv>0){
 					eventon_dv_get_new_days(cal_head,'prev','');
 				}
@@ -256,7 +274,7 @@ jQuery(document).ready(function($){
 			var top = $(this).closest('.ajde_evcal_calendar');
 			if(top.hasClass('evoDV')){
 				var cal_head = $(this).parents('.calendar_header');
-				var evo_dv = cal_head.find('.eventon_other_vals').length;		
+				var evo_dv = cal_head.find('.eventon_other_vals[name="dv_focus_day"]').length;		
 				if(evo_dv>0){
 					eventon_dv_get_new_days(cal_head,'next','');
 				}
@@ -265,14 +283,24 @@ jQuery(document).ready(function($){
 
 		// switching months with day strip
 			$('.eventon_daily_list').on('click','.evodv_action',function(event){
-				classN = ($(this).hasClass('next'))? 'evcal_btn_next':'evcal_btn_prev';
-				calendar = $(this).closest('.ajde_evcal_calendar');
-
-				calendar.find('.'+classN).trigger('click');
+				if( $(this).hasClass('scroll') ){
+					eventon_daily_in = $(this).siblings('.eventon_daily_in');
+					if($(this).hasClass('prev')){
+						swiping('swiperight', eventon_daily_in);
+					}else{// next
+						swiping('swipeleft', eventon_daily_in);
+					}
+				// switch months
+				}else{
+					classN = ($(this).hasClass('next'))? 'evcal_btn_next':'evcal_btn_prev';
+					calendar = $(this).closest('.ajde_evcal_calendar');
+					
+					calendar.find('.'+classN).trigger('click');
+				}				
 			});
 	
 	// AJAX: update the days list for new month
-		function eventon_dv_get_new_days(cal_header, change, cday){
+		function eventon_dv_get_new_days(cal_header, change, cday, type){
 			
 			var cal_id = cal_header.parent().attr('id');
 
@@ -280,18 +308,19 @@ jQuery(document).ready(function($){
 			if(!cal_header.parent().hasClass('evoDV'))
 				return;
 
-			var evodata = cal_header.siblings('.evo-data');
-
-			var cur_m = parseInt(evodata.attr('data-cmonth'));
-			var cur_y = parseInt(evodata.attr('data-cyear'));
+			var evodata = cal_header.siblings('.evo-data'),
+				cur_m = parseInt(evodata.attr('data-cmonth')),
+				cur_y = parseInt(evodata.attr('data-cyear')),
+				other_vals = cal_header.find('.eventon_other_vals[name="dv_focus_day"]');
 			
 			var ev_cal = cal_header.parent();
 			
 			// new dates
-			var new_d = (cday=='')? cal_header.find('.eventon_other_vals').val(): cday;
-
-			// set first to be the date
-				//cal_header.find('.eventon_other_vals').attr({'value':1});
+			var new_d = (cday=='')? 
+				other_vals.val(): cday;
+				if(type=='filtering' && other_vals.data('mo1st') == 'yes'){
+					new_d = other_vals.attr('data-day');
+				}
 			
 			if(change=='next'){
 				var new_m = (cur_m==12)?1: cur_m+ 1 ;
@@ -309,6 +338,8 @@ jQuery(document).ready(function($){
 				next_m:new_m,	
 				next_y:new_y,
 				next_d:new_d,
+				direction: change,
+				continuous_scroll: cal_header.find('.eventon_other_vals[name="dv_continuous_scroll"]').val(),
 				cal_id: 	cal_id,
 				send_unix: 	evodata.data('send_unix'),
 				filters: 		ev_cal.evoGetFilters(),
@@ -330,7 +361,8 @@ jQuery(document).ready(function($){
 				success:function(data){
 					//console.log(data);
 					this_section.html(data.days_list);
-					revert_to_beginning(cal_id, data.last_date_of_month, new_d);
+					this_section_days.attr('data-mdays',data.last_date_of_month);
+					//update_focus_date(this_section_days, next_d);
 
 					// update current date section 
 					update_num_events();
@@ -340,7 +372,6 @@ jQuery(document).ready(function($){
 					set_daily_strip_sizes();
 				}
 			});
-			//ajax_update_month_events(cal_id, new_d);
 		}
 		
 	//	Return filters array if exist for the active calendar
@@ -395,10 +426,14 @@ jQuery(document).ready(function($){
 				// moving to left
 				if(delta == -1 && ( (new_marl*(-1))< (width -200)) ){
 					new_marl = ( new_marl <maxMLEFT)? maxMLEFT: new_marl;
-					OBJ.stop().animate({'margin-left': new_marl });
+					OBJ.stop().animate({'margin-left': new_marl },function(){
+						scroll_o_switch( OBJ.parent().parent() );
+					});
 				
 				}else if(delta == 1){
-					OBJ.stop().animate({'margin-left': new_marl });
+					OBJ.stop().animate({'margin-left': new_marl },function(){
+						scroll_o_switch( OBJ.parent().parent() );
+					});
 				}
 			}
 			e.preventDefault();
@@ -417,8 +452,18 @@ jQuery(document).ready(function($){
 				var leftNow = parseInt(OBJ.css('marginLeft'));
 				var Pwid = OBJ.parent().width();
 				var width = parseInt(OBJ.css('width') );
+				one_day_width = parseInt(OBJ.find('.evo_day:gt(20)').outerWidth());
 				maxMLEFT = (width-Pwid)*(-1);
-				swipeMove = 300;
+
+				STRIP = OBJ.closest('.eventon_dv_outter');
+				STRIP_Width = STRIP.width();
+				ARROW_Width = STRIP.find('span.prev').width() + STRIP.find('span.next').width();
+
+				swipeMove = (one_day_width*5);
+
+				if( (swipeMove + ARROW_Width) > STRIP_Width ){
+					swipeMove = (one_day_width*2);
+				}
 				
 				if(direction =='swipeleft'){
 					var newLEFT = ( leftNow - swipeMove );	
@@ -426,76 +471,80 @@ jQuery(document).ready(function($){
 
 					if( newLEFT*(-1) < (width) ){
 						newLEFT = ( newLEFT <maxMLEFT)? maxMLEFT: newLEFT;
-						OBJ.stop().animate({'margin-left': newLEFT });
+						OBJ.stop().animate({'margin-left': newLEFT },function(){
+							scroll_o_switch( OBJ.parent() );
+						});
 					}
 				}else{
 					var newLEFT = ( leftNow + swipeMove );	
 					// /console.log(newLEFT);
 
 					newLEFT = ( newLEFT >0 )? 0: newLEFT;
-					OBJ.stop().animate({'margin-left': newLEFT });
+					OBJ.stop().animate({'margin-left': newLEFT },function(){
+						scroll_o_switch( OBJ.parent() );
+					});
 				}
-				
 			}
 		// adjust margin left when window resized
 			$(window).on('resize', function(){
-				$('.eventon_daily_in').each(function(){
-					OBJ = $(this);
-					var leftNow = parseInt(OBJ.css('marginLeft'));
-					var Pwid = OBJ.parent().width();
-					var width = parseInt(OBJ.css('width') );
-
-					maxMLEFT = (width-Pwid)*(-1);
-
-					if(leftNow < maxMLEFT)
-						OBJ.stop().css({'margin-left': maxMLEFT });
-
+				$('.eventon_daily_list').each(function(){
+					adjust_days_width( $(this));				
 				});
 			});
-	
-	// remove days back to beginning of month
-		function revert_to_beginning(cal_id, new_d, current_day){
-			var day_holder = $('#'+cal_id).find('.eventon_daily_in');
-			var date_w = parseInt(day_holder.find('.evo_day:gt(20)').outerWidth());
-
-			// fix width 
-			date_w = (date_w<=0 )? 30: date_w;
-			
-			
-			var w_fb = ((date_w*current_day) - (date_w*8));
-			var adjust_w = (w_fb>0)? (w_fb): 0;
-
-			//var dpw = parseInt( day_holder.parent().width());
-			//var dw = parseInt(day_holder.width());
-			//var ml = day_holder.css('margin-left');
-
-			//var new_ml = dw-dpw;
-			day_holder.animate({'margin-left':'-'+(adjust_w)+'px'});
-
-			//console.log(adjust_w+' '+(date_w*5)+' '+new_d+' '+date_w);
-		}
-	
+		
 	// daily list sliders	
 		function set_daily_strip_sizes(cal_id){
 			if(cal_id!=''){
 				var holder = $('#'+cal_id).find('.eventon_daily_list');
 				adjust_days_width(holder);
+				scroll_o_switch(holder);
 			}
 			$('.eventon_daily_list').each(function(){
-				adjust_days_width( $(this));
-				
+				adjust_days_width( $(this));				
+				scroll_o_switch( $(this));				
 			});
 		}
 			function adjust_days_width(holder){
 				var day_holder = holder.find('.eventon_daily_in');
 				var days = day_holder.children('.evo_day');	
 				var day_width = parseInt(day_holder.find('.evo_day:gt(20)').outerWidth());
+				OUTTERWidth = parseInt(day_holder.parent().width());
 
-				var d_holder_width = (parseInt(days.length)+2 )* (day_width);
-						
-				day_holder.css({'width':d_holder_width});
+				wALLDAYS = (parseInt(days.length)+2 )* (day_width);
+													
+				FOCUSday = parseInt(day_holder.closest('.eventon_daily_list').attr('data-fday'));
+				LEFTwidth = (FOCUSday-1) * day_width;
+				RIGHTwidth = wALLDAYS - LEFTwidth;
 
-				//console.log(day_width+' '+d_holder_width+' '+days.length);
+				LEFTmargin = ( RIGHTwidth > OUTTERWidth ) ? LEFTwidth: wALLDAYS-OUTTERWidth;
+				LEFTmargin = -1* LEFTmargin;
+
+				day_holder.css({'width':wALLDAYS, 'margin-left':LEFTmargin});
+
+				// /console.log(OUTTERWidth+' '+wALLDAYS+' '+LEFTmargin+' '+LEFTwidth+' '+RIGHTwidth);
+
+				//console.log(LEFTmargin);
 			}
-	
+		// scroll or switch months
+			function scroll_o_switch(list){
+				holder = list.find('.eventon_daily_in');
+				current_marginleft = parseInt(holder.css('marginLeft'));
+				max_marginleft = parseInt(holder.parent().width()) - parseInt(holder.width());
+				
+				//console.log(current_marginleft+' '+max_marginleft);
+				if( current_marginleft <= max_marginleft){
+					holder.siblings('.next').removeClass('scroll').addClass('switch');
+					holder.siblings('.prev').removeClass('switch').addClass('scroll');
+				}else if(current_marginleft >= 0){
+					holder.siblings('.next').removeClass('switch').addClass('scroll');
+					holder.siblings('.prev').removeClass('scroll').addClass('switch');
+				}else{
+					holder.siblings('.next').attr({'class':'evodv_action next scroll'});
+					holder.siblings('.prev').attr({'class':'evodv_action prev scroll'});
+				}
+			}
+		// update current focus date in calendar
+			function update_focus_date(OBJ, DATE){
+				OBJ.attr('data-fday', DATE);
+			}
 });

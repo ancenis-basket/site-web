@@ -6,12 +6,12 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2016  Chad Butler
+ * Copyright (c) 2006-2017  Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
  * @package WP-Members
  * @author Chad Butler
- * @copyright 2006-2016
+ * @copyright 2006-2017
  *
  * Functions Included:
  * - wpmem_inc_loginfailed
@@ -23,10 +23,10 @@
  * - wpmem_inc_forgotusername
  */
 
-
-// Include the form building functions.
-include_once( WPMEM_PATH . 'inc/forms.php' );
-
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit();
+}
 
 if ( ! function_exists( 'wpmem_inc_loginfailed' ) ):
 /**
@@ -497,7 +497,9 @@ function wpmem_page_user_edit( $wpmem_regchk, $content ) {
 	 */	
 	$heading = apply_filters( 'wpmem_user_edit_heading', $wpmem->get_text( 'profile_heading' ) );
 	
-	if ( $wpmem_a == "update") { $content.= wpmem_inc_regmessage( $wpmem_regchk, $wpmem_themsg ); }
+	if ( $wpmem_a == "update") {
+		$content.= wpmem_inc_regmessage( $wpmem_regchk, $wpmem_themsg );
+	}
 	$content = $content . wpmem_inc_registration( 'edit', $heading );
 	
 	return $content;

@@ -7,7 +7,7 @@
  * @author 		AJDE
  * @category 	Core
  * @package 	EventON/Functions
- * @version     2.4.7
+ * @version     2.5.4
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -19,42 +19,6 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			&& $opt['evcal_af_'.$number]=='yes'
 			&& !empty($opt['evcal_ec_f'.$number.'a1']) 
 			&& !empty($opt['evcal__fai_00c'.$number])  )? true: false;
-	}
-
-
-/*	Dynamic styles generation */
-	function eventon_generate_options_css($newdata='') {
-	 
-		/** Define some vars **/
-		$data = $newdata; 
-		$uploads = wp_upload_dir();
-		
-		//$css_dir = get_template_directory() . '/css/'; // Shorten code, save 1 call
-		$css_dir = AJDE_EVCAL_DIR . '/'. EVENTON_BASE.  '/assets/css/'; 
-		//$css_dir = plugin_dir_path( __FILE__ ).  '/assets/css/'; 
-		
-		//echo $css_dir;
-
-		/** Save on different directory if on multisite **/
-		if(is_multisite()) {
-			$aq_uploads_dir = trailingslashit($uploads['basedir']);
-		} else {
-			$aq_uploads_dir = $css_dir;
-		}
-		
-		/** Capture CSS output **/
-		ob_start();
-		require($css_dir . 'dynamic_styles.php');
-		$css = ob_get_clean();
-
-		//print_r($css);
-		
-		/** Write to options.css file **/
-		WP_Filesystem();
-		global $wp_filesystem;
-		if ( ! $wp_filesystem->put_contents( $aq_uploads_dir . 'eventon_dynamic_styles.css', $css, 0777) ) {
-		    return true;
-		}		
 	}
 
 // check for a shortcode in post content
@@ -117,18 +81,15 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 // if event is in date range
 	function eventon_is_event_in_daterange($Estart_unix, $Eend_unix, $Mstart_unix, $Mend_unix, $shortcode=''){	
 
+		
 		// past event only cal
-		if(!empty($shortcode['el_type']) && $shortcode['el_type']=='pe'){
-			if(		
-				( $Eend_unix <= $Mend_unix) &&
-				( $Eend_unix >= $Mstart_unix)
-			){
-				return true;
-			}else{
-				return false;
-			}
+		if(isset($shortcode['el_type']) && $shortcode['el_type']=='pe'){
+
+			if( $Eend_unix <= $Mend_unix &&	 $Eend_unix >= $Mstart_unix ) return true;				
+			return false;
 		}else{
-			if(
+			if(	
+				($Mend_unix == 0 && $Mstart_unix == 0) ||
 				($Estart_unix<=$Mstart_unix && $Eend_unix>=$Mstart_unix) ||
 				($Estart_unix<=$Mend_unix && $Eend_unix>=$Mend_unix) ||
 				($Mstart_unix<=$Estart_unix && $Estart_unix<=$Mend_unix && $Eend_unix=='') ||		
@@ -263,7 +224,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		//$offset = (get_option('gmt_offset', 0) * 3600);
 
 		date_default_timezone_set('UTC');
-		$unix = $unix ;
+		$unix = (int)$unix ;
 
 		$dateformat = (!empty($dateformat))? $dateformat: $DT_format[1];
 		$timeformat24 = (!empty($timeformat24))? $timeformat24: $DT_format[2];
@@ -327,19 +288,16 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 							.':'.$data['evcal_start_time_min'].$__Sampm;
 						
 						// event start time string
-						$date = $data['evcal_start_date'].' '.$time_string;
-						//$dateTformat = $_wp_date_format.' '.($_is_24h?'H:i':'g:ia');
-						//$unix_start = date_create_from_format($dateTformat, $date);
-						//$unix_start = $unix_start->getTimestamp();
-						$unix_start = strtotime($date);
-						
-						// parse string to array by time format
-						/*$__ti = ($_is_24h)?
-							date_parse_from_format($_wp_date_format.' H:i', $date):
-							date_parse_from_format($_wp_date_format.' g:ia', $date);
+						$date = $time_string.' '.$data['evcal_start_date'];
 
-						$unix_start = mktime($__ti['hour'], $__ti['minute'],0, $__ti['month'], $__ti['day'], $__ti['year'] );
-						*/
+						// different format give
+						if($_wp_date_format != 'Y/m/d'){
+							$unix_start = date_parse_from_format($_wp_date_format, $data['evcal_start_date']);
+							$date = $time_string.' '.$unix_start['year'] .'/'.$unix_start['month'] .'/'.  $unix_start['day'];
+						}
+
+						//print_r($date);
+						$unix_start = strtotime($date);
 					}
 				}
 			}
@@ -362,10 +320,13 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 							.':'.$data['evcal_end_time_min'].$__Eampm;
 						
 						// event start time string
-						$date = $__evo_end_date.' '.$time_string;
-						//$dateTformat = $_wp_date_format.' '.($_is_24h?'H:i':'g:ia');
-						//$unix_start = date_create_from_format($dateTformat, $date);
-						//$unix_start = $unix_start->getTimestamp();
+						$date = $time_string. ' '.$__evo_end_date;
+						
+						// different format give
+						if($_wp_date_format != 'Y/m/d'){
+							$unix_end = date_parse_from_format($_wp_date_format, $__evo_end_date);
+							$date = $time_string.' '.$unix_end['year'] .'/'. $unix_end['month'] .'/'. $unix_end['day'];
+						}
 
 						$unix_end = strtotime($date);
 														
@@ -382,14 +343,33 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			
 		}else{
 			// if no start or end present
-			$unix_start = $unix_end = 0;
+			$unix_start = $unix_end = time();
 		}
 		// output the unix timestamp
 		$output = array(
 			'unix_start'=>$unix_start,
 			'unix_end'=>$unix_end
-		);		
+		);	
+
+		//print_r($output);	
 		return $output;
+	}
+
+	function evo_date_parse_from_format($format, $date) {
+	  	$dMask = array(
+	    'H'=>'hour',
+	    'i'=>'minute',
+	    's'=>'second',
+	    'y'=>'year',
+	    'm'=>'month',
+	    'd'=>'day'
+	  	);
+	  	$format = preg_split('//', $format, -1, PREG_SPLIT_NO_EMPTY); 
+	  	$date = preg_split('//', $date, -1, PREG_SPLIT_NO_EMPTY); 
+	  	foreach ($date as $k => $v) {
+	    if ($dMask[$format[$k]]) $dt[$dMask[$format[$k]]] .= $v;
+	  	}
+	  	return $dt;
 	}
 
 /*
@@ -397,12 +377,12 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	added: version 2.1.19
 	updated: 
 */
-	function eventon_get_timeNdate_format($evcal_opt=''){
+	function eventon_get_timeNdate_format($evcal_opt='', $force_wp_format = false){
 		
 		if(empty($evcal_opt))
 			$evcal_opt = get_option('evcal_options_evcal_1');
 		
-		if(!empty($evcal_opt) && $evcal_opt['evo_usewpdateformat']=='yes'){
+		if( (!empty($evcal_opt) && $evcal_opt['evo_usewpdateformat']=='yes') || $force_wp_format){
 					
 			/** get date formate and convert to JQ datepicker format**/				
 			$wp_date_format = get_option('date_format');
@@ -464,8 +444,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		}
 		return $output;
 	}
-// get single letter month names
+// get long month names
 // added: v2.4.5
+// updated v2.5.3
 	function evo_get_long_month_names($lang_options){
 		if(!empty($lang_options)) {$lang_options = $lang_options;}
 		else{
@@ -478,7 +459,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		$output = array();
 
 		foreach($__months as $month){
-			$output[] = (!empty($lang_options['evo_lang_'.$count]))? $lang_options['evo_lang_'.$count]: $month;
+			$output[] = (!empty($lang_options['evcal_lang_'.$count]))? $lang_options['evcal_lang_'.$count]: $month;
 			$count++;
 		}
 		return $output;
@@ -486,30 +467,32 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 // ---
 // SUPPORTIVE time and date functions
-	// GET time for ICS adjusted for unix
-		function evo_get_adjusted_utc($unix){
-			$offset = (get_option('gmt_offset', 0) * 3600);
-			/*
-				We are making time (mktime) and getting time (date) using php server timezone
-				So we first adjust save UNIX to get unix at UTC/GMT 0 and then we adjust that time to offset for timezone saved on wordpress settings.
-			*/
-			//$__unix = $unix - (date('Z')) - $offset;
-			$__unix = $unix - $offset;
+	// GET time for ICS adjusted for unix		
+		function evo_get_adjusted_utc($unix, $sep= true){
+			
+			$datetime = new evo_datetime();
+			
+			$unix = $unix - $datetime->get_UTC_offset();
 
-			//$the_date = $unix;
-			//date_default_timezone_get();
-			//date_default_timezone_set("UTC");
-			//$new_timeT = gmdate("Ymd", $unix);
-			//$new_timeT = date_i18n("Ymd", $__unix);
-			$new_timeT = date("Ymd", $__unix);
-			$new_timeZ = date("Hi", $__unix);
-
+			if(!$sep) return $unix;
+			
+			$new_timeT = date("Ymd", $unix);
+			$new_timeZ = date("Hi", $unix);
 			return $new_timeT.'T'.$new_timeZ.'00Z';
-		}
 
-	function evo_unix_offset($unix){
-		$offset = (get_option('gmt_offset', 0) * 3600);
-	}
+		}
+		
+	/* ADD TO CALENDAR */
+		function eventon_get_addgoogle_cal($object, $sUNIX, $eUNIX){
+			
+			$location_name = isset($object->location_name) ? urlencode($object->location_name) . ' - ' : '';
+			$location = (isset($object->location_address))? urlencode($object->location_address) : ''; 
+			
+			$title = urlencode($object->etitle);
+			$excerpt = !empty($object->excerpt)? $object->excerpt: $object->etitle;
+
+			return '//www.google.com/calendar/event?action=TEMPLATE&amp;text='.$title.'&amp;dates='.$sUNIX.'/'.$eUNIX.'&amp;details='.( urlencode($excerpt) ).'&amp;location='.$location_name.$location;
+		}
 
 // return 24h or 12h or true false
 	function eventon_get_time_format($return='tf'){
@@ -580,7 +563,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			
 			if($len=='full'){	
 				$option_name_prefix = 'evcal_lang_day';
-				$_not_value = $eventon_day_names[ $text_num];
+				$_not_value = !empty($eventon_month_names[ $text_num])?
+					$eventon_day_names[ $text_num]:'';
 			
 			// 3 letter day names
 			}else if($len=='three'){				
@@ -596,12 +580,14 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			if($len == 'full'){
 			
 				$option_name_prefix = 'evcal_lang_';
-				$_not_value = $eventon_month_names[ $text_num];
+				$_not_value = !empty($eventon_month_names[ $text_num])?
+					$eventon_month_names[ $text_num]:'';
 				
 			}else if($len=='three'){
 			
 				$option_name_prefix = 'evo_lang_3Lm_';
-				$_not_value = substr($eventon_month_names[ $text_num], 0 , 3);
+				$_not_value = !empty($eventon_month_names[ $text_num])?
+					substr($eventon_month_names[ $text_num], 0 , 3):'';
 				
 			}
 		
@@ -613,11 +599,13 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			
 			if($len == 'full'){
 				$option_name_prefix = 'evcal_lang_';
-				$_not_value = $eventon_month_names[ $text_num];
+				$_not_value = !empty($eventon_month_names[ $text_num])? 
+					$eventon_month_names[ $text_num]:'';
 
 			}else if($len=='three'){
 				$option_name_prefix = 'evo_lang_3Lm_';
-				$_not_value = substr($eventon_month_names[ $text_num], 0 , 3);
+				$_not_value = !empty($eventon_month_names[ $text_num])?
+					substr($eventon_month_names[ $text_num], 0 , 3):'';
 			}
 		// am pm
 		}else if($type=='ampm'){
@@ -737,7 +725,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			}
 			
 			$new_lang_val = (!empty($evo_options[$_lang_variation][$field]) )?
-				stripslashes($evo_options[$_lang_variation][$field]): $default_val;
+				stripslashes($evo_options[$_lang_variation][$field]): 
+				$default_val;
 				
 			return $new_lang_val;
 		}
@@ -765,13 +754,22 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					( !empty($shortcode_arg['lang'])? $shortcode_arg['lang']: 'L1')
 				);
 
-			$field_name = str_replace(' ', '-',  strtolower($text));
+			$field_name = evo_lang_texttovar_filter($text);
 
 			return !empty($language_options[$lang][$field_name])? $language_options[$lang][$field_name]:$text;
 		}
 		// this function with directly echo the values
 			function evo_lang_e($text, $lang='', $language_options=''){
-				echo evo_lang($text, $lang='', $language_options='');
+				echo evo_lang($text, $lang, $language_options='');
+			}
+
+			// Convert the text string for language into correct escapting variable name
+			function evo_lang_texttovar_filter($text){
+				$field_name = str_replace(' ', '-',  strtolower($text));
+				$field_name = str_replace('.', '',  $field_name);
+				$field_name = str_replace(':', '',  $field_name);
+				$field_name = str_replace(',', '',  $field_name);
+				return $field_name;
 			}
 	// get eventon language using variable
 	// 2.3.16
@@ -790,16 +788,6 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 		}
 
-/* ADD TO CALENDAR */
-	function eventon_get_addgoogle_cal($object){
-		$location = (!empty($object->evals['evcal_location']))? urlencode($object->evals['evcal_location'][0]) : ''; 
-		$start = evo_get_adjusted_utc($object->estart);
-		$end = evo_get_adjusted_utc($object->eend);
-		$title = urlencode($object->etitle);
-		$excerpt = !empty($object->excerpt)? $object->excerpt: $object->etitle;
-
-		return 'http://www.google.com/calendar/event?action=TEMPLATE&amp;text='.$title.'&amp;dates='.$start.'/'.$end.'&amp;details='.( urlencode($excerpt) ).'&amp;location='.$location;
-	}
 
 /** SORTING arrangement functions **/
 	function cmp_esort_startdate($a, $b){
@@ -858,7 +846,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			$words = explode(' ', $text);
 
 			if(count($words)> $excerpt_length)
-				$words = array_slice($words, 0, 5, true);
+				$words = array_slice($words, 0, $excerpt_length, true);
 
 			$content = implode(' ', $words);
 			$content = strip_shortcodes($content);
@@ -880,7 +868,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		$words = explode(' ', $string);
 
 		if(count($words)> $excerpt_length)
-			$words = array_slice($words, 0, 5, true);
+			$words = array_slice($words, 0, $excerpt_length, true);
 
 		$content = implode(' ', $words);
 
@@ -905,8 +893,15 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			$template =$preurl."/{$slug}-{$name}.php";
 		}else{
 			// Look in yourtheme/slug-name.php and yourtheme/eventon/slug-name.php
-			if ( $name )
-				$template = locate_template( array ( "{$slug}-{$name}.php", "{$eventon->template_url}{$slug}-{$name}.php" ) );
+			if ( $name ){
+				$childThemePath = get_stylesheet_directory();
+				$template = locate_template( array ( 
+					"{$slug}-{$name}.php", 
+					TEMPLATEPATH."/". $eventon->template_url . $slug .'-'. $name .'.php',
+					$childThemePath."/". $eventon->template_url . $slug .'-'. $name .'.php',
+					"{$eventon->template_url}{$slug}-{$name}.php" )
+				);
+			}
 
 			// Get default slug-name.php
 			if ( !$template && $name && file_exists( AJDE_EVCAL_PATH . "/templates/{$slug}-{$name}.php" ) )
@@ -1062,6 +1057,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		return apply_filters('evo_max_cmd_count', 11);
 	}
 
+
 // GET event type names
 	function evo_get_ettNames($options=''){
 		$output = array();
@@ -1074,7 +1070,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		return $output;
 	}
 	function evo_get_localized_ettNames($lang='', $options='', $options2=''){
-		$output ='';
+		$output = array();
 		global $eventon;
 
 		$options = (!empty($options))? $options: get_option('evcal_options_evcal_1');
@@ -1102,7 +1098,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			if(!empty($lang_name)){
 				$output[$x] = $lang_name;
 			}else{
-				$output[$x] = (!empty($options['evcal_eventt'.$ab]))? $options['evcal_eventt'.$ab]:'Event Type '.$ab;
+				$output[$x] = (!empty($options['evcal_eventt'.$ab]))? $options['evcal_eventt'.$ab]: __('Event Type','eventon').' '.$ab;
 			}			
 		}
 		return $output;
@@ -1157,9 +1153,19 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			($slashes? stripcslashes($meta_array[$fieldname][0]): $meta_array[$fieldname][0])
 			:null;
 	}
-	function evo_meta_yesno($meta_array, $fieldname, $check_value, $yes_value, $no_value){	
+	// updated @2.5.5
+	function evo_meta_yesno($meta_array, $fieldname, $check_value='yes', $yes_value='yes', $no_value='no'){	
 		return (!empty($meta_array[$fieldname]) && $meta_array[$fieldname][0] == $check_value)? $yes_value:$no_value;
 	}
+	// added @2.5
+	// get values from post meta field
+		function evo_var_val($array, $field){
+			return !empty($array[$field])? $array[$field][0] : null;
+		}
+	// @added 2.5.2
+		function evo_settings_value($array, $field){
+			return !empty($array[$field])? $array[$field] : false;
+		}
 	
 	/**
 	 * check wether meta field value is not empty and equal to yes
@@ -1171,24 +1177,34 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	function evo_check_yn($meta_array, $fieldname){
 		return (!empty($meta_array[$fieldname]) && $meta_array[$fieldname][0]=='yes')? true:false;
 	}
+	// @added 2.5
+	function evo_settings_check_yn($meta_array, $fieldname){
+		return (!empty($meta_array[$fieldname]) && $meta_array[$fieldname]=='yes')? true:false;
+	}
 	// this will return true or false after checking if eventon settings value = yes
-	function evo_settings_val($fieldname, $options, $not=''){
+	function evo_settings_val($fieldname, $options, $not = false){
 		if($not){
 			return ( empty($options[$fieldname]) || (!empty($options[$fieldname]) && $options[$fieldname]=='no') )? true:false;
 		}else{
-			return ( !empty($options[$fieldname]) && $options[$fieldname]=='yes' )? true:false;
+			return ( is_array($options) && !empty($options[$fieldname]) && $options[$fieldname]=='yes' )? true:false;
 		}
 	}
+	
 
 /* 2.2.17 */
 	// process taxnomy filter values and return terms and operator
 		function eventon_tax_filter_pro($value){
 			// value have NOT in it
 			if(strpos($value, 'NOT-')!== false){
-				$op = explode('-', $value);
-				$filter_op='NOT';
-				$vals = str_replace('NOT-', '', $value);
-				//$vals = $op[1];
+
+				if($value == 'NOT-all' || $value == 'NOT-ALL'){
+					$filter_op='IN';
+					$vals='none';
+				}else{
+					$op = explode('-', $value);
+					$filter_op='NOT';
+					$vals = str_replace('NOT-', '', $value);
+				}
 			}else{
 				$vals= $value;
 				$filter_op = 'IN';
@@ -1333,10 +1349,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				}else{
 					$blogs = wp_get_sites();
 					foreach($blogs as $blog){
-						echo $blog['blog_id'];
+						//echo $blog['blog_id'];
 						$_active_plugins = get_blog_option($blog['blog_id'], 'active_plugins');
 						if(!empty($_active_plugins)){	
-							print_r($_active_plugins);			
+							//print_r($_active_plugins);			
 							foreach($_active_plugins as $plugin){
 								// check if eventon is in activated plugins list
 								if(strpos( $plugin, 'woocommerce.php') !== false){
@@ -1389,31 +1405,42 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			$num = !empty($num)? $num: 1;
 			return get_option('evcal_options_evcal_'.$num);
 		}
+		// @since 2.5.2
+		// this will only return settings first option
+		function get_evo_options(){
+			return EVO()->evo_get_options('evcal_options_evcal_1');
+		}
+		function get_evo_langoptions(){
+			return EVO()->evo_get_options('evcal_options_evcal_2');
+		}
+
+		// @since v2.5.6
+		function evo_get_option_val($field_name='', $options_key=''){
+			if(empty($field_name)) return false;
+
+			$options_key = !empty($options_key)? $options_key: 'evcal_options_evcal_1';
+			$OPT = EVO()->evo_get_options($options_key);
+
+			if(empty($OPT[$field_name])) return false;
+
+			return stripslashes($OPT[$field_name]);
+		}
+		function evo_has_option_val($field_name='', $options_key=''){
+			if(empty($field_name)) return false;
+
+			$options_key = !empty($options_key)? $options_key: 'evcal_options_evcal_1';
+			$OPT = EVO()->evo_get_options($options_key);
+
+			if(empty($OPT[$field_name])) return false;
+
+			return true;
+		}
 
 /* version 2.2.25 */	
 	/* when events are moved to trash record time */
 		function eventon_record_trashedtime($opt){
 			$opt['event_trashed'] = current_time('timestamp');
 			update_option('evcal_options_evcal_1', $opt);
-		}
-
-	/* check if its time to trash old events again */
-	// deprecated since 2.3.16
-		function is_eventon_events_ready_to_trash($opt){
-
-			// check if set to trash old events
-			if(!empty($opt['evcal_move_trash']) && $opt['evcal_move_trash']=='yes'){
-				$rightnow =current_time('timestamp');
-
-				$last_trashed = (!empty($opt['event_trashed']))? $opt['event_trashed']:false;
-
-				$trash_gap = 3600*24;
-
-				// check if the time is correct for trashing
-				if(!$last_trashed || $last_trashed+$trash_gap < $rightnow){
-					return true;
-				}else{ return false;}
-			}else{ return false;}
 		}
 
 	// go through all events and trash past events
@@ -1431,34 +1458,36 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			if(!$events->have_posts()) return false;
 
 			date_default_timezone_set('UTC');
-			$rightnow = current_time('timestamp');
+			$rightnow = time();
 
 			while($events->have_posts()): $events->the_post();
 				$event_id = $events->ID;
 				$eventPMV = get_post_custom($event_id);
 
-				$repeating = evo_check_yn($eventPMV, 'evcal_repeat');
-				$yearLong = evo_check_yn($eventPMV, 'evo_year_long');
-				$monthLong = evo_check_yn($eventPMV, '_evo_month_long');
+				if( evo_check_yn($eventPMV, 'evcal_repeat') ) continue;
+				if( evo_check_yn($eventPMV, 'evo_year_long') ) continue;
+				if( evo_check_yn($eventPMV, '_evo_month_long') ) continue;
 				
 				$row_end = ( !empty($eventPMV['evcal_erow']) )? 
 					$eventPMV['evcal_erow'][0]:
 					((!empty($eventPMV['evcal_srow']))? 
 					$eventPMV['evcal_srow'][0] :false);
 
-				if(!$repeating && !$yearLong && !$monthLong && $row_end){
 
-					if($row_end< $rightnow){
-						$event = get_post($event_id, 'ARRAY_A');
+				if($row_end >= $rightnow) continue;
 
-						// only do this for event post types 5/19/15
-						if($event['post_type']!='ajde_events') continue;
-						
-						$event['post_status']='trash';
-						wp_update_post($event);
-					}
-				}
-					
+				$event = get_post($event_id, 'ARRAY_A');
+
+				// only do this for event post types 5/19/15
+				if($event['post_type']!='ajde_events') continue;
+				
+				do_action('evo_before_trashing_event', $event_id);
+
+				$event['post_status']='trash';
+				wp_update_post($event);
+
+				do_action('evo_after_trashing_event', $event_id);
+								
 
 			endwhile;
 			wp_reset_postdata();
@@ -1475,6 +1504,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		$repeat_count = (isset($_POST['evcal_rep_num']))? $_POST['evcal_rep_num']: 1;
 		$repeat_gap = (isset($_POST['evcal_rep_gap']))? $_POST['evcal_rep_gap']: 1;
 		$month_repeat_by = (isset($_POST['evp_repeat_rb']))? $_POST['evp_repeat_rb']: 'dom';
+		$week_repeat_by = (isset($_POST['evp_repeat_rb_wk']))? $_POST['evp_repeat_rb_wk']: 'sing';
+			$week_repeat_days = (isset($_POST['evo_rep_WKwk']))? $_POST['evo_rep_WKwk']: '';
+
 		$wom = (isset($_POST['evo_repeat_wom']))? $_POST['evo_repeat_wom']: 'none';
 		$days = (isset($_POST['evo_rep_WK']))? $_POST['evo_rep_WK']: '';
 
@@ -1520,6 +1552,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			// each repeat interval
 			if($numberof_repeats>0){
 
+				// create for each added 
 				foreach($_post_repeat_intervals as $field => $interval){
 
 					// initial repeat value
@@ -1554,9 +1587,12 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 			// append Initial event date values to repeat dates array
 				if( !empty($unix_E) && !empty($unix_S) && 
-					$unix_S != $_post_repeat_intervals[0][0] &&
-					$unix_E != $_post_repeat_intervals[0][1] 
+					(	!empty($_post_repeat_intervals) && 
+						$unix_S != $_post_repeat_intervals[0][0] ||
+						$unix_E != $_post_repeat_intervals[0][1] 
+					)
 				){
+
 					if($numberof_repeats==1){
 						$repeat_intervals[] = array($unix_S,$unix_E);
 					}elseif($numberof_repeats>=1){
@@ -1564,28 +1600,26 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					}						
 				}
 
-			update_post_meta(3089,'aaa',$count);
+			//update_post_meta(3089,'aaa',$numberof_repeats);
 			// sort repeating dates
 			asort($repeat_intervals);
 
 		}else{
 			// for each repeat times
-			$count = 1;
+			$count = 1; $debug = '';
 			for($x =0; $x<=$repeat_count; $x++){
 
-				$repeat_multiplier = ((int)$repeat_gap) * $x;
+				// Reused variables
+					$Names = array( 0=>"Sun", 1=>"Mon", 2=>"Tue", 3=>"Wed", 4=>"Thu", 5=>"Fri", 6=>"Sat" );
+					$dif_s_e = $unix_E - $unix_S;
 
 				// for day of week monthly repeats
 				if($repeat_type == 'monthly' && $month_repeat_by=='dow' && !empty($days) && is_array($days) ){
-
-					// $wom = week of month
-						$Names = array( 0=>"Sun", 1=>"Mon", 2=>"Tue", 3=>"Wed", 4=>"Thu", 5=>"Fri", 6=>"Sat" );
-
+					$repeat_multiplier = ((int)$repeat_gap) * $x;
 					// find time dif from 12am to selected time
 						$dif_S = $unix_S - strtotime( date("Y-m-j", $unix_S) );
 						$dif_E = $unix_E - strtotime( date("Y-m-j", $unix_E) );
-						$dif_s_e = $unix_E - $unix_S;
-
+						
 					// start time
 						if($repeat_multiplier == 0){
 							$ThisMonthTS = strtotime( date("Y-m-01", $unix_S)  );							
@@ -1613,25 +1647,70 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 						// if first repeat instance is before initial event start date
 						if($new_start_time_repeat<$unix_S) continue;
 
-						$repeat_intervals[] = array( $new_start_time_repeat, $new_start_time_repeat+$dif_s_e );
+						$new_end_time_repeat = $new_start_time_repeat+$dif_s_e;
+
+						if( !eventon_repeat_interval_exists($repeat_intervals,$new_start_time_repeat, $new_end_time_repeat ) )
+							$repeat_intervals[] = array( $new_start_time_repeat, $new_end_time_repeat );
 						
 						$data .= date("Y-m-j", $new_start_time_repeat).' ';	
 						
 					}
 					//$errors[] = $ThisMonthTS;
 
+				}elseif($repeat_type == 'weekly' && $week_repeat_by=='dow' && !empty($week_repeat_days) && is_array($week_repeat_days) ){
+
+					$y = $x+1;
+					$week = ($x==0)? $y: ($x *$repeat_gap)+1;
+					
+					$init = date('w', $unix_S);
+
+					$init_day_of_week = $init[0];
+					$days_before = ($init_day_of_week==0)?0: $init_day_of_week;
+					$unix_for_day = 86400;
+
+					// Initial date
+					if($week == 1) $repeat_intervals[] = array($unix_S, $unix_E);
+					
+					// each day of the week repeating weekly
+					foreach($week_repeat_days as $dayKey){
+
+						if($week == 1){
+							if( $dayKey <= $init_day_of_week ) continue;
+							$unix_addition = ($dayKey - $init_day_of_week) * $unix_for_day;						
+							$repeat_intervals[] = array($unix_S + $unix_addition, $unix_E + $unix_addition);
+							
+						}else{
+							$day_multiple = (($dayKey - $init_day_of_week) + ( ($week-1)*7) );
+							$unix_addition = $day_multiple * $unix_for_day;
+							$repeat_intervals[] = array($unix_S + $unix_addition, $unix_E + $unix_addition);
+							//$debug .='W'.$days_before.' ';
+						}						
+					}					
+
 				}else{
+					$repeat_multiplier = ((int)$repeat_gap) * $x;
 					$new_unix_S = strtotime('+'.$repeat_multiplier.' '.$term, $unix_S);
 					$new_unix_E = strtotime('+'.$repeat_multiplier.' '.$term, $unix_E);
 					// add new intervals to array
 					$repeat_intervals[] = array($new_unix_S, $new_unix_E);
 				}				
-			}
+			}// each repeat count
+
+			//update_post_meta(3089,'aaa', $debug);
 		}
 
 		//update_post_meta(1350,'aa', $data);
 		//return array_merge($repeat_intervals, $errors);
 		return $repeat_intervals;
+	}
+
+	// check if exact same repeat interval doesnt exist 
+	// @version 2.5
+	function eventon_repeat_interval_exists($multiarray, $start, $end){
+		foreach($multiarray as $repeat){
+			if($repeat[0] == $start && $repeat[1] == $end) return true;
+		}
+		return false;
 	}
 
 // EVENT COLOR
@@ -1695,6 +1774,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	}
 	function evo_save_term_metas($tax, $termid, $data, $options=''){
 		if(empty($termid)) return false;
+		if(!is_array($data) ) return false;
+		
 		$termmetas = !empty($options)? $options: get_option( "evo_tax_meta");
 		
 		if(!empty($termmetas) && is_array($termmetas) && !empty($termmetas[$tax][$termid])){
@@ -1709,6 +1790,39 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	}
 
 // SUPPORT FUNCTIONS
+
+	// Login link
+	// @since 2.6.5
+		function evo_login_url($permalink =''){
+			$opt = get_option('evcal_options_evcal_1');
+
+			if( !empty( $opt['evo_login_link']))  return $opt['evo_login_link'];
+
+			return wp_login_url($permalink);
+
+		}
+
+	// Link Related
+		// convert link to acceptable link
+  			function evo_format_link($url){
+
+  				$is_url_filters_on = evo_get_option_val('evo_card_http_filter');
+
+  				if(!empty($is_url_filters_on) && $is_url_filters_on=='yes') return $url;
+
+				$scheme = is_ssl() ? 'https' : 'http';
+				
+	            $url = str_replace(array('http:','https:'), '', $url);
+
+	            if ( substr( $url, 0, 2 ) === '//' ){
+	            	$url = $scheme. ':' . $url;
+	            }else{
+	            	$url = $scheme. '://' . $url;
+	            }
+
+	            return $url;
+			}
+
 	// Generate location latLon from address
 		function eventon_get_latlon_from_address($address){
 			
@@ -1774,6 +1888,15 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					return $baseurl.'?'.$str;
 				}
 			}
+
+	// create data attributes for HTML elements
+		function EVO_get_data_attrs($array){
+			$output = '';
+			foreach($array as $key=>$val){
+				$output .= 'data-'.$key.'="'.$val .'" ';
+			}
+			return $output;
+		}
 
 	// Returns a proper form of labeling for custom post type
 	/** Function that returns an array containing the IDs of the products that are on sale. */

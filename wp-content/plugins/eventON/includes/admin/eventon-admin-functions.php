@@ -166,6 +166,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	}
 
 // create backend pages
+// @updated 2.6.1
 	function eventon_create_page($slug, $option, $page_title = '', $page_content = '', $post_parent = 0 ){
 		global $wpdb;
 
@@ -193,6 +194,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	    );
 	    $page_id = wp_insert_post( $page_data );
 	    update_option( $option, $page_id );
+
+	    return $page_id;
 	}
 
 // save event functions
@@ -288,4 +291,51 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			} // endforeach
 
 		}
+
+// get converted unix time for saving event date time using $_POST
+	function evoadmin_get_unix_time_fromt_post($post_id){
+		// field names that pertains only to event date information
+			$fields_sub_ar = apply_filters('eventon_event_date_metafields', array(
+				'evcal_start_date',
+				'evcal_end_date', 
+				'evcal_start_time_hour',
+				'evcal_start_time_min',
+				'evcal_st_ampm',
+				'evcal_end_time_hour',
+				'evcal_end_time_min',
+				'evcal_et_ampm',
+				'evcal_allday'
+				)
+			);
+
+		// DATE and TIME data
+			$date_POST_values = array();
+			foreach($fields_sub_ar as $ff){
+				
+				if(empty($_POST[$ff])) continue;
+				$date_POST_values[$ff]=$_POST[$ff];
+
+				// remove these values from previously saved
+				delete_post_meta($post_id, $ff);
+			}
+
+		// hide end time filtering of data values
+			if( !empty($_POST['evo_hide_endtime']) && $_POST['evo_hide_endtime']=='yes'){
+
+				if(evo_settings_check_yn($_POST,'evo_span_hidden_end')){
+					$date_POST_values['evcal_end_date']=$_POST['evcal_end_date'];
+				}else{
+					$date_POST_values['evcal_end_date']=$_POST['evcal_start_date'];
+					$date_POST_values['evcal_end_time_hour'] = '11';
+					$date_POST_values['evcal_end_time_min'] = '50';
+					$date_POST_values['evcal_et_ampm'] = 'pm';
+				}				
+			}
+		
+		// convert the post times into proper unix time stamps
+			$date_format = !empty($_POST['_evo_date_format']) ? $_POST['_evo_date_format']: get_option('date_format');
+			$time_format = !empty($_POST['_evo_time_format']) ? $_POST['_evo_time_format']: get_option('time_format');
+
+			return eventon_get_unix_time($date_POST_values, $date_format, $time_format);
+	}
 ?>

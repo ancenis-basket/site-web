@@ -2,7 +2,7 @@
 /**
  * Language Settings 
  *
- * @version		2.4.7
+ * @version		2.6.5
  * @package		EventON/settings
  * @category	Settings
  * @author 		AJDE
@@ -18,7 +18,8 @@ class evo_settings_lang{
 		$this->evopt = get_option('evcal_options_evcal_1');
 		$this->lang_version = (!empty($_GET['lang']))? $_GET['lang']: 'L1';
 		
-		$this->lang_options = (!empty($this->evcal_opt[2][$this->lang_version]))? $this->evcal_opt[2][$this->lang_version]:null;
+		$evo_opt_lang = get_option('evcal_options_evcal_2');
+		$this->lang_options = (!empty($evo_opt_lang[$this->lang_version]))? $evo_opt_lang[$this->lang_version]:null;
 
 		$this->lang_variations = apply_filters('eventon_lang_variation', array('L1','L2', 'L3'));
 		$this->uri_parts = explode('?', $_SERVER['REQUEST_URI'], 2);
@@ -28,17 +29,20 @@ class evo_settings_lang{
 		ob_start(); ?>
 		<form method="post" action=""><?php settings_fields('evcal_field_group'); 
 			wp_nonce_field( AJDE_EVCAL_BASENAME, 'evcal_noncename' ); ?>
-		<div id="evcal_2" class="postbox evcal_admin_meta">	
-			<div class="inside">
-				<h2><?php _e('Type in custom language text for front-end calendar','eventon');?></h2>
-				<?php echo $this->_section_lang_selection();?>
-				<p><i><?php _e('Please use the below fields to type in custom language text that will be used to replace the default language text on the front-end of the calendar.','eventon')?></i></p>
-				<?php
-					echo $this->interpret_array( apply_filters('eventon_settings_lang_tab_content',$this->language_variables_array()) );
-				?>
+			<div id="evcal_2" class="postbox evcal_admin_meta">	
+				<div class="inside">
+					<h2><?php _e('Type in custom language text for front-end calendar','eventon');?></h2>
+					<?php echo $this->_section_lang_selection();?>
+
+					<p style='padding-bottom:15px;'><i><?php _e('Please use the below fields to type in custom language text that will be used to replace the default language text on the front-end of the calendar.','eventon')?><br/><?php _e('NOTE: Text strings with label "Duplicate" will be replaced with first text string value you entered, after saving changes.');?></i></p>
+					<?php
+						echo $this->interpret_array( apply_filters('eventon_settings_lang_tab_content',$this->language_variables_array()) );
+					?>
+				</div>
 			</div>
-		</div>
-		<p style='padding:0'><input type="submit" class="evo_admin_btn btn_prime" value="<?php _e('Save Changes','eventon') ?>" style='margin-top:15px'/></p>
+			
+			<p style='padding:0'><input type="submit" class="evo_admin_btn btn_prime" value="<?php _e('Save Changes','eventon') ?>" style='margin-top:15px'/></p>
+
 		</form>
 		
 		<?php
@@ -48,7 +52,7 @@ class evo_settings_lang{
 			 * @added 	2.3.2
 			 */
 		?>
-		<div class="evo_lang_export">
+		<div class="evo_lang_export" style='padding-top:10px; margin-top:30px; border-top:1px solid #d0d0d0'>
 			<h3><?php _e('Import/Export translations','eventon');?></h3>
 			<p><i><?php _e('NOTE: Make sure to save changes after importing. This will import/export the current selected language ONLY.','eventon');?></i></p>
 
@@ -77,7 +81,7 @@ class evo_settings_lang{
 						echo "<option value='{$lang}' ".(($this->lang_version==$lang)? 'selected="select"':null).">{$lang}</option>";
 					}
 				?></select>
-				<?php $ajde->wp_admin->echo_tooltips(__("You can use this to save upto 2 different languages for customized text. Once saved use the shortcode to show calendar text in that customized language. eg. [add_eventon lang='L2']",'eventon'));?></h4>
+				<?php $ajde->wp_admin->echo_tooltips(__("You can use this to save different languages for customized text for calendar. Once saved use the shortcode to show calendar text in that customized language. eg. [add_eventon lang='L2']",'eventon'));?></h4>
 
 			<?php 
 			return ob_get_clean();
@@ -92,6 +96,8 @@ class evo_settings_lang{
 
 			if(!is_array($array)) return;
 
+			$LNG_names = array();
+
 			foreach($array as $item){
 				$item_type = !empty($item['type'])? $item['type']: '';				
 				$label = (!empty($item['label']))?  $item['label']: '';
@@ -104,7 +110,7 @@ class evo_settings_lang{
 						$output .= "<div class='evoLANG_section_header evo_settings_toghead'>{$item['name']}</div><div class='evo_settings_togbox'>";
 					break;
 					case 'multibox_open':
-						if(!empty($item['items'])){
+						if(!empty($item['items']) && is_array($item['items'])){
 							$output .= "<div class='evcal_lang_box ' style='padding-bottom:5px; clear:both'>";
 						
 							foreach($item['items'] as $box=>$boxval){
@@ -126,24 +132,39 @@ class evo_settings_lang{
 						$output .= "</div><!--close-->";
 					break;
 					default:
+
+						//if(empty($item['name'])) continue;
+
 				
 						//@v 2.2.28 
 						// self sufficient names for language
 							if(!empty($item['var']) && $item['var']=='1'){
-								$name = str_replace(' ', '-',  strtolower($label));
+								$name = evo_lang_texttovar_filter($label);
 							}else{
-								$name = (!empty($item['name']))?  $item['name']: '';
+								$name = $item['name'];
 							}
-						
-						$val = (!empty($name) && !empty($this->lang_options[$name]))?  $this->lang_options[$name]: '';						
 
-						if(empty($label)) break;
+						$duplicate_string = in_array($name, $LNG_names)? true:false;
 
-						$output .= "<div class='eventon_custom_lang_line'>
+						// field name processing
+							if(in_array($name, $LNG_names) && !empty($this->lang_options[$name]) ){
+								$val = $this->lang_options[$name];
+							}else{
+								$name = in_array($name, $LNG_names)? $name.'_v_': $name;
+								$LNG_names[] = $name;	
+								$val = (!empty($this->lang_options[$name]))?  $this->lang_options[$name]: '';
+							}
+								
+
+						$output .= "<div class='eventon_custom_lang_line ".($duplicate_string?'dup':'')."'>
 							<div class='eventon_cl_label_out'>
 								<p class='eventon_cl_label'>{$label}</p>
 							</div>";
-						$output .= '<input class="eventon_cl_input" type="text" name="'.$name.'" placeholder="'.$placeholder.'" value="'.stripslashes($val).'"/>';
+
+						$value = is_array($val)? $val[0]: stripslashes($val);
+
+						$output .= '<input class="eventon_cl_input " type="text" name="'.$name.'" placeholder="'.$placeholder.'" value="'.
+							$value.'"/>';
 
 						if($placeholder) $output .= $ajde->wp_admin->tooltips($placeholder,'L');
 						$output .= "<div class='clear'></div></div>";
@@ -156,6 +177,7 @@ class evo_settings_lang{
 			return $output;
 		}
 
+		// Language section fields
 		function language_variables_array(){
 			$output =  array(
 				array('type'=>'togheader','name'=>__('Months and Dates','eventon')),
@@ -168,23 +190,28 @@ class evo_settings_lang{
 				array('type'=>'togend'),
 				array('type'=>'togheader','name'=>__('General Calendar','eventon')),
 					array('label'=>'No Events','name'=>'evcal_lang_noeve',),
+					array('label'=>'No Events on The List at This Time','var'=>1),
 					array('label'=>'All Day','name'=>'evcal_lang_allday',),
 					array('label'=>'Year Around Event','name'=>'evcal_lang_yrrnd'),
 					array('label'=>'Month Long Event','name'=>'evcal_lang_mntlng'),
 					array(
-						'label'=>'Events',
-						'name'=>'evcal_lang_events',
+						'label'=>'Events','name'=>'evcal_lang_events',
 					),array(
-						'label'=>'Show More Events',
-						'name'=>'evcal_lang_sme',
-					),array(
-						'label'=>'Event Cancelled',
-						'name'=>'evcal_evcard_evcancel',
+						'label'=>'Show More Events','name'=>'evcal_lang_sme',
 					),
+					array('label'=>'Event Cancelled','name'=>'evcal_evcard_evcancel'),
+					array('label'=>'Featured','var'=>1),
 					array('label'=>'Event Tags','name'=>'evo_lang_eventtags',),
 					array('label'=>'YES','name'=>'evo_lang_yes',),
 					array('label'=>'NO','name'=>'evo_lang_no',),
 					array('label'=>'MORE','name'=>'evo_lang_more'),
+					
+					array('label'=>'Search Events','name'=>'evoSR_001','legend'=>'placeholder for search input fields'),
+					array('label'=>'Search Calendar Events','name'=>'evoSR_001a'),
+					array('label'=>'Searching','name'=>'evoSR_002'),
+					array('label'=>'What do you want to search for?','name'=>'evoSR_003'),
+					array('label'=>'Event(s) found','name'=>'evoSR_004'),
+					array('label'=>'Download all events as ICS file','var'=>'1'),
 				array('type'=>'togend'),
 			);
 
@@ -210,19 +237,19 @@ class evo_settings_lang{
 					),array(
 						'label'=>'Title','name'=>'evcal_lang_stitle',
 					),array(
-						'label'=>'All','name'=>'evcal_lang_all',
+						'label'=>__('All','eventon'),'name'=>'evcal_lang_all',
 						'placeholder'=>'Sort options all text'
 					),array(
-						'label'=>'Current Month','name'=>'evcal_lang_gototoday',
+						'label'=>__('Current Month','eventon'),'name'=>'evcal_lang_gototoday',
 					),array('label'=>'Apply Filters','name'=>'evcal_lang_apply_filters'),
 
 					array('type'=>'togend'),
 				array('type'=>'togheader','name'=>__('Event Card','eventon')),
 					array(
-						'label'=>'Location Name','name'=>'evcal_lang_location_name',
+						'label'=>__('Location Name','eventon'),'name'=>'evcal_lang_location_name',
 					)
-					,array('label'=>'Location','name'=>'evcal_lang_location')
-					,array('label'=>'Event Location','name'=>'evcal_evcard_loc')
+					,array('label'=>__('Location','eventon'),'name'=>'evcal_lang_location')
+					,array('label'=>__('Event Location','eventon'),'name'=>'evcal_evcard_loc')
 					,array(
 						'label'=>'Type your address','name'=>'evcalL_getdir_placeholder',
 						'legend'=>'Get directions section'
@@ -277,6 +304,7 @@ class evo_settings_lang{
 						'name'=>'evcal_evcard_learnmore2',
 						'legend'=>'for event learn more text'
 					),
+					array('label'=>'Login required to see the information','var'=>'1',),
 					array('type'=>'subheader','label'=>__('Add to calendar Section','eventon')),
 						array(
 							'label'=>'Calendar','name'=>'evcal_evcard_calncal',			
@@ -314,14 +342,17 @@ class evo_settings_lang{
 			return $output;
 		}
 			function _array_part_months(){
-				$output = '';
+				$output = array();
 				for($x=1; $x<13; $x++){
-					$output['evcal_lang_'.$x] = array('default'=>((!empty($this->lang_options['evcal_lang_'.$x]))?  $this->lang_options['evcal_lang_'.$x]: ''), 'placeholder'=>$this->eventon_months[$x]);
+					$output['evcal_lang_'.$x] = array(
+						'default'=>((!empty($this->lang_options['evcal_lang_'.$x]))?  $this->lang_options['evcal_lang_'.$x]: ''), 
+						'placeholder'=>$this->eventon_months[$x]
+					);
 				}
 				return $output;
 			}
 			function _array_part_3letter_months(){
-				$output = '';
+				$output = array();
 				for($x=1; $x<13; $x++){
 					$month_3l = substr($this->eventon_months[$x],0,3);
 					$output['evo_lang_3Lm_'.$x] = array('default'=> ((!empty($this->lang_options['evo_lang_3Lm_'.$x]))?  $this->lang_options['evo_lang_3Lm_'.$x]: ''), 'placeholder'=>$month_3l);
@@ -329,7 +360,7 @@ class evo_settings_lang{
 				return $output;
 			}
 			function _array_part_1letter_months(){
-				$output = '';
+				$output = array();
 				for($x=1; $x<13; $x++){
 					$month_1l = substr($this->eventon_months[$x],0,1);
 					$output['evo_lang_1Lm_'.$x] = array('default'=>((!empty($this->lang_options['evo_lang_1Lm_'.$x]))?  $this->lang_options['evo_lang_1Lm_'.$x]: ''), 'placeholder'=>$month_1l);
@@ -337,7 +368,7 @@ class evo_settings_lang{
 				return $output;
 			}
 			function _array_part_day_names(){
-				$output = '';
+				$output = array();
 				for($x=1; $x<8; $x++){
 					$default = $this->eventon_days[$x];
 					$output['evcal_lang_day'.$x] = array('default'=>((!empty($this->lang_options['evcal_lang_day'.$x]))?  $this->lang_options['evcal_lang_day'.$x]: ''), 'placeholder'=>$default);
@@ -345,7 +376,7 @@ class evo_settings_lang{
 				return $output;
 			}
 			function _array_part_3leter_day_names(){
-				$output = '';
+				$output = array();
 				for($x=1; $x<8; $x++){
 					$default = substr($this->eventon_days[$x],0,3);
 					$output['evo_lang_3Ld_'.$x] = array('default'=>((!empty($this->lang_options['evo_lang_3Ld_'.$x]))?  $this->lang_options['evo_lang_3Ld_'.$x]: ''),'placeholder'=>$default);
@@ -353,13 +384,13 @@ class evo_settings_lang{
 				return $output;
 			}
 			function _array_part_ampm(){
-				$output = '';
+				$output = array();
 				$output['evo_lang_am'] = array('default'=>((!empty($this->lang_options['evo_lang_am']))?  $this->lang_options['evo_lang_am']: ''),'placeholder'=>'am');
 				$output['evo_lang_pm'] = array('default'=>((!empty($this->lang_options['evo_lang_pm']))?  $this->lang_options['evo_lang_pm']: ''),'placeholder'=>'pm');
 				return $output;
 			}
 			function _array_part_taxonomies(){
-				$output =  '';
+				$output =  array();
 				
 				$event_type_names = evo_get_ettNames($this->evopt);
 				$ett_verify = evo_get_ett_count($this->evopt);
@@ -374,7 +405,7 @@ class evo_settings_lang{
 					// each term of taxonomy
 					$ab = $x==1?'':'_'.$x;
 					$terms = get_terms('event_type'.$ab, array('hide_empty'=>false));
-					$termitem = '';
+					$termitem = array();
 					if(!empty($terms)){
 						foreach($terms as $term){
 							$var = 'evolang_'.'event_type'.$ab.'_'.$term->term_id;
@@ -391,11 +422,16 @@ class evo_settings_lang{
 				$output[] = array('label'=>'Event Organizer', 'name'=>'evcal_lang_evorg');
 				$output[] = array('label'=>'Events by this organizer', 'var'=>'1');
 
+				// for MDT
+					for($y=1; $y <= EVO()->mdt->evo_max_mdt_count() ; $y++){
+						$output[] = array('label'=>'Multi Data Type '.$y, 'var'=>'1');
+					}
+
 				$output[] = array('type'=>'togend');
 				return $output;
 			}
 			function _array_part_custom_meta_field_names(){
-				$output = '';
+				$output = array();
 				$cmd_verify = evo_retrieve_cmd_count($this->evopt);
 
 				for($x=1; $x<($cmd_verify+1); $x++){

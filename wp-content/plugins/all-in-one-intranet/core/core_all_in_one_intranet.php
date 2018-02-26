@@ -9,14 +9,22 @@ class core_all_in_one_intranet {
 	// PRIVATE SITE
 	
 	public function aioi_template_redirect() {
-		if (substr($_SERVER['REQUEST_URI'], 0, 16) == '/wp-activate.php') return;
-		if (substr($_SERVER['REQUEST_URI'], 0, 11) == '/robots.txt') return;
-
 		$options = $this->get_option_aioi();
 		if (!$options['aioi_privatesite']) {
 			return;
 		}
-		
+
+	    $allow_access = false;
+		if (substr($_SERVER['REQUEST_URI'], 0, 16) == '/wp-activate.php' || substr($_SERVER['REQUEST_URI'], 0, 11) == '/robots.txt') {
+		    $allow_access = true;
+		}
+
+		$allow_access = apply_filters('aioi_allow_public_access', $allow_access);
+
+		if ($allow_access) {
+		    return;
+        }
+
 		// We do want a private site
 		if (!is_user_logged_in()) {
 			auth_redirect();
@@ -30,7 +38,7 @@ class core_all_in_one_intranet {
 				$user = wp_get_current_user();
 				if (!$user || !is_array($user->roles) || count($user->roles) == 0) {
 					wp_logout();
-					$output = '<p>'.esc_html('You attempted to login to the site, but you do not have any permissions. If you believe you should have access, please contact your administrator.').'</p>';
+					$output = '<p>'.esc_html__('You attempted to login to the site, but you do not have any permissions. If you believe you should have access, please contact your administrator.', 'all-in-one-intranet').'</p>';
 					wp_die($output);
 				}
 			}
@@ -58,11 +66,22 @@ class core_all_in_one_intranet {
 		}
 		return $sites;
 	}
+
+	// Disable REST API
+    public function aioi_rest_pre_dispatch() {
+	    $options = $this->get_option_aioi();
+	    $allow_access = !$options['aioi_privatesite'] || is_user_logged_in();
+	    $allow_access = apply_filters('aioi_allow_public_access', $allow_access);
+
+	    if (!$allow_access) {
+		    return new WP_Error( 'not-logged-in', 'REST API Requests must be authenticated because All-In-One Intranet is active', array( 'status' => 401 ) );
+	    }
+    }
 	
 	// LOGIN REDIRECT
 	
-	public function aioi_login_redirect($redirect_to, $requested_redirect_to, $user) {
-		if (isset($user->user_login)) {
+	public function aioi_login_redirect($redirect_to, $requested_redirect_to='', $user=null) {
+		if (!is_null($user) && isset($user->user_login)) {
 			$options = $this->get_option_aioi();
 			if ($options['aioi_loginredirect'] != '' && admin_url() == $redirect_to) {
 				return $options['aioi_loginredirect']; 
@@ -90,10 +109,9 @@ class core_all_in_one_intranet {
 			$last_activity_time = (int)get_user_meta($user_id, 'aioi_last_activity_time', true);
 			$logout_time_in_sec = $this->get_autologout_time_in_seconds();
 			if ($logout_time_in_sec > 0 && $last_activity_time + $logout_time_in_sec < time()) {
+				$current_url = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
 				wp_logout();
-				global $wp;
-				$current_url = add_query_arg( $wp->query_string, '', home_url( $wp->request ) );
-				wp_redirect($current_url); // Should hit the Login wall
+				wp_redirect($current_url); // Should hit the Login wall if site is private
 				exit;
 			} else {
 				update_user_meta($user_id, 'aioi_last_activity_time', time());
@@ -128,7 +146,7 @@ class core_all_in_one_intranet {
 	
 	public function aioi_plugin_action_links( $links, $file ) {
 		if ($file == $this->my_plugin_basename()) {
-			$settings_link = '<a href="'.$this->get_settings_url().'">Settings</a>';
+			$settings_link = '<a href="'.$this->get_settings_url().'">'.__('Settings', 'all-in-one-intranet').'</a>';
 			array_unshift( $links, $settings_link );
 		}
 	
@@ -155,12 +173,14 @@ class core_all_in_one_intranet {
 	// Add All-In-One Intranet to the Settings menu in admin panel
 	public function aioi_admin_menu() {
 		if (is_multisite()) {
-			add_submenu_page( 'settings.php', 'All-In-One Intranet settings', 'All-In-One Intranet',
+			add_submenu_page( 'settings.php', __('All-In-One Intranet settings', 'all-in-one-intranet'),
+                __('All-In-One Intranet', 'all-in-one-intranet'),
 			'manage_network_options', $this->get_options_menuname(),
 			array($this, 'aioi_options_do_page'));
 		}
 		else {
-			add_options_page( 'All-In-One Intranet settings', 'All-In-One Intranet',
+			add_options_page( __('All-In-One Intranet settings', 'all-in-one-intranet'),
+            __('All-In-One Intranet', 'all-in-one-intranet'),
 			'manage_options', $this->get_options_menuname(),
 			array($this, 'aioi_options_do_page'));
 		}
@@ -178,7 +198,7 @@ class core_all_in_one_intranet {
 		}
 		?>
 			
-		<h2>All-In-One Intranet setup</h2>
+		<h2><?php esc_html_e('All-In-One Intranet setup', 'all-in-one-intranet'); ?></h2>
 		
 		<hr />
 		<br />
@@ -191,9 +211,10 @@ class core_all_in_one_intranet {
 		$this->aioi_memberssection_text();
 		$this->aioi_loginredirectsection_text();
 		$this->aioi_autologoutsection_text();
+		$this->aioi_licensesection_text();
 		?>
 		<p class="submit">
-			<input type="submit" value="Save Changes" class="button button-primary" id="submit" name="submit">
+			<input type="submit" value="<?php esc_attr_e('Save Changes', 'all-in-one-intranet') ?>" class="button button-primary" id="submit" name="submit">
 		</p>
 		
 		</form>
@@ -204,11 +225,11 @@ class core_all_in_one_intranet {
 	protected function aioi_privacysection_text() {
 		$options = $this->get_option_aioi();
 				
-		echo "<h3>Privacy</h3>";
+		echo "<h3>".esc_html__('Privacy','all-in-one-intranet')."</h3>";
 		
 		echo "<input id='input_aioi_privatesite' name='".$this->get_options_name()."[aioi_privatesite]' type='checkbox' ".($options['aioi_privatesite'] ? 'checked' : '')." class='checkbox' />";
 		echo '<label for="input_aioi_privatesite" class="checkbox plain">';
-		echo 'Force site to be entirely private';
+		esc_html_e('Force site to be entirely private', 'all-in-one-intranet');
 		echo '</label>';
 		
 		echo "<br />";
@@ -216,13 +237,13 @@ class core_all_in_one_intranet {
 		if (is_multisite()) {
 			echo "<input id='input_aioi_ms_requiremember' name='".$this->get_options_name()."[aioi_ms_requiremember]' type='checkbox' ".($options['aioi_ms_requiremember'] ? 'checked' : '')." class='checkbox' />";
 			echo '<label for="input_aioi_ms_requiremember" class="checkbox plain">';
-			echo 'Require logged-in users to be members of a sub-site to view it';
+			esc_html_e('Require logged-in users to be members of a sub-site to view it', 'all-in-one-intranet' );
 			echo '</label>';
 			
 			echo "<br />";
 		}
 		
-		echo "<p>Note that your media uploads (e.g. photos) will still be accessible to anyone who knows their direct URLs.</p>";
+		echo "<p>".esc_html__('Note that your media uploads (e.g. photos) will still be accessible to anyone who knows their direct URLs.', 'all-in-one-intranet')."</p>";
 		
 		$this->display_registration_warning();
 		echo "<br />";
@@ -230,10 +251,12 @@ class core_all_in_one_intranet {
 	
 	protected function display_registration_warning() {
 		if (get_option('users_can_register')) {
-			echo '<p><b>Warning:</b> Your site is set so that &quot;Anyone can register&quot; themselves. ';
+			echo '<p>'
+                 . '<b>'.esc_html__('Warning:', 'all-in-one-intranet').'</b> '
+                 . esc_html__('Your site is set so that &quot;Anyone can register&quot; themselves. ', 'all-in-one-intranet');
 			echo '<a href="'
 					.admin_url( 'options-general.php' )
-					.'">Turn off here</a>';
+					.'">'.esc_html__('Turn off here', 'all-in-one-intranet').'</a>';
 			echo '</p>';
 		}
 	}
@@ -245,17 +268,17 @@ class core_all_in_one_intranet {
 	protected function aioi_loginredirectsection_text() {
 		$options = $this->get_option_aioi();
 	
-		echo "<h3>Login Redirect</h3>";
+		echo "<h3>".esc_html__('Login Redirect', 'all-in-one-intranet')."</h3>";
 	
 		echo '<label for="input_aioi_loginredirect" class="textbox plain">';
-		echo 'Redirect after login to URL: ';
+		esc_html_e( 'Redirect after login to URL: ', 'all-in-one-intranet');
 		echo '</label>';
 	
 		echo "<input id='input_aioi_loginredirect' name='".$this->get_options_name()."[aioi_loginredirect]' type='input' value='".esc_attr($options['aioi_loginredirect'])."' size='60' />";
 		
 		echo "<br />";
 		
-		echo "<p>Effective when users login via /wp-login.php directly. Otherwise, they will be taken to the page they were trying to access before being required to login.</p>";
+		echo "<p>".esc_html__('Effective when users login via /wp-login.php directly. Otherwise, they will be taken to the page they were trying to access before being required to login.', 'all-in-one-intranet')."</p>";
 		
 		echo "<br />";
 		echo "<br />";
@@ -264,29 +287,38 @@ class core_all_in_one_intranet {
 	protected function aioi_autologoutsection_text() {
 		$options = $this->get_option_aioi();
 		
-		echo "<h3>Auto Logout</h3>";
+		echo "<h3>".esc_html('Auto Logout', 'all-in-one-intranet')."</h3>";
 		
 		echo '<label for="input_aioi_autologout_time" class="textbox plain">';
-		echo 'Auto logout inactive users after ';
+		esc_html_e('Auto logout inactive users after ', 'all-in-one-intranet');
 		echo '</label>';
 		
 		echo "<input id='input_aioi_autologout_time' name='".$this->get_options_name()."[aioi_autologout_time]' type='input' value='".esc_attr($options['aioi_autologout_time'] == 0 ? '' : $options['aioi_autologout_time'])."' size='10' />";
 		
 		echo "<select name='".$this->get_options_name()."[aioi_autologout_units]'>";
 		echo $this->list_options(Array('minutes', 'hours', 'days'), $options['aioi_autologout_units']);
-		echo "</select> (leave blank to turn off auto-logout)"; 
+		echo "</select> ".esc_html__("(leave blank to turn off auto-logout)", 'all-in-one-intranet');
 
+		echo "<br />";
 		echo "<br />";
 	}
 
+	// Override in Premium
+	protected function aioi_licensesection_text() {
+    }
+
 	protected function list_options($list, $current) {
 		$output = '';
+		$trans_map = Array(
+			'minutes' => esc_html__('Minutes', 'all-in-one-intranet'),
+			'hours' => esc_html__('Hours', 'all-in-one-intranet'),
+            'days' => esc_html__('Days', 'all-in-one-intranet')
+        );
 		foreach ($list as $opt) {
-			$output .= '<option value="'.esc_attr($opt).'" '.($current == $opt ? 'selected="selected"' : '').'>'.esc_html($opt).'</option>';
+			$output .= '<option value="'.esc_attr($opt).'" '.($current == $opt ? 'selected="selected"' : '').'>'.$trans_map[$opt].'</option>';
 		}
 		return $output;
 	}
-	
 	public function aioi_options_validate($input) {
 		$newinput = Array();
 		$newinput['aioi_version'] = $this->PLUGIN_VERSION;
@@ -319,12 +351,12 @@ class core_all_in_one_intranet {
 	
 	protected function get_error_string($fielderror) {
 		$local_error_strings = Array(
-				'aioi_autologout_time|nan_texterror' => 'Auto logout time should be blank or a whole number'
+				'aioi_autologout_time|nan_texterror' => __('Auto logout time should be blank or a whole number', 'all-in-one-intranet')
 		);
 		if (isset($local_error_strings[$fielderror])) {
 			return $local_error_strings[$fielderror];
 		}
-		return 'Unspecified error';
+		return __('Unspecified error', 'all-in-one-intranet');
 	}
 	
 	public function aioi_save_network_options() {
@@ -364,7 +396,7 @@ class core_all_in_one_intranet {
 			?>
 					<div id="setting-error-settings_updated" class="updated settings-error">
 					<p>
-					<strong>Settings saved</strong>
+					<strong><?php esc_html_e('Settings saved', 'all-in-one-intranet'); ?></strong>
 					</p>
 					</div>
 				<?php
@@ -427,6 +459,8 @@ class core_all_in_one_intranet {
 	}
 	
 	protected function add_actions() {
+
+		add_action('plugins_loaded', array($this, 'aioi_plugins_loaded'));
 		
 		if (is_admin()) {
 			add_action( 'admin_init', array($this, 'aioi_admin_init'), 5, 0 );
@@ -445,13 +479,18 @@ class core_all_in_one_intranet {
 		add_action( 'template_redirect', array($this, 'aioi_template_redirect') );
 		add_filter( 'robots_txt', array($this, 'aioi_robots_txt'), 0, 2);
 		add_filter( 'option_ping_sites', array($this, 'aioi_option_ping_sites'), 0, 1);
+		add_filter( 'rest_pre_dispatch', array($this, 'aioi_rest_pre_dispatch'), 0, 1);
 		
 		add_filter( 'login_redirect', array($this, 'aioi_login_redirect'), 10, 3);
 		
 		add_action( 'wp_login', array($this, 'aioi_wp_login'), 10, 2);
-		add_action( 'get_header', array($this, 'aioi_check_activity'), 1);
-		add_action( 'admin_init', array($this, 'aioi_check_activity'), 1);
+		add_action( 'init', array($this, 'aioi_check_activity'), 1);
 	}
+
+	public function aioi_plugins_loaded() {
+		load_plugin_textdomain( 'all-in-one-intranet', false, dirname($this->my_plugin_basename()).'/lang/' );
+	}
+
 
 }
 

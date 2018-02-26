@@ -5,7 +5,7 @@
  * This file is being included into "../class-shortcodes.php" file's shortcode_render() method.
  *
  * @since    1.0
- * @version  1.3.7
+ * @version  1.4.7
  *
  * @uses  $codes_globals['sizes']['values']
  *
@@ -57,10 +57,18 @@
 	//icon
 		$atts['icon'] = trim( $atts['icon'] );
 		if ( $atts['icon'] ) {
-			$atts['icon'] = '<i class="' . esc_attr( $atts['icon'] ) . '"></i> ';
+			$atts['icon'] = '<span class="' . esc_attr( $atts['icon'] ) . '" aria-hidden="true"> </span>';
 		}
 	//class
 		$atts['class'] = apply_filters( 'wmhook_shortcode_' . $shortcode . '_classes', $atts['class'], $atts );
 
-//Output
-	$output = '<a href="' . esc_url( $atts['url'] ) . '" class="' . esc_attr( $atts['class'] ) . '"' . $atts['attributes'] . '>' . $atts['icon'] . $atts['content'] . '</a>';
+
+// Output
+
+	$shortcode_output = $atts['icon'] . $atts['content'];
+
+	if ( ! empty( $shortcode_output ) ) {
+		$output = '<a href="' . esc_url( $atts['url'] ) . '" class="' . esc_attr( $atts['class'] ) . '"' . $atts['attributes'] . '>' . $shortcode_output . '</a>';
+	} else {
+		$output = esc_html__( 'Sorry, there is nothing to display here&hellip;', 'webman-amplifier' );
+	}

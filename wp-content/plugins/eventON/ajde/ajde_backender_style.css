@@ -79,6 +79,7 @@
 		opacity: 0.6;
 		font-size: 18px;
 	}
+	@media screen and (max-width: 782px){#acus_left ul a i.fa{text-indent: 5px}}
 	#acus_left ul a i.fa:before{
 		margin-top: 3px;
 	}
@@ -111,7 +112,7 @@
 	#acus_left ul a.ny_afterfield{background-color:transparent; color:#fff; border-bottom:1px solid #a6a6a6}
 	#acus_right{	
 		background-color:#f8f7f7; position:relative;
-		min-height:700px;
+		min-height:900px;
 	}
 
 /* collpase menu button */
@@ -121,17 +122,19 @@
 	.backender_left .ajde-collapse-menu:hover span, .backender_left .ajde-collapse-menu:hover #collapse-button div:after{
 		color: #dfa872;
 	}
-	.backender_left .ajde-collapse-menu{	cursor: pointer;}
-	.backender_left .ajde-collapse-menu span{
-		padding:7px 0;
+	.backender_left .ajde-collapse-menu{ cursor: pointer;}
+	.backender_left #collapse-button .collapse-button-icon{
+		padding:0;
 		display: inline-block;
 	}
-	.backender_left.mini  #collapse-button.ajde_collpase_btn div:after{
+	.backender_left #collapse-button .collapse-button-label{display: block;}
+	.backender_left.mini #collapse-button .collapse-button-label{display: none;}
+	.backender_left.mini  #collapse-button .collapse-button-icon:after{
 		-ms-transform: rotate(180deg);
 		-webkit-transform: rotate(180deg);
 		transform: rotate(180deg);
 	}
-	#collapse-button.ajde_collpase_btn div:after{
+	.backender_left #collapse-button .collapse-button-icon:after{
 		-ms-transform: rotate(0deg);
 		-webkit-transform: rotate(0deg);
 		transform: rotate(0deg);
@@ -179,6 +182,7 @@
 		margin: -8px -20px 0;
 		padding: 10px 20px 0;
 	}
+	.backender_yn_sec .backender_yn_sec{background-color: #ece7dc}
 
 /* fonts */
 	#acus_right h3{
@@ -268,10 +272,12 @@
 	}	
 	#acus_right .customization_right_in{padding:20px; min-width:410px}
 
-	.customization_right_in .nfe_f_width input, .customization_right_in .nfe_f_width textarea{
+	.customization_right_in .nfe_f_width input, 
+	.customization_right_in .nfe_f_width textarea{
 		width:100%;
 		color:#666666;
 		padding:5px 8px;
+		border-radius: 5px;
 	}
 
 	.acus_line input{width:120px}
@@ -292,7 +298,7 @@
 		padding-right: 8px;
 		width: 25px;
 	}
-	.acus_radio em{display:block; padding-bottom:5px;width:100%}	
+	.acus_radio em{display:block; padding-top:8px;width:100%}	
 	.acus_radio input{width:15px; text-align:left;}
 
 	/* image uploading */

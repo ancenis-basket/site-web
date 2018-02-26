@@ -3,7 +3,7 @@
  * calendar outter shell content.
  *
  * @class 		evo_cal_shell
- * @version		2.3.11
+ * @version		2.4.11
  * @package		EventON/Classes
  * @category	Class
  * @author 		AJDE
@@ -21,7 +21,7 @@ class evo_cal_shell {
 	// Load calendar required files
 		public function load_evo_files(){
 			global $eventon;
-			$eventon->load_default_evo_scripts();
+			$eventon->frontend->load_default_evo_scripts();
 			$this->load_google_maps_api();
 		}
 
@@ -29,7 +29,7 @@ class evo_cal_shell {
 	// Event types and other functions
 		public function get_event_types(){
 			$output;
-			for($x = 1; $x< evo_max_ett_count() ; $x++){
+			for($x = 1; $x <= evo_max_ett_count() ; $x++){
 				$ab = ($x==1)? '':'_'.$x;
 				$event_type = 'event_type'.$ab;
 				$output[$x] = $event_type;
@@ -85,11 +85,16 @@ class evo_cal_shell {
 				'ft_event_priority'=>'no',
 				'number_of_months'=>1,
 				'hide_mult_occur'=>'no',
+				'hide_month_headers'=>'no',
 				'show_repeats'=>'no', // show repeating events while hide multiple occurance
 				'show_upcoming'=>0,
+				
 				'show_limit'=>'no',		// show only event count but add view more
-				'show_limit_redir'=>'',		// url to redirect show more button
-					'tiles'=>'no',		// tile box style cal
+					'show_limit_redir'=>'',		// url to redirect show more button
+					'show_limit_ajax'=>'no',
+					'show_limit_paged'=>1,
+				
+				'tiles'=>'no',		// tile box style cal
 					'tile_height'=>0,		// tile height
 					'tile_bg'=>0,		// tile background
 					'tile_count'=>2,		// tile count in a row
@@ -105,15 +110,18 @@ class evo_cal_shell {
 				'jumper'=>'no'	,		// month jumper
 					'jumper_offset'=>'0', 	// jumper start year offset
 					'exp_jumper'=>'no', 	// expand jumper
+					'jumper_count'=>5, 		// jumper years count
 				'accord'=>'no',			// accordion
 				'only_ft'=> 'no',		// only featured events				
+				'hide_ft'=> 'no',		// hide all feaured events				
 				'hide_so'=>'no',	// hide sort options
 				'wpml_l1'=>'',		// WPML lanuage L1 = en
 				'wpml_l2'=>'',		// WPML lanuage L2 = nl
 				'wpml_l3'=>'',		// WPML lanuage L3 = es
 				's'=>'',		// keywords to search
 				'hide_arrows'=>'no',	// hide calendar arrows
-				'members_only'=>'no'	// only visible for loggedin user
+				'members_only'=>'no',	// only visible for loggedin user
+				'ics'=>'no'	,		// download all events as ICS
 			);
 
 			// each event type category
@@ -126,6 +134,7 @@ class evo_cal_shell {
 				$args[$tax] ='all';
 			}
 
+			
 			return apply_filters('eventon_shortcode_defaults', $args);
 		}
 
@@ -150,13 +159,19 @@ class evo_cal_shell {
 				'evc_open'=>((!empty($arg['evc_open']))? $arg['evc_open']:'no'),
 				'show_limit'=>((!empty($arg['show_limit']))? $arg['show_limit']:'no'),
 				'etc_override'=>((!empty($arg['etc_override']))? $arg['etc_override']:'no'),
+				'show_limit_redir'=>((!empty($arg['show_limit_redir']))? $arg['show_limit_redir']:'0'),
 				'tiles'=>$arg['tiles'],
 					'tile_height'=>$arg['tile_height'],
 					'tile_bg'=>$arg['tile_bg'],
 					'tile_count'=>$arg['tile_count'],
 					'tile_style'=>$arg['tile_style'],
 				's'=>((!empty($arg['s']))? $arg['s']:''),
-				'members_only' => $arg['members_only']
+				'members_only' => $arg['members_only'],
+				'ux_val'=>((!empty($arg['ux_val']))? $arg['ux_val']:'0'),
+				'show_limit_ajax'	=>(!empty($arg['show_limit_ajax'])? $arg['show_limit_ajax']:'no'),
+				'show_limit_paged'	=>(!empty($arg['show_limit_paged'])?$arg['show_limit_paged']:0),
+				'hide_mult_occur'	=>(!empty($arg['hide_mult_occur'])?$arg['hide_mult_occur']:'no'),
+				'show_repeats'	=>(!empty($arg['show_repeats'])?$arg['show_repeats']:'no'),
 			), $arg);
 
 			foreach ($cdata as $f=>$v){
@@ -175,28 +190,27 @@ class evo_cal_shell {
 		function load_google_maps_api(){
 			// google maps loading conditional statement
 			if( !empty($this->cal->evopt1['evcal_cal_gmap_api']) && ($this->cal->evopt1['evcal_cal_gmap_api']=='yes') 	){
+
+				// remove completly
 				if(!empty($this->cal->evopt1['evcal_gmap_disable_section']) && $this->cal->evopt1['evcal_gmap_disable_section']=='complete'){
 
 					$this->cal->google_maps_load = false;
-
+					wp_dequeue_script( 'evcal_gmaps');
 					wp_enqueue_script( 'eventon_init_gmaps_blank');
 					wp_enqueue_script( 'eventon_gmaps_blank');
-				}else{
+				}else{ // remove only gmaps API
 
 					//update_option('evcal_gmap_load',true);
 					$this->cal->google_maps_load = true;
-					wp_enqueue_script( 'eventon_init_gmaps_blank');
+					wp_enqueue_script( 'eventon_init_gmaps');
 					wp_enqueue_script('eventon_gmaps');
+					wp_dequeue_script( 'evcal_gmaps');
 				}
 
-			}else {
+			}else { // NOT disabled
 
 				//update_option('evcal_gmap_load',true);
 				$this->cal->google_maps_load = true;
-
-				wp_enqueue_script( 'evcal_gmaps');
-				wp_enqueue_script( 'eventon_gmaps');
-				wp_enqueue_script('eventon_init_gmaps');
 
 				// load map files only to frontend
 				if ( !is_admin() ){
@@ -218,7 +232,7 @@ class evo_cal_shell {
 
 			// *** GET STARTING month and year
 			if($fixed_month!=0 && $fixed_year!=0){
-				$focused_month_num = $fixed_month;
+				$focused_month_num = (int)$fixed_month;
 				$focused_year = $fixed_year;
 			}else{
 			// GET offset month/year values
@@ -311,7 +325,7 @@ class evo_cal_shell {
 				$this->cal->lang_array['et'.$ab] = $ett_i18n_names[$x];
 			}
 
-			$this->cal->lang_array['no_event'] = $this->cal->lang('evcal_lang_noeve','No Events',$lang);
+			$this->cal->lang_array['no_event'] = html_entity_decode($this->cal->lang('evcal_lang_noeve','No Events',$lang));
 			$this->cal->lang_array['evcal_lang_yrrnd'] = $this->cal->lang('evcal_lang_yrrnd','Year Around Event',$lang);
 			$this->cal->lang_array['evcal_lang_mntlng'] = $this->cal->lang('evcal_lang_mntlng','Month Long Event',$lang);
 			$this->cal->lang_array['evloc'] = $this->cal->lang('evcal_lang_evloc','Event Location', $lang);

@@ -8,18 +8,22 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2016 Chad Butler
+ * Copyright (c) 2006-2017 Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
  * @package WP-Members
  * @author Chad Butler
- * @copyright 2006-2016
+ * @copyright 2006-2017
  *
  * Functions Included:
  * - wpmem_do_wp_register_form
  * - wpmem_do_wp_newuser_form
  */
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit();
+}
 
 /**
  * Appends WP-Members registration fields to wp-login.php registration form.
@@ -27,22 +31,27 @@
  * @since 2.8.7
  * @since 3.1.1 Updated to support new (3.1.0) field types.
  * @since 3.1.6 Updated to support new fields array. Added WC classes.
+ * @since 3.1.8 Added $process parameter.
  */
-function wpmem_do_wp_register_form() {
+function wpmem_do_wp_register_form( $process = 'wp' ) {
 
 	global $wpmem;
-	$wpmem_fields = wpmem_fields();
+	$wpmem_fields = wpmem_fields( $process );
 	
 	// Check if this is WooCommerce account page.
 	$is_woo = false;
-	if ( function_exists( 'is_account_page' ) ) {
-		$is_woo = ( is_account_page() ) ? true : $is_woo;
+	if ( 'woo' == $process ) {
+		$is_woo = true;
+	} else {
+		if ( function_exists( 'is_account_page' ) ) {
+			$is_woo = ( is_account_page() ) ? true : $is_woo;
+		}
 	}
 	
 	if ( isset( $wpmem_fields ) && is_array( $wpmem_fields ) ) {
 		foreach ( $wpmem_fields as $meta_key => $field ) {
 
-			$req = ( $field['required'] ) ? ' <span class="req">' . __( '(required)' ) . '</span>' : '';
+			$req = ( $field['required'] ) ? ( ( $is_woo ) ? ' <span class="required">*</span>' : ' <span class="req">' . __( '(required)' ) . '</span>' ) : '';
 
 			// File fields not yet supported for this form.
 			if ( $field['register'] && $meta_key != 'user_email' && $field['type'] != 'file' && $field['type'] != 'image' ) {
@@ -194,7 +203,7 @@ function wpmem_do_wp_newuser_form() {
 	global $wpmem;
 	echo '<table class="form-table"><tbody>';
 
-	$wpmem_fields = wpmem_fields();
+	$wpmem_fields = wpmem_fields( 'add_new' );
 	$exclude = wpmem_get_excluded_meta( 'register' );
 
 	foreach ( $wpmem_fields as $meta_key => $field ) {

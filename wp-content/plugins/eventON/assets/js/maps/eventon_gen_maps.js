@@ -100,7 +100,7 @@
 			// @since 2.2.22
 			var styles = '';
 
-			if(gmapstyles != 'default'){
+			if( typeof gmapstyles !== 'undefined' && gmapstyles != 'default'){
 				styles = $.parseJSON(gmapstyles);
 			}
 

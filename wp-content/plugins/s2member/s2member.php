@@ -20,8 +20,8 @@
  */
 /* -- This section for WordPress parsing. ------------------------------------------------------------------------------
 
-Version: 161129
-Stable tag: 161129
+Version: 170722
+Stable tag: 170722
 
 SSL Compatible: yes
 bbPress Compatible: yes
@@ -36,11 +36,11 @@ Authorize.Net Compatible: yes w/s2Member Pro
 Google Wallet Compatible: yes w/s2Member Pro
 ClickBank Compatible: yes w/s2Member Pro
 
-Tested up to: 4.7-alpha
+Tested up to: 4.9-alpha
 Requires at least: 4.2
 
 Requires PHP: 5.2
-Tested up to PHP: 7.0.12
+Tested up to PHP: 7.0.17
 
 Copyright: © 2009 WebSharks, Inc.
 License: GNU General Public License
@@ -48,24 +48,20 @@ Contributors: WebSharks, JasWSInc, anguz, raamdev, bruce-caldwell
 
 Author: s2Member / WebSharks, Inc.
 Author URI: http://s2member.com/
-Donate link: http://s2member.com/donate/
+Donate link: http://s2member.com/r/donate
 
 Text Domain: s2member
 Domain Path: /src/includes/translations
 
 Plugin Name: s2Member Framework
-Forum URI: http://s2member.com/forums/
+Forum URI: http://s2member.com/r/forum/
 Plugin URI: http://s2member.com/
 Privacy URI: http://s2member.com/privacy-policy/
 Changelog URI: http://s2member.com/changelog/
-Video Tutorials: http://s2member.com/videos/
+Video Tutorials: http://s2member.com/r/s2member-videos/
 Knowledge Base: http://s2member.com/kb/
 Newsletter: http://s2member.com/r/subscribe/
-Pro Add-on / Home Page: http://s2member.com/
-Pro Add-on / Prices: http://s2member.com/prices/
-Pro Add-on / Auto-Update URL: https://www.s2member.com/
 PayPal Pro Integration: http://s2member.com/r/pp-account-types/
-Professional Installation URI: http://s2member.com/r/professional-installation/
 
 Description: s2Member, a powerful (free) membership plugin for WordPress. Protect/secure members only content with roles/capabilities.
 Tags: s2, s2member, s2 member, membership, users, user, members, member, subscribers, subscriber, members only, roles, capabilities, capability, register, signup, paypal, paypal pro, pay pal, authorize, authorize.net, google wallet, clickbank, click bank, buddypress, buddy press, bbpress, bb press, shopping cart, cart, checkout, ecommerce
@@ -81,7 +77,7 @@ if(!defined('WPINC')) // MUST have WordPress.
  *
  * @var string
  */
-${__FILE__}['tmp'] = '161129'; //version//
+${__FILE__}['tmp'] = '170722'; //version//
 if(!defined('WS_PLUGIN__S2MEMBER_VERSION'))
 	define('WS_PLUGIN__S2MEMBER_VERSION', ${__FILE__}['tmp']);
 /**
@@ -114,7 +110,7 @@ if(!defined('WS_PLUGIN__S2MEMBER_MIN_WP_VERSION'))
  *
  * @var string
  */
-${__FILE__}['tmp'] = '161129'; //version//
+${__FILE__}['tmp'] = '170722'; //version//
 if(!defined('WS_PLUGIN__S2MEMBER_MIN_PRO_VERSION'))
 	define('WS_PLUGIN__S2MEMBER_MIN_PRO_VERSION', ${__FILE__}['tmp']);
 /*

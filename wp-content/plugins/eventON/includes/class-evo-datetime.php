@@ -3,7 +3,7 @@
  * Eventon date time class.
  *
  * @class 		EVO_generator
- * @version		2.3.20
+ * @version		2.5.3
  * @package		EventON/Classes
  * @category	Class
  * @author 		AJDE
@@ -19,17 +19,25 @@ class evo_datetime{
 	// RETURN UNIX
 		// return repeat interval correct unix time stamp for start OR end
 			public function get_int_correct_event_time($post_meta, $repeat_interval, $time='start'){
-				if(!empty($post_meta['repeat_intervals']) && $repeat_interval>0 ){					
+				if(!empty($post_meta['repeat_intervals']) && $repeat_interval>0 ){	
+
+					$repeat_interval = (int)$repeat_interval;
+
 					$intervals = unserialize($post_meta['repeat_intervals'][0]);
 
-					if(isset($intervals[$repeat_interval])){
-						return ($time=='start')? $intervals[$repeat_interval][0]:$intervals[$repeat_interval][1];
+					if(sizeof($intervals)>0 && isset($intervals[$repeat_interval])){
+						return ($time=='start')? 
+							$intervals[$repeat_interval][0]:
+							$intervals[$repeat_interval][1];
 					}else{
 						return ($time=='start')? $post_meta['evcal_srow'][0]:$post_meta['evcal_erow'][0];
 					}
 					
 				}else{
-					return ($time=='start')? $post_meta['evcal_srow'][0]:$post_meta['evcal_erow'][0];
+					// return raw start val else end val else 0
+					if( isset( $post_meta['evcal_srow'] )) return $post_meta['evcal_srow'][0];
+					if( isset( $post_meta['evcal_erow'] )) return $post_meta['evcal_erow'][0];
+					return 0;
 				}
 			}
 		// return just UNIX timestamps corrected for repeat intervals
@@ -51,6 +59,25 @@ class evo_datetime{
 					return array(
 						'start'=> $start,
 						'end'=> ( !empty($post_meta['evcal_erow'])? $post_meta['evcal_erow'][0]: $start)
+					);
+				}
+			}
+		// get unix times for event
+			function get_correct_event_time($event_id, $repeat_interval=0){
+				$RIS = get_post_meta($event_id, 'repeat_intervals', true);
+				if(empty($RIS)){
+					$start =  get_post_meta($event_id, 'evcal_srow', true);
+					$end =  get_post_meta($event_id, 'evcal_erow', true);
+					$end = !empty($end)? $end: $start;
+					return array('start'=>$start, 'end'=>$end);
+				}else{
+					return array(
+						'start'=> (isset($RIS[$repeat_interval][0])? 
+							$RIS[$repeat_interval][0]:
+							$RIS[0][0]),
+						'end'=> (isset($RIS[$repeat_interval][1])? 
+							$RIS[$repeat_interval][1]:
+							$RIS[0][1]) ,
 					);
 				}
 			}
@@ -102,14 +129,16 @@ class evo_datetime{
 		}
 
 	// return start OR end time unix in translated and formatted date-time-string
-		function get_formatted_smart_time_piece($unix, $pmv, $lang=''){
+		function get_formatted_smart_time_piece($unix, $pmv='', $lang=''){
 			$time_ = eventon_get_formatted_time($unix);
 			$_is_allday = (!empty($epmv['evcal_allday']) && $epmv['evcal_allday'][0]=='yes')? true:false;
 			
+			$date_time_format = apply_filters('evo_smart_time_datetime_format', $this->wp_date_format);
+			
 			if($_is_allday){
-				$output = $this->date($this->wp_date_format, $time_).' ('.evo_lang_get('evcal_lang_allday','All Day').')';
+				$output = $this->date($date_time_format, $time_).' ('.evo_lang_get('evcal_lang_allday','All Day').')';
 			}else{// not all day
-				$output = $this->date($this->wp_date_format.' '.$this->wp_time_format, $time_);
+				$output = $this->date($date_time_format.' '.$this->wp_time_format, $time_);
 			}
 			return $output;
 		}
@@ -118,10 +147,14 @@ class evo_datetime{
 
 	// return a smarter complete date-time -translated and formatted to date-time string
 	// 2.3.13
-		public function get_formatted_smart_time($startunix, $endunix, $epmv){
+		public function get_formatted_smart_time($startunix, $endunix, $epmv='', $event_id=''){
 
 			$wp_time_format = get_option('time_format');
 			$wp_date_format = get_option('date_format');
+
+			if(empty($epmv) && empty($event_id)) return false;
+
+			if(empty($epmv)) $epmv = get_post_meta($event_id);
 
 			$start_ar = eventon_get_formatted_time($startunix);
 			$end_ar = eventon_get_formatted_time($endunix);
@@ -204,6 +237,50 @@ class evo_datetime{
 			}
 
 			return date_i18n($date_format.' '.($alldaytext? '':$time_format), $unix). ( $alldaytext? '('.$alldaytext.')':'' );
+		}
+
+	// Timezone 
+	// @deprecating moved to EVO_Environment
+		function get_UTC_offset(){
+			$offset = (get_option('gmt_offset', 0) * 3600);
+
+			$opt = EVO()->frontend->evo_options;
+			$customoffset = !empty($opt['evo_time_offset'])? 
+				(intval($opt['evo_time_offset'])) * 60:
+				0;
+
+			return $offset + $customoffset;
+		}
+
+		function get_local_unix_now(){
+			$this->set_timezone();
+			return time();
+		}
+		function set_timezone(){
+			$tzstring = $this->get_timezone_str();
+			$tzstring = $tzstring == 'UTC+0'? 'UTC': $tzstring;
+			date_default_timezone_set($tzstring);
+		}
+		
+		function get_timezone_str(){
+			$tzstring = get_option('timezone_string');
+
+			// Remove old Etc mappings. Fallback to gmt_offset.
+			if ( false !== strpos($tzstring,'Etc/GMT') )
+				$tzstring = '';
+
+			$current_offset='';
+			if ( empty($tzstring) ) { // Create a UTC+- zone if no timezone string exists
+				$check_zone_info = false;
+				if ( 0 == $current_offset )
+					$tzstring = 'UTC+0';
+				elseif ($current_offset < 0)
+					$tzstring = 'UTC' . $current_offset;
+				else
+					$tzstring = 'UTC+' . $current_offset;
+			}
+
+			return $tzstring;
 		}
 
 }

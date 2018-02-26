@@ -5,7 +5,7 @@
  * This file is being included into "../class-shortcodes.php" file's shortcode_render() method.
  *
  * @since    1.0
- * @version  1.3.19
+ * @version  1.5.0
  *
  * @uses  $codes_globals['sizes']['values']
  *
@@ -61,11 +61,19 @@
 	//title
 		$atts['title'] = trim( $atts['title'] );
 		if ( $atts['title'] ) {
-			$atts['title'] = strip_tags( $atts['title'], $this->inline_tags );
+			$atts['title'] = wp_kses( $atts['title'], WM_Shortcodes::get_inline_tags() );
 			$atts['title'] = '<' . tag_escape( $atts['heading_tag'] ) . ' class="wm-message-title wm-message-element">' . $atts['title'] . '</' . tag_escape( $atts['heading_tag'] ) . '>';
 		}
 	//class
 		$atts['class'] = apply_filters( 'wmhook_shortcode_' . $shortcode . '_classes', $atts['class'], $atts );
 
-//Output
-	$output = '<div class="' . esc_attr( $atts['class'] ) . '">' . $atts['title'] . $atts['content'] . '</div>';
+
+// Output
+
+	$shortcode_output = $atts['title'] . $atts['content'];
+
+	if ( ! empty( $shortcode_output ) ) {
+		$output = '<div class="' . esc_attr( $atts['class'] ) . '">' . $shortcode_output . '</div>';
+	} else {
+		$output = esc_html__( 'Sorry, there is nothing to display here&hellip;', 'webman-amplifier' );
+	}

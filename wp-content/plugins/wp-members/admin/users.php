@@ -6,12 +6,12 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2016  Chad Butler
+ * Copyright (c) 2006-2017  Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
  * @package WP-Members
  * @author Chad Butler
- * @copyright 2006-2016
+ * @copyright 2006-2017
  *
  * Functions included:
  * - wpmem_bulk_user_action
@@ -30,21 +30,10 @@
  * - wpmem_set_user_status
  */
 
-
-/**
- * Actions and filters
- */
-add_action( 'admin_footer-users.php', 'wpmem_bulk_user_action' );
-add_action( 'load-users.php', 'wpmem_users_page_load' );
-add_action( 'admin_notices', 'wpmem_users_admin_notices' );
-add_filter( 'views_users', 'wpmem_users_views' );
-add_filter( 'manage_users_columns', 'wpmem_add_user_column' );
-add_action( 'manage_users_custom_column', 'wpmem_add_user_column_content', 10, 3 );
-add_action( 'wpmem_post_register_data', 'wpmem_set_new_user_non_active' );
-add_action( 'wpmem_user_activated', 'wpmem_set_activated_user' );
-add_action( 'wpmem_user_deactivated', 'wpmem_set_deactivated_user' );
-add_filter( 'user_row_actions', 'wpmem_insert_activate_link', 10, 2 );
-
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit();
+}
 
 /**
  * Function to add activate/export to the bulk dropdown list.
@@ -100,8 +89,15 @@ function wpmem_insert_activate_link( $actions, $user_object ) {
  * @since 2.8.2
  *
  * @uses WP_Users_List_Table
+ *
+ * @global object $wpmem
  */
 function wpmem_users_page_load() {
+	
+	global $wpmem;
+	if ( current_user_can( 'list_users' ) ) {
+		$wpmem->admin->user_search = new WP_Members_Admin_User_Search();
+	}
 
 	// If exporting all users, do it, then exit.
 	if ( isset( $_REQUEST['export_all'] ) && $_REQUEST['export_all'] == __( 'Export All Users', 'wp-members' ) ) {
@@ -142,6 +138,7 @@ function wpmem_users_page_load() {
 			// Update the users.
 			$x = 0;
 			foreach ( $users as $user ) {
+				$user = filter_var( $user, FILTER_VALIDATE_INT );
 				// Check to see if the user is already activated, if not, activate.
 				if ( ! get_user_meta( $user, 'active', true ) ) {
 					wpmem_a_activate_user( $user, $chk_pass );
@@ -222,7 +219,7 @@ function wpmem_users_admin_notices() {
 
 	global $pagenow, $user_action_msg;
 	 if( $pagenow == 'users.php' && isset( $_REQUEST['activated'] ) ) {
-		$message = $_REQUEST['activated'];
+		$message = esc_html( $_REQUEST['activated'] );
 		echo "<div class=\"updated\"><p>{$message}</p></div>";
 	}
 
@@ -316,7 +313,7 @@ function wpmem_users_views( $views ) {
 		$arr[] = 'Not Active';
 	}
 	$arr[] = 'Not Exported';
-	$show = ( isset( $_GET['show'] ) ) ? $_GET['show'] : false;
+	$show = ( isset( $_GET['show'] ) ) ? sanitize_text_field( $_GET['show'] ) : false;
 
 	for ( $row = 0; $row < count( $arr ); $row++ ) {
 		$link = "users.php?action=show&amp;show=";
@@ -416,6 +413,9 @@ function wpmem_add_user_column_content( $value, $column_name, $user_id ) {
 			$user_info = get_userdata( $user_id );
 			return $user_info->$column_name;
 			break;
+
+		case 'user_id':
+			return $user_id;
 
 		default:
 			return get_user_meta( $user_id, $column_name, true );

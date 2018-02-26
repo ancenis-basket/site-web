@@ -1,6 +1,6 @@
 /*
  * all wp-admin scripts for ajde library
- * @version 0.1
+ * @version 2.5
  */
 jQuery(document).ready(function($){
 
@@ -12,6 +12,7 @@ jQuery(document).ready(function($){
 			toolTip.remove();
 			$(this).append('<em>' +tipContent +'</em>').addClass(classes[1]);
 		});
+		
 
 	// lightbox hide
 		$('body').on('click',' .ajde_close_pop_trig',function(){
@@ -22,15 +23,15 @@ jQuery(document).ready(function($){
 			hide_popupwindowbox( $(this).closest('.ajde_admin_lightbox') );
 		});
 		
-		$(document).mouseup(function (e){
-			var container = $('.ajde_popup');			
-			if(container.hasClass('nooutside')) return false;
-
-			if (!container.is(e.target) // if the target of the click isn't the container...
-			&& container.has(e.target).length === 0) // ... nor a descendant of the container
-			{
-				container.find('.ajde_close_pop_btn').trigger('click');
-			}
+		$(document).mouseup( function(event){
+			if( 
+		    	$(event.target).hasClass('evo_content_inin')
+		    ){
+			 	CONTAIN =	$(event.target).find('.ajde_popup');
+			 	if(!CONTAIN.hasClass('nooutside')){
+			 		CONTAIN.find('.ajde_close_pop_btn').trigger('click');
+			 	}
+		  	}
 		});
 		
 	// trigger hide popup
@@ -48,7 +49,7 @@ jQuery(document).ready(function($){
 					$('body').removeClass('evo_overflow');
 					$('html').removeClass('evo_overflow');
 				}
-			}, 500);			
+			}, 300);			
 		}
 
 	// OPEN POPUP BOX		
@@ -123,6 +124,9 @@ jQuery(document).ready(function($){
 			LIGHTBOX = $('.'+boxclassname+'.ajde_admin_lightbox');
 			type = (type!='bad')? 'good':'bad';
 			LIGHTBOX.find('p.message').removeClass('bad good').addClass(type).html(message).fadeIn();
+			// hide lightbox if good after 2 seconds
+			if(type=='good')
+				setTimeout(function(){  hide_popupwindowbox(LIGHTBOX) }, 2000);
 		});
 
 		function show_pop_bad_msg(msg){
@@ -142,7 +146,7 @@ jQuery(document).ready(function($){
 		}
 
 	// yes no button		
-		$('body').on('click','.ajde_yn_btn ', function(){
+		$('body').on('click','.ajde_yn_btn', function(){
 			var obj = $(this);
 			var afterstatement = obj.attr('afterstatement');
 			// yes
@@ -153,7 +157,7 @@ jQuery(document).ready(function($){
 				// afterstatment
 				if(afterstatement!=''){
 					var type = (obj.attr('as_type')=='class')? '.':'#';
-					$(type+ obj.attr('afterstatement')).slideDown('fast');
+					$(type+ obj.attr('afterstatement')).show();
 				}
 
 			}else{//no
@@ -162,7 +166,7 @@ jQuery(document).ready(function($){
 				
 				if(afterstatement!=''){
 					var type = (obj.attr('as_type')=='class')? '.':'#';
-					$(type+obj.attr('afterstatement')).slideUp('fast');
+					$(type+obj.attr('afterstatement')).hide();
 				}
 			}
 		});
@@ -218,6 +222,7 @@ jQuery(document).ready(function($){
 				$(this).ColorPickerSetColor( $(this).attr('hex'));
 			},	
 			onChange:function(hsb, hex, rgb, el){
+				//console.log(hex+' '+rgb);
 				CIRCLE = $('body').find('.colorpicker_on');
 				CIRCLE.css({'backgroundColor': '#' + hex}).attr({'title': '#' + hex, 'hex':hex});
 

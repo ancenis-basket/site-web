@@ -4,6 +4,134 @@
  */
 jQuery(document).ready(function($){	
 	
+	// Event Singular tax term form create new or edit form
+		$('body').on('click','.evo_tax_term_form',function(){
+			OBJ = $(this);
+			PAR = OBJ.closest('.evo_singular_tax_for_event');
+			var ajaxdataa = { };
+				ajaxdataa['action']='eventon_get_event_tax_term_section';
+				ajaxdataa['type']= OBJ.data('type');
+				ajaxdataa['tax']=  PAR.data('tax');
+				ajaxdataa['eventid']=  PAR.data('eventid');
+				ajaxdataa['termid']=  OBJ.data('id');
+
+			$.ajax({
+				beforeSend: function(){
+					text = OBJ.data('type')=='new'? 'Add new item':'Edit item';
+					$('.evo_term_lightbox').find('.ajde_lightbox_title').html( text );
+					$('.evo_term_lightbox').find('.ajde_popup_text').addClass( 'loading');
+				},
+				type: 'POST',
+				url:evo_admin_ajax_handle.ajaxurl,
+				data: ajaxdataa,
+				dataType:'json',
+				success:function(data){
+					if(data.status=='good'){						
+						$('.evo_term_lightbox').find('.ajde_popup_text').html( data.content);
+					}else{}
+				},complete:function(){
+					$('.evo_term_lightbox').find('.ajde_popup_text').removeClass( 'loading');
+				}
+			});	
+		});
+		
+		// get term list
+		$('body').on('click','.evo_tax_term_list',function(){
+			OBJ = $(this);
+			PAR = OBJ.closest('.evo_singular_tax_for_event');
+			var ajaxdataa = { };
+				ajaxdataa['action']='eventon_event_tax_list';
+				ajaxdataa['tax']=  PAR.data('tax');
+				ajaxdataa['eventid']=  PAR.data('eventid');
+				ajaxdataa['termid']=  OBJ.data('id');
+
+			$.ajax({
+				beforeSend: function(){
+					$('.evo_term_lightbox').find('.ajde_lightbox_title').html( 'Select from list');
+					$('.evo_term_lightbox').find('.ajde_popup_text').addClass( 'loading');
+				},
+				type: 'POST',
+				url:evo_admin_ajax_handle.ajaxurl,
+				data: ajaxdataa,
+				dataType:'json',
+				success:function(data){
+					if(data.status=='good'){						
+						$('.evo_term_lightbox').find('.ajde_popup_text').html( data.content);
+						$('.evo_term_lightbox').find('select.field').select2();						
+					}
+				},complete:function(){
+					$('.evo_term_lightbox').find('.ajde_popup_text').removeClass( 'loading');
+				}
+			});	
+		});
+
+		// save changes
+		$('body').on('click','.evo_term_submit',function(){
+			OBJ = $(this);
+			PAR = OBJ.closest('.evo_tax_entry');
+			var ajaxdataa = { };
+				ajaxdataa['action']='eventon_event_tax_save_changes';
+				ajaxdataa['tax']=  PAR.data('tax');
+				ajaxdataa['eventid']=  PAR.data('eventid');
+				ajaxdataa['type']=  PAR.data('type');
+
+			PAR.find('.field').each(function(){
+				if($(this).val() != ''){
+					ajaxdataa[ $(this).attr('name')]=  $(this).val();
+				}
+			});
+
+			$.ajax({
+				beforeSend: function(){
+					$('.evo_term_lightbox').find('.ajde_lightbox_title').html( 'Select from list');
+					$('.evo_term_lightbox').find('.ajde_popup_text').addClass( 'loading');
+				},
+				type: 'POST',
+				url:evo_admin_ajax_handle.ajaxurl,
+				data: ajaxdataa,
+				dataType:'json',
+				success:function(data){
+					if(data.status=='good'){						
+						$('.evo_term_lightbox').find('.message').html( data.content).show();
+						$('.evo_singular_tax_for_event.'+PAR.data('tax')).html(data.htmldata);
+					}
+				},complete:function(){
+					setTimeout(function () {
+					   $('.ajde_close_pop_btn').trigger('click');
+					}, 2000);					
+					$('.evo_term_lightbox').find('.ajde_popup_text').removeClass( 'loading');
+				}
+			});	
+		});
+
+		// remove location
+		$('body').on('click','.evo_tax_remove',function(){
+			OBJ = $(this);
+			PAR = OBJ.closest('.evo_singular_tax_for_event');
+			var ajaxdataa = { };
+				ajaxdataa['action']='eventon_event_tax_remove';
+				ajaxdataa['tax']=  PAR.data('tax');
+				ajaxdataa['eventid']=  PAR.data('eventid');
+				ajaxdataa['termid']=  OBJ.data('id');
+
+			$.ajax({
+				beforeSend: function(){
+					PAR.addClass( 'loading');
+				},
+				type: 'POST',
+				url:evo_admin_ajax_handle.ajaxurl,
+				data: ajaxdataa,
+				dataType:'json',
+				success:function(data){
+					if(data.status=='good'){						
+						PAR.html(data.htmldata);
+					}
+				},complete:function(){
+					PAR.removeClass( 'loading');
+				}
+			});	
+		});
+
 	// Upload custom images to eventon custom image meta fields
 		var file_frame,
 			BOX;
@@ -75,6 +203,173 @@ jQuery(document).ready(function($){
 				$(this).parent().siblings('.evo_wug_hid').slideDown('fast');
 			}	
 		});
+
+// Multi Data Types for event type posts
+	$('body').on('click','.evomdt_add_new_btn',function(){
+		OBJ = $(this);
+		var ajaxdataa = { };
+			ajaxdataa['action']='evo_mdt';
+			ajaxdataa['type']= 'newform';
+			ajaxdataa['tax']=  OBJ.data('tax');
+			ajaxdataa['eventid']=  OBJ.data('eventid');
+
+		$.ajax({
+			type: 'POST',
+			url:evo_admin_ajax_handle.ajaxurl,
+			data: ajaxdataa,
+			dataType:'json',
+			success:function(data){
+				if(data.status=='good'){
+					$('.evomdt_new').find('.ajde_popup_text').html( data.content);
+				}else{}
+			},complete:function(){		}
+		});			
+	});
+
+	// edit term
+		$('.evomdt_selection').on('click','i.fa-pencil',function(){
+			OBJ = $(this);
+			var ajaxdataa = { };
+				ajaxdataa['action']='evo_mdt';
+				ajaxdataa['type']= 'editform';
+				ajaxdataa['tax']=  OBJ.closest('ul').data('tax');
+				ajaxdataa['eventid']=  OBJ.closest('ul').data('eventid');
+				ajaxdataa['termid']=  OBJ.parent().data('termid');
+
+			$.ajax({
+				type: 'POST',
+				url:evo_admin_ajax_handle.ajaxurl,
+				data: ajaxdataa,
+				dataType:'json',
+				success:function(data){
+					if(data.status=='good'){
+						$('.evomdt_new').find('.ajde_popup_text').html( data.content);
+					}else{}
+				},complete:function(){		}
+			});			
+		});
+
+	// delete term relationship
+		$('.evomdt_selection').on('click','i.fa-close',function(){
+			OBJ = $(this);
+			EVOMB = OBJ.closest('.evomb_body');
+			var ajaxdataa = { };
+				ajaxdataa['action']='evo_mdt';
+				ajaxdataa['type']= 'removeterm';
+				ajaxdataa['tax']=  OBJ.closest('ul').data('tax');
+				ajaxdataa['eventid']=  OBJ.closest('ul').data('eventid');
+				ajaxdataa['termid']=  OBJ.parent().data('termid');
+
+			$.ajax({
+				beforeSend: function(){	EVOMB.addClass('loading'); },
+				type: 'POST',
+				url:evo_admin_ajax_handle.ajaxurl,
+				data: ajaxdataa,
+				dataType:'json',
+				success:function(data){
+					if(data.status=='good'){
+						$('.'+ ajaxdataa['tax']+'_display_list').html(data.content);
+					}else{}
+				},complete:function(){	EVOMB.removeClass('loading'); }
+			});			
+		});
+
+	// submit mdt form
+		$('.ajde_admin_lightbox').on('click','.evomdt_new_mdt_submit',function(){
+			console.log('t');
+			OBJ = $(this);
+			FORM = OBJ.closest('.ev_admin_form');
+			BOX = OBJ.closest('.ajde_popup_text');
+
+			var ajaxdataa = { };
+				ajaxdataa['action']='evo_mdt';
+				ajaxdataa['type']= 'save';
+
+			error = 0;
+			FORM.find('.field').each(function(){
+				THIS = $(this);
+				// required field missing
+				if( THIS.hasClass('req') && (THIS.val() === undefined || THIS.val()=='')) error++;
+				ajaxdataa[ THIS.attr('name')] = THIS.val();
+			});
+
+			if(error == 0 ){
+				$.ajax({
+					beforeSend: function(){	BOX.addClass('loading'); },
+					type: 'POST',
+					url:evo_admin_ajax_handle.ajaxurl,
+					data: ajaxdataa,
+					dataType:'json',
+					success:function(data){
+						if(data.status=='good'){
+							$('.'+ ajaxdataa['tax']+'_display_list').html(data.content);
+							$('body').trigger('ajde_lightbox_show_msg',[ data.msg,'evomdt_new']);
+						}else{	}
+					},
+					complete:function(){ BOX.removeClass('loading');	}
+				});	
+			}else{
+				msg = 'Required Fields Missing!';
+				$('body').trigger('ajde_lightbox_show_msg',[ msg,'evomdt_new','bad']);
+			}		
+		});
+	// select from list
+		$('body').on('click','.evomdt_get_list',function(){
+			OBJ = $(this);
+			var ajaxdataa = { };
+				ajaxdataa['action']='evo_mdt';
+				ajaxdataa['type']= 'list';
+				ajaxdataa['eventid']= OBJ.data('eventid');
+				ajaxdataa['tax']= OBJ.data('tax');
+
+			$.ajax({
+				type: 'POST',
+				url:evo_admin_ajax_handle.ajaxurl,
+				data: ajaxdataa,
+				dataType:'json',
+				success:function(data){
+					if(data.status=='good'){
+						$('.evomdt_list').find('.ajde_popup_text').html( data.content);
+					}else{	}
+				},complete:function(){		}
+			});			
+		});	
+
+	// save list
+		$('body').on('click','.evomdt_save_list_submit',function(){
+			OBJ = $(this);
+			BOX = OBJ.closest('.ajde_popup_text');
+
+			var mdt = [];
+			OBJ.parent().parent().find('input').each(function() {
+				if($(this).is(':checked'))
+		    		mdt.push($(this).val());
+		    });
+
+			var ajaxdataa = { };
+				ajaxdataa['action']='evo_mdt';
+				ajaxdataa['type']= 'savelist';
+				ajaxdataa['eventid']= OBJ.data('eventid');
+				ajaxdataa['tax']= OBJ.data('tax');
+				ajaxdataa['mdt']= mdt;
+
+			
+			$.ajax({
+				beforeSend: function(){	BOX.addClass('loading'); },
+				type: 'POST',
+				url:evo_admin_ajax_handle.ajaxurl,
+				data: ajaxdataa,
+				dataType:'json',
+				success:function(data){
+					if(data.status=='good'){
+						$('.'+ ajaxdataa['tax']+'_display_list').html(data.content);
+							$('body').trigger('ajde_lightbox_show_msg',[ data.msg,'evomdt_list']);
+					}else{
+
+					}
+				},complete:function(){BOX.removeClass('loading');}
+			});		
+		});	
 	
 // settings
 	// themes section
@@ -114,19 +409,21 @@ jQuery(document).ready(function($){
 	// @since	2.2.22
 		$('p.evcal_gmap_style select').on('change', function(){
 
+			baseurl = 'https://snazzy-maps-cdn.azureedge.net/assets/';
 			var styles = {
-				'default':'https://az594329.vo.msecnd.net/assets/58-simple-labels.png?v=20150113051357',
-				retro : 'https://az594329.vo.msecnd.net/assets/18-retro.png?v=20150113072047',
-				richblack : 'https://az594329.vo.msecnd.net/assets/2720-rich-black.png?v=20150113113807',
-				apple : 'https://az594329.vo.msecnd.net/assets/42-apple-maps-esque.png?v=20150113070431',
-				blueessence : 'https://az594329.vo.msecnd.net/assets/61-blue-essence.png?v=20150113072113',
-				shift : 'https://az594329.vo.msecnd.net/assets/27-shift-worker.png?v=20150113052049',
-				bluewater : 'https://az594329.vo.msecnd.net/assets/25-blue-water.png?v=20150113093754',
-				bentley : 'https://az594329.vo.msecnd.net/assets/43-bentley.png?v=20150113085831',
-				hotpink : 'https://az594329.vo.msecnd.net/assets/24-hot-pink.png?v=20150113074419',
-				muted : 'https://az594329.vo.msecnd.net/assets/91-muted-monotone.png?v=20150113093728',
-				redalert : 'https://az594329.vo.msecnd.net/assets/3-red-alert.png?v=20150113090743',
-				avacado : 'https://az594329.vo.msecnd.net/assets/35-avocado-world.png?v=20150113094526',
+				'default':'58-simple-labels.png?v=20150113051357',
+				paleretrogold : '86430-pale-retro-gold.png',
+				richblack : '2720-rich-black.png?v=20150113113807',
+				apple : '42-apple-maps-esque.png?v=20150113070431',
+				blueessence : '/61-blue-essence.png?v=20150113072113',
+				coolgrey : '80-cool-grey.png',
+				shift : '27-shift-worker.png?v=20150113052049',
+				bluewater : '25-blue-water.png?v=20150113093754',
+				bentley : '43-bentley.png?v=20150113085831',
+				hotpink : '24-hot-pink.png?v=20150113074419',
+				muted : '91-muted-monotone.png?v=20150113093728',
+				vintageyellowlight : '78128-vintage-yellow-light.png',
+				avacado : '35-avocado-world.png?v=20150113094526',
 			};
 
 			var gmapSTY = $(this).val();
@@ -137,11 +434,11 @@ jQuery(document).ready(function($){
 			// get url for map image
 			$.each(styles, function(index, value){
 				if( index == gmapSTY){
-					styleVAL = value;
+					styleVAL = baseurl+value;
 				}
 			});
 
-			obj.css({'background-image':'url('+styleVAL+')','display':'block','height':'150px','margin-top':'10px'});
+			obj.css({'background':'url('+styleVAL+') center center no-repeat','display':'block','height':'150px','margin-top':'10px','max-width':'600px'});
 			obj.parent().css({'opacity':'1'});
 		});
 	// Export settings
@@ -204,6 +501,28 @@ jQuery(document).ready(function($){
 			  	}
 			});
 		});
+
+// Diagnose
+	$('#evo_send_test_email').on('click', function(){
+		if($('#evo_admin_test_email_address').val() == undefined|| $('#evo_admin_test_email_address').val() ==''){
+			$('#evodiagnose_message').html('Email Address Missing!');
+		}else{
+			$.ajax({
+				beforeSend: function(){	$('#evodiagnose_message').html('Sending Test Email...')},
+				type: 'POST',
+				url:evo_admin_ajax_handle.ajaxurl,
+				data: {	
+					action:'eventon_admin_test_email',
+					nonce: evo_admin_ajax_handle.postnonce,
+					email: $('#evo_admin_test_email_address').val()
+				},
+				dataType:'json',
+				success:function(data){
+					$('#evodiagnose_message').html(data.msg);
+				},complete:function(){	}
+			});
+		}		
+	});
 
 // LANGUAGE SETTINGS
 	// language tab

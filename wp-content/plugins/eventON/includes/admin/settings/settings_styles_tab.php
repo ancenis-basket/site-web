@@ -29,7 +29,17 @@
 				?></textarea>				
 			</tr>		
 		</table>
-		<p><i><?php _e('NOTE: These styles will update everytime you make changes in eventon appearance settings','eventon');?></i></p>		
+		<p><i><?php _e('NOTE: These styles will update everytime you make changes in eventon appearance settings','eventon');?></i></p>	
+
+		<?php if( evo_settings_check_yn($genral_opt,'evo_php_coding') ):?>
+		<h2><?php _e('Add your own custom PHP Codes (Advanced users only)','eventon');?></h2>
+		<p><i><?php _e('Please use text area below to write your own PHP codes that will run on your site. These codes run on both back and frontend of your website on init().','eventon')?></i></p>
+		<table width='100%'>
+			<tr><td colspan='2'>
+				<textarea style='width:100%; height:350px' name='evcal_php'><?php echo get_option('evcal_php');?></textarea>				
+			</tr>		
+		</table>	
+		<?php endif;?>
 	</div>
 </div>
 <input type="submit" class="evo_admin_btn btn_prime" value="<?php _e('Save Changes') ?>" />

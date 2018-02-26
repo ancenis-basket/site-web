@@ -1,11 +1,8 @@
 <?php
-
-/**
- * Filters and Actions.
- */
-add_filter( 'wpmem_admin_tabs',    'wpmem_add_about_tab'       );
-add_action( 'wpmem_admin_do_tab',  'wpmem_a_about_tab', 999, 1 );
-
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit();
+}
 
 /**
  * Creates the About tab.

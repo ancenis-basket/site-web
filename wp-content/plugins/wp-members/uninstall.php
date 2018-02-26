@@ -6,13 +6,18 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2016  Chad Butler
+ * Copyright (c) 2006-2017  Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
  * @package WP-Members
  * @author Chad Butler
- * @copyright 2006-2016
+ * @copyright 2006-2017
  */
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit();
+}
 
 // If uninstall is not called from WordPress, kill the uninstall.
 if( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
@@ -54,6 +59,8 @@ function wpmem_uninstall_options() {
 	delete_option( 'wpmembers_tos'      );
 	delete_option( 'wpmembers_export'   );
 	delete_option( 'wpmembers_utfields' );
+	delete_option( 'wpmembers_usfields' );
+	delete_option( 'wpmembers_dropins'  );
 
 	delete_option( 'wpmembers_email_newreg'  );
 	delete_option( 'wpmembers_email_newmod'  );
@@ -75,6 +82,10 @@ function wpmem_uninstall_options() {
 	delete_option( 'wpmembers_style'    );
 	delete_option( 'wpmembers_autoex'   );
 	delete_option( 'wpmembers_attrib'   );
+	
+	// Drop user meta key search table.
+	global $wpdb;
+	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}wpmembers_user_search_keys" );
 }
 
 // End of file.

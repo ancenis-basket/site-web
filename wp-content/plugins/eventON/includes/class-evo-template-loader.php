@@ -3,7 +3,7 @@
  * Template Loader
  *
  * @class 		EVO_Template_Loader
- * @version		2.2.9
+ * @version		2.5
  * @package		Eventon/Classes
  * @category	Class
  * @author 		AJDE
@@ -35,7 +35,14 @@ class EVO_Template_Loader {
 		
 		// single and archive events page
 		if( is_single() && get_post_type() == 'ajde_events' ) {
+
+			// check if ditch single event template is enabled
+			if(!empty($evOpt['evo_ditch_sin_template']) && $evOpt['evo_ditch_sin_template']=='yes')
+				return $template;
+
 			include_once('class-single-event.php');
+			new evo_sinevent();
+			
 			$paths[] 	= AJDE_EVCAL_PATH . '/templates/';
 			$file 	= 'single-ajde_events.php';
 
@@ -51,6 +58,7 @@ class EVO_Template_Loader {
 			$file 	= 'taxonomy-event_type.php';
 			$paths[] 	= AJDE_EVCAL_PATH . '/templates/';
 		}
+
 		// Event location taxonomy
 		elseif( is_tax(array('event_location'))){
 			$file 	= 'taxonomy-event_location.php';
@@ -62,7 +70,7 @@ class EVO_Template_Loader {
 			$paths[] 	= AJDE_EVCAL_PATH . '/templates/';
 		}
 
-
+		$file = apply_filters('evo_template_loader_file', $file);
 
 		// FILE Exist
 		if ( $file ) {			
@@ -80,7 +88,6 @@ class EVO_Template_Loader {
 			}
 		}
 		
-		//print_r($template);
 		
 		return $template;
 	}

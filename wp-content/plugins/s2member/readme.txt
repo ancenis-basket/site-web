@@ -1,64 +1,26 @@
 === s2Member Framework (Member Roles, Capabilities, Membership, PayPal Members) ===
 
-Version: 161129
-Stable tag: 161129
-
-SSL Compatible: yes
-bbPress® Compatible: yes
-WordPress® Compatible: yes
-BuddyPress® Compatible: yes
-WP® Multisite Compatible: yes
-Multisite Blog Farm Compatible: yes
-
-PayPal® Standard Compatible: yes
-Stripe™ Compatible: yes w/s2Member® Pro
-PayPal® Pro Compatible: yes w/s2Member® Pro
-Authorize.Net® Compatible: yes w/s2Member® Pro
-Google® Checkout Compatible: yes w/s2Member® Pro
-ClickBank® Compatible: yes w/s2Member® Pro
-
-Tested up to: 4.7
+Version: 170722
+Stable tag: 170722
+Tested up to: 4.9.4
 Requires at least: 4.2
-
 Requires PHP: 5.2
-Tested up to PHP: 7.0.12
-
-Copyright: © 2009 WebSharks, Inc.
+Tested up to PHP: 7.0.17
 License: GNU General Public License v2 or later.
-Contributors: WebSharks, JasWSInc, raamdev, KristineDS, renzms
-
+Contributors: WebSharks, JasWSInc, raamdev
 Author: s2Member® / WebSharks, Inc.
 Author URI: http://s2member.com/
 Donate link: http://s2member.com/donate/
 Beta link: http://s2member.com/beta-testers/
-
 Text Domain: s2member
 Domain Path: /src/includes/translations
-
 Plugin Name: s2Member® Framework
-Forum URI: http://s2member.com/forums/
 Plugin URI: http://s2member.com/
-Privacy URI: http://s2member.com/privacy-policy/
-Changelog URI: http://s2member.com/changelog/
-Video Tutorials: http://s2member.com/videos/
-Knowledge Base: http://s2member.com/kb/
-Newsletter: http://s2member.com/r/subscribe/
-Pro Add-on / Home Page: http://s2member.com/
-Pro Add-on / Prices: http://s2member.com/prices/
-Pro Add-on / Auto-Update URL: https://www.s2member.com/
-PayPal Pro Integration: http://s2member.com/r/pp-account-types/
-Professional Installation URI: http://s2member.com/r/professional-installation/
-
-Description: s2Member®—a powerful (free) membership plugin for WordPress®. Protect members only content with roles/capabilities.
-Tags: s2, s2member, s2 member, membership, users, user, members, member, subscribers, subscriber, members only, roles, capabilities, capability, register, signup, stripe, bitcoin, paypal, paypal pro, pay pal, authorize, authorize.net, google wallet, clickbank, click bank, buddypress, buddy press, bbpress, bb press, shopping cart, cart, checkout, ecommerce
+Tags: membership, subscribers, subscriber, members only, roles, capabilities, capability, register, signup, paypal, ecommerce, restriction
 
 s2Member®—a powerful (free) membership plugin for WordPress®. Protect members only content with roles/capabilities.
 
 == Description ==
-
-**NOTICE:** The support forum at WordPress is for community interaction only. If you are an s2Member Pro customer in need of support, please use [our support center](http://www.s2member.com/contact/).
-
----
 
 The s2Member® Framework (free) integrates with PayPal Website Payments Standard (also free). Sell "Buy Now" or Membership access to your site. Restrict access to Roles, Capabilities, Posts, Pages, or anything else in WordPress.
 
@@ -66,7 +28,7 @@ Protect your WordPress Posts, Pages, Tags, Categories, URIs, BuddyPress/bbPress,
 
 s2Member is powered almost entirely by WordPress shortcodes, making complex integrations quick & easy. Sell recurring (or non-recurring) subscriptions with lots of flexibility. Or sell "Buy Now" access in various ways. You can also sell specific Posts/Pages, sell access to file downloads, or sell Custom Capabilities that provide highly configurable access to specific portions of your content.
 
-You can learn more at [s2Member.com](http://www.s2member.com/).
+You can learn more at [s2Member.com](http://s2member.com/).
 
 = Reasons to upgrade to "s2Member® Pro" =
 
@@ -77,11 +39,11 @@ You can learn more at [s2Member.com](http://www.s2member.com/).
 
 With 1000's of customers, an intelligent open-community, comprehensive documentation, video tutorials, APIs, the s2Member Codex, KB articles, and over 50,000 forum posts; s2Member just can't be beat!
 
-Secure WordPress content and offer users/members a secure checkout solution that integrates seamlessly with WordPress Roles/Capabilities. It's like a cash machine. s2Member puts money back in your pocket with every customer you acquire. You can learn more at [s2Member.com](http://www.s2member.com/).
+Secure WordPress content and offer users/members a secure checkout solution that integrates seamlessly with WordPress Roles/Capabilities. It's like a cash machine. s2Member puts money back in your pocket with every customer you acquire. You can learn more at [s2Member.com](http://s2member.com/).
 
 == Installation ==
 
-**NOTICE:** If you are an s2Member Pro customer in need of support, please use [our support center at s2Member.com](http://www.s2member.com/contact/).
+**NOTICE:** If you are an s2Member Pro customer in need of support, please use [our support center at s2Member.com](http://s2member.com/support/).
 
 ---
 
@@ -93,7 +55,7 @@ Secure WordPress content and offer users/members a secure checkout solution that
 
 = See Also (s2Member.com) =
 
-[Detailed installation/upgrade instructions](http://www.s2member.com/framework/#!s2_tab_jump=s2-framework-install-update).
+[Detailed installation/upgrade instructions](http://s2member.com/installation/).
 
 = Is s2Member compatible with Multisite Networking? =
 
@@ -111,7 +73,7 @@ Yes. s2Member and s2Member Pro, are also both compatible with Multisite Networki
 
 == Frequently Asked Questions ==
 
-**NOTICE:** If you are an s2Member Pro customer in need of support, please use [our support center at s2Member.com](http://www.s2member.com/contact/).
+**NOTICE:** If you are an s2Member Pro customer in need of support, please use [our support center at s2Member.com](http://s2member.com/support/).
 
 ---
 
@@ -120,7 +82,7 @@ Yes. s2Member and s2Member Pro, are also both compatible with Multisite Networki
 * s2Member® FAQs: <http://s2member.com/faqs/>
 * Knowledge Base: <http://s2member.com/kb/>
 * Video Tutorials: <http://s2member.com/videos/>
-* Community: <http://s2member.com/forums/>
+* Community: <http://s2member.com/r/forum/>
 * Codex: <http://s2member.com/codex/>
 
 = Translating s2Member® =
@@ -174,6 +136,58 @@ Released under the terms of the [GNU General Public License](http://www.gnu.org/
 (Maintenance Release) Upgrade immediately.
 
 == Changelog ==
+
+= v170722 =
+
+- (s2Member/s2Member Pro) **PayPal IPN Compatibility:** This release includes an updated PayPal IPN handler that is capable of reading number-suffixed IPN variables that are now being sent by PayPal's IPN system in some cases, for some customers. We strongly encourage all site owners to upgrade to this release as soon as possible, particularly if you're using PayPal to process transactions. Props @openmtbmap and @patdumond for reporting. See: [Issue #1112](https://github.com/websharks/s2member/issues/1112)
+
+= v170524 =
+
+- (s2Member/s2Member Pro) **PHP v7 Compat. Enhancements**: This release adds an integration with the [Defuse encryption library](https://github.com/defuse/php-encryption) for PHP, making it possible for s2Member to move away from the `mcrypt_*()` family of functions in versions of PHP >= 7.0.4, where the mcrypt library has been deprecated — `mcrypt_*()` will eventually be removed entirely.
+
+  Starting with this release of s2Member, if you're running s2Member on PHP v7.0.4+, the Defuse library will be used automatically instead of mcrypt. See [Issue #1079](https://github.com/websharks/s2member/pull/1079).
+
+  **Note:** Backward compatibility with mcrypt functions will remain for now, especially for the decryption of any data that was previously encrypted using RIJNDAEL-256; i.e., data encrypted by a previous release of the s2Member software. s2Member is capable of automatically determining the algorithm originally used to encrypt, which allows it to decrypt data using Defuse, else RIJNDAEL-256, else XOR as a last-ditch fallback.
+
+  **API Functions:** `s2member_encrypt()` & `s2member_decrypt()`. These two API Functions provided by s2Member are impacted by this change. Starting with this release, if you're running s2Member on PHP v7.0.4+, the Defuse library is used automatically instead of the older mcrypt extension. Not to worry though; the `s2member_decrypt()` function is still capable of decrypting data encrypted by previous versions of the s2Member software.
+
+- (s2Member/s2Member Pro) **UI Fix:** All menu page notices should be given the `notice` class and the additional `notice-[type]` class instead of the older generic `updated` and `error` classes. Fixed in this release. Related to [Issue #1034](https://github.com/websharks/s2member/issues/1034)
+
+- (s2Member/s2Member Pro) **UI Fix:** Plugins displaying Dashboard-wide notices using the older `updated` and `error` classes should be handled better to avoid displaying them below the s2Member header (on s2Member menu pages) and with non-default WordPress styles. See: [Issue #1034](https://github.com/websharks/s2member/issues/1034)
+
+- (s2Member/s2Member Pro) **UI Fix:** Improving color highlighting in input fields following a media library insertion; e.g., when adding a custom logo to the login/registration page.
+
+- (s2Member Pro) **Bug Fix:** Merchants using PayPal Pro (Payflow Edition) to charge a fixed non-recurring fee following an initial 100% free trial period, were seeing their member accounts EOTd after the trial ended, instead of the EOT Time being set to the end of the fixed term period. Props @patdumond, James Hall, and many others for reporting this in the forums and at GitHub. See [Issue #1077](https://github.com/websharks/s2member/issues/1077).
+
+- (s2Member Pro) **Bug Fix:** Updating PHP syntax in Simple Export tool, for compatibility w/ modern versions of PHP. Props @patdumond for reporting and helping us locate the underlying cause of this problem. See [Issue #1055](https://github.com/websharks/s2member/issues/1055).
+
+- (s2Member Pro) **Stripe Bug Fix:** This releases corrects a seemingly rare conflict between s2Member and Stripe on certain mobile devices and in certain scenarios. In a case we examined, there was a problematic CSS `z-index` setting in the s2Member source code that was, at times, causing problems in the stacking order, which resulted in a user's inability to enter details into the Stripe popup form. In this release, s2Member's customization of the `z-index` stacking order has been removed entirely, as it is no longer necessary in the latest revision of the Stripe popup, which already handles `z-index` adequately. Props @jaspuduf for reporting and for helping us diagnose the problem. See [Issue #1057](https://github.com/websharks/s2member/issues/1057).
+
+- (s2Member/s2Member Pro) **Security Enhancement:** This release removes the `%%user_pass%%` Replacement Code from the API Registration Notification email that is sent to a site owner; i.e., when/if it is configured by a site owner. Props @patdumond see [Issue #954](https://github.com/websharks/s2member/issues/954). This Replacement Code was removed as a security precaution.
+
+- (s2Member/s2Member Pro) **Bug Fix:** Resolving internal warning: 'PHP Warning: Parameter 2 to c_ws_plugin__s2member_querys::_query_level_access_coms() expected to be a reference, value given'. This was resolved by removing the strict 'by reference' requirement from the list of parameters requested by s2Member.
+
+- (s2Member/s2Member Pro) **Bug Fix:** Resolving internal warning: 'PHP Warning: Illegal string offset 'user_id' in s2member/src/includes/classes/sc-eots-in.inc.php'. This was resolved by typecasting `$attr` to an array in cases where WordPress core passes this as a string; e.g., when there are no attributes.
+
+- (s2Member Pro) **Bug Fix:** Incorrect default option value for `reject_prepaid=""` attribute in Stripe Pro-Forms. See: [Issue #1089](https://github.com/websharks/s2member/issues/1089)
+
+= v170221 =
+
+- (s2Member/s2Member Pro) **JW Player v7:** This release adds support for JW Player v7 in the `[s2Stream /]` shortcode. See [Issue #774](https://github.com/websharks/s2member/issues/774).
+
+- (s2Member Pro) **Bug Fix:** Allow Pro-Forms to use `success="%%sp_access_url%%"` without issue. See [Issue #1024](https://github.com/websharks/s2member/issues/1024).
+
+- (s2Member/s2Member Pro) **AWS Region:** Adding AWS region `ap-northeast-2`. See [Issue #1033](https://github.com/websharks/s2member/issues/1033).
+
+- (s2Member/s2Member Pro) **AWS Region:** Adding AWS region `eu-west-2`. See [Issue #1033](https://github.com/websharks/s2member/issues/1033).
+
+- (s2Member) **Bug Fix:** This release corrects a minor server-side validation bug that was related to the use of non-personal email address. See [Thread #1195](https://forums.wpsharks.com/t/bugfix-file-custom-reg-fields-inc-php-missing-bracket/1195) and [Issue #1054](https://github.com/websharks/s2member/issues/1054).
+
+- (s2Member) **Bug Fix:** Updated several outdated links within the software; e.g., removing older `www.` references, correcting forum links, and more. Also corrected missing changelog. See [Issue #1027](https://github.com/websharks/s2member/issues/1027).
+
+- (s2Member Pro) **Pro Upgrader:** The pro upgrader has been refactored and now asks for your s2Member Pro License Key instead of your s2Member.com password. The next time you upgrade to the most recent version of s2Member Pro, you will be asked for your License Key. You can obtain your License Key by logging into your account at s2Member.com. Once logged in, visit your 'My Account' page, where you will find your License Key right at the top. See [Issue #668](https://github.com/websharks/s2member/issues/668).
+
+- (s2Member/s2Member Pro) **CloudFlare Compat.:** Enhancing compatibility with Rocket Loader via `data-cfasync="false"` on dynamic s2Member scripts. See: [Issue #1038](https://github.com/websharks/s2member/issues/1038).
 
 = v161129 =
 
@@ -293,7 +307,7 @@ Released under the terms of the [GNU General Public License](http://www.gnu.org/
 - (s2Member) **Multisite Support:** This release of s2Member (the free version only) removes full support for Multisite Networks, which is now a Pro feature; i.e., only available in the Pro version.
 
   ##### Is s2Member still compatible with WordPress Multisite Networking?
-  Multisite support is no longer included in the s2Member Framework. However, it is available with s2Member Pro. s2Member Pro is compatible with Multisite Networking. After you enable Multisite Networking, install the s2Member Pro Add-On. Then, navigate to `s2Member → Multisite (Config)` in the Dashboard of your Main Site. You can learn more about s2Member Pro at [s2Member.com](http://www.s2member.com/).
+  Multisite support is no longer included in the s2Member Framework. However, it is available with s2Member Pro. s2Member Pro is compatible with Multisite Networking. After you enable Multisite Networking, install the s2Member Pro Add-On. Then, navigate to `s2Member → Multisite (Config)` in the Dashboard of your Main Site. You can learn more about s2Member Pro at [s2Member.com](http://s2member.com/).
 
   ##### I was using the free version in a Multisite Network before. What happened?
   s2Member (when running on a Multisite Network) requires minor alterations in WordPress core that are not compatible with plugins available at WordPress.org (i.e., not allowed) at this time. For this reason, full support for Multisite Networks is now available only in the pro version.

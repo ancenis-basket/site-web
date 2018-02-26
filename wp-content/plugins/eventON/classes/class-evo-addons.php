@@ -3,15 +3,15 @@
  * 
  * eventon addons class
  * This will be used to control everything about eventon addons
+ * Deprecated since 2.5
  *
  * @author 		AJDE
  * @category 	Admin
  * @package 	EventON/Classes
- * @version     2.2.27
+ * @version     2.6.1
  */
 
 if(!class_exists('evo_addon')){
-
 
 class evo_addon{
 
@@ -19,7 +19,7 @@ class evo_addon{
 	private $urls;
 
 	function __construct($arr){
-
+		
 		// assign initial values for instance of addon
 		$this->addon_data = $arr;
 
@@ -55,6 +55,8 @@ class evo_addon{
 			// eventon exist if addon connect to this function
 			// check if eventon version is compatible and return true of false
 			global $eventon;
+
+			if( !isset($GLOBALS['eventon'])  ) return;
 
 			$eventON_version = $eventon->version;
 
@@ -94,14 +96,15 @@ class evo_addon{
 			if(is_admin() && !empty($pagenow) && in_array($pagenow, $__needed_pages) ){
 				
 				if($pagenow == 'admin.php' && isset($_GET['tab']) && $_GET['tab']=='evcal_4' 
-					|| $pagenow!='admin.php'){
+					|| $pagenow!='admin.php'
+				){
 					
 					// INITIATE Updater for addon product
-					$path = AJDE_EVCAL_PATH;
-					require_once( $path .'/includes/admin/class-evo-updater.php' );
+					$ADDON = new EVO_Product($this->addon_data['slug'], true);
 
-					$this->evo_updater = new evo_updater( 
+					$ADDON->setup( 
 						array(
+							'ID'=> (!empty($this->addon_data['ID'])? $this->addon_data['ID']: ''),
 							'version'=>$this->addon_data['version'], 
 							'slug'=>$this->addon_data['slug'],
 							'plugin_slug'=>$this->addon_data['plugin_slug'],
@@ -118,13 +121,18 @@ class evo_addon{
 
 	// Deactivate Addon from eventon products
 		public function remove_addon(){
-			if(!empty($this->evo_updater))
-				return $this->evo_updater->product->deactivate($this->addon_data['slug']);
+			$PROD = new EVO_Product_Lic($this->addon_data['slug']);
+			return $PROD->deactivate();
 		}
 	// return the current page names that should be used to check updates
 		function get_check_pages(){
-			return array('update-core.php',
-				'admin-ajax.php', 'plugin-install.php','admin.php');
+			return array(
+				'update-core.php',
+				'admin-ajax.php', 
+				'plugin-install.php',
+				'admin.php', 
+				'plugins.php'
+			);
 		}
 	
 }

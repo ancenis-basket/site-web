@@ -36,9 +36,6 @@ class evo_updater{
 	        $this->plugin_slug = $args['plugin_slug']; // eventon/eventon.php
 	       	$this->slug = $args['slug'];
 
-	       	// only for eventon
-	       	//if(!in_array($this->slug, array('eventon') )) return;
-
 	       	// plugin file path
 	       		$this->pluginPath = substr(AJDE_EVCAL_FILE, 0, -19);
 	       		$pluginFile = $this->pluginPath . $this->plugin_slug;
@@ -46,18 +43,17 @@ class evo_updater{
 	       		$this->pluginFile = (isset($args['file']))? $args['file']: $pluginFile;
 	       		$this->pluginName = (isset($args['name']))? $args['name']: false;
 
-	       	// connect to eventon products class
-		        require_once('class-evo-product.php');
-		    	$this->product = new evo_product(array(
+	       	// setup product
+		        $this->product = new evo_product($this->slug, false,array(
 		    		'name'=>$args['name'],
 		    		'slug'=>$this->slug,
 		    		'version'=>$args['version'],
 		    		'guide_file'=>(!empty($args['guide_file'])? $args['guide_file']: null),
+		    		'plugin_slug'=>	$this->plugin_slug,
 		    	));
 
 	        // get api url
-		        $rand = rand(1,5);
-		        $this->api_url= 'http://get.myeventon.com/index_'.$rand.'.php';		
+		        
 		        //$this->api_url= 'http://get.myeventon.com/index_x.php';		
 
 		    $this->init();
@@ -72,10 +68,9 @@ class evo_updater{
 	        add_filter("upgrader_post_install", array( $this, "postInstall" ), 10, 3 );
 
 			// show new update notices		
-			//$this->new_update_notices();
+			$this->new_update_notices();
 
 	    	// update current of the product to product data
-	    	//$this->product->update_field($this->slug,'version', $this->current_version);
 	    }
 
 	// get information regarding eventon from wordpress
@@ -95,11 +90,13 @@ class evo_updater{
 			if(!empty($this->myeventonAPIResults)) return;
     		
     		// check if local stored info exists and if there is update
-    		$product = $this->product->get_product_array($this->slug, true);
+    		$product = $this->product->get_product_array();
 
-    		// if local info shows there is an update show that info OR its not time to check remote
-    		if( (isset($product['remote_version']) 
-    			&& version_compare($product['remote_version'], $this->current_version) == 1 )
+    		// if local info shows there is an update show that info, OR if its not time to check remote
+    		if( (
+    				isset($product['remote_version']) 
+    				&& version_compare($product['remote_version'], $this->current_version) == 1 
+    			)
     			|| !$this->product->can_check_remotely($product) 
     		){
     			$newvals = array(
@@ -151,15 +148,23 @@ class evo_updater{
 	    public function set_transient($transient){
 
 	    	//print_r($transient);
+	    	//print_r($this->myeventonAPIResults);
+	    	//print_r($this->myeventonAPIResults->version);
+	    	// print_r($this->current_version);
 
 	    	// If we have checked the plugin data before, don't re-check
 			if (empty($transient->checked)) {return $transient;} 
-
+			
 	        // Get the plugin information
 	        $this->initPluginData();
 	        $this->getReleaseInfo();
 
+	        if (empty($this->myeventonAPIResults->version)) {return $transient;} 
+
+	        //print_r($transient);
+
 	        // check the version if we need 
+	        
 	        $doupdate = version_compare($this->myeventonAPIResults->version, $this->current_version);
 
 	        // If a newer version is available, add the update
@@ -260,8 +265,6 @@ class evo_updater{
 		    }
 		// Perform additional actions to successfully install our plugin
 		    public function postInstall($true, $hook_extra, $result) {
-				// Since we are hosted in GitHub, our plugin folder would have a dirname of
-				// reponame-tagname change it to our original one:
 				global $wp_filesystem;
 				$pluginFolder = WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . dirname($this->plugin_slug);
 				$wp_filesystem->move($result['destination'], $pluginFolder);
@@ -296,49 +299,89 @@ class evo_updater{
 
 	// update count
 		function update_checks_count(){
-			$count = get_post_meta(1, 'count', true);
-			$newcount = empty($count)? 1: ($count+1);
-			update_post_meta(1, 'count',$newcount);
+			//$count = get_post_meta(1, 'count', true);
+			//$newcount = empty($count)? 1: ($count+1);
+			//update_post_meta(1, 'count',$newcount);
 		}
 
 	// Custom update notice message -- if updates are avialable
 		// CHECK for new update and if there are any show custom update notice message
 		    public function new_update_notices(){
-		    	$remot_version = $this->remote_version;
-		    	if(version_compare($this->current_version, $remot_version, '<')){
+		    	$product = $this->product->get_product_array();
+		    	
+		    	if(empty($product['remote_version'])) return;
+
+		    	// if current version is lower than remote
+		    	if(version_compare($product['remote_version'], $this->current_version ) == 1){
 					global $pagenow;
 
-				    if( $pagenow == 'plugins.php' ){	       
+				    if( $pagenow == 'plugins.php' ){      
 				        add_action( 'in_plugin_update_message-' . $this->plugin_slug, array($this, 'in_plugin_update_message'), 10, 2 );
-				       
 				    }				
 				}
 		    }	
 		// custom update notification message		
-			function in_plugin_update_message($plugin_data, $r ){		    
-			    ob_start();
-
+			function in_plugin_update_message($plugin_data, $response ){		    
+			    
 			    // main eventon plugin
 			    if($this->slug=='eventon'):
-			    	?>
-					<div class="evo-plugin-update-info">
-						<p><strong>NOTE:</strong> You can activate your copy to get auto updates. <a href='http://www.myeventon.com/documentation/how-to-find-eventon-license-key/' target='_blank'>How to find eventON license key</a><br/>When you update eventON please be sure to clear all your website and browser cache to reflect style and javascript changes we have made.</p>
-					</div>
-			    <?php
-			    	// addon
-			    	else:
-			   	?>
-					<div class="evo-plugin-update-info">
-						<p><strong>NOTE:</strong> You can activate your copy to get auto updates or you can grab the new update from <a href='http://www.myeventon.com/my-account' target='_blank'>myeventon.com</a></p>
-					</div>
-			   	<?php
-			   	endif;
 
-			    echo ob_get_clean();
+			    	if(evo_license()->kriyathmakada('eventon')):
+			    		$url = 'http://www.myeventon.com/documentation/update-eventon/';
+			    		$redirect = sprintf( '<a href="%s" target="_blank">%s</a>', $url, __( 'update eventon via FTP', 'eventon' ) );
+			    		echo '<br/><b>NOTE:</b> '.sprintf( ' ' . __( 'If you are unable to auto update please visit %s to learn how to update manually.', 'eventon' ), $redirect );
+			    	else:
+			    	
+						$url = esc_url( ( is_multisite() ? network_admin_url( 'admin.php?page=eventon&tab=evcal_4' ) : admin_url( 'admin.php?page=eventon&tab=evcal_4' ) ) );
+						$redirect = sprintf( '<a href="%s" target="_blank">%s</a>', $url, __( 'settings', 'eventon' ) );
+						echo '<br/><b>NOTE:</b> '. sprintf( ' ' . __( 'To receive automatic updates license activation is required. Please visit %s to activate your EventON.', 'eventon' ), $redirect );
+			    			// sprintf( ' <a href="http://go.wpbakery.com/faq-update-in-theme" target="_blank">%s</a>', __( 'Got EventON in theme?', 'eventon' ) );
+									    	
+			    	endif;
+
+			    // addon
+			    else:
+
+			    	$url = 'http://www.myeventon.com/documentation/can-download-addon-updates/';
+		    		$redirect = sprintf( '<a href="%s" target="_blank">%s</a>', $url, __( 'updating eventon addons', 'eventon' ) );
+		    		echo '<br/><b>NOTE:</b> '.sprintf( ' ' . __( 'Please visit %s to learn how to update eventon addons.', 'eventon' ), $redirect );
+			   	
+			   	endif;
+			    
 			}
 	
-	// Verify License
-	// @version 2.2.24
+	// Updating eventon
+		function envato_download_purchase_url($username, $apikey, $purchase_code){
+			return 'http://marketplace.envato.com/api/edge/' . rawurlencode( $username ) . '/' . rawurlencode( $api_key ) . '/download-purchase:' . rawurlencode( $purchase_code ) . '.json';
+		}
+
+			
+	// eventon kriyathmakada kiyala check kireema
+		public function kriyathmakada(){return $this->product->kriyathmakada();}
+		public function akriyamath_niwedanaya(){
+			$url = esc_url( ( is_multisite() ? network_admin_url( 'admin.php?page=eventon&tab=evcal_4' ) : admin_url( 'admin.php?page=eventon&tab=evcal_4' ) ) );
+			$redirect = sprintf( '<a href="%s" target="_blank">%s</a>', $url, __( 'settings', 'eventon' ) );
+			return sprintf( ' ' . __( 'EventON license need activated for this to work. Please visit %s to activate your EventON.', 'eventon' ), $redirect );
+		}
+		
+
+	// error code decipher
+	// deprecated since 2.5
+		public function error_code_($code=''){
+			$code = (!empty($code))? $code: $this->error_code;
+			global $eventon;
+			return $eventon->license->error_code_($code);
+		}
+		// return API url
+		public function get_api_url($args){
+			return evo_license()->get_api_url($args);
+		}
+		public function eventon_kriyathmaka_karanna(){
+			evo_license()->eventon_kriyathmaka_karanna();
+		}
+		// Verify License
+		// @version 2.2.24
+		// deprecated
 		public function verify_product_license($args){
 
 			if($args['slug']=='eventon'){
@@ -365,61 +408,5 @@ class evo_updater{
 					return false;
 				}
 			}	
-		}
-
-		// return API url
-		public function get_api_url($args){
-			$url = '';
-			if($args['slug']=='eventon'){
-				$api_key = 'vzfrb2suklzlq3r339k5t0r3ktemw7zi';
-				$api_username ='ashanjay';
-				$url = '//marketplace.envato.com/api/edge/'.$api_username.'/'.$api_key.'/verify-purchase:'.$args['key'].'.json';
-				
-			}else{
-				$instance = !empty($args['instance'])?$args['instance']:1;
-				
-				$url='http://www.myeventon.com/woocommerce/?wc-api=software-api&request=activation&email='.$args['email'].'&licence_key='.$args['key'].'&product_id='.$args['product_id'].'&instance='.$instance;
-			}
-			return $url;
-		}
-			
-	// eventon kriyathmakada kiyala check kireema
-		public function kriyathmakada(){return $this->product->kriyathmakada();}
-		public function akriyamath_niwedanaya(){
-			return __('EventON license need activated for this to work!', 'eventon');
-		}
-		public function eventon_kriyathmaka_karanna(){
-			$this->product->update_field('eventon', 'status', 'active');
-		}
-
-	// error code decipher
-		public function error_code_($code=''){
-			$code = (!empty($code))? $code: $this->error_code;
-			$array = array(
-				"00"=>'',
-				'01'=>"No data returned from envato API",
-				"02"=>'Your license is not a valid one!, please check and try again.',
-				"03"=>'envato verification API is busy at moment, please try later.',
-				"04"=>'This license is already registered with a different site.',
-				"05"=>'Your EventON version is older than 2.2.17.',
-				"06"=>'Eventon license key not passed correct!',
-				"07"=>'Could not deactivate eventON license from remote server',
-				'08'=>'http request failed, connection time out. Please contact your web provider!',
-				'09'=>'wp_remote_post() method did not work to verify licenses, trying a backup method now..',
-
-
-				'10'=>'License key is not valid, please try again.',
-				'11'=>'Could not verify. Server might be busy, please try again LATER!',
-				'12'=>'Activated successfully and synced w/ eventon server!',
-				'13'=>'Remote validation did not work, but we have activated your copy within your site!',
-
-				'101'=>'Invalid license key!',
-				'102'=>'Addon has been deactivated!',
-				'103'=>'You have exceeded maxium number of activations!',
-				'104'=>'Invalid instance ID!',
-				'105'=>'Invalid security key!',
-				'100'=>'Invalid request!',
-			);
-			return $array[$code];
 		}
 }

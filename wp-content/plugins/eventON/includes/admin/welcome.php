@@ -226,12 +226,11 @@ class EVO_Welcome_Page {
 					<a class='evo_wel_btn' href="<?php echo esc_url( admin_url( add_query_arg( array( 'page' => 'eventon' ), 'admin.php' ) ) ); ?>"><?php _e( 'Go to myeventon Settings', 'eventon' ); ?></a>
 				</div>
 				<div class='evowel_info1'>
-					<p class='h3'>
-					<?php
+					<p class='h3'><?php
 						if(!empty($_GET['evo-updated']))
-							$message = __( 'Thank You for Updating EventON to ver ', 'eventon' );
+							$message = __( 'Thank you for updating EventON to ver ', 'eventon' );
 						else
-							$message = __( 'Thank You for Purchasing EventON ver ', 'eventon' );
+							$message = __( 'Thank you for purchasing EventON ver ', 'eventon' );
 							
 						printf( __( '%s%s', 'eventon' ), $message,	$eventon->version );
 					?></p>			
@@ -254,7 +253,7 @@ class EVO_Welcome_Page {
 
 			<div class='evow_credits'>
 				<p style='text-transform:uppercase; font-size:20px; margin:0; padding-bottom:3px;'><a href='http://www.ashanjay.com' target='_blank'>Product of AshanJay Designs LLC</a></p>
-				<p style='text-transform:uppercase; opacity:0.7; margin:0; color:#fff'>Made in Portland, OR</p>
+				<p style='text-transform:uppercase; opacity:0.7; margin:0; color:#fff'>Made in USA</p>
 			</div>			
 		<?php
 		}
@@ -346,7 +345,7 @@ class EVO_Welcome_Page {
 
 	/** Sends user to the welcome page on first activation	 */
 		public function welcome() {
-
+			global $eventon;
 			// Bail if no activation redirect transient is set
 		    if ( ! get_transient( '_evo_activation_redirect' )  )
 				return;
@@ -368,14 +367,12 @@ class EVO_Welcome_Page {
 				//wp_safe_redirect( admin_url( 'index.php?page=evo-about&evo-updated=true' ) );
 			
 			wp_safe_redirect( admin_url( 'index.php?page=evo-about' ) );
-			eventon_generate_options_css(); // update dynamic styles as well - 2.3.8
-				
+
+			// update dynamic styles file for eventon
+			$eventon->evo_admin->generate_dynamic_styles_file();			
 			
 			exit;
 		}	
-		
-	
-	
 }
 
 new EVO_Welcome_Page();

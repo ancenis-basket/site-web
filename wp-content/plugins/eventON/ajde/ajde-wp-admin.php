@@ -2,8 +2,8 @@
 /**
  * AJDE wp-admin all the other required parts for wp-admin
  *
- * @version 2.4.7
- * @updated 2016-10
+ * @version 2.5.4
+ * @updated 2017-5
  */
 
 if(class_exists('ajde_wp_admin')) return;
@@ -48,7 +48,7 @@ class ajde_wp_admin{
 				<div class='ajde_popup {$ajdeCLASSES}' {$args['attr']} style='". ( (!empty($args['width']))? 'width:'.$args['width'].'px;':null )."'>	
 					<div class='ajde_header'>
 						<a class='ajde_backbtn' style='display:none'><i class='fa fa-angle-left'></i></a>
-						<p id='ajde_title'>{$args['title']}</p>
+						<p id='ajde_title' class='ajde_lightbox_title'>{$args['title']}</p>
 						". ( (!empty($args['subtitle']))? "<p id='ajde_subtitle'>{$args['subtitle']}</p>":null) ."
 						<a class='ajde_close_pop_btn'>X</a>
 					</div>							
@@ -91,6 +91,7 @@ class ajde_wp_admin{
 				'abs'=>'no',// absolute positioning of the button
 				'attr'=>'', // array
 				'afterstatement'=>'',
+				'nesting'=>false
 			);
 			
 			$args = shortcode_atts($defaults, $args);
@@ -111,6 +112,11 @@ class ajde_wp_admin{
 				}
 			}
 
+			// afterstatement
+				if(!empty($args['afterstatement'])){
+					$_attr .= 'afterstatement="' . $args['afterstatement'] .'"';
+				}
+				
 			// input field
 			$input = '';
 			if($args['input']){
@@ -138,7 +144,14 @@ class ajde_wp_admin{
 			if(!empty($args['label']))
 				$label = "<label class='ajde_yn_btn_label' for='{$args['id']}'>{$args['label']}{$guide}</label>";
 
-			return '<span id="'.$args['id'].'" class="ajde_yn_btn '.($no? 'NO':null).''.(($args['abs']=='yes')? ' absolute':null).'" '.$_attr.'><span class="btn_inner" style=""><span class="catchHandle"></span></span></span>'.$input.$label;
+			// nesting
+				$nesting_start = $nesting_end = '';
+				if($args['nesting']){
+					$nesting_start = "<p class='yesno_row'>";
+					$nesting_end = "</p>";
+				}
+
+			return $nesting_start.'<span id="'.$args['id'].'" class="ajde_yn_btn '.($no? 'NO':null).''.(($args['abs']=='yes')? ' absolute':null).'" '.$_attr.'><span class="btn_inner" style=""><span class="catchHandle"></span></span></span>'.$input.$label.$nesting_end;
 		}
 	
 	// tool tips
@@ -368,20 +381,25 @@ class ajde_wp_admin{
 				case 'taxonomy':
 					
 					$terms = get_terms($var['var']);
-					
-					$view ='';
-					if(!empty($terms) && count($terms)>0){
-						foreach($terms as $term){
-							if(!isset($term)) continue;
-							$view.= '<em>'.$term->name .' ('.$term->term_id.')</em>';
-						}
-					}
 
-					$view_html = (!empty($view))? '<span class="ajdePOSH_tax">Possible Values <span >'. $view .'</span></span>': null;				
+					$possible_values = (isset($var['possible_values']) && $var['possible_values']=='yes')?true:false;
+					$view_html = '';
+					
+					if($possible_values){
+						$view ='';
+						if(!empty($terms) && count($terms)>0){
+							foreach($terms as $term){
+								if(!isset($term)) continue;
+								$view.= '<em>'.$term->name .' ('.$term->term_id.')</em>';
+							}
+						}
+
+						$view_html = (!empty($view))? '<span class="ajdePOSH_tax">'.__('Possible Values','eventon').' <span >'. $view .'</span></span>': null;	
+					}			
 					
 					echo 
 					"<div class='".implode(' ', $line_class)."'>
-						<p class='label'><input class='ajdePOSH_input' type='text' codevar='".$var['var']."' placeholder='".( (!empty($var['placeholder']))?$var['placeholder']:null) ."'/> ".$var['name']." {$view_html}</p>
+						<p class='label'><input class='ajdePOSH_input' type='text' codevar='".$var['var']."' placeholder='".( (!empty($var['placeholder']))? $var['placeholder']:null) ."'/> ".$var['name']." {$view_html}</p>
 					</div>";
 				break;
 				
@@ -442,7 +460,7 @@ class ajde_wp_admin{
 		public function get_content($shortcode_guide_array, $base_shortcode){
 			global $ajde;
 				
-			$__text_a = __('Select option below to customize shortcode variable values', $ajde->domain);
+			$__text_a = __('Select option below to customize shortcode variable values','eventon');
 			ob_start();
 
 			?>		
@@ -450,6 +468,7 @@ class ajde_wp_admin{
 					<h3 class='notifications '><em id='ajdePOSH_back' class='fa'></em><span id='ajdePOSH_subtitle' data-section='' data-bf='<?php echo $__text_a;?>'><?php echo $__text_a;?></span></h3>
 					<div class='ajdePOSH_inner'>
 						<div class='step1 steps'>
+						<p style='    background-color: #ff896e; color: #fff;padding: 10px; font-size: 12px;'><?php _e('WARNING! If you are interchangeably using shortcode parameters between other calendar shortcodes, bare in mind, that the shortcode parameters not available in its shortcode options may not be fully supported!','eventon');?></p>
 						<?php					
 							foreach($shortcode_guide_array as $options){
 								$__step_2 = (empty($options['variables']))? ' nostep':null;
@@ -483,6 +502,67 @@ class ajde_wp_admin{
 			<?php
 			return ob_get_clean();
 		
+		}
+
+	// wp admin tables
+		function start_table_header($id, $column_headers, $args=''){ 
+
+			$defaults = array(
+				'classes'=>'',
+				'display'=>'table'
+			);
+			$args = !empty($args)? array_merge($defaults, $args): $defaults;
+			?>
+			<table id="<?php echo $id;?>" class='evo_admin_table <?php echo !empty($args['classes'])? implode(' ',$args['classes']):'';?>' style='display:<?php echo $args['display'];?>'>
+				<thead width="100%">
+					<tr>
+						<?php
+						foreach($column_headers as $key=>$value){
+							// width for column
+							$width = (!empty($args['width'][$key]))? 'width="'.$args['width'][$key].'px"':'';
+							echo "<th id='{$key}' class='column column-{$key}' {$width}>".$value."</th>";
+						}
+						?>
+					</tr>
+				</thead>
+				<tbody id='list_items' width="100%">
+			<?php
+		}
+		function table_row($data='', $args=''){
+			$defaults = array(
+				'classes'=>'',
+				'tr_classes'=>'',
+				'tr_attr'=>'',
+				'colspan'=>'none'
+			);
+			$args = !empty($args) ?array_merge($defaults, $args): $defaults;
+
+			// attrs
+				$tr_attr = '';
+				if(!empty($args['tr_attr']) && sizeof($args['tr_attr'])>0){
+					foreach($args['tr_attr'] as $key=>$value){
+						$tr_attr .= $key ."='". $value ."' ";
+					}
+				}
+			
+			if($args['colspan']=='all'){
+				echo "<tr class='colspan-row ".(!empty($args['tr_classes'])? implode(' ',$args['tr_classes']):'')."' ".$tr_attr.">";
+				echo "<td class='column span_column ".(!empty($args['classes'])? implode(' ',$args['classes']):'')."' colspan='{$args['colspan_count']}'>".$args['content']."</td>";
+			}else{
+				echo "<tr class='regular-row ".(!empty($args['tr_classes'])? implode(' ',$args['tr_classes']):'')."' ".$tr_attr.">";
+				foreach($data as $key=>$value){
+				
+					echo "<td class='column column-{$key} ".(!empty($args['classes'])? implode(' ',$args['classes']):'')."'>".$value."</td>";
+				}
+			}
+			
+			echo "</tr>";
+		}
+		function table_footer(){
+			?>
+			</tbody>
+			</table>
+			<?php
 		}
 
 }

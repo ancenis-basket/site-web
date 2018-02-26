@@ -5,13 +5,13 @@
  * 
  * This file is part of the WP-Members plugin by Chad Butler
  * You can find out more about this plugin at http://rocketgeek.com
- * Copyright (c) 2006-2015 Chad Butler
+ * Copyright (c) 2006-2017 Chad Butler
  * WP-Members(tm) is a trademark of butlerblog.com
  *
  * @package WordPress
  * @subpackage WP-Members
  * @author Chad Butler 
- * @copyright 2006-2015
+ * @copyright 2006-2017
  */
 
 /*	
@@ -88,10 +88,17 @@ see http://rocketgeek.com/tips-and-tricks/load-a-custom-stylesheet/
 	line-height: 1.5;
 }
 
+#wpmem_reg label,
+#wpmem_login label {
+	display: initial;
+}
+
 #wpmem_reg input[type="text"],
 #wpmem_reg input[type="password"],
 #wpmem_reg input[type="email"],
 #wpmem_reg input[type="url"],
+#wpmem_reg input[type="number"],
+#wpmem_reg input[type="date"],
 #wpmem_reg textarea,
 #wpmem_login input[type="text"],
 #wpmem_login input[type="password"] {
@@ -143,6 +150,7 @@ see http://rocketgeek.com/tips-and-tricks/load-a-custom-stylesheet/
 	line-height: 1;
 	font-weight: 700;
 	margin-bottom: 10px;
+	width: 100%;
 }
 #wpmem_reg .form, 
 #wpmem_login .form {
@@ -168,7 +176,9 @@ see http://rocketgeek.com/tips-and-tricks/load-a-custom-stylesheet/
 #wpmem_reg .div_radio,
 #wpmem_reg .div_image,
 #wpmem_reg .div_file,
-#wpmem_reg .div_url { 
+#wpmem_reg .div_url,
+#wpmem_reg .div_number,
+#wpmem_reg .div_date { 
 	width:74%;
 	margin:0 0 14px 0;
 }
@@ -232,7 +242,7 @@ see http://rocketgeek.com/tips-and-tricks/load-a-custom-stylesheet/
 
 #wpmem_reg .button_div, #wpmem_login .button_div {
 	width:74%;
-	height:55px;
+	/* height:55px; */
 	padding: 6px 0;
 	text-align: right;
 }
@@ -250,8 +260,7 @@ see http://rocketgeek.com/tips-and-tricks/load-a-custom-stylesheet/
 	}
 	
 	#wpmem_reg label.text, #wpmem_reg label.checkbox, 
-	#wpmem_reg label.textarea , #wpmem_reg label.select,
-	#wpmem_login label {
+	#wpmem_reg label.textarea , #wpmem_reg label.select {
 		width: 90%;
 		padding: 5px 0 0 0;
 	}

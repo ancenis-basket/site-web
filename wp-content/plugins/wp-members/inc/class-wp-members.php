@@ -11,22 +11,183 @@
  * @since 3.0.0
  */
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit();
+}
+
 class WP_Members {
 	
+	/**
+	 * Plugin version.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    string
+	 */
 	public $version;
+	
+	/**
+	 * Content block settings.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    array
+	 */
 	public $block;
+	
+	/**
+	 * Excerpt settings.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    array
+	 */
 	public $show_excerpt;
+	
+	/**
+	 * Show login form settings.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    array
+	 */
 	public $show_login;
+	
+	/**
+	 * Show registration form settings.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    array
+	 */
 	public $show_reg;
+	
+	/**
+	 * Auto-excerpt settings.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    array
+	 */
 	public $autoex;
+	
+	/**
+	 * Notify admin settings.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    string
+	 */
 	public $notify;
+	
+	/**
+	 * Moderated registration settings.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    string
+	 */
 	public $mod_reg;
+	
+	/**
+	 * Captcha settings.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    array
+	 */
 	public $captcha;
+	
+	/**
+	 * Enable expiration extension settings.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    string
+	 */
 	public $use_exp;
+	
+	/**
+	 * Expiration extension enable trial period.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    string
+	 */
 	public $use_trial;
+	
+	/**
+	 * 
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    array
+	 */
 	public $warnings;
+	
+	/**
+	 * Enable drop-ins setting.
+	 *
+	 * @since  3.1.9
+	 * @access public
+	 * @var    string
+	 */
+	public $dropins = 0;
+	
+	/**
+	 * Container for enabled dropins.
+	 *
+	 * @since  3.1.9
+	 * @access public
+	 * @var    array
+	 */
+	public $dropins_enabled = array();
+
+	/**
+	 * Current plugin action container.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    string
+	 */
+	public $action;
+	
+	/**
+	 * Regchk container.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    string
+	 */
+	public $regchk;
+	
+	/**
+	 * User page settings.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    array
+	 */
 	public $user_pages;
+	
+	/**
+	 * Custom Post Type settings.
+	 *
+	 * @since  3.0.0
+	 * @access public
+	 * @var    array
+	 */
 	public $post_types;
+	
+	/**
+	 * Setting for applying texturization.
+	 *
+	 * @since  3.1.7
+	 * @access public
+	 * @var    boolean
+	 */
+	public $texturize;
 
 	/**
 	 * Plugin initialization function.
@@ -36,6 +197,7 @@ class WP_Members {
 	 */
 	function __construct() {
 		
+		// Load dependent files.
 		$this->load_dependencies();
 	
 		/**
@@ -74,6 +236,9 @@ class WP_Members {
 		// Load api.
 		$this->api = new WP_Members_API;
 		
+		// Load user functions.
+		$this->user = new WP_Members_User;
+		
 		/**
 		 * Fires after main settings are loaded.
 		 *
@@ -100,6 +265,11 @@ class WP_Members {
 		
 		// Load contants.
 		$this->load_constants();
+		
+		// Load dropins.
+		if ( $this->dropins ) {
+			$this->load_dropins();
+		}
 	}
 
 	/**
@@ -131,6 +301,9 @@ class WP_Members {
 		add_shortcode( 'wpmem_profile',    'wpmem_sc_user_profile' );
 		add_shortcode( 'wpmem_loginout',   'wpmem_sc_loginout'     );
 		add_shortcode( 'wpmem_tos',        'wpmem_sc_tos'          );
+		add_shortcode( 'wpmem_avatar',     'wpmem_sc_avatar'       );
+		add_shortcode( 'wpmem_login_link', 'wpmem_sc_link'         );
+		add_shortcode( 'wpmem_reg_link',   'wpmem_sc_link'         );
 		
 		/**
 		 * Fires after shortcodes load.
@@ -159,18 +332,20 @@ class WP_Members {
 		// Add actions.
 		add_action( 'template_redirect',     array( $this, 'get_action' ) );
 		add_action( 'widgets_init',          'widget_wpmemwidget_init' );  // initializes the widget
-		add_action( 'admin_init',            'wpmem_chk_admin' );          // check user role to load correct dashboard
+		add_action( 'admin_init',            array( $this, 'load_admin' ) ); // check user role to load correct dashboard
 		add_action( 'admin_menu',            'wpmem_admin_options' );      // adds admin menu
 		add_action( 'user_register',         'wpmem_wp_reg_finalize' );    // handles wp native registration
 		add_action( 'login_enqueue_scripts', 'wpmem_wplogin_stylesheet' ); // styles the native registration
 		add_action( 'wp_print_styles',       'wpmem_enqueue_style' );      // load the stylesheet if using the new forms
 
 		// Add filters.
-		add_filter( 'the_content',           array( $this, 'do_securify' ), 99 );
-		add_filter( 'allow_password_reset',  'wpmem_no_reset' );                 // no password reset for non-activated users
-		add_filter( 'register_form',         'wpmem_wp_register_form' );         // adds fields to the default wp registration
-		add_filter( 'registration_errors',   'wpmem_wp_reg_validate', 10, 3 );   // native registration validation
-		add_filter( 'comments_open',         'wpmem_securify_comments', 99 );    // securifies the comments
+		add_filter( 'the_content',               array( $this, 'do_securify' ), 99 );
+		add_filter( 'allow_password_reset',      'wpmem_no_reset' );                 // no password reset for non-activated users
+		add_filter( 'register_form',             'wpmem_wp_register_form' );         // adds fields to the default wp registration
+		add_action( 'woocommerce_register_form', 'wpmem_woo_register_form' );
+		add_filter( 'registration_errors',       'wpmem_wp_reg_validate', 10, 3 );   // native registration validation
+		add_filter( 'comments_open',             'wpmem_securify_comments', 99 );    // securifies the comments
+		add_filter( 'wpmem_securify',            'wpmem_reg_securify' );             // adds success message on login form if redirected
 		
 		// If registration is moderated, check for activation (blocks backend login by non-activated users).
 		if ( $this->mod_reg == 1 ) { 
@@ -210,11 +385,18 @@ class WP_Members {
 		 *
 		 * @param string $folder The drop-in file folder.
 		 */
-		$folder = apply_filters( 'wpmem_dropin_folder', WP_PLUGIN_DIR . '/wp-members-dropins/' );
+		$folder = apply_filters( 'wpmem_dropin_folder', WPMEM_DROPIN_DIR );
 		
 		// Load any drop-ins.
-		foreach ( glob( $folder . '*.php' ) as $filename ) {
-			include_once( $filename );
+		$settings = get_option( 'wpmembers_dropins' );
+		$this->dropins_enabled = ( $settings ) ? $settings : array();
+		if ( ! empty( $this->dropins_enabled ) ) {
+			foreach ( $this->dropins_enabled as $filename ) {
+				$dropin = $folder . $filename;
+				if ( file_exists( $dropin ) ) {
+					include_once( $dropin );
+				}
+			}
 		}
 
 		/**
@@ -247,6 +429,8 @@ class WP_Members {
 		( ! defined( 'WPMEM_REGURL' ) ) ? define( 'WPMEM_REGURL', $this->user_pages['register'] ) : '';
 		( ! defined( 'WPMEM_LOGURL' ) ) ? define( 'WPMEM_LOGURL', $this->user_pages['login']    ) : '';
 		
+		( ! defined( 'WPMEM_DROPIN_DIR' ) ) ? define( 'WPMEM_DROPIN_DIR', WP_PLUGIN_DIR . '/wp-members-dropins/' ) : '';
+		
 		define( 'WPMEM_CSSURL', $this->cssurl );
 	}
 
@@ -272,16 +456,50 @@ class WP_Members {
 			include( $wpmem_pluggable );
 		}
 		
+		require_once( WPMEM_PATH . 'inc/class-wp-members-user.php' );
 		require_once( WPMEM_PATH . 'inc/class-wp-members-api.php' );
 		require_once( WPMEM_PATH . 'inc/class-wp-members-forms.php' );
 		require_once( WPMEM_PATH . 'inc/class-wp-members-widget.php' );
 		require_once( WPMEM_PATH . 'inc/core.php' );
 		require_once( WPMEM_PATH . 'inc/api.php' );
 		require_once( WPMEM_PATH . 'inc/utilities.php' );
+		require_once( WPMEM_PATH . 'inc/forms.php' );
 		require_once( WPMEM_PATH . 'inc/dialogs.php' );
 		require_once( WPMEM_PATH . 'inc/sidebar.php' );
 		require_once( WPMEM_PATH . 'inc/shortcodes.php' );
 		require_once( WPMEM_PATH . 'inc/email.php' );
+		//require_once( WPMEM_PATH . 'inc/users.php' ); @deprecated 3.1.9
+		require_once( WPMEM_PATH . 'inc/deprecated.php' );
+	}
+
+	/**
+	 * Load admin API and dependencies.
+	 *
+	 * Determines which scripts to load and actions to use based on the 
+	 * current users capabilities.
+	 *
+	 * @since 2.5.2
+	 * @since 3.1.0 Added admin api object.
+	 * @since 3.1.7 Moved from main plugin file as wpmem_chk_admin() to main object.
+	 */
+	function load_admin() {
+
+		/**
+		 * Fires before initialization of admin options.
+		 *
+		 * @since 2.9.0
+		 */
+		do_action( 'wpmem_pre_admin_init' );
+
+		// Initilize the admin api.
+		$this->load_admin_api();
+
+		/**
+		 * Fires after initialization of admin options.
+		 *
+		 * @since 2.9.0
+		 */
+		do_action( 'wpmem_after_admin_init' );
 	}
 	
 	/**
@@ -294,11 +512,18 @@ class WP_Members {
 	function get_action() {
 
 		// Get the action being done (if any).
-		$this->action = ( isset( $_REQUEST['a'] ) ) ? trim( $_REQUEST['a'] ) : '';
+		$this->action = sanitize_text_field( wpmem_get( 'a', '', 'request' ) );
 
 		// For backward compatibility with processes that check $wpmem_a.
 		global $wpmem_a;
 		$wpmem_a = $this->action;
+		
+		/**
+		 * Fires when the wpmem action is retrieved.
+		 *
+		 * @since 3.1.7
+		 */
+		do_action( 'wpmem_get_action' );
 
 		// Get the regchk value (if any).
 		$this->regchk = $this->get_regchk( $this->action );
@@ -325,23 +550,23 @@ class WP_Members {
 		switch ( $action ) {
 
 			case 'login':
-				$regchk = wpmem_login();
+				$regchk = $this->user->login();
 				break;
 
 			case 'logout':
-				$regchk = wpmem_logout();
+				$regchk = $this->user->logout();
 				break;
 			
 			case 'pwdchange':
-				$regchk = wpmem_change_password();
+				$regchk = $this->user->password_update( 'change' );
  				break;
 			
 			case 'pwdreset':
-				$regchk = wpmem_reset_password();
+				$regchk = $this->user->password_update( 'reset' );
 				break;
 			
 			case 'getusername':
-				$regchk = wpmem_retrieve_username();
+				$regchk = $this->user->retrieve_username();
 				break;
 			
 			case 'register':
@@ -362,6 +587,7 @@ class WP_Members {
 		 * This value determines what happens in the wpmem_securify() function.
 		 *
 		 * @since 2.9.0
+		 * @since 3.0.0 Moved to get_regchk() in WP_Members object.
 		 *
 		 * @param  string $this->regchk The value of wpmem_regchk.
 		 * @param  string $this->action The $wpmem_a action.
@@ -414,6 +640,7 @@ class WP_Members {
 			 * Filter the block arguments.
 			 *
 			 * @since 2.9.8
+			 * @since 3.0.0 Moved to is_blocked() in WP_Members object.
 			 *
 			 * @param array $args     Null.
 			 * @param array $defaults Although you are not filtering the defaults, knowing what they are can assist developing more powerful functions.
@@ -487,8 +714,6 @@ class WP_Members {
 
 			// Block/unblock Posts.
 			if ( ! is_user_logged_in() && $this->is_blocked() == true ) {
-
-				include_once( WPMEM_PATH . 'inc/dialogs.php' );
 				
 				//Show the login and registration forms.
 				if ( $this->regchk ) {
@@ -561,7 +786,7 @@ class WP_Members {
 		 */
 		$content = apply_filters( 'wpmem_securify', $content );
 
-		if ( strstr( $content, '[wpmem_txt]' ) ) {
+		if ( 1 == $this->texturize && strstr( $content, '[wpmem_txt]' ) ) {
 			// Fix the wptexturize.
 			remove_filter( 'the_content', 'wpautop' );
 			remove_filter( 'the_content', 'wptexturize' );
@@ -581,6 +806,8 @@ class WP_Members {
 	 * @param string $form The form being generated.
 	 */
 	function load_fields( $form = 'default' ) {
+		
+		// Get stored fields settings.
 		$fields = get_option( 'wpmembers_fields' );
 		
 		// Validate fields settings.
@@ -624,12 +851,17 @@ class WP_Members {
 				case 'multiselect':
 				case 'multicheckbox':
 				case 'radio':
+					// Correct a malformed value (if last value is empty due to a trailing comma).
+					if ( '' == end( $val[7] ) ) {
+						array_pop( $val[7] );
+						$this->fields[ $meta_key ][7] = $val[7];
+					}
 					$this->fields[ $meta_key ]['values']    = $val[7];
 					$this->fields[ $meta_key ]['delimiter'] = ( isset( $val[8] ) ) ? $val[8] : '|';
-					$this->fields[ $meta_key ]['options'] = array();
+					$this->fields[ $meta_key ]['options']   = array();
 					foreach ( $val[7] as $value ) {
-						$pieces = explode( $this->fields[ $meta_key ]['delimiter'], trim( $value ) );
-						if ( $pieces[1] != '' ) {
+						$pieces = explode( '|', trim( $value ) );
+						if ( isset( $pieces[1] ) && $pieces[1] != '' ) {
 							$this->fields[ $meta_key ]['options'][ $pieces[1] ] = $pieces[0];
 						}
 					}
@@ -849,6 +1081,12 @@ class WP_Members {
 	 */
 	function load_admin_api() {
 		if ( is_admin() ) {
+			/**
+			 * Load the admin api class.
+			 *
+			 * @since 3.1.0
+			 */	
+			include_once( WPMEM_PATH . 'admin/includes/class-wp-members-admin-api.php' );
 			$this->admin = new WP_Members_Admin_API;
 		}
 	}

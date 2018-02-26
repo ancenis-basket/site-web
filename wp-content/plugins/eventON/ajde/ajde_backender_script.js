@@ -27,11 +27,11 @@ jQuery(document).ready(function($){
 		$('.ajde-collapse-menu').on('click', function(){
 			if($(this).hasClass('close')){
 				$(this).parent().removeClass('mini');
-				$('.ajde_diag').removeClass('mini');
+				$('.evo_diag').removeClass('mini');
 				$(this).removeClass('close');
 			}else{
 				$(this).parent().addClass('mini');
-				$('.ajde_diag').addClass('mini');
+				$('.evo_diag').addClass('mini');
 				$(this).addClass('close');
 			}
 		});
@@ -201,6 +201,9 @@ jQuery(document).ready(function($){
 				$(this).closest('.ajderearrange_box').siblings('.ajderearrange_order').val(sortedID);
 			}
 		});
+
+
+
 		// hide sortables
 			$('.ajderearrange_box').on('click','span',function(){
 				$(this).toggleClass('hide');

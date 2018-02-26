@@ -55,6 +55,20 @@
 			});	
 			return shortcode_array;
 		}
+		$.fn.evo_item_shortcodes = function(){			
+			var OBJ = $(this);
+			var shortcode_array ={};			
+			OBJ.each(function(){	
+				$.each(this.attributes, function(i, attrib){
+					var name = attrib.name;
+					if(attrib.name!='class' && attrib.name!='style' && attrib.value !=''){
+						name__ = attrib.name.split('-');
+						shortcode_array[name__[1]] = attrib.value;	
+					}
+				});
+			});
+			return shortcode_array;
+		}
 
 	// get evo data for a given calendar
 		$.fn.evo_getevodata = function(){
@@ -101,12 +115,13 @@
 			var OPT = $.extend({}, defaults, opt);
 
 			if(OPT.direction == 'start'){
-				$(this).find('#eventon_loadbar').slideDown().css({width:'0%'}).animate({width:'100%'})
+				$(this).find('#eventon_loadbar').slideDown();
 			}else{
-				$(this).find('#eventon_loadbar').css({width:'100%'}).delay(400).slideUp();
+				$(this).find('#eventon_loadbar').slideUp();
 			}
 		}
 
+	
 		
 
 }(jQuery));

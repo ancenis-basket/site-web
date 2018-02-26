@@ -13,7 +13,7 @@ function print_ajde_customization_form($cutomization_pg_array, $ajdePT, $extra_t
 	
 	global $ajde;
 	$wp_admin = $ajde->wp_admin;
-	$textdomain = 'nylon';
+	$textdomain = 'eventon';
 	
 	// initial variables
 		$font_sizes = array('10px','11px','12px','13px','14px','16px','18px','20px', '22px', '24px','28px','30px','36px','42px','48px','54px','60px');
@@ -141,8 +141,9 @@ function print_ajde_customization_form($cutomization_pg_array, $ajdePT, $extra_t
 						$rightside.= 'value="'.$FIELDVALUE.'"';
 						$rightside.= $default_value."/></span></p>";
 					break;
-					case 'textarea':						
-						$rightside.= "<p>".__($field['name'],$textdomain).$legend_code."</p><p><span class='nfe_f_width'><textarea name='".$field['id']."'>".$FIELDVALUE."</textarea></span></p>";
+					case 'textarea':
+						$default_value = (!empty($field['default']) )? 'placeholder="'.$field['default'].'"':null;
+						$rightside.= "<p>".__($field['name'],$textdomain).$legend_code."</p><p><span class='nfe_f_width'><textarea name='".$field['id']."' {$default_value}>".$FIELDVALUE."</textarea></span></p>";
 					break;
 					case 'font_size':
 						$rightside.= "<p>".__($field['name'],$textdomain)." <select name='".$field['id']."'>";
@@ -316,10 +317,12 @@ function print_ajde_customization_form($cutomization_pg_array, $ajdePT, $extra_t
 						
 						$rightside.= "<p class='acus_line {$field['id']}'>".__($field['name'],$textdomain)." <select class='ajdebe_dropdown' name='".$field['id']."'>";
 						
-						foreach($field['options'] as $option=>$option_val){
-							$rightside.="<option name='".$field['id']."' value='".$option."' "
-							.  ( ($option == $dropdown_opt)? 'selected=\"selected\"':null)  ."/> ".$option_val."</option>";
-						}						
+						if(is_array($field['options'])){
+							foreach($field['options'] as $option=>$option_val){
+								$rightside.="<option name='".$field['id']."' value='".$option."' "
+								.  ( ($option == $dropdown_opt)? 'selected=\"selected\"':null)  ."/> ".$option_val."</option>";
+							}	
+						}					
 						$rightside.= "</select>";
 
 							// description text for this field
@@ -407,6 +410,7 @@ function print_ajde_customization_form($cutomization_pg_array, $ajdePT, $extra_t
 								<input class="ajderearrange_selected" type="hidden" name="'.$_SELECTEDVAR.'" value="'.( (!empty($SELECTED_VALS))? $SELECTED_VALS:null).'"/>
 								<div id="ajdeEVC_arrange_box" class="ajderearrange_box '.$field['id'].'">';
 
+
 							// if an order array exists already
 							if($SAVED_ORDER){
 								// for each saved order
@@ -417,8 +421,10 @@ function print_ajde_customization_form($cutomization_pg_array, $ajdePT, $extra_t
 										$_FIELDSar[$VAL][1]:
 										$_FIELDSar[$VAL];
 									echo (array_key_exists($VAL, $_FIELDSar))? 
-										"<p val='".$VAL."'><span class='fa ". ( !empty($SELECTED) && in_array($VAL, $SELECTED)?''
-											:'hide') ."'></span>".$FF."</p>":	null;
+										"<p val='".$VAL."' class='evo_data_item'><span class='fa ". ( !empty($SELECTED) && in_array($VAL, $SELECTED)?
+											'':'hide') ."'></span>".$FF.
+											//"<input type='hidden' name='_evo_data_fields[]' value='{$VAL}'/>".
+										"</p>":	null;
 								}	
 								
 								// if there are new values in possible items add them to the bottom
@@ -502,7 +508,7 @@ function print_ajde_customization_form($cutomization_pg_array, $ajdePT, $extra_t
 					
 					// custom code
 					case 'customcode':						
-						$rightside.=$field['code'];						
+						$rightside .= (!empty($field['code'])? $field['code']:'');						
 					break;
 				}
 				if(!empty($field['type']) && !in_array($field['type'], $__no_hr_types) ){ $rightside.= "<em class='hr_line'></em>";}
@@ -521,12 +527,15 @@ function print_ajde_customization_form($cutomization_pg_array, $ajdePT, $extra_t
 			<div id='acus_left'>
 				<ul><?php echo $leftside ?></ul>								
 			</div>
-			<div class="ajde-collapse-menu"><div id="collapse-button" class='ajde_collpase_btn'><div></div></div><span><?php _e('Collpase Menu',$textdomain);?></span></div>
+			<div class="ajde-collapse-menu" id='collapse-button'>
+				<span class="collapse-button-icon"></span>
+				<span class="collapse-button-label"><?php _e('Collapse Menu','eventon');?></span>
+			</div>
 			</td><td width='100%'  valign='top'>
 				<div id='acus_right' class='ajde_backender_uix'>
 					<p id='acus_arrow' style='top:4px'></p>
 					<div class='customization_right_in'>
-						<div style='display:none' id='ajde_color_guide'>Testing</div>
+						<div style='display:none' id='ajde_color_guide'>Loading</div>
 						<div id='ajde_clr_picker' class="cp cp-default" style='display:none'></div>
 						<?php echo $rightside.$extra_tabs;?>
 					</div>

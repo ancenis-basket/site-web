@@ -8,19 +8,17 @@
  *
  *	@Author: AJDE
  *	@EventON
- *	@version: 2.4.8
+ *	@version: 2.5.6
  */
+?>
 	
-	$oneevent = new evo_sinevent();
-	
-	$oneevent->page_header();
+<?php	do_action('eventon_before_main_content');?>	
 
-	do_action('eventon_before_main_content');
-	
-?>	
 <div id='main'>
 	<div class='evo_page_body'>
-		<div class='evo_page_content <?php echo ($oneevent->has_evo_se_sidebar())? 'evo_se_sidarbar':null;?>'>
+
+		<?php do_action('eventon_single_content_wrapper');?>
+
 			<?php /* The loop */ ?>
 			<?php while ( have_posts() ) : the_post(); ?>
 
@@ -29,15 +27,7 @@
 					<div class="entry-content">
 
 					<?php	
-
-
-						$oneevent->page_content();
-						
-						/* use this if you move the content-single-event.php else where along this file*/
-						//require_once('content-single-event.php');
-
-
-
+						do_action('eventon_single_content');
 					?>		
 					</div><!-- .entry-content -->
 
@@ -45,19 +35,14 @@
 						<?php edit_post_link( __( 'Edit', 'twentythirteen' ), '<span class="edit-link">', '</span>' ); ?>
 					</footer><!-- .entry-meta -->
 				</article><!-- #post -->
-			<?php endwhile; ?>
+			<?php endwhile; ?>	
 
-		</div><!-- #content -->
-	
-		<?php
-			
-			$oneevent->sidebar();
+		<?php	do_action('eventon_single_sidebar');	?>
 
-		?>
-	</div><!-- #primary -->
-	<div class="clear"></div>
+		<?php	do_action('eventon_single_after_loop');	?>
+
+	</div><!-- #primary -->	
 
 </div>	
+
 <?php 	do_action('eventon_after_main_content'); ?>
-	
-<?php	get_footer(); ?>

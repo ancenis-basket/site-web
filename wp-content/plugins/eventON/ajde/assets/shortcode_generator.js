@@ -27,8 +27,13 @@ jQuery(document).ready(function($){
 				var pare = obj.parent().parent();
 				pare.find('.step2').show();
 				pare.find('#'+section).show();
-				$('.'+CODE+'POSH_inner').animate({'margin-left':'-470px'});
-				
+
+				if($('body').hasClass('rtl')){
+					$('.'+CODE+'POSH_inner').animate({'margin-right':'-470px'});
+				}else{
+					$('.'+CODE+'POSH_inner').animate({'margin-left':'-470px'});
+				}
+								
 				ajdePOSH_show_back_btn();
 				
 				$('#'+CODE+'POSH_code').html('['+code+']').attr({'data-curcode':code});
@@ -44,11 +49,12 @@ jQuery(document).ready(function($){
 	// go back button on the shortcode popup
 		function ajdePOSH_go_back(){
 			$('#'+CODE+'POSH_back').click(function(){		
-				$(this).animate({'left':'-20px'},'fast');	
+				$(this).animate({'left':'-30px'},'fast');	
 				
 				$('h3.notifications').removeClass('back');
-			
+				
 				$('.'+CODE+'POSH_inner').animate({'margin-left':'0px'}).find('.step2_in').fadeOut();
+								
 				
 				// hide step 2
 				$(this).closest('#'+CODE+'POSH_outter').find('.step2').fadeOut();

@@ -31,6 +31,8 @@ if (!class_exists ("c_ws_plugin__s2member_menu_page_help"))
 				public function __construct ()
 					{
 						echo '<div class="wrap ws-menu-page">' . "\n";
+						
+						echo '<div class="wp-header-end"></div>'."\n";
 
 						echo '<div class="ws-menu-page-toolbox">'."\n";
 						c_ws_plugin__s2member_menu_pages_tb::display ();
@@ -49,7 +51,7 @@ if (!class_exists ("c_ws_plugin__s2member_menu_page_help"))
 						echo '<div class="ws-menu-page-group" title="Getting Help w/ s2Member" default-state="open">' . "\n";
 
 						echo '<div class="ws-menu-page-section ws-plugin--s2member-help">' . "\n";
-						echo '<p>s2Member is pretty easy to setup and install initially. Most of the official documentation is right here in your Dashboard (i.e., there is a lot of inline documentation built into the software). That being said, it can take some time to master everything there is to know about s2Member\'s advanced features. If you need assistance with s2Member, please search the <a href="http://s2member.com/kb/" target="_blank" rel="external">s2Member Knowledge Base</a>, <a href="http://s2member.com/videos/" target="_blank" rel="external">Video Tutorials</a>, <a href="http://s2member.com/forums/" target="_blank" rel="external">Forums</a> and <a href="http://s2member.com/r/codex/" target="_blank" rel="external">Codex</a>. If you are planning to do something creative with s2Member, you might want to <a href="http://jobs.wordpress.net" target="_blank" rel="external">hire a freelance developer</a> to assist you.</p>' . "\n";
+						echo '<p>s2Member is pretty easy to setup and install initially. Most of the official documentation is right here in your Dashboard (i.e., there is a lot of inline documentation built into the software). That being said, it can take some time to master everything there is to know about s2Member\'s advanced features. If you need assistance with s2Member, please search the <a href="http://s2member.com/kb/" target="_blank" rel="external">s2Member Knowledge Base</a>, <a href="http://s2member.com/r/videos/" target="_blank" rel="external">Video Tutorials</a>, <a href="http://s2member.com/r/forum/" target="_blank" rel="external">Forums</a> and <a href="http://s2member.com/r/codex/" target="_blank" rel="external">Codex</a>. If you are planning to do something creative with s2Member, you might want to <a href="https://s2member.com/r/jobs-wordpress-net/" target="_blank" rel="external">hire a freelance developer</a> to assist you.</p>' . "\n";
 						echo '<p><strong>See also:</strong> <a href="http://s2member.com/r/common-troubleshooting-tips/" target="_blank" rel="external">s2Member Troubleshooting Guide</a> (please read this first if you\'re having trouble).</p>'."\n";
 
 						echo '<div class="ws-menu-page-hr"></div>' . "\n";
@@ -82,7 +84,7 @@ if (!class_exists ("c_ws_plugin__s2member_menu_page_help"))
 						echo '<div class="ws-menu-page-group" title="s2Member Tech. Support (for Pro Customers)" default-state="open">' . "\n";
 
 						echo '<div class="ws-menu-page-section ws-plugin--s2member-support">' . "\n";
-						echo '<p style="max-width:900px;">Support for s2Member® is provided by WebSharks, Inc. Our customer support representatives are available Monday through Friday, excluding all major holidays. Or, you can discuss problems/solutions with others in our <a href="https://wordpress.org/support/plugin/s2member" target="_blank" rel="external">public community forum</a>.</p>'."\n";
+						echo '<p style="max-width:900px;">Support for s2Member® is provided by WebSharks, Inc. Our customer support representatives are available Monday through Friday, excluding all major holidays. Or, you can discuss problems/solutions with others in our <a href="http://s2member.com/r/forums/" target="_blank" rel="external">public community forum</a>.</p>'."\n";
 
 						echo '<ul>'."\n";
 						echo '<li>For pre-sale questions please see: <a href="http://s2member.com/kb/kb-tag/pre-sale-faqs/" target="_blank" rel="external">Pre-Sale FAQs</a>.</li>'."\n";

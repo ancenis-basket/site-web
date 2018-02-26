@@ -1,8 +1,43 @@
 Daily View (DV) addon for EventON Plugin
 ====================================
+v 1.0.8 (2018-1-30)
+FIXED: today event not working corret
+ADDED: continuous month scrolling from days stripe
+
+v 1.0.7 (2017-10-11)
+FIXED: mobile dailyview scroll of days strip skipping days
+FIXED: Addon iniating multiple times
+UPDATED: Loader bar animation to be compatible with evo 2.6
+
+v 1.0.6 (2017-7-7)
+FIXED: undefined $number_days_in_month error
+UPDATED: Compatibility with eventon 2.5.5 version
+UPDATED: new filter evodv_daily_view_list
+
+v 1.0.5 (2017-3-3)
+FIXED: Style not loading with new eventon version
+FIXED: mo1st changing days to 1st of month when using filters
+UPDATED: addon initiation setup
+UPDATED: Eventon requirement not meeting causing errors
+
+v 1.0.4 (2016-12-12)
+FIXED: left arrow not moving to previous date
+FIXED: font family update for eventon 2.5
+FIXED: php versions that doesnt support cal_days_in_month function alternative
+UPDATED: Font family pluggability
+
+v 1.0.3 (2016-11-23)
+ADDED: day strip arrows to also scroll day strip while switching months
+ADDED: Top days box arrows to also switch months
+FIXED: switch to first of month issues
+
+v 1.0.2 (2016-11-12)
+FIXED: Missing dailyview appearance
+FIXED: Styles for day section
+
 v 1.0.1 (2016-8-24)
 FIXED: Removed new jq mobile script that was altering website behavior
-UODATED: Compatibility with eventON 2.4.5
+UPDATED: Compatibility with eventON 2.4.5
 
 v 1.0 (2016-8-5)
 ADDED: compatibility with all month events

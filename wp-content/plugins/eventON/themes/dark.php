@@ -4,7 +4,7 @@
  * @updated:	2.2.30
  */
 	
-$theme = array(
+$theme = apply_filters('evo_color_theme_dark', array(
 	'evcal_hexcode'=>'ECECEC',
 	// month year lable text
 	'evcal__jm005'=>'414141',
@@ -15,6 +15,7 @@ $theme = array(
 	//eventtop background
 	'evcal__bgc4'=>'474747',
 	'evcal__bgc4h'=>'616161',
+	'evcal_loader_001'=>'545454',// loader bar bg
 	//border
 	'evcal__evcbrb0'=>'000000',
 
@@ -39,8 +40,8 @@ $theme = array(
 	'evcal__bc1_rgb'=>'40,40,40',
 	'evcal__bc1H'=>'3A3A3A',
 	'evcal__evcbrb'=>'4F4F4F',
-	'evcal__fc4'=>'A9A9A9',// section titles
-	'evcal__fc5'=>'8C8C8C',// section titles
+	'evcal__fc4'=>'d6d6d6',// section titles
+	'evcal__fc5'=>'d9d9d9',// section titles
 	'evcal_closebtn'=>'303030',// close button
 	'evcal_closebtnx'=>'4F4E4E',// close button H
 
@@ -56,7 +57,6 @@ $theme = array(
 	'evcal__jm010'=>'868686', //line
 	'evcal__jm010H'=>'A6A6A6',
 
-
 	// single events addition
 	'evose_3'=>'2C2C2C',
 	'evose_4'=>'4F4F4F',
@@ -70,7 +70,7 @@ $theme = array(
 	// canceled events
 	'evcal__cancel_event_3'=>'2b2b2b',
 	'evcal__cancel_event_4'=>'383738',
-);
+));
 
 ?>
 

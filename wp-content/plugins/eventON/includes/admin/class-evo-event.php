@@ -3,7 +3,7 @@
 /**
  * Event Class
  *
- * The eventon event creating the right event object
+ * The eventon event creating the right event object - deprecating
  *
  * @class 		eventon_event
  * @version		0.1
@@ -11,7 +11,7 @@
  * @category	Class
  * @author 		eventon
  */
-class evo_event {
+class evo_event_item {
 	
 	public function get_event($the_event=''){
 		global $post;
@@ -102,21 +102,28 @@ class evo_event {
 	
 	public function get_event_fields_edit(){
 		return $values  = array(
-				'evcal_start_date',
-				'evcal_start_time_hour',
-				'evcal_start_time_min',
-				'evcal_st_ampm',
-				'evcal_end_date',
-				'evcal_end_time_hour',
-				'evcal_end_time_min',
-				'evcal_et_ampm',
-				'evcal_location',
-				'evcal_organizer',
-				'evcal_subtitle',
-				'_featured',
-				'_evo_date_format',
-				'_evo_time_format'
-			);
+			'evcal_start_date',
+			'evcal_start_time_hour',
+			'evcal_start_time_min',
+			'evcal_st_ampm',
+			'evcal_end_date',
+			'evcal_end_time_hour',
+			'evcal_end_time_min',
+			'evcal_et_ampm',
+			'evcal_location',
+			'evcal_organizer',
+			'evcal_subtitle',
+			'evcal_allday',
+			'evo_hide_endtime',
+			'_featured',
+			'evo_exclude_ev',
+			'evcal_gmap_gen',
+			'evcal_hide_locname',
+			'evo_access_control_location',
+			'evo_evcrd_field_org',
+			'_evo_date_format',
+			'_evo_time_format'
+		);
 	}
 	
 }

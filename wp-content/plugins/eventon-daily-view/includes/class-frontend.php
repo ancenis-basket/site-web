@@ -1,8 +1,8 @@
 <?php
 /**
  * DailyView front-end
- * @version 	0.2
- * @updated 	2015-4
+ * @version 	1.0.5
+ * @updated 	2017-2
  */
 
 class evodv_frontend{
@@ -21,18 +21,29 @@ class evodv_frontend{
 
 		// inclusion
 		add_action('eventon_calendar_header_content',array($this, 'calendar_header_hook'), 10, 1);
+		add_action('evo_addon_styles', array($this, 'styles') );
 	}
 
-	// styles for dailyView	
-		public function register_styles_scripts(){
+	// styles for dailyView
+		function styles(){
 			global $eventon_dv;
+			ob_start();
+			include_once($eventon_dv->plugin_path.'/assets/dv_styles.css');
+			echo ob_get_clean();
+		}	
+		public function register_styles_scripts(){
+			global $eventon_dv, $eventon;
 			
-			wp_register_style( 'evo_dv_styles',$eventon_dv->plugin_url.'/assets/dv_styles.css');		
+			// Load dailyview styles conditionally
+			$evOpt = evo_get_options('1');
+			if( evo_settings_val('evcal_concat_styles',$evOpt, true))
+				wp_register_style( 'evo_dv_styles',$eventon_dv->plugin_url.'/assets/dv_styles.css');
+
 			wp_register_script('evo_dv_mousewheel',$eventon_dv->plugin_url.'/assets/jquery.mousewheel.min.js', array('jquery'), $eventon_dv->version, true );
 			//wp_register_script('evodv_other',$eventon_dv->plugin_url.'/assets/jquery.mobile.min.js', array('jquery'), $eventon_dv->version, true );	
 			wp_register_script('evo_dv_script',$eventon_dv->plugin_url.'/assets/dv_script.js', array('jquery'), $eventon_dv->version, true );	
 
-			if(has_eventon_shortcode('add_eventon_dv')){
+			if(function_exists('has_eventon_shortcode') && has_eventon_shortcode('add_eventon_dv')){
 				// LOAD JS files
 				$this->print_scripts();					
 			}
@@ -66,14 +77,24 @@ class evodv_frontend{
 			if($eventon_dv->is_running_dv){			
 				$day_data = $this->focus_day_data;
 
-				$_cal_focus_day = (!empty($this->focus_day_data['mo1st']) && $this->focus_day_data['mo1st'] =='yes')? 1:$this->focus_day_data['day'];
+				$mo1st = (!empty($this->focus_day_data['mo1st']) && $this->focus_day_data['mo1st'] =='yes')? true: false;
 
-				// Move to first of month class
-				$mo1st_class = (!empty($this->focus_day_data['mo1st']) && $this->focus_day_data['mo1st'] =='yes')? ' mo1st':null;				
+				$_cal_focus_day = $mo1st? 1:$this->focus_day_data['day'];				
+				$mo1st_class = $mo1st? ' mo1st':null;	// Move to first of month class			
 
-				$add = "<input type='hidden' class='eventon_other_vals{$mo1st_class} evoDV' name='dv_focus_day' data-day='".$day_data['day']."' value='".$_cal_focus_day."' data-mo1st='".( $mo1st_class? '1':0)."'/>";
+				echo "<input type='hidden' class='eventon_other_vals{$mo1st_class} evoDV' name='dv_focus_day' data-mo1st='".( $mo1st_class? 'yes':'no')."' data-day='".$day_data['day']."' value='".$_cal_focus_day."' />";
+				echo "<input type='hidden' class='eventon_other_vals evoDV' name='dv_mo1st' value='".($mo1st?'yes':'no')."'/>";
 				
-				echo $add;
+				
+				// continuous scrolling
+				$continuous_scroll = (!empty($this->focus_day_data['continuous_scroll']) && $this->focus_day_data['continuous_scroll'] =='yes')? true: false;
+
+				echo "<input type='hidden' class='eventon_other_vals evoDV' name='dv_continuous_scroll' value='". ($continuous_scroll? 'yes':'no' ) . "'/>";
+
+				$focus_date = $this->focus_day_data['day'];
+
+				echo "<input type='hidden' class='eventon_other_vals evoDV' name='dv_def_focus_day' value='". $focus_date ."'/>";
+				
 
 				$this->print_scripts();
 			}else{
@@ -86,6 +107,7 @@ class evodv_frontend{
 			global $eventon, $wpdb, $eventon_dv;	
 
 			$this->only_dv_actions($args);	
+			$calendar_header_args = array();
 			
 			// Intial variables
 				// GET preset values
@@ -120,7 +142,7 @@ class evodv_frontend{
 							$__year = date_i18n('Y');
 						}
 
-					$_days_in_month = cal_days_in_month(CAL_GREGORIAN,$__month, $__year);
+					$_days_in_month = $this->get_days_in_month($__month, $__year);
 
 					// date
 					$today_day = date_i18n('j');
@@ -143,7 +165,7 @@ class evodv_frontend{
 							$__month = ($__month<1)? 12: $__month;
 							$__year = ($__month<1)? $__year-1: $__year;
 
-							$_days_in_prev_month = cal_days_in_month(CAL_GREGORIAN,$__month, $__year);
+							$_days_in_prev_month = $this->get_days_in_month($__month, $__year);
 
 							$__date = $new_day+$_days_in_prev_month;
 						}else{
@@ -158,6 +180,7 @@ class evodv_frontend{
 					$focus_start_date_range = mktime( 0,0,0,$__month,$__date,$__year );
 					$focus_end_date_range = mktime(23,59,59,$__month,$__date,$__year);
 					$mo1st=( !empty($args['mo1st']) )? $args['mo1st']: '';				
+					$continuous_scroll=( !empty($args['continuous_scroll']) )? $args['continuous_scroll']: '';				
 				
 				// Set focus day data within the class
 					$this->focus_day_data = array(
@@ -165,6 +188,7 @@ class evodv_frontend{
 						'month'=>$__month,
 						'year'=>$__year,
 						'mo1st'=>$mo1st,
+						'continuous_scroll'=>$continuous_scroll,
 						'focus_start_date_range'=>$focus_start_date_range,
 						'focus_end_date_range'=>$focus_end_date_range,
 						'cal_id'=>((!empty($args['cal_id']))? $args['cal_id']:'1')
@@ -187,7 +211,13 @@ class evodv_frontend{
 					if(!empty($args['today']) && $args['today']=='yes' && !empty($args['header_title'])){
 						$args['date_header'] = false;
 						$args['hide_so'] = 'yes';
+						$calendar_header_args['hide_so'] = 'yes';
+						$calendar_header_args['date_header'] = false;
 					}
+
+			
+			$calendar_header_args['focused_month_num'] = $__month;
+			$calendar_header_args['focused_year'] = $__year;
 			
 			// PROCESS variables
 			$args__ = $eventon->evo_generator->process_arguments($args);
@@ -195,16 +225,13 @@ class evodv_frontend{
 
 			// ==================
 			$this->events_list = $eventon->evo_generator->evo_get_wp_events_array('', $args__);
-			
+
 
 			ob_start();
 
-				if($type!='listOnly')
-					echo $eventon->evo_generator->get_calendar_header(array(
-						'focused_month_num'=>$__month, 
-						'focused_year'=>$__year
-						)
-					);
+				if($type!='listOnly'){
+					echo $eventon->evo_generator->get_calendar_header( $calendar_header_args );
+				}
 
 				// calendar events
 					$months_event_array = $eventon->evo_generator->generate_event_data( 
@@ -216,8 +243,7 @@ class evodv_frontend{
 						echo $eventon->evo_generator->calendar_shell_footer();
 
 			$this->remove_dv_only_actions();
-			return  ob_get_clean();		
-			
+			return  ob_get_clean();	
 		}
 
 	// days strip		
@@ -340,7 +366,6 @@ class evodv_frontend{
 
 			$output='';
 
-			$output.= "<p class='evodv_action prev'></p>";
 			for($x=0; $x<$number_days_in_month; $x++){
 				$day_classes = array();
 
@@ -390,7 +415,6 @@ class evodv_frontend{
 						<span class='evoday_events'>".$innerItems."</span>
 					</p>";
 			}
-			$output .= "<p class='evodv_action next'></p>";
 			//$output.= "<div class='clear'></div>";
 			
 			return $output;
@@ -413,7 +437,7 @@ class evodv_frontend{
 			//print_r($day_data);
 
 			// DAILY VIEW section
-			$dv_strip_margin = (( ($day_data['day'])*(-35) )+35).'px';
+			$dv_strip_margin = (( ($day_data['day'])*(-60) )+130 ).'px';
 			$hide_arrows = ($evcal_val1['evcal_arrow_hide']=='yes')? true:false;
 			
 
@@ -422,29 +446,28 @@ class evodv_frontend{
 			$dayname = $this->get_full_day_names($day_of_week);
 
 			// top date box
+			$number_days_in_month = '';
 			if(!empty($this->shortcode_args['hide_date_box']) && $this->shortcode_args['hide_date_box']!='yes'){
 
 				$number_days_in_month = $this->days_in_month( $day_data['month'], $day_data['year']);
 
-				$disable_prev = ($day_data['day']==1)?'disable':null;
-				$disable_next = ($day_data['day']==$number_days_in_month)?'disable':null;
-
 				$content.="<div class='evodv_current_day'>
 					<p class='evodv_dayname'>{$dayname}</p>
-					<p class='evodv_daynum'><span class='prev {$disable_prev}' data-dir='prev'><i class='fa fa-angle-left'></i></span><b>{$day_data['day']}</b><span class='next {$disable_next}' data-dir='next'><i class='fa fa-angle-right'></i></span></p>
+					<p class='evodv_daynum'><span class='evodv_daynum_switch prev' data-dir='prev'><i class='fa fa-angle-left'></i></span><b>{$day_data['day']}</b><span class='evodv_daynum_switch next' data-dir='next'><i class='fa fa-angle-right'></i></span></p>
 					<p class='evodv_events' style='display:none'><span>2</span>". eventon_get_custom_language('', 'evcal_lang_events','Events' )."</p>
 				</div>";
 			}
 
 			$content.="
-			<div class='eventon_daily_list ".( (!$hide_arrows)? 'dvlist_hasarrows': 'dvlist_noarrows' )."' cal_id='{$day_data['cal_id']}'>
+			<div class='eventon_daily_list ".( (!$hide_arrows)? 'dvlist_hasarrows': 'dvlist_noarrows' )."' data-fday='".($day_data['day'])."' data-mdays='".$number_days_in_month."' data-mo1st='".$args['mo1st']."'>
 				<div class='eventon_dv_outter'>
+					<span class='evodv_action prev'></span>
 					<div class='eventon_daily_in' data-left='{$dv_strip_margin}' style='left:{}'>";	
 						
-						$content .= $this->get_daily_view_list($day_data['day'],$day_data['month'], $day_data['year']);
-						//$content .= $this->get_daily_view_list($day_data['day'],$day_data['month']+1, $day_data['year']);
+						$content .= apply_filters('evodv_daily_view_list', $this->get_daily_view_list($day_data['day'],$day_data['month'], $day_data['year']), $day_data);
 						
 					$content .="</div>
+					<span class='evodv_action next'></span>
 				</div>
 			</div>";
 
@@ -457,6 +480,14 @@ class evodv_frontend{
 		}
 
 	// other supported functions
+		function get_days_in_month($month, $year){
+			if(function_exists('cal_days_in_month')){
+				return cal_days_in_month(CAL_GREGORIAN,$month, $year);
+			}else{
+				return date('t', mktime(0, 0, 0, $month+1, 0, $year)); 
+			}
+		}
+
 		public function only_dv_actions($args){
 			$this->shortcode_args = $args;
 			if(empty($args['today']) || (!empty($args['today']) && $args['today']!='yes'))

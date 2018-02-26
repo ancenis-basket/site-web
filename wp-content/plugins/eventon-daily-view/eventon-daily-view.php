@@ -4,16 +4,16 @@
  Plugin URI: http://www.myeventon.com/addons/daily-view/
  Description: Adds the capabilities to create a calendar with horizontally scrollable list of days of the month right below month title and sort bar. Read the guide for more information on how to use this addon.
  Author: Ashan Jay
- Version: 1.0.1
+ Version: 1.0.8
  Author URI: http://www.ashanjay.com/
- Requires at least: 3.8
- Tested up to: 4.2.2
+ Requires at least: 4.0
+ Tested up to: 4.9
  */
  
 class EventON_daily_view{
 	
-	public $version='1.0.1';
-	public $eventon_version = '2.4.4';
+	public $version='1.0.8';
+	public $eventon_version = '2.6';
 	public $name = 'DailyView';
 		
 	public $is_running_dv =false;
@@ -24,21 +24,31 @@ class EventON_daily_view{
 	private $urls;
 	
 	public $shortcode_args;
+
+	public function __construct(){
+		$this->super_init();
+		add_action('plugins_loaded', array($this, 'plugin_init'));
+	}
 	
-	// construct
-		public function __construct(){
-			
-			$this->super_init();
+	public function plugin_init(){			
+		// check if eventon exists with addon class
+		if( !isset($GLOBALS['eventon']) || !class_exists('evo_addons') ){
+			add_action('admin_notices', array($this, 'notice'));
+			return false;			
+		}			
+		
+		$this->addon = new evo_addons($this->addon_data);
 
-			include_once( 'includes/admin/class-admin_check.php' );
-			$this->check = new addon_check($this->addon_data);
-			$check = $this->check->initial_check();
-
-			if($check){
-				$this->addon = new evo_addon($this->addon_data);
-				add_action( 'init', array( $this, 'init' ), 0 );	
-			}
-		}	
+		if($this->addon->evo_version_check()){
+			add_action( 'init', array( $this, 'init' ), 0 );
+		}
+	}	
+	// Eventon missing
+		public function notice(){
+			?><div class="message error"><p><?php printf(__('EventON %s is NOT active! - '), $this->name); 
+	        	echo "You do not have EventON main plugin, which is REQUIRED.";?></p></div><?php
+		}
+	
 	
 	// SUPER init
 		function super_init(){
@@ -61,15 +71,11 @@ class EventON_daily_view{
 
 	// INITIATE please
 		function init(){				
-			// Activation
-			$this->activate();
-
 			// Deactivation
 			register_deactivation_hook( __FILE__, array($this,'deactivate'));
 						
 			// RUN addon updater only in dedicated pages
 			if ( is_admin() ){
-				$this->addon->updater();
 				include_once( 'includes/admin/admin-init.php' );
 			}
 
@@ -84,13 +90,7 @@ class EventON_daily_view{
 			$this->frontend = new evodv_frontend();
 		}		
 	
-	// ACTIVATION	
-		function activate(){
-			// add actionUser addon to eventon addons list
-			$this->addon->activate();
-		}		
-	
-		// Deactivate addon
+	// Deactivate addon
 		function deactivate(){
 			$this->addon->remove_addon();
 		}

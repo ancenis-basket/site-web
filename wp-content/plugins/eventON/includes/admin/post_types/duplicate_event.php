@@ -138,6 +138,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 		$sql     = $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d", absint( $id ) );
 
+		// Fields to exclude during event replication
 		$exclude = array_map( 'esc_sql', array_filter( apply_filters( 'eventon_duplicate_event_exclude_meta', array('tx_woocommerce_product_id') ) ) );
 
 		if ( sizeof( $exclude ) ) {

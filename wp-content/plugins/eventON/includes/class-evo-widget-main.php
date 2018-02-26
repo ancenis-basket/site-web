@@ -5,7 +5,7 @@
  * @author 		AJDE
  * @category 	Widget
  * @package 	EventON/Classes
- * @version     2.3.9
+ * @version     2.5.2
  */
 
 class EvcalWidget extends WP_Widget{	
@@ -88,7 +88,7 @@ class EvcalWidget extends WP_Widget{
 				<div class='evo_wig_item' connection=''>
 					<input id="<?php echo $this->get_field_id('ev_hidepastev'); ?>" type='hidden' name='<?php echo $this->get_field_name('ev_hidepastev'); ?>' value='<?php echo esc_attr($ev_hidepastev); ?>'/>
 					<p class='evowig_chbx <?php echo ($ev_hidepastev=='yes')?'selected':null; ?>'></p>
-					<p>Hide past events</p>
+					<p><?php _e('Hide past events','eventon');?></p>
 					<div class='clear'></div>
 				</div>				
 			</div>
@@ -99,7 +99,7 @@ class EvcalWidget extends WP_Widget{
 
 					<input id="<?php echo $this->get_field_id('show_upcoming'); ?>" type='hidden' name='<?php echo $this->get_field_name('show_upcoming'); ?>' value='<?php echo esc_attr($show_upcoming); ?>'/>
 					<p class='evowig_chbx <?php echo ($show_upcoming=='yes')?'selected':null; ?>'></p>
-					<p>Show upcoming events</p>
+					<p><?php _e('Show upcoming events','eventon');?></p>
 					<div class='clear'></div>
 				</div>
 				
@@ -114,13 +114,13 @@ class EvcalWidget extends WP_Widget{
 					<div class='evo_wig_item' connection=''>
 						<input id="<?php echo $this->get_field_id('hide_mult_occur'); ?>" type='hidden' name='<?php echo $this->get_field_name('hide_mult_occur'); ?>' value='<?php echo esc_attr($hide_mult_occur); ?>'/>
 						<p class='evowig_chbx <?php echo ($hide_mult_occur=='yes')?'selected':null; ?>'></p>
-						<p>Hide Multiple Occurance</p>
+						<p><?php _e('Hide Multiple Occurance','eventon');?></p>
 						<div class='clear'></div>
 					</div>
 					<div class='evo_wig_item' connection=''>
 						<input id="<?php echo $this->get_field_id('hide_empty_months'); ?>" type='hidden' name='<?php echo $this->get_field_name('hide_empty_months'); ?>' value='<?php echo esc_attr($hide_empty_months); ?>'/>
 						<p class='evowig_chbx <?php echo ($hide_empty_months=='yes')?'selected':null; ?>'></p>
-						<p>Hide Empty Months</p>
+						<p><?php _e('Hide Empty Months','eventon');?></p>
 						<div class='clear'></div>
 					</div>
 				</div>
@@ -133,7 +133,7 @@ class EvcalWidget extends WP_Widget{
 					
 					<input id="<?php echo $this->get_field_id('_is_fixed_time'); ?>" type='hidden' name='<?php echo $this->get_field_name('_is_fixed_time'); ?>' value='<?php echo esc_attr($_is_fixed_time); ?>'/>
 					<p class='evowig_chbx <?php echo ($_is_fixed_time=='yes')?'selected':null; ?>'></p>
-					<p>Set fixed month/year</p>
+					<p><?php _e('Set fixed month/year','eventon');?></p>
 					<div class='clear'></div>
 				</div>
 				
@@ -199,19 +199,18 @@ class EvcalWidget extends WP_Widget{
 	/**
 	 * The actuval widget
 	 */
-	public function widget($args, $instance) {
+	public function widget($widget_args, $instance) {
 		global $eventon;
 
 		// make sure styles and scripts get loaded
-		$eventon->load_evo_scripts_styles();
+		$eventon->frontend->load_evo_scripts_styles();
 		
 		// DEFAULTS
 		$fixed_month = $fixed_year = 0;
 		
 		// extract widget specific variables
-		extract($args, EXTR_SKIP);		
-		
-		
+		extract($widget_args, EXTR_SKIP);		
+				
 		$values = $this->process_values($instance);		
 		extract($values);
 		
@@ -221,7 +220,7 @@ class EvcalWidget extends WP_Widget{
 			add_filter('eventon_shortcode_defaults', array($this,'event_list_shortcode_defaults'), 10, 1);
 		
 		// CALENDAR ARGUMENTS
-		$args = array(
+		$args = apply_filters('evo_main_widget_args',array(
 			'cal_id'=>$ev_cal_id,
 			'event_count'=>$ev_count,
 			'show_upcoming'=>$show_upcoming,
@@ -234,7 +233,7 @@ class EvcalWidget extends WP_Widget{
 			'hide_past'=>$ev_hidepastev,
 			'hide_mult_occur'=>$hide_mult_occur,
 			'hide_empty_months'=>$hide_empty_months,
-		);
+		));
 		//print_r($args);
 		
 		// Check for event type filterings called for from widget settings
@@ -256,20 +255,17 @@ class EvcalWidget extends WP_Widget{
 		}
 		
 		
-		/*
-			 WIDGET
-		*/	
+		// WIDGET
 		if(has_action('eventon_before_widget')){
 			do_action('eventon_before_widget');
 		}else{
 			echo $before_widget;
 		}
-			
-			
+						
 		
 		// widget title
-		if(!empty($instance['ev_title']) ){
-			echo "<h3 class='widget-title'>".$instance['ev_title']."</h3>";
+		if ( $title = apply_filters( 'widget_title', empty( $instance['ev_title'] ) ? '' : $instance['ev_title'], $instance) ) {
+			echo $widget_args['before_title']. $title. $widget_args['after_title'];
 		}
 
 		//print_r($args);
@@ -307,8 +303,7 @@ class EvcalWidget_SC extends WP_Widget{
 		$evo_shortcodeW = (!empty($evo_shortcodeW))? $evo_shortcodeW: null;
 		// HTML
 
-		if(is_admin())
-			$eventon->evo_admin->eventon_shortcode_pop_content();
+		if(is_admin())	$eventon->evo_admin->eventon_shortcode_pop_content();
 
 		?>
 		<div id='eventon_widget_settings' class='eventon_widget_settings'>
@@ -320,7 +315,8 @@ class EvcalWidget_SC extends WP_Widget{
 					value="<?php echo esc_attr($evo_title); ?>" placeholder='Widget Title' title='Widget Title'/>					
 				</div>
 			</div>
-			<p><a id='evo_shortcode_btn' class='ajde_popup_trig evo_admin_btn btn_prime' data-popc='eventon_shortcode' title='<?php _e('eventON Shortcode generator','eventon');?>' href='#'>[ Shortcode Generator ]</a><br/><i>NOTE: Page need to be refreshed after adding the widget, for the shortcode generator to function.</i></p>
+			<p><a id='evo_shortcode_btn' class='ajde_popup_trig evo_admin_btn btn_prime' data-popc='eventon_shortcode' title='<?php _e('eventON Shortcode generator','eventon');?>' href='#'>[ Shortcode Generator ]</a><br/>
+			<i><?php _e('NOTE: Page need to be refreshed after adding the widget, for the shortcode generator to function.','eventon');?></i></p>
 			<p class='evo_widget_textarea'><textarea name="<?php echo $this->get_field_name('evo_shortcodeW'); ?>" id="<?php echo $this->get_field_id('evo_shortcodeW'); ?>"><?php echo esc_attr($evo_shortcodeW); ?></textarea><br/><label><?php _e('EventOn Calendar Shortcode','eventon');?><?php $eventon->throw_guide('Use the Eventon Shortcode Generator to create a shortcode based on your requirements, and paste it in here.','L');?></label></p>
 		
 		</div>

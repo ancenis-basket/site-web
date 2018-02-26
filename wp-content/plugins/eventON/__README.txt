@@ -4,8 +4,9 @@ Plugin Name: EventON
 Author URI: http://ashanjay.com/
 Tags: calendar, event calendar, event posts
 Requires at least: 4.0
-Tested up to: 4.6.1
-Stable tag: 2.4.9
+Tested up to: 4.9.4
+Stable tag: 2.6.6
+Initial Release: 2011-12-21
 
 Event calendar plugin for wordpress that utilizes WP's custom post type.  
 
@@ -19,6 +20,305 @@ Event calendar plugin for wordpress that utilizes WP's custom post type. This pl
 1. Activate the plugin through the 'Plugins' menu in WordPress
 
 == Changelog ==
+= 2.6.6 (2018-2-7) =
+FIXED: AJAX based load more events not working correct
+FIXED: addon details actionuser plus ID correction
+FIXED: Shortcode generator tooltips not showing
+FIXED: All day events on multi days not showing end date
+FIXED: datetime object get_int_correct_event_time return error
+FIXED: Event inclusion in search results breaking bbpress forums
+FIXED: load more events via ajax not reseting paged val
+FIXED: subtitle with double quotes not saving correct
+UPDAETD: Better URL structure for passing repeat event information
+UPDATED: event edit meta box colors to a lighter colors
+
+= 2.6.5 (2017-12-11) =
+ADDED: Option to disable auto generated og: meta tags
+ADDED: Notice for interchangeable shortcode usage
+ADDED: Single event to be able to pass arguments using filter eventon_single_event_page_data
+FIXED: all events wp-admin responsiveness
+FIXED: Language saved text are not reflecting upon page reload
+FIXED: Missing backend translation codes
+FIXED: Facebook share image to be full size
+FIXED: Single event not correctly using map scroll disable
+FIXED: Deprecation handling method
+FIXED: Quick edit not saving some of yes no values
+
+= 2.6.4 (2017-11-29) =
+FIXED: transient error on evo product class
+FIXED: End day all day events not passing value correct 
+FIXED: Settings page coming in blank
+FIXED: Event maps license product ID not correct
+FIXED: Event slider product ID error in licensing
+FIXED: evo_check_updates cron hook name getting printed in the admin pages
+FIXED: Corresponding language not saving in event edit page
+FIXED: mobile lightbox positioning
+
+= 2.6.3 (2017-11-20) =
+FIXED: alphabetical sorting for addons list
+FIXED: Setting changes not reflecting on reload
+
+= 2.6.2 (2017-11-17) = 
+ADDED: Deprecated class handing and recording for alternatives
+FIXED: license activation not working
+
+= 2.6.1 (2017-11-17) =
+ADDED: Support for past and future event filtering on frontend
+ADDED: Export events as CSV to include event id
+ADDED: Remove invalid quotation marks from shortcode arguments
+ADDED: function check for iconv() for users without support for that
+ADDED: new remote auto updates system to eventon and addons
+ADDED: remote updates subscription service for eventon products
+ADDED: new filter evo_template_loader_file for template loading files
+FIXED: featuring an event in wp-admin causing error
+FIXED: Organizer open in new window not saving
+FIXED: wp-admin styles not passing version
+FIXED: ICS download file date format issue
+FIXED: All day events passing all day text for end time as well
+FIXED: Email share event name in email body not escaping correct
+FIXED: event class maybe_unserialize return prop values
+FIXED: email child theme support not working
+FIXED: location coordinates not saving just by itself
+FIXED: Location apostrophe
+UPDATED: POT file updates
+UPDATED: month jumper to show all months with no scroll
+UPDATED: csv htmlentities separated to be able to turn off
+UPDATED: Event id to be passed to eventtop
+UPDATED: Event object class improvements
+DEV: action filter when events auto trash
+
+= 2.6 (2017-9-12) =
+ADDED: ability to pass arguments to get_all_event_data() function
+ADDED: globally accessible event post meta update ajax from wp-admin
+ADDED: New calendar loader bar with cool knightrider like animation
+ADDED: Support for access to new loadbar for eventon addons
+ADDED: Support for event featured image ALT text
+ADDED: Option to disable location and organizer link filtering for https
+ADDED: new tile style with details under the tile
+ADDED: location and organizer filter support into shortcode generator
+FIXED: event end time not passing correct for dailyview addon
+FIXED: Separate months event list showing 1 less event
+FIXED: Single events template sidebar not position correct
+FIXED: Universal time format for eventcard not applying to all day events
+FIXED: hide end time events still showing end time
+FIXED: external links with https not working for events
+FIXED: twitter not including the URL
+FIXED: Single event page styles on responsive
+FIXED: event type archive page template layout issues
+FIXED: location and organizer archive page layout issues and styles
+FIXED: fixed month value with 0 yeild incorrect month
+FIXED: wp_admin AJDE library table styles
+FIXED: ajax based show more events causing filter events issues
+FIXED: ICS add to calendar file time processing issue
+FIXED: learn more link ux_val=2 not working
+FIXED: location meta data not able to delete
+FIXED: location description not saving and showing up in lightbox
+FIXED: open in new window not working for ux_val & learn more link
+FIXED: Google maps disable in settings to still work using other google maps APIs
+FIXED: single event box repeat interval not passing correct to box data
+FIXED: auto created events page to have page content as basic eventon shortcode
+FIXED: load styles and scripts only on eventon pages
+UPDATED: Possibility for extra filter text translation
+UPDATED: evo helpers to support file attachment to emails
+UPDATED: Helper styles for frontend
+UPDATED: event tax archive page layout design update
+UPDATED: eventon language saving for duplicate text strings
+UPDATED: new event date time function using event id
+UPDATED: location info over image styles and layout updated
+UPDATED: eventon back end button styles
+DEV: get_terms instead of get_categories to get event taxonomies for filter
+
+= 2.5.5 (2017-7-4) =
+ADDED: End year to show in eventtop with option to hide
+ADDED: Option to set custom login URL
+ADDED: Option to disable html special character decode on ICS file
+ADDED: New cron class to handle similar tasks for addons
+FIXED: error on eventon uninstall
+FIXED: no events text on list view echoing instead of returning
+FIXED: admin location and organizer not translating in event edit page
+FIXED: tiles with ajax load more leaving clear div 
+FIXED: ajax load more switching months showing incorrect events
+FIXED: disabling schema data to break calendar layout
+FIXED: organizer link formating correctly
+FIXED: location link formating correctly as well
+FIXED: not able to delete plugin via wp admin page
+FIXED: Search bar styles overriding by theme styles for some users 
+FIXED: missing argument error on evoadmin_get_unix_time_fromt_post()
+FIXED: search not working when enabled via settings
+FIXED: external link input field showing for lightbox UX option in event edit page
+UPDATED: Minor style changes
+UPDATED: calendar date styles and HTML structure
+UPDATED: Minor updates to single events template codes
+
+= 2.5.4 (2017-5-26) =
+ADDED: seperate styles sheet for backend RTL styles
+ADDED: Language corresponding event capabilities
+ADDED: JSON-LD structured data for events
+ADDED: Option to enable search for all calendars by default
+ADDED: Get directions to use lat lon if address not provided
+ADDED: Ability to use NOT-ALL to hide all events assigned with certain event taxonomy terms
+ADDED: pluggable funtions on calendar evo_cal_eventtop_attrs
+ADDED: Ability to run PHP codes on website via eventon settings
+ADDED: Pluggble filter for taxonomy page shortcode used
+ADDED: AJAX based pagination for loading new events
+ADDED: Featured events tag on eventtop
+FIXED: tile minor styles
+FIXED: backslashes not getting stripped on organizer meta information
+FIXED: Single events page showing multiple widgets
+FIXED: press enter key to search not working
+FIXED: search minor styles 
+FIXED: Export events as CSV event date to be in matching date format for CSV Importer
+FIXED: Schema based structured data errors
+FIXED: Stripslashes for organizer address and contact data fields
+FIXED: location and organizer button translatability
+FIXED: Single event template function requireing a paramater
+FIXED: Tiles feature image not showing background image
+UPDATED: By default search be disable for calendars
+UPDATED: Addons list on license page
+UPDATED: AJDE library
+UPDATED: all events page to show all day text instead of time
+
+= 2.5.3 (2017-5-4) =
+ADDED: event edit page to support location and organizer setting via ajax
+ADDED: search addon is now a part of eventon
+ADDED: ability to search on event type 2 and 3 with advance search
+ADDED: Location with city, state and country data
+ADDED: Search to be available in event list version of calendar as well
+ADDED: Search box to be able to search all past and current events
+ADDED: Option to show end time as well in repeat instance
+ADDED: Option to hide add eventon shortcode generator button from backend
+ADDED: Option to hide comments section on single event page
+ADDED: global option for location to be hidden from non-loggedin users
+ADDED: Option to download all events as ICS file from frontend
+FIXED: MDT custom html code for extra field not getting stripslashes
+FIXED: add to google calendar link compatibility with https protocol
+FIXED: monthly and weekly repeat options incorrection on event edit page
+FIXED: repeat interval time in eventcard be formatted with translated month names
+FIXED: PHP7.1 conflicts in language edit page & other places
+FIXED: export events as CSV to support csv importer date time formats
+FIXED: saving date proper conversion for altered date formats
+FIXED: External link for open event in single event page not complying with https
+FIXED: ics export all events not importing correct
+FIXED: Twitter sharing 2 links to events 
+FIXED: custom repeats not saving on newly added events
+FIXED: Language not saying in PHP 7.1+
+FIXED: Tile view not switching to one tile in a row in mobile view
+FIXED: Add to calendar ICS file formatting fix
+FIXED: evo_get_long_month_names() not returning correct translated month names
+FIXED: isset error on function get_int_correct_event_time()
+FIXED: style adjustments for extra <p> tags added inside calendar by some themes
+FIXED: deactivated multi data types not hiding from left menu
+UPDATED: Select2 updates to version 4
+UPDATED: Single event page template code
+
+= 2.5.2 (2017-3-30) =
+ADDED: filter hook for eventcard event details text
+ADDED: Support for hide fearured events from a calendar using hide_ft='yes'
+ADDED: event edit page ability to delete the initial repeat instance of custom repeat
+ADDED: Eventtop time block pluggable filter evo_eventtop_day_block
+ADDED: pluggable support for backend filtering options
+ADDED: pluggable map styles and new map styles
+ADDED: Searchable select fields for location and organizer
+ADDED: Pluggable function support for schema data for events
+ADDED: export events as CSV to comply with WP date/time format if set via settings
+FIXED: ICS and google cal times were off by couple of hours
+FIXED: Minor styles
+FIXED: RTL styles update
+FIXED: Some date/time formats not saving the correct value
+FIXED: when none of terms selected from filtering checkbox count that as none instead of all
+FIXED: Social share icons background color fix
+FIXED: Repeating instances delete not completly hiding the row
+FIXED: custom map marker not showing in single event pages
+FIXED: event subtitle with apostrophe not showing correct in wp-admin
+FIXED: Google maps custom styles undefine error
+FIXED: featured events not move to top with show more events option
+FIXED: error on evo_lang_e() function lang variable
+FIXED: Facebook share not working
+FIXED: lightbox event details paragraph padding bottom
+FIXED: PHP 7.1 saving events save event time as current time
+FIXED: dynamic styles file loading issues on https for multisites
+FIXED: Widget title not showing correct for some themes
+FIXED: language unsupported taxonomy names in filtering bar
+FIXED: repeating event URL cross scripting vulnerability
+FIXED: Quick edit issues
+FIXED: Custom repeats when delete a repeat and add new not saved correct
+FIXED: new months showing old month events during ajax call
+FIXED: Some widget icons for eventcard not hidden
+FIXED: Export events as CSV convert all info to htmlentities()
+UPDATED: Various minor style updates for frontend layout
+UPDATED: Eventon email helper function to support correct from email format
+UPDATED: extended support for more fields under quick edit 
+UPDATED: Repeating interval value convert passed value to integer
+UPDATED: map styles preview images
+UPDATED: Schema data structure
+UPDATED: Close button styles for lightbox
+
+= 2.5.1 (2017-1-23) =
+FIXED: License activation not working & not saving the key
+FIXED: Custom field button not opening links correct
+FIXED: Missing language translations for multi data types
+UPDATED: Deactivate single events addon if installed
+UPDATED: Made organizer fields pluggable
+
+= 2.5 (2017-1-17) =
+ADDED: All new calendar design styles
+ADDED: Option to click repeating event series within eventcard
+ADDED: Option to stop using eventon single event template for single event pages
+ADDED: View archive page for event location tax term edit page in admin
+ADDED: Option to remove schema everywhere except single event pages
+ADDED: option to remove month header from basic event list version of the calendar
+ADDED: Ability to concatenate addon styles into one file for faster load times
+ADDED: Ability to change event text string value quick from settings
+ADDED: Option to make location information only visible to logged-in users
+ADDED: Option to show login required message for custom fields thats only visible to logged-in users
+ADDED: Links to various documentation articles to help common questions in settings
+ADDED: Multi data types for events
+FIXED: location address strip slashes
+FIXED: Backend event edit afterstatement not working for yes/no buttons
+FIXED: Single event template overriding not working correct
+FIXED: placeholder value not showing in settings textarea field type
+FIXED: Twitter share missing link to event
+FIXED: eventcard and eventtop background-image quotation marks
+FIXED: Event edit page locaton and organizer dropdown order ASC
+FIXED: Eventon settings collapse not working
+FIXED: Language variable not passing for single event clicks
+FIXED: Location address not passing in add to google cal button
+FIXED: Location information missing in ICS add to calendar
+FIXED: Repeat interval share not passing correct repeat interval value
+FIXED: Month repeats saving initial dates twice
+FIXED: Custom eventon only time offset not correctly adjusting time
+UPDATED: compaibility with php 7.1
+UPDATED: Better organizsation of font styles for easy changing fonts
+UPDATED: ux_val set to 4 or X to not load eventCard content when switching months for faster loading
+UPDATED: License activation system
+
+= 2.4.10 (2016-12-1) =
+ADDED: Ability for addons to load styles into one file for faster loading styles
+ADDED: Option in settings to offset add to calendar times
+ADDED: Weekly repeats to be able to select day or the week
+ADDED: Pluggable support for single event sharable options
+ADDED: Further edit location from event edit page button
+ADDED: Location description to be shown with location image when available
+ADDED: Jumper years count be changed via shortcode jumper_count value
+FIXED: Better language variable name filtering
+FIXED: wp-admin click outside lightbox causing other scripts to not work
+FIXED: Styles for text over location image for lightbox event
+FIXED: Excerpt function word count issue
+FIXED: Image not sharing on facebook
+FIXED: Appearance theme selection not saving
+FIXED: Location address was not passing to get_all_event_data()
+FIXED: Event type #5 not showing up
+FIXED: Make sure custom repeat values pass integer
+FIXED: Custom repeats saving correct repeat intervals
+FIXED: RTL Styles & passed rtl class into body class
+FIXED: eventcard and eventtop event image missing quotation marks for url
+FIXED: Email share event to contain event date and remove dummy to email
+FIXED: load more events redirect not working when switching months - thanks @rootheng 
+FIXED: Mobile yes/no button clicks not working
+UPDATED: Html decoding for no event text string with html code
+UPDATED: shortcode generator styles
+UPDATED: Font awesome icons to version 4.7.0
+
 = 2.4.9 (2016-10-18) =
 FIXED: Click outside lightbox close is back
 FIXED: Backend edit event page styles missing

@@ -12,6 +12,10 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
+$OPT = get_option('evcal_options_evcal_1');
+$sin_name = (!empty($OPT['evo_textstr_sin']))? $OPT['evo_textstr_sin']: __('Event','eventon');
+$plu_name = (!empty($OPT['evo_textstr_plu']))? $OPT['evo_textstr_plu']: __('Events','eventon');
+
 // month names
 __( 'january', 'eventon' );
 __( 'february', 'eventon' );
@@ -36,6 +40,7 @@ __( 'saturday', 'eventon' );
 __( 'sunday', 'eventon' );
 
 // taxonomies
+__( 'event type', 'eventon' ); 
 __( 'event type', 'eventon' ); 
 __( 'event type 2', 'eventon' ); 
 __( 'event type 3', 'eventon' ); 

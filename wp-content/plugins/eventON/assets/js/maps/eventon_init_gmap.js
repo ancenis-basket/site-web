@@ -13,6 +13,8 @@ function getGeocoder(){
 
 function initialize(map_canvas_id, address,mapformat, zoom_level, location_type, scrollwheel, styles, iconURL) {
 	var map;
+
+	console.log(map_canvas_id);
 	geocoder = new google.maps.Geocoder();
 			
 	var latlng = new google.maps.LatLng(45.524732, -122.677031);
@@ -33,10 +35,12 @@ function initialize(map_canvas_id, address,mapformat, zoom_level, location_type,
 			mapTypeId:mapformat,	
 			zoom: zoom_level,
 			styles: styles,
-			zoomControl:true
+			zoomControl:true,
+			scrollwheel: true,
 		}
 	}
 	
+	//console.log(myOptions);
 	
 	var map_canvas = document.getElementById(map_canvas_id);
 	map = new google.maps.Map(map_canvas, myOptions);

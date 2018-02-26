@@ -18,7 +18,7 @@ class evo_admin {
 	private $class_name;
 	/** Constructor */
 	public function __construct() {
-		$this->opt = get_option('evcal_options_evcal_1');
+		$this->opt = evo_get_options('1');
 
 		add_action('admin_menu', array($this,'eventon_admin_menu'), 5);
 		add_action( 'admin_head', array($this,'eventon_admin_menu_highlight'), 5);
@@ -30,17 +30,40 @@ class evo_admin {
 		add_action('media_buttons_context',  array($this,'eventon_shortcode_button'));
 		add_filter( 'tiny_mce_version', array($this,'eventon_refresh_mce') ); 
 
+		add_filter('display_post_states', array($this,'post_state'),10,2);
+
+		$tt = strtotime( 'first day of 2 months ago');
+		//echo date('y-m-d', $tt);
+
 		//add_action( 'admin_enqueue_scripts', array($this,'eventon_admin_scripts') );
 		//add_action( 'admin_enqueue_scripts', array($this,'eventon_all_backend_files') );
 	}
 
+	function post_state( $states, $post){
+		//print_r($post);
+		if (  'page' == get_post_type( $post->ID ) &&  $post->post_name == 'event-directory'){
+	        $states[] = __('Events Page'); 
+	    } 
+
+	    return $states;
+	}
+
 // admin init
 	function eventon_admin_init() {
+		
+		//$tt = get_site_option('_site_transient_update_plugins');
+		//$transient_package = isset($tt->response[ 'eventon-action-user/eventon-action-user.php']->package)?	$tt->response[ 'eventon-action-user/eventon-action-user.php']->package: false;
+		//print_r($transient_package);
+		//print_r($tt);
+		
+		// Includes
+			require_once(AJDE_EVCAL_PATH.'/includes/updates/class-evo_plugins_api_data.php');
+
 		global $pagenow, $typenow, $wpdb, $post;	
-				
+
 		$postType = !empty($_GET['post_type'])? $_GET['post_type']: false;
-	    if(!$postType && !empty($_GET['post']))
-	    	$postType = get_post_type($_GET['post']);
+	   
+	    if(!$postType && !empty($_GET['post']))   	$postType = get_post_type($_GET['post']);
 		
 		if ( $postType && $postType == "ajde_events" ) {		
 			// Event Post Only
@@ -48,7 +71,7 @@ class evo_admin {
 
 			foreach ( $print_css_on as $page ){
 				add_action( 'admin_print_styles-'. $page, array($this,'eventon_admin_post_css') );
-				add_action( 'admin_print_scripts-'. $page, array($this,'eventon_admin_post_script') );
+				add_action( 'admin_print_scripts-'. $page, array($this,'eventon_admin_post_script') );			
 			}
 						
 			// taxonomy only page
@@ -57,6 +80,10 @@ class evo_admin {
 				wp_enqueue_script('taxonomy',AJDE_EVCAL_URL.'/assets/js/admin/taxonomy.js' ,array('jquery'),'1.0', true);
 			}
 		}
+
+		// event edit page content
+			include_once(  AJDE_EVCAL_PATH.'/includes/admin/post_types/class-meta_boxes.php' );
+			$this->metaboxes = new evo_event_metaboxes();
 
 		// Includes for admin
 			if(defined('DOING_AJAX')){	include_once( 'class-admin-ajax.php' );		}			
@@ -75,6 +102,18 @@ class evo_admin {
 			if(empty($_eventon_create_pages) || $_eventon_create_pages!= 1){
 				evo_install::create_pages();
 			}
+
+		// force update checking on wp-admin
+			if($pagenow =='update-core.php' && isset($_REQUEST['force-check']) && $_REQUEST['force-check']==1){
+				EVO_Prods()->get_remote_prods_data();
+			}
+
+		// when an addon is updated or installed - since 2.5
+			add_action('evo_addon_version_change', array($this, 'update_addon_styles'), 10);
+
+		// Deactivate single events addon
+			deactivate_plugins('eventon-single-event/eventon-single-event.php');
+			deactivate_plugins('eventon-search/eventon-search.php');
 	}
 	
 // admin menus
@@ -96,11 +135,7 @@ class evo_admin {
 
 	    add_action( 'load-' . $main_page, array($this,'eventon_admin_help_tab') );	
 		
-		// includes
-		if( $pagenow == 'post-new.php' || $pagenow == 'post.php' || $pagenow == 'edit.php' ) {
-			include_once(  AJDE_EVCAL_PATH.'/includes/admin/post_types/ajde_events_meta_boxes.php' );
-		}
-
+		
 		// add submenus to the eventon menu
 		add_submenu_page( 'eventon', 'Language', 'Language', 'manage_eventon', 'admin.php?page=eventon&tab=evcal_2', '' );
 		add_submenu_page( 'eventon', 'Styles', 'Styles', 'manage_eventon', 'admin.php?page=eventon&tab=evcal_3', '' );
@@ -109,6 +144,7 @@ class evo_admin {
 	}
 	/** Include and display the settings page. */
 		function eventon_settings_page() {
+			include_once(  AJDE_EVCAL_PATH.'/ajde/class-ajde_plugin_settings.php' );
 			include_once(  AJDE_EVCAL_PATH.'/includes/admin/settings/eventon-admin-settings.php' );
 			include_once(  AJDE_EVCAL_PATH.'/includes/admin/settings/class-settings-appearance.php' );
 			eventon_settings();
@@ -135,7 +171,7 @@ class evo_admin {
 // admin styles and scripts
 	// for event posts
 		function eventon_admin_post_css() {
-			global $wp_scripts;
+			global $wp_scripts, $eventon;
 			$protocol = is_ssl() ? 'https' : 'http';
 
 			// JQ UI styles
@@ -143,7 +179,13 @@ class evo_admin {
 			
 			wp_enqueue_style("jquery-ui-css", $protocol."://ajax.googleapis.com/ajax/libs/jqueryui/{$jquery_version}/themes/smoothness/jquery-ui.min.css");
 			
-			wp_enqueue_style( 'backend_evcal_post',AJDE_EVCAL_URL.'/assets/css/admin/backend_evcal_post.css');
+			wp_enqueue_style( 'backend_evcal_post',AJDE_EVCAL_URL.'/assets/css/admin/backend_evcal_post.css', array(), $eventon->version );
+			wp_enqueue_style( 'select2',AJDE_EVCAL_URL.'/assets/css/select2.css',array(), $eventon->version);
+
+			// RTL styles for wp-admin
+			if( is_rtl() ){
+				wp_enqueue_style( 'rtl_styles',AJDE_EVCAL_URL.'/assets/css/admin/wp_admin_rtl.css',array(), $eventon->version);
+			}
 		}
 		function eventon_admin_post_script() {
 			global $pagenow, $typenow, $post, $eventon, $ajde;	
@@ -164,6 +206,7 @@ class evo_admin {
 				wp_enqueue_style( 'eventon_JQ_UI_tp',$eventon_JQ_UI_tp);
 			
 				// other scripts 
+				wp_enqueue_script('select2',AJDE_EVCAL_URL.'/assets/js/select2.min.js');
 				wp_enqueue_script('evcal_backend_post_timepicker',AJDE_EVCAL_URL.'/assets/js/jquery.timepicker.js');
 				wp_enqueue_script('evcal_backend_post',AJDE_EVCAL_URL.'/assets/js/admin/eventon_backend_post.js', array('jquery','jquery-ui-core','jquery-ui-datepicker'), $eventon->version, true );
 				wp_enqueue_script("jquery-ui-core");
@@ -219,28 +262,120 @@ class evo_admin {
 			}
 			
 			// ALL wp-admin
-			wp_register_style('evo_font_icons',AJDE_EVCAL_URL.'/assets/fonts/font-awesome.css');
+			wp_register_style('evo_font_icons',AJDE_EVCAL_URL.'/assets/fonts/font-awesome.css',array(), $eventon->version);
 			wp_enqueue_style( 'evo_font_icons' );
 
 			// wp-admin styles
-			 	wp_enqueue_style( 'evo_wp_admin',AJDE_EVCAL_URL.'/assets/css/admin/wp_admin.css');
+			 	wp_enqueue_style( 'evo_wp_admin',AJDE_EVCAL_URL.'/assets/css/admin/wp_admin.css',array(), $eventon->version);
 
 
 			// styles for WP>=3.8
 			if($wp_version>=3.8)
-				wp_enqueue_style( 'newwp',AJDE_EVCAL_URL.'/assets/css/admin/wp3.8.css');
+				wp_enqueue_style( 'newwp',AJDE_EVCAL_URL.'/assets/css/admin/wp3.8.css',array(), $eventon->version);
 			// styles for WP<3.8
 			if($wp_version<3.8)
-				wp_enqueue_style( 'newwp',AJDE_EVCAL_URL.'/assets/css/admin/wp_old.css');
+				wp_enqueue_style( 'newwp',AJDE_EVCAL_URL.'/assets/css/admin/wp_old.css',array(), $eventon->version);
+
+			
 
 		}
 
-	
+// Dynamic Style Related
+	/*	Dynamic styles generation */
+		function generate_dynamic_styles_file($newdata='') {
+		 
+			/** Define some vars **/
+			$data = $newdata; 
+			$uploads = wp_upload_dir();
+			
+			//$css_dir = get_template_directory() . '/css/'; // Shorten code, save 1 call
+			$css_dir = AJDE_EVCAL_DIR . '/'. EVENTON_BASE.  '/assets/css/'; 
+			//$css_dir = plugin_dir_path( __FILE__ ).  '/assets/css/'; 
+			
+			//echo $css_dir;
 
-// eventon kriyathmakada kiya test kara beleema
-	function kriyathmakada(){
-		require_once('class-evo-product.php');
-	}
+			/** Save on different directory if on multisite **/
+			if(is_multisite()) {
+				$aq_uploads_dir = trailingslashit($uploads['basedir']);
+			} else {
+				$aq_uploads_dir = $css_dir;
+			}
+			
+			/** Capture CSS output **/
+			ob_start();
+			require($css_dir . 'dynamic_styles.php');
+			$css = ob_get_clean();
+
+			//print_r($css);
+			
+			/** Write to options.css file **/
+			WP_Filesystem();
+			global $wp_filesystem;
+			if ( ! $wp_filesystem->put_contents( $aq_uploads_dir . 'eventon_dynamic_styles.css', $css, 0777) ) {
+			    return true;
+			}	
+
+			// also update concatenated addon styles
+				$this->update_addon_styles();	
+		}
+
+	/**
+	 * Update and save addon styles passed via pluggable function
+	 * @since   2.5
+	 */
+		function update_addon_styles(){
+			// check if enabled via eventon settings
+			if( evo_settings_val('evcal_concat_styles',$this->opt, true)) return false;
+			
+			/** Define some vars **/
+			//$data = $newdata; 
+			$uploads = wp_upload_dir();
+			
+			//$css_dir = get_template_directory() . '/css/'; // Shorten code, save 1 call
+			$css_dir = AJDE_EVCAL_DIR . '/'. EVENTON_BASE.  '/assets/css/'; 
+			//$css_dir = plugin_dir_path( __FILE__ ).  '/assets/css/'; 
+			
+			//echo $css_dir;
+
+			/** Save on different directory if on multisite **/
+			if(is_multisite()) {
+				$aq_uploads_dir = trailingslashit($uploads['basedir']);
+			} else {
+				$aq_uploads_dir = $css_dir;
+			}
+			
+			/** Capture CSS output **/
+			ob_start();
+			require($css_dir . 'styles_evo_addons.php');
+			$css = ob_get_clean();
+				
+			// if there is nothing on css
+			if(empty($css)) return false;
+
+			// save a version number for this
+				$ver = get_option('eventon_addon_styles_version');
+				(empty($ver))? 
+					add_option('eventon_addon_styles_version', 1.00001):
+					update_option('eventon_addon_styles_version', ($ver+0.00001));
+
+			
+			require_once(ABSPATH . 'wp-admin/includes/file.php');
+			/** Write to options.css file **/
+			WP_Filesystem();
+			global $wp_filesystem;
+			if ( ! $wp_filesystem->put_contents( $aq_uploads_dir . 'eventon_addon_styles.css', $css, 0777) ) {
+			    return true;
+			}		
+		}
+
+	// update the dynamic styles file with updates styles val
+	// @ 2.5
+		function update_dynamic_styles(){
+			ob_start();
+			include(AJDE_EVCAL_PATH.'/assets/css/dynamic_styles.php');
+			$evo_dyn_css = ob_get_clean();						
+			update_option('evo_dyn_css', $evo_dyn_css);
+		}	
 
 // shortcode generator
 	function eventon_shortcode_button($context) {	
@@ -255,9 +390,11 @@ class evo_admin {
 		
 		if ( $typenow == '' || $typenow == "ajde_events" ) return;
 
+		if(evo_settings_check_yn($this->opt, 'evo_hide_shortcode_btn') ) return;
+
 		//our popup's title
 	  	$text = '[ ] ADD EVENTON';
-	  	$title = 'eventON Shortcode generator';
+	  	$title = __('eventON Shortcode generator','eventon');
 
 	  	//append the icon
 	  	$context .= "<a id='evo_shortcode_btn' class='ajde_popup_trig evo_admin_btn btn_prime' data-popc='eventon_shortcode' title='{$title}' href='#'>{$text}</a>";
@@ -279,7 +416,7 @@ class evo_admin {
 			'content'=>$content, 
 			'class'=>'eventon_shortcode', 
 			'attr'=>'clear="false"', 
-			'title'=>'Shortcode Generator',			
+			'title'=> __('Shortcode Generator','eventon'),			
 			//'subtitle'=>'Select option to customize shortcode variable values'
 		));
 	}
@@ -317,8 +454,8 @@ class evo_admin {
 	}
 
 	public function addon_exists($slug){
-		$addons = get_option('_evo_products');
-		return (!empty($addons) && array_key_exists($slug, $addons))? true: false;
+		$addon = new EVO_Product($slug);
+		return $addon->is_installed();
 	}
 	function eventon_load_colorpicker(){
 		global $ajde;
@@ -342,9 +479,9 @@ class evo_admin {
 
 	// plugin settings page additional links
 		function eventon_plugin_links($links) { 
-		  	$settings_link = '<a href="admin.php?page=eventon">Settings</a>'; 	  
-		  	$docs_link = '<a href="http://www.myeventon.com/documentation/" target="_blank">Docs</a>';
-		  	$news_link = '<a href="http://www.myeventon.com/news/" target="_blank">News</a>'; 
+		  	$settings_link = '<a href="admin.php?page=eventon">'.__('Settings','eventon').'</a>'; 	  
+		  	$docs_link = '<a href="http://www.myeventon.com/documentation/" target="_blank">'.__('Docs','eventon').'</a>';
+		  	$news_link = '<a href="http://www.myeventon.com/news/" target="_blank">'.__('News','eventon').'</a>'; 
 		  	array_unshift($links, $settings_link, $docs_link, $news_link); 
 		  	return $links; 
 		}
@@ -354,6 +491,8 @@ class evo_admin {
 		$ver += 3;
 		return $ver;
 	}
+
+
 		
 }
 

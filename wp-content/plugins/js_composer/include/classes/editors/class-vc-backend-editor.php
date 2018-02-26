@@ -4,9 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPBakery Visual Composer admin editor
+ * WPBakery WPBakery Page Builder admin editor
  *
- * @package WPBakeryVisualComposer
+ * @package WPBakeryPageBuilder
  *
  */
 
@@ -78,7 +78,7 @@ class Vc_Backend_Editor implements Vc_Editor_Interface {
 			visual_composer()->registerAdminJavascript();
 
 			// meta box to render
-			add_meta_box( 'wpb_visual_composer', __( 'Visual Composer', 'js_composer' ), array(
+			add_meta_box( 'wpb_visual_composer', __( 'WPBakery Page Builder', 'js_composer' ), array(
 				$this,
 				'renderEditor',
 			), $post_type, 'normal', 'high' );
@@ -176,21 +176,6 @@ class Vc_Backend_Editor implements Vc_Editor_Interface {
 		do_action( 'vc_backend_editor_enqueue_js_css' );
 	}
 
-	/**
-	 * @deprecated 4.8
-	 * @return string
-	 */
-	public function showRulesValue() {
-		_deprecated_function( '\Vc_Backend_Editor::showRulesValue', '4.8 (will be removed in next release)' );
-		global $current_user;
-		wp_get_current_user();
-		/** @var $settings - get use group access rules */
-		$settings = vc_settings()->get( 'groups_access_rules' );
-		$role = is_object( $current_user ) && isset( $current_user->roles[0] ) ? $current_user->roles[0] : '';
-
-		return isset( $settings[ $role ]['show'] ) ? $settings[ $role ]['show'] : '';
-	}
-
 	public function registerBackendJavascript() {
 		// editor can be disabled but fe can be enabled. so we currently need this file. @todo maybe make backend-disabled.min.js
 		wp_register_script( 'vc-backend-actions-js', vc_asset_url( 'js/dist/backend-actions.min.js' ), array(
@@ -218,19 +203,19 @@ class Vc_Backend_Editor implements Vc_Editor_Interface {
 			/**
 			 * @deprecated, used for accordions/tabs/tours
 			 */
-			wp_register_style( 'ui-custom-theme', vc_asset_url( 'css/ui-custom-theme/jquery-ui-less.custom.min.css' ), array(), WPB_VC_VERSION, false );
+			wp_register_style( 'ui-custom-theme', vc_asset_url( 'css/ui-custom-theme/jquery-ui-less.custom.min.css' ), array(), WPB_VC_VERSION );
 
 			/**
 			 * @todo check vc_add-element-deprecated-warning for fa icon usage ( set to our font )
 			 * also used in vc_icon shortcode
 			 */
-			wp_register_style( 'font-awesome', vc_asset_url( 'lib/bower/font-awesome/css/font-awesome.min.css' ), array(), WPB_VC_VERSION, false );
+			wp_register_style( 'font-awesome', vc_asset_url( 'lib/bower/font-awesome/css/font-awesome.min.css' ), array(), WPB_VC_VERSION );
 
 			/**
 			 * @todo check for usages
 			 * definetelly used in edit form param: css_animation, but curreny vc_add_shortcode_param doesn't accept css [ @todo refactor that ]
 			 */
-			wp_register_style( 'animate-css', vc_asset_url( 'lib/bower/animate-css/animate.min.css' ), array(), WPB_VC_VERSION, false );
+			wp_register_style( 'animate-css', vc_asset_url( 'lib/bower/animate-css/animate.min.css' ), array(), WPB_VC_VERSION );
 		}
 	}
 

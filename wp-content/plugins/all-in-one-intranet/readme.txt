@@ -2,8 +2,8 @@
 Contributors: danlester
 Tags: authentication, company, intranet, extranet, private, privacy, network, security, visibility, secure
 Requires at least: 3.5
-Tested up to: 4.6
-Stable tag: 1.2
+Tested up to: 4.9
+Stable tag: 1.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -88,7 +88,7 @@ may render your site insecure.
 = What are the system requirements? =
 
 *  PHP 5.2.x or higher
-*  Wordpress 3.3 or above
+*  Wordpress 3.5 or above
 
 == Installation ==
 
@@ -109,6 +109,18 @@ the Plugins section of your Wordpress admin
 
 
 == Changelog ==
+
+= 1.5 =
+
+Ready for WP 4.9. Disables unauthenticated calls to WP REST API by default.
+
+= 1.4 =
+
+Now supports localization - please contribute your translations!
+
+= 1.3 =
+
+Changed which WordPress hooks are used to check for auto-logout. This is to widen compatibility with certain Themes.
 
 = 1.2 =
 

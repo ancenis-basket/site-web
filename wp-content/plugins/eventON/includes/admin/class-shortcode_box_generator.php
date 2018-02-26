@@ -32,6 +32,7 @@ class eventon_admin_shortcode_box{
 						'guide'=>'Event Type '.$x.' category IDs - seperate by commas (eg. 3,12)',
 						'placeholder'=>'eg. 3, 12',
 						'var'=>'event_type_'.$x,
+						'possible_values'=>'yes',
 						'default'=>'0'
 					);
 				}else{ $event_types_sc['event_type_'.$x] = array(); }
@@ -104,6 +105,7 @@ class eventon_admin_shortcode_box{
 				'guide'=>__('Event Type category IDs - seperate by commas (eg. 3,12)','eventon'),
 				'placeholder'=>'eg. 3, 12',
 				'var'=>'event_type',
+				'possible_values'=>'yes',
 				'default'=>'0'
 			),'event_type_2'=>array(
 				'name'=>__('Event Type 2','eventon'),
@@ -111,11 +113,30 @@ class eventon_admin_shortcode_box{
 				'guide'=>__('Event Type 2 category IDs - seperate by commas (eg. 3,12)','eventon'),
 				'placeholder'=>'eg. 3, 12',
 				'var'=>'event_type_2',
+				'possible_values'=>'yes',
 				'default'=>'0'
 			),
 			'event_type_3'=>$event_types_sc['event_type_3'],
 			'event_type_4'=>$event_types_sc['event_type_4'],
 			'event_type_5'=>$event_types_sc['event_type_5'],
+			'event_location'=>array(
+				'name'=>__('Event Location','eventon'),
+				'type'=>'taxonomy',
+				'guide'=>__('Event Loction term ID(s) - seperate by commas (eg. 3,12)','eventon'),
+				'placeholder'=>'eg. 3, 12',
+				'var'=>'event_location',
+				'possible_values'=>'yes',
+				'default'=>'0'
+			),
+			'event_organizer'=>array(
+				'name'=>__('Event Organizer','eventon'),
+				'type'=>'taxonomy',
+				'guide'=>__('Event Organizer term ID(s) - seperate by commas (eg. 3,12)','eventon'),
+				'placeholder'=>'eg. 3, 12',
+				'var'=>'event_organizer',
+				'possible_values'=>'no',
+				'default'=>'0'
+			),
 			'fixed_month'=>array(
 				'name'=>__('Fixed Month','eventon'),
 				'type'=>'text',
@@ -152,7 +173,7 @@ class eventon_admin_shortcode_box{
 				)
 			),
 			'lang'=>array(
-				'name'=>'Language Variation (<a href="'.get_admin_url().'admin.php?page=eventon&tab=evcal_2">Update Language Text</a>)',
+				'name'=>'Language Variation (<a href="'.get_admin_url().'admin.php?page=eventon&tab=evcal_2">'.__('Update Language Text','eventon').'</a>)',
 				'type'=>'select',
 				'guide'=>__('Select which language variation text to use','eventon'),
 				'var'=>'lang',
@@ -162,8 +183,15 @@ class eventon_admin_shortcode_box{
 			'hide_mult_occur'=>array(
 				'name'=>__('Hide multiple occurence (HMO)','eventon'),
 				'type'=>'YN',
-				'guide'=>__('Hide events from showing more than once between months','eventon'),
+				'guide'=>__('Hide events from showing more than once in between months','eventon'),
 				'var'=>'hide_mult_occur',
+				'default'=>'no',
+			),
+			'hide_month_headers'=>array(
+				'name'=>__('Hide month headers','eventon'),
+				'type'=>'YN',
+				'guide'=>__('Remove the month headers that seprate each months events in the list.','eventon'),
+				'var'=>'hide_month_headers',
 				'default'=>'no',
 			),
 			'show_repeats'=>array(
@@ -208,19 +236,29 @@ class eventon_admin_shortcode_box{
 				'guide'=>__('Select this option to override event colors with event type colors, if they exists','eventon'),
 				'var'=>'etc_override',
 				'default'=>'no',
-			),'only_ft'=>array(
+			),
+			'only_ft'=>array(
 				'name'=>__('Show only featured events','eventon'),
 				'type'=>'YN',
 				'guide'=>__('Display only featured events in the calendar','eventon'),
 				'var'=>'only_ft',
 				'default'=>'no',
-			),'jumper'=>array(
+			),
+			'hide_ft'=>array(
+				'name'=>__('Hide featured events','eventon'),
+				'type'=>'YN',
+				'guide'=>__('Hide all the featured events from showing in the calendar','eventon'),
+				'var'=>'hide_ft',
+				'default'=>'no',
+			),
+			'jumper'=>array(
 				'name'=>__('Show jump months option','eventon'),
 				'type'=>'YN',
 				'guide'=>__('Display month jumper on the calendar','eventon'),
 				'var'=>'jumper',
 				'default'=>'no',
-				),'exp_jumper'=>array(
+				),
+				'exp_jumper'=>array(
 					'name'=>__('Expand jump month on load','eventon'),
 					'type'=>'YN',
 					'guide'=>__('Show expand jump month section when calendar load','eventon'),
@@ -243,13 +281,13 @@ class eventon_admin_shortcode_box{
 					'sort_rand'=>__('Random Order','eventon'),
 				)
 			),'hide_sortO'=>array(
-				'name'=>__('Hide sort options section','eventon'),
+				'name'=>__('Disable calendar sort/filter ability','eventon'),
 				'type'=>'YN',
 				'guide'=>__('This will hide sort options section on the calendar.','eventon'),
 				'var'=>'hide_so',
 				'default'=>'no',
 			),'expand_sortO'=>array(
-				'name'=>__('Expand sort options by default','eventon'),
+				'name'=>__('Expand sort/filter section by default','eventon'),
 				'type'=>'YN',
 				'guide'=>__('This will expand sort options section on load for calendar.','eventon'),
 				'var'=>'exp_so',
@@ -259,19 +297,36 @@ class eventon_admin_shortcode_box{
 				'type'=>'note',
 				'var'=>'rtl',
 				'default'=>'no',
-			),'show_limit'=>array(
+			),
+
+			'show_limit'=>array(
 				'name'=>__('Show load more events button','eventon'),
 				'type'=>'YN',
 				'guide'=>__('Require "event count limit" to work, then this will add a button to show rest of the events for calendar in increments','eventon'),
 				'var'=>'show_limit',
 				'default'=>'no',
-			),'show_limit_redir'=>array(
-				'name'=>__('Redirect load more events button','eventon'),
-				'type'=>'text',
-				'guide'=>__('http:// URL the load more events button will redirect to instead of loading more events on the same calendar.','eventon'),
-				'var'=>'show_limit_redir',
-				'default'=>'no',
-			),'members_only'=>array(
+				'afterstatement'=>'show_limit'
+			),
+				'show_limit_redir'=>array(
+					'name'=>__('Redirect load more events button','eventon'),
+					'type'=>'text',
+					'guide'=>__('http:// URL the load more events button will redirect to instead of loading more events on the same calendar.','eventon'),
+					'var'=>'show_limit_redir',
+					'default'=>'no',
+				),
+				'show_limit_ajax'=>array(
+					'name'=>__('Load more events via AJAX','eventon'),
+					'type'=>'YN',
+					'guide'=>__('This will load more events via AJAX as oppose to loading all events onLoad.','eventon'),
+					'var'=>'show_limit_ajax',
+					'default'=>'no',
+				),
+				'show_limit_close'=>array(
+					'name'=>'Custom Code','type'=>'customcode', 'value'=>'',
+					'closestatement'=>'show_limit'
+				),
+
+			'members_only'=>array(
 				'name'=>__('Make this calendar only visible to loggedin user','eventon'),
 				'type'=>'YN',
 				'guide'=>__('This will make this calendar only visible to loggedin users','eventon'),
@@ -293,6 +348,20 @@ class eventon_admin_shortcode_box{
 					'default'=>__('Dropdown Filter List','eventon'),
 					'select'=>__('Multiple Checkbox Filter','eventon'),
 				)
+			),
+			'hide_arrows'=>array(
+				'name'=>'Hide Calendar Arrows',
+				'type'=>'YN',
+				'guide'=>'This will hide calendar arrow navigations',
+				'var'=>'hide_arrows',
+				'default'=>'no',
+			),
+			'ics'=>array(
+				'name'=>'Allow ICS download of all events',
+				'type'=>'YN',
+				'guide'=>'This will allow visitors to download one ICS file with all the events',
+				'var'=>'ics',
+				'default'=>'no',
 			)
 
 		);
@@ -307,13 +376,14 @@ class eventon_admin_shortcode_box{
 			$shortcode_guide_array = apply_filters('eventon_shortcode_popup', array(
 				array(
 					'id'=>'s1',
-					'name'=>'Main Calendar',
+					'name'=> __('Main Calendar','eventon'),
 					'code'=>'add_eventon',
 					'variables'=>apply_filters('eventon_basiccal_shortcodebox', array(
 						$this->shortcode_default_field('cal_id')
 						,$this->shortcode_default_field('show_et_ft_img')
 						,$this->shortcode_default_field('ft_event_priority')
 						,$this->shortcode_default_field('only_ft')
+						,$this->shortcode_default_field('hide_ft')
 						,$this->shortcode_default_field('hide_past')	
 						,$this->shortcode_default_field('hide_past_by')	
 						,$this->shortcode_default_field('sort_by')
@@ -321,12 +391,16 @@ class eventon_admin_shortcode_box{
 						,$this->shortcode_default_field('event_count')
 						,$this->shortcode_default_field('show_limit')
 						,$this->shortcode_default_field('show_limit_redir')
+						,$this->shortcode_default_field('show_limit_ajax')
+						,$this->shortcode_default_field('show_limit_close')
 						,$this->shortcode_default_field('month_incre')
 						,$this->shortcode_default_field('event_type')
 						,$this->shortcode_default_field('event_type_2')
 						,$this->shortcode_default_field('event_type_3')
 						,$this->shortcode_default_field('event_type_4')
 						,$this->shortcode_default_field('event_type_5')
+						,$this->shortcode_default_field('event_location')
+						,$this->shortcode_default_field('event_organizer')
 						,$this->shortcode_default_field('etc_override')
 						,$this->shortcode_default_field('fixed_mo_yr')						
 						,$this->shortcode_default_field('lang')
@@ -340,17 +414,24 @@ class eventon_admin_shortcode_box{
 								'default'=>'no',
 								'afterstatement'=>'jumper_offset'
 							),
-								$this->shortcode_default_field('exp_jumper'),							
-								array(
+							$this->shortcode_default_field('exp_jumper'),							
+							array(
 								'name'=>' Jumper Start Year',
 								'type'=>'select',
 								'options'=>array(
 									'0'=>$_current_year-2,
 									'1'=>$_current_year-1,
 									'2'=>$_current_year,
+									'3'=>$_current_year+1,
 									),
 								'guide'=>'Select which year you want to set to start jumper options at relative to current year',
 								'var'=>'jumper_offset','default'=>'0',
+							),array(
+								'name'=>' Jumper Years Count',
+								'type'=>'select',
+								'options'=>array(1=>'1','2','3','4','5','6','7','8','9'),
+								'guide'=>'Set how many years you want to show after the selected year above',
+								'var'=>'jumper_count','default'=>'5',
 								'closestatement'=>'jumper_offset'
 							)
 
@@ -358,21 +439,25 @@ class eventon_admin_shortcode_box{
 						,$this->shortcode_default_field('expand_sortO')
 						,$this->shortcode_default_field('filter_type')
 						,$this->shortcode_default_field('accord')
-						,array(
-								'name'=>'Hide Calendar Arrows',
-								'type'=>'YN',
-								'guide'=>'This will hide calendar arrow navigations',
-								'var'=>'hide_arrows',
-								'default'=>'no',
-							)
-						,
-							array(
+						,$this->shortcode_default_field('hide_arrows')
+							,array(
 								'name'=>'Activate Tile Design',
 								'type'=>'YN',
 								'guide'=>'This will activate the tile event design for calendar instead of rows of events.',
 								'default'=>'no',
 								'var'=>'tiles',
 								'afterstatement'=>'tiles'
+							),
+							array(
+								'name'=>'Number of Tiles in a Row',
+								'type'=>'select',
+								'options'=>array(
+									'2'=>'2',
+									'3'=>'3',
+									'4'=>'4',
+									),
+								'guide'=>'Select the number of tiles to show on one row',
+								'var'=>'tile_count','default'=>'0'
 							),
 							array(
 								'name'=>'Tile Box Height (px)',
@@ -389,40 +474,30 @@ class eventon_admin_shortcode_box{
 									),
 								'guide'=>'Select the type of background for the event tile design',
 								'var'=>'tile_bg','default'=>'0'
-							),array(
-								'name'=>'Number of Tiles in a Row',
-								'type'=>'select',
-								'options'=>array(
-									'2'=>'2',
-									'3'=>'3',
-									'4'=>'4',
-									),
-								'guide'=>'Select the number of tiles to show on one row',
-								'var'=>'tile_count','default'=>'0'
 							),
-							/*array(
+							array(
 								'name'=>'Tile Style',
 								'type'=>'select',
 								'options'=>array(
 									'0'=>'Default',
-									'1'=>'Top bar',
+									'1'=>'Details under tile box',
 									),
 								'guide'=>'With this you can select different layout styles for tiles',
 								'var'=>'tile_style','default'=>'0'
-							),*/
+							),
 							array(
-								'name'=>'Custom Code',
-								'type'=>'customcode', 'value'=>'',
+								'name'=>'Custom Code','type'=>'customcode', 'value'=>'',
 								'closestatement'=>'tiles'
 							)
 						,
-						$this->shortcode_default_field('members_only')
+						$this->shortcode_default_field('members_only'),
+						$this->shortcode_default_field('ics')
 						
 					))
 				),
 				array(
 					'id'=>'s2',
-					'name'=>'Events List',
+					'name'=> __('Event Lists','eventon'),
 					'code'=>'add_eventon_list',
 					'variables'=> apply_filters('eventon_basiclist_shortcodebox',array(
 						$this->shortcode_default_field('number_of_months')
@@ -434,19 +509,21 @@ class eventon_admin_shortcode_box{
 							'var'=>'event_count',
 							'default'=>'0'
 						)
-						,$this->shortcode_default_field('show_limit')
-						,$this->shortcode_default_field('show_limit_redir')
 						,$this->shortcode_default_field('month_incre')
 						,$this->shortcode_default_field('fixed_mo_yr')
 						,$this->shortcode_default_field('cal_id')
 						,$this->shortcode_default_field('event_order')
 						,$this->shortcode_default_field('hide_past')
 						,$this->shortcode_default_field('hide_past_by')
+						,$this->shortcode_default_field('UIX')
 						,$this->shortcode_default_field('event_type')
 						,$this->shortcode_default_field('event_type_2')
 						,$this->shortcode_default_field('event_type_3')
 						,$this->shortcode_default_field('event_type_4')
-						,$this->shortcode_default_field('event_type_5')	
+						,$this->shortcode_default_field('event_type_5')							
+						,$this->shortcode_default_field('event_location')
+						,$this->shortcode_default_field('event_organizer')
+						,$this->shortcode_default_field('hide_month_headers')
 						,$this->shortcode_default_field('hide_mult_occur'),
 						array(
 							'name'=>'Show all repeating events while HMO',
@@ -454,7 +531,8 @@ class eventon_admin_shortcode_box{
 							'guide'=>'If you are hiding multiple occurence of event but want to show all repeating events set this to yes',
 							'var'=>'show_repeats',
 							'default'=>'no',
-						),array(
+						),
+						array(
 							'name'=>'Hide empty months (Use ONLY w/ event list)',
 							'type'=>'YN',
 							'guide'=>'Hide months without any events on the events list',
@@ -513,7 +591,7 @@ class eventon_admin_shortcode_box{
 				),
 				array(
 					'id'=>'s_SE',
-					'name'=>'Single Event',
+					'name'=>__('Single Event','eventon'),
 					'code'=>'add_single_eventon',
 					'variables'=>array(
 						array(
@@ -554,11 +632,12 @@ class eventon_admin_shortcode_box{
 							'var'=>'ext_url',
 							'placeholder'=>'http://'
 						),
-						$this->shortcode_default_field('lang')
+						$this->shortcode_default_field('lang'),
+						$this->shortcode_default_field('etc_override')
 						,array(
 							'name'=>'Repeat Interval ID',
 							'type'=>'text','var'=>'repeat_interval',
-							'guide'=>'Enter the repeat interval instance ID such as 1, 2,3. This is only for repeating events',
+							'guide'=>'Enter the repeat interval instance ID of the event you want to show from the repeating events series (the number at the end of the single event URL)  eg. 3. This is only for repeating events',
 							'placeholder'=>'eg. 4',							
 						)
 					)
@@ -572,8 +651,10 @@ class eventon_admin_shortcode_box{
 		public function get_content(){
 			global $ajde, $eventon;
 
-			if(!$eventon->evo_updater->kriyathmakada()) 
-				return '<p style="padding:10px;text-align:center">'.$eventon->evo_updater->akriyamath_niwedanaya() .'</p>';
+			$EVO = new EVO_Product('eventon');
+
+			if(!$EVO->kriyathmakada()) 
+				return '<p style="padding:10px;text-align:center">'.$EVO->akriyamath_niwedanaya() .'</p>';
 			
 			return $ajde->wp_admin->get_content(
 				$this->get_shortcode_field_array(),

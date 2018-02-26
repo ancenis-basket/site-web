@@ -48,6 +48,7 @@ class evo_dv_shortcode{
 					'mo1st'=>'',
 					'today'=>'no',
 					'header_title'=>'',
+					'continuous_scroll'=>'no',
 				));	
 			}
 
@@ -112,6 +113,12 @@ class evo_dv_shortcode{
 							'type'=>'YN',
 							'guide'=>'Yes = when switching month focus day will go to 1st of new month',
 							'var'=>'mo1st',
+							'default'=>'no'
+						),array(
+							'name'=>'Continuous Scrolling Days Strip',
+							'type'=>'YN',
+							'guide'=>'Yes = Will do continuous scrolling when next and prev arrows clicked on days strip. Instead of going to current focused date this will go to beginning or end of the new month.',
+							'var'=>'continuous_scroll',
 							'default'=>'no'
 						),array(
 							'name'=>'Hide Focus Date Section',

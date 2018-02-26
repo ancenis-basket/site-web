@@ -1,5 +1,8 @@
 AJDE Library Changelog
 ----------------------------
+v 1.6.1 (2017-
+UPDATED: font awesome fonts to 4.7
+
 v 1.6.0 (2016-10-13)
 UPDATED: New lightbox system
 FIXED: Lightbox styles
